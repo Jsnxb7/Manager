@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ url_for('static', filename='js/index.js') }}" defer></script>
+    
+</head>
+<body class="bg-gray-900 text-white">
+    <header class="bg-gray-800 py-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center px-4">
+            <h1 class="text-3xl font-bold text-pink-500">AnimeManager</h1>
+            <nav>
+                <ul class="flex space-x-4">
+                    <a href="{{ url_for('home') }}">Home</a>
+                    <a href="{{ url_for('bookmarks_page') }}">Bookmarks</a>
+                    <li><a href="#" class="hover:text-pink-400">Sort</a></li>
+                    <li><a href="#" class="hover:text-pink-400">About</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <!-- Search and Filter Section -->
+        <section class="mb-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center w-full space-x-4">
+                    <input type="text" placeholder="Search anime..." class="w-full px-4 py-2 rounded-lg bg-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                    <select class="px-4 py-2 rounded-lg bg-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <option value="" disabled selected>Sort by</option>
+                        <option value="popularity">Popularity</option>
+                        <option value="release-date">Release Date</option>
+                        <option value="rating">Rating</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Anime Cards Section -->
+        <section class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Loop through anime_list -->
+            {% for anime in anime_list %}
+            <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+                <img src="{{ anime['image_url'] }}" alt="Anime Cover" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-lg font-bold">{{ anime['title'] }}</h3>
+                    <p class="text-sm text-gray-400">{{ anime['description'] }}</p>
+                    <ul class="mt-4 space-y-2 text-gray-300">
+                        <!-- Loop through episodes -->
+                        {% for episode in anime['episodes'] %}
+                        <li>
+                            <span class="font-semibold">Episode {{ episode['number'] }}:</span>
+                            {{ episode['title'] }} 
+                            {% if episode['watched'] %}
+                                <span class="text-green-400">(Watched)</span>
+                            {% else %}
+                                <span class="text-red-400">(Not Watched)</span>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="flex justify-between items-center mt-4">
+                        <button class="px-3 py-1 bg-pink-500 rounded-lg text-sm hover:bg-pink-600">Bookmark</button>
+                        <!-- View Details link with anime_id -->
+                        <a href="{{ url_for('anime_details', anime_id=anime['id']) }}" class="text-sm text-pink-400 hover:underline">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+        
+    </main>
+
+    <footer class="bg-gray-800 py-4 mt-6">
+        <div class="container mx-auto text-center text-gray-400">
+            <p>&copy; 2025 AnimeManager. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

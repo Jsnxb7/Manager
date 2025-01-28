@@ -1,0 +1,13 @@
+[[
+    {
+      "id": 2,
+      "title": "Demon Slayer",
+      "description": "Tanjiro Kamado sets out to become a demon slayer to avenge his family and cure his sister, who has turned into a demon.",
+      "episodes": [
+        { "number": 1, "title": "Cruelty", "watched": true },
+        { "number": 2, "title": "Trainer Sakonji Urokodaki", "watched": false },
+        { "number": 3, "title": "Sabito and Makomo", "watched": false }
+      ]
+    }
+  ]
+  ]
