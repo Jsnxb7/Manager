@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="flex flex-col items-center justify-center p-6">
+        <!-- Anime Title -->
+        <h1 class="text-2xl font-bold text-center mb-4">{{ anime.title }} - {{ anime.season }}</h1>
+
+        <!-- Video Player -->
+        <div class="relative w-full max-w-3xl">
+            <video id="video-player"
+                   class="video-js vjs-default-skin vjs-big-play-centered rounded-lg shadow-lg"
+                   controls
+                   autoplay
+                   preload="auto"
+                   width="800"
+                   height="450"
+                   data-setup='{}'>
+                <source src="{{ episode.video_url }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+
+        <!-- Episode Info -->
+        <p class="mt-4 text-lg font-semibold">
+            <strong>Now Playing:</strong> Episode {{ episode.number }} - {{ episode.title }}
+        </p>
+
+        <!-- Episode Navigation -->
+        <div class="mt-6 flex gap-4">
+            {% if episode.number > 1 %}
+                <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number - 1) }}"
+                   class="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-900 transition">
+                    ⬅️ Previous Episode
+                </a>
+            {% endif %}
+            {% if episode.number < anime.episodes|length %}
+                <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number + 1) }}"
+                   class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-800 transition">
+                    Next Episode ➡️
+                </a>
+            {% endif %}
+        </div>
+
+        <!-- Back to Anime Details -->
+        <a href="{{ url_for('anime_detail', anime_id=anime.id) }}"
+           class="mt-6 text-lg text-gray-600 hover:underline">
+            ⬅️ Back to Anime Details
+        </a>
+    </div>
+
+    <script>
+        // Ensure Video.js is properly initialized
+        document.addEventListener("DOMContentLoaded", function () {
+            const player = videojs('video-player', {
+                controls: true,
+                autoplay: true,
+                preload: 'auto',
+                playbackRates: [0.5, 1, 1.5, 2], // Speed options
+                controlBar: {
+                    children: [
+                        'playToggle', 'volumePanel', 'currentTimeDisplay', 'timeDivider',
+                        'durationDisplay', 'progressControl', 'remainingTimeDisplay',
+                        'playbackRateMenuButton', 'fullscreenToggle'
+                    ]
+                }
+            });
+
+            // Handle End of Video - Auto Next Episode
+            player.on('ended', function () {
+    alert('Episode ended. Moving to the next episode...');
+
+    // Properly parse Jinja variables into JavaScript
+    const nextEpisode = parseInt("{{ episode.number }}") + 1;
+    const totalEpisodes = parseInt("{{ anime.episodes|length }}");
+
+    if (nextEpisode <= totalEpisodes) {
+        window.location.href = "{{ url_for('player', anime_id=anime.id, episode_number=0) }}".replace("0", nextEpisode);
+    }
+});
+
+
+            // Keyboard Shortcuts
+            document.addEventListener('keydown', (event) => {
+                if (event.target.tagName.toLowerCase() === 'input') return; // Prevent conflicts with input fields
+
+                switch (event.key) {
+                    case ' ': // Spacebar - Play/Pause
+                        event.preventDefault();
+                        player.paused() ? player.play() : player.pause();
+                        break;
+                    case 'ArrowLeft': // Rewind 10s
+                        player.currentTime(player.currentTime() - 10);
+                        break;
+                    case 'ArrowRight': // Forward 10s
+                        player.currentTime(player.currentTime() + 10);
+                        break;
+                    case 'ArrowUp': // Increase Volume
+                        player.volume(Math.min(player.volume() + 0.1, 1));
+                        break;
+                    case 'ArrowDown': // Decrease Volume
+                        player.volume(Math.max(player.volume() - 0.1, 0));
+                        break;
+                    case 'f': // Fullscreen Toggle
+                        player.isFullscreen() ? player.exitFullscreen() : player.requestFullscreen();
+                        break;
+                    case 'm': // Mute/Unmute
+                        player.muted(!player.muted());
+                        break;
+                }
+            });
+        });
+    </script>
+{% endblock %}

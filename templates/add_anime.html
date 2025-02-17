@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="add-anime-form">
+        <h1>Add New Anime</h1>
+        <form method="POST" id="add-anime-form">
+            <label for="title">Anime Title:</label>
+            <input type="text" id="title" name="title" required oninput="updateDirectory()">
+
+            <label for="season">Season:</label>
+            <input type="text" id="season" name="season" required oninput="updateDirectory()">
+
+            <label for="status">Status:</label>
+            <select id="status" name="status" required>
+                <option value="Ongoing">Ongoing</option>
+                <option value="Completed">Completed</option>
+            </select>
+
+            <label for="download_link">Download Link:</label>
+            <input type="url" id="download_link" name="download_link" required>
+
+            <label for="episodes">Number of Episodes:</label>
+            <input type="number" id="episodes" name="episodes" min="1" required>
+
+            <button type="submit">Add Anime</button>
+        </form>
+    </div>
+
+    <script>
+        const BASE_PATH = "C:/Users/shour/Documents/Anime"; // Base directory
+
+        function updateDirectory() {
+            const title = document.getElementById("title").value.trim();
+            const season = document.getElementById("season").value.trim();
+            if (title && season) {
+                document.getElementById("add-anime-form").setAttribute("data-directory", `${BASE_PATH}/${title}/${season}`);
+            }
+        }
+    </script>
+
+{% endblock %}

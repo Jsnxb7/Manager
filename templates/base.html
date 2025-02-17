@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!-- Video.js CSS -->
+    <link href="https://vjs.zencdn.net/7.15.4/video-js.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <h1>Anime Manager</h1>
+        <a href="{{ url_for('index') }}" class="home-button">Back to Home</a>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <!-- Video.js Script -->
+    <script src="https://vjs.zencdn.net/7.15.4/video.min.js"></script>
+</body>
+</html>

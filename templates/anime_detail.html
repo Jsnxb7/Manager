@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="anime-detail">
+        <h1>{{ anime.title }}</h1>
+        <p><strong>Season:</strong> {{ anime.season }}</p>
+        <p><strong>Status:</strong> {{ anime.status }}</p>
+        <p><strong>Total Episodes:</strong> {{ anime.episodes|length }}</p>
+        <p><strong>Download Anime:</strong> <a href="{{ anime.download_link }}" target="_blank" class="download-link">{{ anime.download_link }}</a></p>
+        
+        <div class="episodes-list">
+            <h2>Episodes</h2>
+            {% for episode in anime.episodes %}
+                <div class="episode">
+                    <div class="episode-info">
+                        <span class="episode-number">Episode {{ episode.number }}</span>
+                        <span class="episode-title">{{ episode.title }}</span>
+                    </div>
+                    <div class="episode-actions">
+                        <button onclick="toggleWatched('{{ anime.id }}', '{{ episode.number }}', this)" class="watched-button {% if episode.watched %}watched{% endif %}">
+                            {% if episode.watched %}✔ Watched{% else %}Mark as Watched{% endif %}
+                        </button>
+                        <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number) }}" class="play-button">Play</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
