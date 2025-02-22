@@ -3,16 +3,16 @@ body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f9;
+    background-image: url("{{ url_for('static', filename='anime_images/Healer.jpg') }}");
     color: #333;
 }
 
 header {
-    background-color: #2c3e50;
+    background-color: #a3ccf3dc;
     color: #ecf0f1;
     padding: 20px 0;
     text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: 40px;
 }
 
 h1 {
@@ -35,10 +35,10 @@ a:hover {
 }
 /* Anime List Styles */
 .anime-list {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #ffffff;
+    max-width: auto;
+    margin: 20px;
+    padding: 60px;
+    background-color: #ffffff00;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -196,7 +196,7 @@ a:hover {
 }
 
 .home-button:hover {
-    background-color: #2980b9;
+    background-color: #204158;
 }
 /* Video.js Custom Styles */
 .video-js {
@@ -304,12 +304,11 @@ a:hover {
 
 /* Anime Detail Page Styles */
 .anime-detail {
-    max-width: 800px;
-    margin: 20px auto;
+    max-width: auto;
+    margin: 20px;
     padding: 20px;
-    background-color: #ffffff;
+    background-color: #ffffff24;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .anime-detail h1 {
@@ -320,7 +319,7 @@ a:hover {
 
 .anime-detail p {
     font-size: 1rem;
-    color: #7f8c8d;
+    color: #064448;
     margin: 5px 0;
 }
 
@@ -491,5 +490,5 @@ a:hover {
 }
 
 .add-anime-button:hover {
-    background-color: #219653;
+    background-color: #145530;
 }

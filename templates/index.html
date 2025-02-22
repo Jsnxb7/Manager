@@ -2,12 +2,130 @@
 
 {% block content %}
     <div class="anime-list">
-        <h1>Anime Manager</h1>
         <a href="{{ url_for('add_anime') }}" class="add-anime-button">Add New Anime</a>
-        <ul class="anime-titles" id="anime-titles">
-            <!-- Anime list will be dynamically inserted here -->
-        </ul>
+
+        <!-- Search Bar -->
+        <input type="text" id="search-bar" class="search-bar" placeholder="Search anime..." onkeyup="filterAnime()">
+
+        <!-- Anime Grid Container -->
+        <div class="anime-grid" id="anime-grid">
+            <!-- Anime cards will be dynamically inserted here -->
+        </div>
     </div>
+
+    <style>
+        body {
+            font-family: Comic Sans MS;
+            margin: 0;
+            padding: 0;
+            background-image: url("{{ url_for('static', filename='anime_images/bg.png') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #333;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px;
+            margin: 10px auto;
+            display: block;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        /* Anime Grid Layout */
+        .anime-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .anime-card {
+            background-color: #93bae3e2;
+            height: fit-content;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .anime-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .anime-thumbnail {
+            width: 100%;
+            height: fit-content;
+            object-fit: cover;
+        }
+
+        .anime-info {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .anime-title {
+            font-weight: bold;
+            padding: 3px;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .anime-season {
+            padding: 2px;
+            color: #803333;
+            font-size: 0.9rem;
+        }
+
+        .anime-status {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #099a45;
+        }
+
+        .anime-actions {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+        }
+
+        .view-button, .delete-button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            font-size: 0.9rem;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .view-button {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .view-button:hover {
+            background-color: #22343f;
+        }
+
+        .delete-button {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .delete-button:hover {
+            background-color: #c0392b;
+        }
+    </style>
 
     <script>
         // Function to fetch anime data from the server
@@ -17,42 +135,91 @@
                 if (!response.ok) {
                     throw new Error('Failed to fetch anime data');
                 }
-                const data = await response.json();
-                return data;
+                return await response.json();
             } catch (error) {
                 console.error('Error fetching anime data:', error);
                 return [];
             }
         }
 
-        // Function to render anime list
+        // Function to render anime list as cards
         function renderAnimeList(animeData) {
-            const animeList = document.getElementById('anime-titles');
-            animeList.innerHTML = ''; // Clear existing content
+            const animeGrid = document.getElementById('anime-grid');
+            animeGrid.innerHTML = ''; // Clear existing content
 
             animeData.forEach(anime => {
-                const listItem = document.createElement('li');
-                listItem.className = 'anime-item';
-                listItem.id = `anime-${anime.id}`; // Add ID for easy deletion
+                // Create anime card container
+                const animeCard = document.createElement('div');
+                animeCard.className = 'anime-card';
+                animeCard.id = `anime-${anime.id}`;
+                animeCard.setAttribute("data-title", anime.title.toLowerCase()); // Store title for search filtering
 
-                const animeLink = document.createElement('a');
-                animeLink.href = `/anime/${anime.id}`;
-                animeLink.className = 'anime-link';
-                animeLink.textContent = `${anime.title} - ${anime.season}`;
+                // Thumbnail image (if available, otherwise use a placeholder)
+                const animeThumbnail = document.createElement('img');
+                animeThumbnail.className = 'anime-thumbnail';
+                animeThumbnail.src = anime.thumbnail_url || 'https://via.placeholder.com/250x180?text=No+Image';
+                animeThumbnail.alt = anime.title;
 
-                const animeStatus = document.createElement('span');
+                // Anime info container
+                const animeInfo = document.createElement('div');
+                animeInfo.className = 'anime-info';
+
+                const animeTitle = document.createElement('div');
+                animeTitle.className = 'anime-title';
+                animeTitle.textContent = anime.title;
+
+                const animeSeason = document.createElement('div');
+                animeSeason.className = 'anime-season';
+                animeSeason.textContent = `Season: ${anime.season}`;
+
+                const animeStatus = document.createElement('div');
                 animeStatus.className = 'anime-status';
                 animeStatus.textContent = anime.status;
 
+                // Actions container
+                const animeActions = document.createElement('div');
+                animeActions.className = 'anime-actions';
+
+                // "View Anime" button
+                const viewButton = document.createElement('a');
+                viewButton.className = 'view-button';
+                viewButton.href = `/anime/${anime.id}`;
+                viewButton.textContent = 'View Anime';
+
+                // Delete button
                 const deleteButton = document.createElement('button');
                 deleteButton.className = 'delete-button';
                 deleteButton.textContent = 'Delete';
                 deleteButton.onclick = () => deleteAnime(anime.id);
 
-                listItem.appendChild(animeLink);
-                listItem.appendChild(animeStatus);
-                listItem.appendChild(deleteButton);
-                animeList.appendChild(listItem);
+                // Append elements to their respective containers
+                animeActions.appendChild(viewButton);
+                animeActions.appendChild(deleteButton);
+
+                animeInfo.appendChild(animeTitle);
+                animeInfo.appendChild(animeSeason);
+                animeInfo.appendChild(animeStatus);
+
+                animeCard.appendChild(animeThumbnail);
+                animeCard.appendChild(animeInfo);
+                animeCard.appendChild(animeActions);
+
+                animeGrid.appendChild(animeCard);
+            });
+        }
+
+        // Function to filter anime based on search query
+        function filterAnime() {
+            const query = document.getElementById('search-bar').value.toLowerCase();
+            const animeCards = document.querySelectorAll('.anime-card');
+
+            animeCards.forEach(card => {
+                const title = card.getAttribute("data-title");
+                if (title.includes(query)) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
             });
         }
 
@@ -65,9 +232,8 @@
                     });
 
                     if (response.ok) {
-                        // Remove the anime item from the list
-                        const animeItem = document.getElementById(`anime-${animeId}`);
-                        animeItem.remove();
+                        // Remove the anime card from the grid
+                        document.getElementById(`anime-${animeId}`).remove();
                         alert("Anime deleted successfully.");
                     } else {
                         alert("Failed to delete anime.");

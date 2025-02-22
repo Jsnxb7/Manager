@@ -4,6 +4,9 @@ import os
 
 app = Flask(__name__)
 
+IMAGE_FOLDER = "static/anime_images"
+DEFAULT_IMAGE = "/static/placeholder.jpeg"
+
 # Load anime data from JSON file
 def load_anime_data():
     with open('data/anime_data.json', 'r') as file:
@@ -19,9 +22,20 @@ def index():
     anime_data = load_anime_data()
     return render_template('index.html', anime_data=anime_data)
 
+def get_anime_image(title):
+    """Returns the image URL if found, otherwise a placeholder."""
+    for ext in ["jpg", "png", "jpeg"]:  # Check multiple extensions
+        filename = f"{title}.{ext}"
+        filepath = os.path.join(IMAGE_FOLDER, filename)
+        if os.path.exists(filepath):
+            return f"/static/anime_images/{filename}"  # Serve from static folder
+    return DEFAULT_IMAGE  # Placeholder if not found
+
 @app.route('/api/anime')
 def api_anime():
     anime_data = load_anime_data()
+    for anime in anime_data:
+        anime["thumbnail_url"] = get_anime_image(anime["title"])  # Include image URL
     return jsonify(anime_data)
 
 @app.route('/videos/<int:anime_id>/<path:filename>')
@@ -59,10 +73,18 @@ def player(anime_id, episode_number):
 def anime_detail(anime_id):
     anime_data = load_anime_data()
     anime = next((item for item in anime_data if item['id'] == anime_id), None)
+
     if anime:
+        # Generate video URLs for preview
+        for episode in anime["episodes"]:
+            filename = os.path.basename(episode["file_path"])
+            episode["video_url"] = f"/videos/{anime_id}/{filename}"
+
         return render_template('anime_detail.html', anime=anime)
     else:
         return "Anime not found", 404
+
+
 
 BASE_PATH = "C:/Users/shour/Documents/Anime"
 
@@ -141,6 +163,15 @@ def delete_anime(anime_id):
         save_anime_data(anime_data)
         return jsonify({'status': 'success'})
     return jsonify({'status': 'error'}), 404
+
+@app.route("/api/anime")
+def get_anime():
+    anime_data = load_anime_data()
+
+    for anime in anime_data:
+        anime["downloaded"] = any(os.path.exists(ep["file_path"]) for ep in anime.get("episodes", []))
+
+    return jsonify(anime_data)
 
 if __name__ == '__main__':
     app.run(debug=True)

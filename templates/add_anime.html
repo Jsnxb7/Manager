@@ -3,6 +3,18 @@
 {% block content %}
     <div class="add-anime-form">
         <h1>Add New Anime</h1>
+        <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url("{{ url_for('static', filename='anime_images/bg.png') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        color: #333;
+    }
+    </style>
         <form method="POST" id="add-anime-form">
             <label for="title">Anime Title:</label>
             <input type="text" id="title" name="title" required oninput="updateDirectory()">
