@@ -1,8 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
+
     <div class="anime-list">
-        <a href="{{ url_for('add_anime') }}" class="add-anime-button">Add New Anime</a>
+        <!-- "Show Ongoing Anime" Button -->
+<button class="add-anime-button" onclick="filterOngoingAnime()">Show Ongoing Anime</button>
+
+<script>
+    function filterOngoingAnime() {
+        const animeGrid = document.getElementById('anime-grid');
+        const animeCards = Array.from(animeGrid.children);
+
+        // Separate ongoing and other anime
+        const ongoingAnime = animeCards.filter(card => {
+            return card.querySelector('.anime-status').textContent.trim().toLowerCase() === 'ongoing';
+        });
+
+        const otherAnime = animeCards.filter(card => !ongoingAnime.includes(card));
+
+        // Clear grid and append sorted elements
+        animeGrid.innerHTML = '';
+        ongoingAnime.forEach(card => animeGrid.appendChild(card));
+        otherAnime.forEach(card => animeGrid.appendChild(card));
+    }
+</script>
+
+        <a href="{{ url_for('add_anime') }}" style="color: #ffffff;"><button class="add-anime-button">Add New Anime</button></a>
 
         <!-- Search Bar -->
         <input type="text" id="search-bar" class="search-bar" placeholder="Search anime..." onkeyup="filterAnime()">
@@ -12,6 +35,7 @@
             <!-- Anime cards will be dynamically inserted here -->
         </div>
     </div>
+    
 
     <style>
         body {
@@ -96,7 +120,7 @@
             padding: 10px;
         }
 
-        .view-button, .delete-button {
+        .view-button, .delete-button, .mark-watched-button {
             padding: 6px 12px;
             border: none;
             border-radius: 5px;
@@ -114,6 +138,16 @@
         }
 
         .view-button:hover {
+            background-color: #22343f;
+        }
+
+        .mark-watched-button{
+            background-color: #3498db;
+            color: white;
+            margin-left: 10px;
+        }
+
+        .mark-watched-button:hover {
             background-color: #22343f;
         }
 
@@ -142,72 +176,87 @@
             }
         }
 
-        // Function to render anime list as cards
         function renderAnimeList(animeData) {
-            const animeGrid = document.getElementById('anime-grid');
-            animeGrid.innerHTML = ''; // Clear existing content
+    const animeGrid = document.getElementById('anime-grid');
+    animeGrid.innerHTML = ''; // Clear existing content
 
-            animeData.forEach(anime => {
-                // Create anime card container
-                const animeCard = document.createElement('div');
-                animeCard.className = 'anime-card';
-                animeCard.id = `anime-${anime.id}`;
-                animeCard.setAttribute("data-title", anime.title.toLowerCase()); // Store title for search filtering
+    animeData.forEach(anime => {
+        const animeCard = document.createElement('div');
+        animeCard.className = 'anime-card';
+        animeCard.id = `anime-${anime.id}`;
+        animeCard.setAttribute("data-title", anime.title.toLowerCase());
 
-                // Thumbnail image (if available, otherwise use a placeholder)
-                const animeThumbnail = document.createElement('img');
-                animeThumbnail.className = 'anime-thumbnail';
-                animeThumbnail.src = anime.thumbnail_url || 'https://via.placeholder.com/250x180?text=No+Image';
-                animeThumbnail.alt = anime.title;
+        const animeThumbnail = document.createElement('img');
+        animeThumbnail.className = 'anime-thumbnail';
+        animeThumbnail.src = anime.thumbnail_url || 'https://via.placeholder.com/250x180?text=No+Image';
+        animeThumbnail.alt = anime.title;
 
-                // Anime info container
-                const animeInfo = document.createElement('div');
-                animeInfo.className = 'anime-info';
+        const animeInfo = document.createElement('div');
+        animeInfo.className = 'anime-info';
 
-                const animeTitle = document.createElement('div');
-                animeTitle.className = 'anime-title';
-                animeTitle.textContent = anime.title;
+        const animeTitle = document.createElement('div');
+        animeTitle.className = 'anime-title';
+        animeTitle.textContent = anime.title;
 
-                const animeSeason = document.createElement('div');
-                animeSeason.className = 'anime-season';
-                animeSeason.textContent = `Season: ${anime.season}`;
+        const animeSeason = document.createElement('div');
+        animeSeason.className = 'anime-season';
+        animeSeason.textContent = `Season: ${anime.season}`;
 
-                const animeStatus = document.createElement('div');
-                animeStatus.className = 'anime-status';
-                animeStatus.textContent = anime.status;
+        const animeStatus = document.createElement('div');
+        animeStatus.className = 'anime-status';
+        animeStatus.textContent = anime.status;
 
-                // Actions container
-                const animeActions = document.createElement('div');
-                animeActions.className = 'anime-actions';
+        // "Mark as Watched" button
+        const markWatchedButton = document.createElement('button');
+        markWatchedButton.className = 'mark-watched-button';
+        markWatchedButton.textContent = anime.watched ? "Watched ✅" : "Mark as Watched";
+        markWatchedButton.onclick = async () => {
+            await toggleAnimeWatched(anime.id, markWatchedButton);
+        };
 
-                // "View Anime" button
-                const viewButton = document.createElement('a');
-                viewButton.className = 'view-button';
-                viewButton.href = `/anime/${anime.id}`;
-                viewButton.textContent = 'View Anime';
+        // Actions container
+        const animeActions = document.createElement('div');
+        animeActions.className = 'anime-actions';
 
-                // Delete button
-                const deleteButton = document.createElement('button');
-                deleteButton.className = 'delete-button';
-                deleteButton.textContent = 'Delete';
-                deleteButton.onclick = () => deleteAnime(anime.id);
+        const viewButton = document.createElement('a');
+        viewButton.className = 'view-button';
+        viewButton.href = `/anime/${anime.id}`;
+        viewButton.textContent = 'View Anime';
 
-                // Append elements to their respective containers
-                animeActions.appendChild(viewButton);
-                animeActions.appendChild(deleteButton);
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'delete-button';
+        deleteButton.textContent = 'Delete';
+        deleteButton.onclick = () => deleteAnime(anime.id);
 
-                animeInfo.appendChild(animeTitle);
-                animeInfo.appendChild(animeSeason);
-                animeInfo.appendChild(animeStatus);
+        animeActions.appendChild(viewButton);
+        animeActions.appendChild(deleteButton);
 
-                animeCard.appendChild(animeThumbnail);
-                animeCard.appendChild(animeInfo);
-                animeCard.appendChild(animeActions);
+        animeInfo.appendChild(animeTitle);
+        animeInfo.appendChild(animeSeason);
+        animeInfo.appendChild(animeStatus);
 
-                animeGrid.appendChild(animeCard);
-            });
+        animeCard.appendChild(animeThumbnail);
+        animeCard.appendChild(animeInfo);
+        animeCard.appendChild(markWatchedButton);
+        animeCard.appendChild(animeActions);
+
+        animeGrid.appendChild(animeCard);
+    });
+}
+
+// Function to toggle watched status for an anime
+async function toggleAnimeWatched(animeId, button) {
+    const response = await fetch(`/mark_anime_watched/${animeId}`, {
+        method: 'POST',
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        if (data.status === "success") {
+            button.textContent = button.textContent === "Mark as Watched" ? "Watched ✅" : "Mark as Watched";
         }
-
+    }
+}
         // Function to filter anime based on search query
         function filterAnime() {
             const query = document.getElementById('search-bar').value.toLowerCase();

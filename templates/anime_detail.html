@@ -7,7 +7,12 @@
         <p><strong>Status:</strong> {{ anime.status }}</p>
         <p><strong>Total Episodes:</strong> {{ anime.episodes|length }}</p>
         <p><strong>Download Anime:</strong> <a href="{{ anime.download_link }}" target="_blank" class="download-link">{{ anime.download_link }}</a></p>
-        
+            <!-- Mark Anime as Watched Button -->
+<div class="anime-actions">
+    <button onclick="toggleAnimeWatched('{{ anime.id }}', this)" class="watched-button {% if anime.watched %}watched{% endif %}">
+        {% if anime.watched %}✔ Anime Watched{% else %}Mark Anime as Watched{% endif %}
+    </button>
+</div>
         <!-- Episode Cards -->
         <div class="episode-cards">
             {% for episode in anime.episodes %}
@@ -39,6 +44,45 @@
             {% endfor %}
         </div>
     </div>
+
+<script>
+    function toggleAnimeWatched(animeId, button) {
+        fetch(`/mark_anime_watched/${animeId}`, { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    button.classList.toggle("watched");
+                    button.textContent = button.classList.contains("watched") ? "✔ Anime Watched" : "Mark Anime as Watched";
+                }
+            });
+    }
+</script>
+<style>
+    .anime-actions {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.watched-button {
+    padding: 12px 20px;
+    background-color: #3498db;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 20px;
+}
+
+.watched-button.watched {
+    background-color: #2980b9;
+}
+
+.watched-button:hover {
+    background-color: #18364a;
+}
+
+</style>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -60,7 +104,7 @@
         }
 
         .episode-card {
-            background-color: #ffffff;
+            background-color: #3d4f73ab;
             border: 1px solid #ddd;
             border-radius: 10px;
             overflow: hidden;

@@ -24,32 +24,28 @@ def index():
 
 def get_anime_image(title):
     """Returns the image URL if found, otherwise a placeholder."""
-    for ext in ["jpg", "png", "jpeg"]:  # Check multiple extensions
+    for ext in ["jpg", "png", "jpeg"]:
         filename = f"{title}.{ext}"
         filepath = os.path.join(IMAGE_FOLDER, filename)
         if os.path.exists(filepath):
-            return f"/static/anime_images/{filename}"  # Serve from static folder
-    return DEFAULT_IMAGE  # Placeholder if not found
+            return f"/static/anime_images/{filename}"
+    return DEFAULT_IMAGE
 
 @app.route('/api/anime')
 def api_anime():
     anime_data = load_anime_data()
     for anime in anime_data:
-        anime["thumbnail_url"] = get_anime_image(anime["title"])  # Include image URL
+        anime["thumbnail_url"] = get_anime_image(anime["title"])
     return jsonify(anime_data)
 
 @app.route('/videos/<int:anime_id>/<path:filename>')
 def serve_video(anime_id, filename):
     anime_data = load_anime_data()
     anime = next((item for item in anime_data if item['id'] == anime_id), None)
-    
     if anime:
-        # Construct the absolute file path
         file_path = os.path.join(anime["directory"], filename)
-
         if os.path.exists(file_path):
             return send_file(file_path, mimetype='video/mp4')
-    
     return "File not found", 404
 
 # Player page
@@ -57,34 +53,25 @@ def serve_video(anime_id, filename):
 def player(anime_id, episode_number):
     anime_data = load_anime_data()
     anime = next((item for item in anime_data if item['id'] == anime_id), None)
-    
     if anime:
         episode = next((item for item in anime['episodes'] if item['number'] == episode_number), None)
-        
         if episode:
             filename = os.path.basename(episode["file_path"])
             episode["video_url"] = f"/videos/{anime_id}/{filename}"
-            
             return render_template('player.html', anime=anime, episode=episode)
-    
     return "Anime or episode not found", 404
 
 @app.route('/anime/<int:anime_id>')
 def anime_detail(anime_id):
     anime_data = load_anime_data()
     anime = next((item for item in anime_data if item['id'] == anime_id), None)
-
     if anime:
-        # Generate video URLs for preview
         for episode in anime["episodes"]:
             filename = os.path.basename(episode["file_path"])
             episode["video_url"] = f"/videos/{anime_id}/{filename}"
-
         return render_template('anime_detail.html', anime=anime)
     else:
         return "Anime not found", 404
-
-
 
 BASE_PATH = "C:/Users/shour/Documents/Anime"
 
@@ -96,24 +83,13 @@ def add_anime():
         status = request.form.get('status')
         download_link = request.form.get('download_link')
         episodes = int(request.form.get('episodes'))
-
-        # Load existing anime data
         anime_data = load_anime_data()
-
-        # Find the next available unique ID
-        existing_ids = {anime["id"] for anime in anime_data}  # Get all existing IDs
-        new_id = 1  # Start with 1
-
+        existing_ids = {anime["id"] for anime in anime_data}
+        new_id = 1
         while new_id in existing_ids:
-            new_id += 1  # Find the next available number
-
-        # Automatically determine the directory path
+            new_id += 1
         directory = os.path.join(BASE_PATH, title, f"{season}")
-
-        # Ensure the directory exists
         os.makedirs(directory, exist_ok=True)
-
-        # Create episodes list with file paths
         episodes_list = [
             {
                 "number": i + 1,
@@ -123,9 +99,8 @@ def add_anime():
             }
             for i in range(episodes)
         ]
-
         new_anime = {
-            "id": new_id,  # Use the dynamically found ID
+            "id": new_id,
             "title": title,
             "season": season,
             "status": status,
@@ -133,12 +108,9 @@ def add_anime():
             "directory": directory,
             "episodes": episodes_list
         }
-
         anime_data.append(new_anime)
         save_anime_data(anime_data)
-
         return redirect(url_for('index'))
-
     return render_template('add_anime.html')
 
 @app.route('/mark_watched/<int:anime_id>/<int:episode_number>', methods=['POST'])
@@ -154,6 +126,19 @@ def mark_watched(anime_id, episode_number):
         return jsonify({'status': 'success'})
     return jsonify({'status': 'error'}), 404
 
+@app.route('/mark_anime_watched/<int:anime_id>', methods=['POST'])
+def mark_anime_watched(anime_id):
+    anime_data = load_anime_data()
+    anime = next((item for item in anime_data if item['id'] == anime_id), None)
+
+    if anime:
+        anime['watched'] = not anime.get('watched', False)  # Toggle watched status
+        save_anime_data(anime_data)
+        return jsonify({'status': 'success'})
+
+    return jsonify({'status': 'error'}), 404
+
+
 @app.route('/delete_anime/<int:anime_id>', methods=['DELETE'])
 def delete_anime(anime_id):
     anime_data = load_anime_data()
@@ -167,10 +152,8 @@ def delete_anime(anime_id):
 @app.route("/api/anime")
 def get_anime():
     anime_data = load_anime_data()
-
     for anime in anime_data:
         anime["downloaded"] = any(os.path.exists(ep["file_path"]) for ep in anime.get("episodes", []))
-
     return jsonify(anime_data)
 
 if __name__ == '__main__':
