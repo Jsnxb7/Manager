@@ -1,21 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="flex flex-col items-center justify-center p-6">
+    <!-- Background Video -->
+    <video autoplay muted loop id="bg-video" class="absolute top-0 left-0 w-full h-full object-cover z-[-1]">
+        <source src="{{ url_for('static', filename='images/stars.mp4') }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="flex flex-col items-center justify-center p-6 relative z-10">
         <!-- Anime Title -->
-        <h1 class="text-2xl font-bold text-center mb-4">{{ anime.title }} - {{ anime.season }}</h1>
-        <style>
-            body {
-                font-family: 'Arial', sans-serif;
-                margin: 0;
-                padding: 0;
-                background-image: url("{{ url_for('static', filename='anime_images/bg.png') }}");
-                background-size: cover;
-                background-position: center;
-                background-attachment: fixed;
-            color: #333;
-        }
-        </style>
+        <h1 class="text-2xl font-bold text-center mb-4 text-white bg-black bg-opacity-50 p-2 rounded-lg">
+            {{ anime.title }} - {{ anime.season }}
+        </h1>
 
         <!-- Video Player -->
         <div class="relative w-full max-w-3xl">
@@ -33,29 +29,35 @@
         </div>
 
         <!-- Episode Info -->
-        <p class="mt-4 text-lg font-semibold">
+        <p class="mt-4 text-lg font-semibold text-white bg-black bg-opacity-50 p-2 rounded-lg">
             <strong>Now Playing:</strong> Episode {{ episode.number }} - {{ episode.title }}
         </p>
 
-        <!-- Episode Navigation -->
-        <div class="mt-6 flex gap-4">
-            {% if episode.number > 1 %}
-                <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number - 1) }}"
-                   class="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-900 transition">
-                    ⬅️ Previous Episode
-                </a>
-            {% endif %}
-            {% if episode.number < anime.episodes|length %}
-                <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number + 1) }}"
-                   class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-800 transition">
-                    Next Episode ➡️
-                </a>
-            {% endif %}
-        </div>
+<!-- Episode Navigation -->
+<div class="mt-6 flex gap-4">
+    {% if episode.number > 1 %}
+        <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number - 1) }}" class="episode-nav-card prev">
+            <div class="nav-info">
+                <span class="nav-label">⬅️ Previous Episode</span>
+                <span class="nav-title">Episode {{ episode.number - 1 }}: {{ anime.episodes[episode.number - 2].title }}</span>
+            </div>
+        </a>
+    {% endif %}
+
+    {% if episode.number < anime.episodes|length %}
+        <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number + 1) }}" class="episode-nav-card next">
+            <div class="nav-info">
+                <span class="nav-label">Next Episode ➡️</span>
+                <span class="nav-title">Episode {{ episode.number + 1 }}: {{ anime.episodes[episode.number].title }}</span>
+            </div>
+        </a>
+    {% endif %}
+</div>
+
 
         <!-- Back to Anime Details -->
         <a href="{{ url_for('anime_detail', anime_id=anime.id) }}"
-           class="mt-6 text-lg text-gray-600 hover:underline">
+           class="mt-6 text-lg text-gray-300 hover:underline">
             ⬅️ Back to Anime Details
         </a>
     </div>
@@ -79,17 +81,13 @@
 
             // Handle End of Video - Auto Next Episode
             player.on('ended', function () {
-    alert('Episode ended. Moving to the next episode...');
-
-    // Properly parse Jinja variables into JavaScript
-    const nextEpisode = parseInt("{{ episode.number }}") + 1;
-    const totalEpisodes = parseInt("{{ anime.episodes|length }}");
-
-    if (nextEpisode <= totalEpisodes) {
-        window.location.href = "{{ url_for('player', anime_id=anime.id, episode_number=0) }}".replace("0", nextEpisode);
-    }
-});
-
+                alert('Episode ended. Moving to the next episode...');
+                const nextEpisode = parseInt("{{ episode.number }}") + 1;
+                const totalEpisodes = parseInt("{{ anime.episodes|length }}");
+                if (nextEpisode <= totalEpisodes) {
+                    window.location.href = "{{ url_for('player', anime_id=anime.id, episode_number=0) }}".replace("0", nextEpisode);
+                }
+            });
 
             // Keyboard Shortcuts
             document.addEventListener('keydown', (event) => {
@@ -122,4 +120,194 @@
             });
         });
     </script>
+    <style>
+        /* Global Styles */
+body {
+    font-family: "Comic Sans MS", sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #fff;
+    background: none; /* No static background, using video */
+    overflow-x: hidden;
+}
+
+/* Background Video */
+#bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -1;
+}
+
+/* Main Content Wrapper */
+.flex.flex-col {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.6); /* Semi-transparent dark background */
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Anime Title */
+h1 {
+    font-size: 1.8rem;
+    text-align: center;
+    margin-bottom: 15px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 8px;
+}
+
+/* Video Player */
+.video-js {
+    width: 100%;
+    max-width: 800px;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #000;
+}
+
+.video-js .vjs-big-play-button {
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    font-size: 30px;
+}
+
+.video-js .vjs-control-bar {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+}
+
+.video-js .vjs-play-progress,
+.video-js .vjs-volume-level {
+    background-color: #3498db;
+}
+
+/* Episode Info */
+p {
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 10px;
+    border-radius: 8px;
+}
+
+/* Episode Navigation */
+.episode-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.episode-navigation a {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.episode-navigation .previous {
+    background-color: #7f8c8d;
+}
+
+.episode-navigation .previous:hover {
+    background-color: #666;
+}
+
+.episode-navigation .next {
+    background-color: #3498db;
+}
+
+.episode-navigation .next:hover {
+    background-color: #2980b9;
+}
+
+/* Episode Navigation Card */
+.episode-nav-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 300px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    transition: transform 0.3s ease, background 0.3s ease;
+    text-decoration: none;
+    color: white;
+}
+
+.episode-nav-card:hover {
+    background: rgba(0, 0, 0, 0.9);
+    transform: scale(1.05);
+}
+
+/* Navigation Info */
+.nav-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #ddd;
+}
+
+.nav-title {
+    font-size: 0.8rem;
+    font-weight: normal;
+    color: #bbb;
+}
+
+
+/* Back to Anime Details */
+.back-link {
+    display: block;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 1.1rem;
+    color: #ddd;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .flex.flex-col {
+        padding: 15px;
+    }
+
+    .episode-navigation {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .episode-navigation a {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+    </style>
 {% endblock %}

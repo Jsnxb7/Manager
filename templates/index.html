@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+<video class="video-background" autoplay loop muted>
+    <source src="static/images/stars.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
     <div class="anime-list">
         <!-- "Show Ongoing Anime" Button -->
 <button class="add-anime-button" onclick="filterOngoingAnime()">Show Ongoing Anime</button>
@@ -38,127 +41,171 @@
     
 
     <style>
-        body {
-            font-family: Comic Sans MS;
-            margin: 0;
-            padding: 0;
-            background-image: url("{{ url_for('static', filename='anime_images/bg.png') }}");
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: #333;
-        }
+       body {
+    font-family: "Comic Sans MS", sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #fff;
+    background: none; /* No static background, using video */
+    overflow-x: hidden;
+}
 
-        /* Search Bar */
-        .search-bar {
-            width: 100%;
-            max-width: 400px;
-            padding: 10px;
-            margin: 10px auto;
-            display: block;
-            border: 2px solid #3498db;
-            border-radius: 5px;
-            font-size: 1rem;
-            outline: none;
-        }
+/* Video Background */
+.video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover; /* Covers full screen */
+    z-index: -1; /* Behind everything */
+}
 
-        /* Anime Grid Layout */
-        .anime-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
+/* Content Container */
+.content {
+    position: relative;
+    z-index: 1;
+    padding: 20px;
+    text-align: center;
+}
 
-        .anime-card {
-            background-color: #93bae3e2;
-            height: fit-content;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-            position: relative;
-        }
+/* Search Bar */
+.search-bar {
+    width: 100%;
+    max-width: 400px;
+    padding: 12px;
+    margin: 20px auto;
+    display: block;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    font-size: 1rem;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    outline: none;
+}
 
-        .anime-card:hover {
-            transform: translateY(-5px);
-        }
+/* Anime Grid Layout */
+.anime-grid {
+    display: flex; /* Makes items align horizontally */
+    flex-wrap: wrap; /* Wraps to new line if screen is small */
+    justify-content: center; /* Centers items */
+    gap: 20px; /* Adds spacing between items */
+}
 
-        .anime-thumbnail {
+.anime-card {
+    width: 500px; /* Adjust width for horizontal layout */
+    height: 220px; /* Reduce height to make it more rectangular */
+    background: rgba(0, 0, 0, 0.6); /* Semi-transparent dark background */
+    border-radius: 10px;
+    padding: 10px;
+    display: flex; /* Aligns image and text in a row */
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.anime-card img {
+    width: 120px; /* Smaller image */
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px 10px 10px 10px; /* Rounded corners on the left */
+}
+
+.anime-card .info {
+    flex: 1; /* Expands text to fill space */
+    padding: 10px;
+    color: white;
+}
+
+.anime-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+}
+
+.anime-thumbnail {
             width: 100%;
             height: fit-content;
             object-fit: cover;
         }
 
-        .anime-info {
-            padding: 10px;
-            text-align: center;
-        }
+    .anime-info {
+    flex: 1; /* Expands text to fill space */
+    padding: 10px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
 
-        .anime-title {
-            font-weight: bold;
-            padding: 3px;
-            font-size: 1.2rem;
-            color: #2c3e50;
-        }
 
-        .anime-season {
-            padding: 2px;
-            color: #803333;
-            font-size: 0.9rem;
-        }
+.anime-title {
+    font-weight: bold;
+    font-size: 1.3rem;
+    color: #fff;
+    text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.8);
+}
 
-        .anime-status {
-            font-size: 1rem;
-            font-weight: bold;
-            color: #099a45;
-        }
+.anime-season {
+    color: #ffcccb;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
 
-        .anime-actions {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-        }
+.anime-status {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #32cd32;
+    text-shadow: 1px 1px 10px rgba(50, 205, 50, 0.8);
+}
 
-        .view-button, .delete-button, .mark-watched-button {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            text-decoration: none;
-            font-size: 0.9rem;
-            text-align: center;
-            display: inline-block;
-        }
+/* Buttons */
+.anime-actions {
+    display: flex;
+    justify-content: center; /* Center buttons horizontally */
+    gap: 10px; /* Adds spacing between buttons */
+    margin-top: 10px;
+}
 
-        .view-button {
-            background-color: #3498db;
-            color: white;
-        }
+/* Individual Buttons */
+.view-button, .delete-button, .mark-watched-button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    text-align: center;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    width: auto; /* Ensures all buttons adjust to content */
+}
 
-        .view-button:hover {
-            background-color: #22343f;
-        }
+.view-button {
+    background: rgb(28 42 48);
+    color: white;
+}
 
-        .mark-watched-button{
-            background-color: #3498db;
-            color: white;
-            margin-left: 10px;
-        }
+.view-button:hover {
+    background: rgba(0, 162, 255, 1);
+    box-shadow: 0 0 10px rgba(0, 162, 255, 0.8);
+}
 
-        .mark-watched-button:hover {
-            background-color: #22343f;
-        }
+.mark-watched-button {
+    background: rgb(28 42 48);
+    color: white;
+}
 
-        .delete-button {
-            background-color: #e74c3c;
-            color: white;
-        }
+.mark-watched-button:hover {
+    background: rgba(46, 204, 113, 1);
+    box-shadow: 0 0 10px rgba(46, 204, 113, 0.8);
+}
 
-        .delete-button:hover {
-            background-color: #c0392b;
-        }
+.delete-button {
+    background: rgb(148 51 41 / 78%);
+    color: white;
+}
+
+.delete-button:hover {
+    background: rgba(231, 76, 60, 1);
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.8);
+}
     </style>
 
     <script>
@@ -206,6 +253,10 @@
         animeStatus.className = 'anime-status';
         animeStatus.textContent = anime.status;
 
+        // Actions container
+        const animeActions = document.createElement('div');
+        animeActions.className = 'anime-actions';
+        
         // "Mark as Watched" button
         const markWatchedButton = document.createElement('button');
         markWatchedButton.className = 'mark-watched-button';
@@ -213,10 +264,6 @@
         markWatchedButton.onclick = async () => {
             await toggleAnimeWatched(anime.id, markWatchedButton);
         };
-
-        // Actions container
-        const animeActions = document.createElement('div');
-        animeActions.className = 'anime-actions';
 
         const viewButton = document.createElement('a');
         viewButton.className = 'view-button';
@@ -228,18 +275,22 @@
         deleteButton.textContent = 'Delete';
         deleteButton.onclick = () => deleteAnime(anime.id);
 
+        // Append buttons to actions container
         animeActions.appendChild(viewButton);
+        animeActions.appendChild(markWatchedButton);
         animeActions.appendChild(deleteButton);
 
+        // Append elements to anime info section
         animeInfo.appendChild(animeTitle);
         animeInfo.appendChild(animeSeason);
         animeInfo.appendChild(animeStatus);
+        animeInfo.appendChild(animeActions); // ✅ Buttons go inside anime-info
 
+        // Append all elements to anime card
         animeCard.appendChild(animeThumbnail);
         animeCard.appendChild(animeInfo);
-        animeCard.appendChild(markWatchedButton);
-        animeCard.appendChild(animeActions);
 
+        // Append anime card to grid
         animeGrid.appendChild(animeCard);
     });
 }
@@ -265,7 +316,7 @@ async function toggleAnimeWatched(animeId, button) {
             animeCards.forEach(card => {
                 const title = card.getAttribute("data-title");
                 if (title.includes(query)) {
-                    card.style.display = "block";
+                    card.style.display = "flex";
                 } else {
                     card.style.display = "none";
                 }
