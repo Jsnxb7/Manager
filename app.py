@@ -23,7 +23,6 @@ def index():
     return render_template('index.html', anime_data=anime_data)
 
 def get_anime_image(title):
-    """Returns the image URL if found, otherwise a placeholder."""
     for ext in ["jpg", "png", "jpeg"]:
         filename = f"{title}.{ext}"
         filepath = os.path.join(IMAGE_FOLDER, filename)

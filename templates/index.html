@@ -7,9 +7,15 @@
 </video>
     <div class="anime-list">
         <!-- "Show Ongoing Anime" Button -->
-<button class="add-anime-button" onclick="filterOngoingAnime()">Show Ongoing Anime</button>
+        <button class="add-anime-button" onclick="resetFilters()">Reset Filters</button>
+        <button class="add-anime-button" onclick="filterUnwatchedAnime()">Unwatched Anime</button>
+<button class="add-anime-button" onclick="filterOngoingAnime()">Ongoing Anime</button>
 
 <script>
+    async function resetFilters() {
+    const animeData = await fetchAnimeData(); // Fetch original data
+    renderAnimeList(animeData); // Re-render the list
+}
     function filterOngoingAnime() {
         const animeGrid = document.getElementById('anime-grid');
         const animeCards = Array.from(animeGrid.children);
@@ -26,6 +32,24 @@
         ongoingAnime.forEach(card => animeGrid.appendChild(card));
         otherAnime.forEach(card => animeGrid.appendChild(card));
     }
+
+    function filterUnwatchedAnime() {
+    const animeGrid = document.getElementById('anime-grid');
+    const animeCards = Array.from(animeGrid.children);
+
+    // Separate unwatched and other anime
+    const unwatchedAnime = animeCards.filter(card => {
+        const watchedStatus = card.querySelector('.mark-watched-button').textContent.trim().toLowerCase();
+        return watchedStatus === "mark as watched"; // Treat null or unwatched as unwatched
+    });
+
+    const otherAnime = animeCards.filter(card => !unwatchedAnime.includes(card));
+
+    // Clear grid and append sorted elements
+    animeGrid.innerHTML = '';
+    unwatchedAnime.forEach(card => animeGrid.appendChild(card));
+    otherAnime.forEach(card => animeGrid.appendChild(card));
+}
 </script>
 
         <a href="{{ url_for('add_anime') }}" style="color: #ffffff;"><button class="add-anime-button">Add New Anime</button></a>
@@ -93,7 +117,7 @@
 }
 
 .anime-card {
-    width: 500px; /* Adjust width for horizontal layout */
+    width: 400px; /* Adjust width for horizontal layout */
     height: 220px; /* Reduce height to make it more rectangular */
     background: rgba(0, 0, 0, 0.6); /* Semi-transparent dark background */
     border-radius: 10px;
