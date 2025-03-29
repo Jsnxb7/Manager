@@ -1,21 +1,40 @@
 from flask import Flask, send_file, render_template, jsonify, request, redirect, url_for
 import json
 import os
+import sys
 
-app = Flask(__name__)
+# Get Flask data directory from Electron arguments
+if len(sys.argv) > 1:
+    BASE_PATH = sys.argv[1]
+else:
+    print("Error: No Flask data directory provided by Electron.")
+    sys.exit(1)
 
-IMAGE_FOLDER = "static/anime_images"
-DEFAULT_IMAGE = "/static/placeholder.jpeg"
+# Use the path received from Electron (default to current dir if not provided)
+STATIC_FOLDER = os.path.join(BASE_PATH, 'static')
+TEMPLATES_FOLDER = os.path.join(BASE_PATH, 'templates')
+DATA_FILE = os.path.join(BASE_PATH, 'data', 'anime_data.json')
+IMAGE_FOLDER = os.path.join(BASE_PATH, "static", "anime_images")
+DEFAULT_IMAGE = os.path.join(BASE_PATH, "static", "placeholder.jpg")
 
-# Load anime data from JSON file
+# Ensure folders exist
+if not os.path.exists(STATIC_FOLDER) or not os.path.exists(TEMPLATES_FOLDER):
+    print("Error: Flask data folder does not contain required directories.")
+    sys.exit(1)
+
+app = Flask(__name__, static_folder=STATIC_FOLDER, template_folder=TEMPLATES_FOLDER)
+
+
+# Load anime data
 def load_anime_data():
-    with open('data/anime_data.json', 'r') as file:
+    with open(DATA_FILE, 'r') as file:
         return json.load(file)
 
-# Save anime data to JSON file
+# Save anime data
 def save_anime_data(data):
-    with open('data/anime_data.json', 'w') as file:
+    with open(DATA_FILE, 'w') as file:
         json.dump(data, file, indent=4)
+
 
 @app.route('/')
 def index():
@@ -154,6 +173,9 @@ def get_anime():
     for anime in anime_data:
         anime["downloaded"] = any(os.path.exists(ep["file_path"]) for ep in anime.get("episodes", []))
     return jsonify(anime_data)
+@app.route('/static/images/stars.mp4')
+def serve_video1():
+    return send_file("static/images/stars.mp4", mimetype="video/mp4", conditional=True)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=5000, debug=True)  # Runs Flask on port 5000

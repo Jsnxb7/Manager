@@ -8,13 +8,26 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-image: url("{{ url_for('static', filename='anime_images/bg.png') }}");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
         color: #333;
     }
+    /* Video Background */
+.video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover; /* Covers full screen */
+    z-index: -1; /* Behind everything */
+}
     </style>
+    <video class="video-background" autoplay loop muted>
+        <source src="{{ url_for('static', filename='images/stars.mp4') }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
         <form method="POST" id="add-anime-form">
             <label for="title">Anime Title:</label>
             <input type="text" id="title" name="title" required oninput="updateDirectory()">

@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<video class="video-background" autoplay loop muted>
-    <source src="static/images/stars.mp4" type="video/mp4">
+<video class="video-background" autoplay loop muted playsinline>
+    <source src="{{ url_for('static', filename='images/stars.mp4') }}" type="video/mp4">
     Your browser does not support the video tag.
 </video>
+
     <div class="anime-list">
         <!-- "Show Ongoing Anime" Button -->
         <button class="add-anime-button" onclick="resetFilters()">Reset Filters</button>
@@ -12,6 +13,8 @@
 <button class="add-anime-button" onclick="filterOngoingAnime()">Ongoing Anime</button>
 
 <script>
+
+    
     async function resetFilters() {
     const animeData = await fetchAnimeData(); // Fetch original data
     renderAnimeList(animeData); // Re-render the list
