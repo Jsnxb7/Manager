@@ -210,7 +210,7 @@ def update_anime_status(anime_id):
         if not new_status:
             return jsonify({'status': 'error', 'message': 'Missing status'}), 400
 
-        with open('data/anime_data.json', 'r+', encoding='utf-8') as f:
+        with open(DATA_FILE, 'r+', encoding='utf-8') as f:
             anime_list = json.load(f)
             updated = False
 
