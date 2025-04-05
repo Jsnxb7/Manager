@@ -80,7 +80,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/All-guys mixer/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 3,
@@ -169,7 +170,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Sora/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 4,
@@ -246,7 +248,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Gin/S2/11.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 5,
@@ -329,7 +332,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Akuyaku Reijou/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 6,
@@ -418,7 +422,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Aria/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 7,
@@ -585,7 +590,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Aria/S2/26.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 9,
@@ -668,7 +674,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Healer/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 8,
@@ -763,7 +770,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Aria/S3/14.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 1,
@@ -840,7 +848,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Gin/S1/11.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 10,
@@ -995,7 +1004,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Ai_Yori/S1/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 11,
@@ -1078,7 +1088,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Ai_Yori/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 12,
@@ -1161,7 +1172,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Sora_no_manimani/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 13,
@@ -1244,7 +1256,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yuru Camp/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 14,
@@ -1333,7 +1346,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yuru Camp/S2/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 15,
@@ -1416,7 +1430,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yuru Camp/S3/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 16,
@@ -1433,7 +1448,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yuru Camp/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 17,
@@ -1516,7 +1532,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kimi Wa Meido/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 18,
@@ -1599,7 +1616,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Magical Girls Inc./S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 19,
@@ -1688,7 +1706,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/OOI Tonbo/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 20,
@@ -1771,7 +1790,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/OOI Tonbo/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 21,
@@ -1854,179 +1874,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kekkon Suru te hontou desuka/S1/12.mp4"
             }
         ],
-        "watched": true
-    },
-    {
-        "id": 22,
-        "title": "Saikyou no Shienshoku",
-        "season": "S1",
-        "status": "Completed",
-        "download_link": "https://animepahe.ru/anime/bd851743-3179-c47c-31f3-dc2c877e0229",
-        "directory": "C:/Users/shour/Documents/Anime\\Saikyou no Shienshoku\\S1",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Saikyou no Shienshoku/S1/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Saikyou no Shienshoku/S1/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Saikyou no Shienshoku/S1/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Saikyou no Shienshoku/S1/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Saikyou no Shienshoku/S1/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Saikyou no Shienshoku/S1/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Saikyou no Shienshoku/S1/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Saikyou no Shienshoku/S1/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Saikyou no Shienshoku/S1/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Saikyou no Shienshoku/S1/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Saikyou no Shienshoku/S1/11.mp4"
-            },
-            {
-                "number": 12,
-                "title": "Episode 12",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Saikyou no Shienshoku/S1/12.mp4"
-            }
-        ],
-        "watched": false
-    },
-    {
-        "id": 23,
-        "title": "Let This Grieving Soul retire",
-        "season": "S1",
-        "status": "Completed",
-        "download_link": "https://animepahe.ru/anime/b8c5f717-f027-0988-d07c-631cd3b01021",
-        "directory": "C:/Users/shour/Documents/Anime\\Let This Grieving Soul retire\\S1",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Let This Grieving Soul retire/S1/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Let This Grieving Soul retire/S1/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Let This Grieving Soul retire/S1/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Let This Grieving Soul retire/S1/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Let This Grieving Soul retire/S1/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Let This Grieving Soul retire/S1/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Let This Grieving Soul retire/S1/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Let This Grieving Soul retire/S1/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Let This Grieving Soul retire/S1/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Let This Grieving Soul retire/S1/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Let This Grieving Soul retire/S1/11.mp4"
-            },
-            {
-                "number": 12,
-                "title": "Episode 12",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Let This Grieving Soul retire/S1/12.mp4"
-            },
-            {
-                "number": 13,
-                "title": "Episode 13",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Let This Grieving Soul retire/S1/13.mp4"
-            }
-        ],
-        "watched": false
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 24,
@@ -2109,7 +1958,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tensei Kizoku, Kantei Skill de Nariagaru/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 25,
@@ -2192,7 +2042,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tensei Kizoku, Kantei Skill de Nariagaru/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 26,
@@ -2275,7 +2126,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Solo Leveling/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 27,
@@ -2352,7 +2204,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Sakamoto Days/S1/11.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 28,
@@ -2435,7 +2288,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kono Kaisha ni Suki na Hito ga Imasu/S1/12.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 29,
@@ -2518,7 +2372,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Guild no Uketsukejou desu/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 30,
@@ -2673,7 +2528,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kusuriya no Hitorigoto/S1/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 31,
@@ -2828,7 +2684,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kusuriya no Hitorigoto/S2/24.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 33,
@@ -2911,7 +2768,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Nihon e Youkoso Elf-san/S1/12.mp4"
             }
         ],
-        "watched": false
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 34,
@@ -2994,7 +2852,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Magic Maker/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 35,
@@ -3077,90 +2936,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Izure Saikyou no Renkinjutsushi/S1/12.mp4"
             }
         ],
-        "watched": true
-    },
-    {
-        "id": 36,
-        "title": "Hazure Skill-Kinomi Master",
-        "season": "S1",
-        "status": "Ongoing",
-        "download_link": "https://animepahe.ru/anime/eed217b2-4fe2-dff7-593f-8649f868eced",
-        "directory": "C:/Users/shour/Documents/Anime\\Hazure Skill-Kinomi Master\\S1",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Hazure Skill-Kinomi Master/S1/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Hazure Skill-Kinomi Master/S1/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Hazure Skill-Kinomi Master/S1/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Hazure Skill-Kinomi Master/S1/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Hazure Skill-Kinomi Master/S1/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Hazure Skill-Kinomi Master/S1/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Hazure Skill-Kinomi Master/S1/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Hazure Skill-Kinomi Master/S1/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Hazure Skill-Kinomi Master/S1/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Hazure Skill-Kinomi Master/S1/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Hazure Skill-Kinomi Master/S1/11.mp4"
-            },
-            {
-                "number": 12,
-                "title": "Episode 12",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Hazure Skill-Kinomi Master/S1/12.mp4"
-            }
-        ],
-        "watched": false
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 37,
@@ -3243,7 +3020,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Watashi no Shiawase na Kekkon/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 38,
@@ -3332,7 +3110,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Watashi no Shiawase na Kekkon/S2/13.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 39,
@@ -3415,7 +3194,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Botsuraku Yotei no Kizoku/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 40,
@@ -3504,7 +3284,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Seishun Buta Yarou wa Bunny Girl Senpai no Yume wo Minai/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 41,
@@ -3521,7 +3302,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Seishun Buta Yarou wa Yumemiru Shoujo no Yume wo Minai/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 42,
@@ -3538,7 +3320,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Seishun Buta Yarou wa Odekake Sister no Yume wo Minai/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 43,
@@ -3555,7 +3338,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Seishun Buta Yarou wa Randoseru Girl no Yume wo Minai/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 32,
@@ -3644,7 +3428,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Atri-My Dear Moments/S1/13.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 44,
@@ -3727,7 +3512,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Na Nare Hana Nare/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 46,
@@ -3816,7 +3602,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Girls Band Cry/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 47,
@@ -3899,7 +3686,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Shinmai Ossan Boukensha/S1/12.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 48,
@@ -3988,7 +3776,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Working/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 49,
@@ -4077,7 +3866,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Working/S2/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 50,
@@ -4166,7 +3956,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Working/S3/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 51,
@@ -4255,7 +4046,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Working/S4/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 52,
@@ -4338,7 +4130,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Giji Harem/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 53,
@@ -4421,7 +4214,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Isekai Yururi Kikou/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 54,
@@ -4504,7 +4298,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yoru no Kurage wa Oyogenai/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 55,
@@ -4593,7 +4388,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Maou Gakuin no Futekigousha/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 56,
@@ -4676,7 +4472,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Maou Gakuin no Futekigousha/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 57,
@@ -4759,7 +4556,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Maou Gakuin no Futekigousha/S3/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 58,
@@ -4842,7 +4640,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Isekai Nonbiri Nouka/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 59,
@@ -4859,7 +4658,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kono Sekai no Katasumi ni/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 60,
@@ -4948,7 +4748,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/RE-KAN!/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 61,
@@ -5031,7 +4832,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Shuumatsu Train Doko e Iku/S1/12.mp4"
             }
         ],
-        "watched": false
+        "watched": true,
+        "bookmarked": true
     },
     {
         "id": 62,
@@ -5048,7 +4850,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Rakudai Majo/Movie/1.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 63,
@@ -5131,7 +4934,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Shinigami Bocchan to Kuro Maid/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 64,
@@ -5214,7 +5018,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Shinigami Bocchan to Kuro Maid/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 65,
@@ -5297,7 +5102,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Shinigami Bocchan to Kuro Maid/S3/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 66,
@@ -5380,7 +5186,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Iwa Kakeru/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 67,
@@ -5463,7 +5270,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Lv2 kara Cheat datta Motoyuusha Kouho no Mattari Isekai Life/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 68,
@@ -5546,7 +5354,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Sasayaku You ni Koi wo Utau/S1/12.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 69,
@@ -5719,7 +5528,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yozakura-san Chi no Daisakusen/S1/27.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 70,
@@ -5874,7 +5684,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tensura/S1/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 71,
@@ -5903,7 +5714,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tensura-VOC/VOC/3.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 72,
@@ -5986,7 +5798,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tensura/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 73,
@@ -6069,7 +5882,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tensura/S2_2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 74,
@@ -6086,7 +5900,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tensura-SB/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 75,
@@ -6241,7 +6056,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tensura/S3/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 76,
@@ -6324,7 +6140,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tensura Nikki/OVA/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 77,
@@ -6407,7 +6224,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Maou no Ore ga Dorei Elf wo Yome ni Shitanda ga, Dou Medereba Ii/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 78,
@@ -6490,7 +6308,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Re-Monster/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 79,
@@ -6573,7 +6392,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tensei shitara Dainana Ouji Datta node, Kimama ni Majutsu wo Kiwamemasu/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 80,
@@ -6656,7 +6476,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Himesama Goumon no Jikan desu/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 81,
@@ -6739,7 +6560,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Boku no Kokoro no Yabai Yatsu/S1/12.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 82,
@@ -6828,7 +6650,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Boku no Kokoro no Yabai Yatsu/S2/13.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 83,
@@ -6845,7 +6668,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Boku no Kokoro no Yabai Yatsu/OVA/1.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 84,
@@ -7006,7 +6830,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Sakura Quest/S1/25.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 85,
@@ -7089,7 +6914,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Akuyaku Reijou Level 99/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 86,
@@ -7172,7 +6998,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Oroka na Tenshi wa Akuma to Odoru/S1/12.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 87,
@@ -7255,7 +7082,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tsukimichi/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 88,
@@ -7416,7 +7244,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tsukimichi/S2/25.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 89,
@@ -7505,7 +7334,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Police in a pod/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 90,
@@ -7588,7 +7418,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kyuujitsu no Warumono-san/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 91,
@@ -7677,7 +7508,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Shin no Nakama/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 92,
@@ -7760,7 +7592,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Shin no Nakama/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 93,
@@ -7843,7 +7676,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yubisaki to Renren/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 94,
@@ -7932,7 +7766,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Chiyu Mahou no Machigatta Tsukaikata/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 95,
@@ -8087,7 +7922,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Dungeon Meshi/S1/24.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 96,
@@ -8176,7 +8012,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Saikyou Onmyouji no Isekai Tenseiki/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 97,
@@ -8259,7 +8096,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yuzuki-san Chi no Yonkyoudai/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 98,
@@ -8342,7 +8180,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Boushoku no Berserk/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 99,
@@ -8425,7 +8264,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Saihate no Paladin/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 100,
@@ -8508,7 +8348,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Saihate no Paladin/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 101,
@@ -8591,7 +8432,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Hoshikuzu Telepath/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 102,
@@ -8674,7 +8516,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tearmoon Teikoku Monogatari/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 103,
@@ -8757,7 +8600,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Hikikomari Kyuuketsuki no Monmon/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 104,
@@ -8840,7 +8684,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Goblin Slayer/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 105,
@@ -8923,7 +8768,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Goblin Slayer/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 106,
@@ -8940,7 +8786,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Goblin Slayer/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 107,
@@ -9023,7 +8870,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Konyaku Haki/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 108,
@@ -9106,7 +8954,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Seijo no Maryoku wa Bannou desu/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 109,
@@ -9189,7 +9038,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Seijo no Maryoku wa Bannou desu/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 110,
@@ -9368,7 +9218,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Sousou no Frieren/S1/28.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 111,
@@ -9517,7 +9368,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Nodame Cantabile/S1/23.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 112,
@@ -9594,7 +9446,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Nodame Cantabile/S2/11.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 113,
@@ -9671,7 +9524,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Nodame Cantabile/S3/11.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 45,
@@ -9760,7 +9614,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/16bit Sensation/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 114,
@@ -9843,7 +9698,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/NegaPosi Angler/S1/12.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 115,
@@ -9926,7 +9782,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Isekai de Mofumofu Nadenade/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 116,
@@ -10009,7 +9866,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kisaki Kyouiku kara Nigetai Watashi/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 118,
@@ -10164,7 +10022,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Nijiiro Days/S1/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 119,
@@ -10319,7 +10178,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Jujutsu Kaisen/S1/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 120,
@@ -10402,7 +10262,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kai Byoui Ramune/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 121,
@@ -10569,7 +10430,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Aishiteru Ze Baby/S1/26.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 122,
@@ -10586,7 +10448,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Suzume no Tojimari/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 123,
@@ -10747,7 +10610,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Dark Gathering/S1/25.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 124,
@@ -10830,7 +10694,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Shiro Seijo to Kuro Bokushi/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 125,
@@ -10919,7 +10784,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Dekiru Neko wa Kyou mo Yuuutsu/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 126,
@@ -11002,7 +10868,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Seija Musou/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 127,
@@ -11091,7 +10958,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Suki na Ko ga Megane wo Wasureta/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 128,
@@ -11180,7 +11048,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Hataraku Saibou/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 129,
@@ -11263,7 +11132,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Okashi na Tensei/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 130,
@@ -11352,7 +11222,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Horimiya/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 131,
@@ -11441,7 +11312,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Horimiya/OVA/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 132,
@@ -11524,7 +11396,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Uchi no Kaisha no Chiisai Senpai no Hanashi/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 133,
@@ -11607,7 +11480,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Inu x Boku SS/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 134,
@@ -11624,7 +11498,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Inu x Boku SS/OVA/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 135,
@@ -11767,7 +11642,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/3-gatsu no Lion/S1/22.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 136,
@@ -11910,7 +11786,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/3-gatsu no Lion/S2/22.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 137,
@@ -11993,7 +11870,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Doukyonin wa Hiza, Tokidoki, Atama no Ue./S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 138,
@@ -12076,7 +11954,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Long Riders/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 139,
@@ -12231,7 +12110,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Lovely Complex/S1/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 140,
@@ -12248,7 +12128,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Natsu e no Tunnel, Sayonara no Deguchi/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 141,
@@ -12343,7 +12224,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Honzuki no Gekokujou/S1/14.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 142,
@@ -12426,7 +12308,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Honzuki no Gekokujou/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 143,
@@ -12497,7 +12380,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Honzuki no Gekokujou/S3/10.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 144,
@@ -12580,7 +12464,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Suisei no Majo/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 145,
@@ -12663,7 +12548,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Suisei no Majo/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 146,
@@ -12746,7 +12632,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kubo-san wa Mob wo Yurusanai/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 147,
@@ -12829,7 +12716,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Isekai wa Smartphone to Tomo ni/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 148,
@@ -12912,7 +12800,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Isekai wa Smartphone to Tomo ni/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 149,
@@ -13067,7 +12956,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Shirobako/S1/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 150,
@@ -13150,7 +13040,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tonikaku Kawaii/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 151,
@@ -13167,7 +13058,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tonikaku Kawaii-SNS/SNS/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 152,
@@ -13184,7 +13076,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tonikaku Kawaii/OVA/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 153,
@@ -13267,7 +13160,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tonikaku Kawaii/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 154,
@@ -13302,7 +13196,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tonikaku Kawaii-Joshikou-hen/OVA-2/4.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 155,
@@ -13385,7 +13280,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Centaur no Nayami/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 156,
@@ -13474,7 +13370,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kamisama Hajimemashita/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 157,
@@ -13557,7 +13454,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kamisama Hajimemashita/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 158,
@@ -13640,7 +13538,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kiznaiver/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 159,
@@ -13729,7 +13628,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/ReLIFE/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 160,
@@ -13764,7 +13664,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/ReLIFE/S2/4.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 161,
@@ -13847,7 +13748,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/My Home Hero/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 162,
@@ -13930,7 +13832,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Mashle/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 163,
@@ -14013,7 +13916,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Mashle/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 164,
@@ -14102,7 +14006,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Jigokuraku/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 165,
@@ -14257,7 +14162,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Ao no Orchestra/S1/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 166,
@@ -14574,7 +14480,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Fullmetal Alchemist/S1/51.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 167,
@@ -14591,7 +14498,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Fullmetal Alchemist/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 168,
@@ -14986,7 +14894,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Fullmetal Alchemist/S2/64.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 169,
@@ -15075,7 +14984,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Mou Ippon/S1/13.mp4"
             }
         ],
-        "watched": false
+        "watched": true,
+        "bookmarked": true
     },
     {
         "id": 170,
@@ -15230,7 +15140,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Niehime to Kemono no Ou/S1/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 171,
@@ -15313,7 +15224,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yakusoku no Neverland/S1/12.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 172,
@@ -15390,7 +15302,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yakusoku no Neverland/S2/11.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 173,
@@ -15557,7 +15470,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kimetsu no Yaiba/S1/26.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 174,
@@ -15574,7 +15488,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kimetsu no Yaiba-Mugen Ressha-hen/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 175,
@@ -15651,7 +15566,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kimetsu no Yaiba/S2/11.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 176,
@@ -15728,7 +15644,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kimetsu no Yaiba/S3/11.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 177,
@@ -15787,7 +15704,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kimetsu no Yaiba/S4/8.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 178,
@@ -15948,7 +15866,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Baby Steps/S1/25.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 179,
@@ -16109,7 +16028,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Baby Steps/S2/25.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 180,
@@ -16192,7 +16112,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Otonari ni Ginga/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 181,
@@ -16275,7 +16196,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Edomae Elf/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 182,
@@ -16358,7 +16280,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Mamahaha no Tsurego ga Motokano datta/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 183,
@@ -16441,7 +16364,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kawaisugi Crisis/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 184,
@@ -16524,7 +16448,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Isekai One Turn Kill Neesan/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 185,
@@ -16607,7 +16532,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tensei Kizoku no Isekai Boukenroku/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 186,
@@ -16690,7 +16616,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kuma Miko/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 187,
@@ -16773,7 +16700,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kuma Kuma Kuma Bear/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 188,
@@ -16856,7 +16784,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kuma Kuma Kuma Bear/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 189,
@@ -16945,7 +16874,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yamada-kun to Lv999 no Koi wo Suru/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 190,
@@ -17028,7 +16958,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Wataten/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 191,
@@ -17045,7 +16976,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Wataten/OVA/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 192,
@@ -17062,7 +16994,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Wataten-Precious Friends/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 193,
@@ -17151,7 +17084,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Isekai de Cheat Skill wo Te ni Shita Ore wa, Genjitsu Sekai wo mo Musou Suru/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 194,
@@ -17221,7 +17155,8 @@
                 "watched": false,
                 "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S1/10.mp4"
             }
-        ]
+        ],
+        "bookmarked": false
     },
     {
         "id": 195,
@@ -17291,7 +17226,8 @@
                 "watched": false,
                 "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S2/10.mp4"
             }
-        ]
+        ],
+        "bookmarked": false
     },
     {
         "id": 196,
@@ -17373,7 +17309,8 @@
                 "watched": false,
                 "file_path": "C:/Users/shour/Documents/Anime/KonoSuba-Explosion/S2_2/12.mp4"
             }
-        ]
+        ],
+        "bookmarked": false
     },
     {
         "id": 197,
@@ -17449,7 +17386,8 @@
                 "watched": false,
                 "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S3/11.mp4"
             }
-        ]
+        ],
+        "bookmarked": false
     },
     {
         "id": 198,
@@ -17465,7 +17403,8 @@
                 "watched": false,
                 "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/Movie/1.mp4"
             }
-        ]
+        ],
+        "bookmarked": false
     },
     {
         "id": 199,
@@ -17548,7 +17487,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Oniichan wa Oshimai/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 200,
@@ -17631,7 +17571,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kaizoku Oujo/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 201,
@@ -17792,7 +17733,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tate no Yuusha/S1/25.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 202,
@@ -17881,7 +17823,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tate no Yuusha/S2/13.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 203,
@@ -17963,7 +17906,8 @@
                 "watched": false,
                 "file_path": "C:/Users/shour/Documents/Anime/Tate no Yuusha/S3/12.mp4"
             }
-        ]
+        ],
+        "bookmarked": false
     },
     {
         "id": 204,
@@ -18046,7 +17990,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Mushikaburi-hime/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 205,
@@ -18129,7 +18074,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Hananoi-kun to Koi no Yamai/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 206,
@@ -18212,7 +18158,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Koi to Yobu ni wa Kimochi Warui/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 207,
@@ -18295,7 +18242,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Soredemo Sekai wa Utsukushii/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 208,
@@ -18456,7 +18404,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Bakuman/S1/25.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 209,
@@ -18617,7 +18566,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Bakuman/S2/25.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 210,
@@ -18778,7 +18728,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Bakuman/S3/25.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 211,
@@ -18861,7 +18812,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Houkago Saikoro Club/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 212,
@@ -18944,7 +18896,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tensei Oujo to Tensai Reijou no Mahou Kakumei/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 213,
@@ -19027,7 +18980,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tondemo Skill de Isekai Hourou Meshi/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 214,
@@ -19110,7 +19064,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Benriya Saitou-san, Isekai ni Iku/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 215,
@@ -19193,7 +19148,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Ijiranaide, Nagatoro-san/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 216,
@@ -19276,7 +19232,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Ijiranaide, Nagatoro-san/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 217,
@@ -19359,7 +19316,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Buddy Daddies/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 218,
@@ -19442,7 +19400,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 219,
@@ -19531,7 +19490,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tomo-chan wa Onnanoko/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 220,
@@ -19614,7 +19574,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Koori Zokusei Danshi to Cool na Douryou Joshi/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 221,
@@ -19697,7 +19658,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/BOFURI/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 222,
@@ -19780,7 +19742,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/BOFURI/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 223,
@@ -19857,7 +19820,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/4-nin wa Sorezore Uso wo Tsuku/S1/11.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 224,
@@ -19940,7 +19904,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Bocchi the Rock/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 225,
@@ -20023,7 +19988,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Do It Yourself/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 226,
@@ -20106,7 +20072,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yama no Susume/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 227,
@@ -20261,7 +20228,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yama no Susume/S2/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 228,
@@ -20284,7 +20252,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yama no Susume/OVA2/2.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 229,
@@ -20373,7 +20342,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yama no Susume/S3/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 230,
@@ -20456,7 +20426,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yama no Susume/S4/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 231,
@@ -20539,7 +20510,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Uzaki-chan wa Asobitai/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 232,
@@ -20628,7 +20600,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Uzaki-chan wa Asobitai/S2/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 233,
@@ -20717,7 +20690,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Uchi no Shishou wa Shippo ga Nai/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 234,
@@ -20800,7 +20774,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tensei shitara Ken deshita/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 235,
@@ -20883,7 +20858,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Urasekai Picnic/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 236,
@@ -20972,7 +20948,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kono Oto Tomare/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 237,
@@ -21061,7 +21038,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kono Oto Tomare/S2/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 238,
@@ -21144,7 +21122,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Sono Bisque Doll wa Koi wo Suru/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 239,
@@ -21161,7 +21140,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Ame wo Tsugeru Hyouryuu Danchi/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 240,
@@ -21244,7 +21224,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kyoukai no Kanata/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 241,
@@ -21261,7 +21242,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kyoukai no Kanata/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 242,
@@ -21344,7 +21326,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yuusha, Yamemasu/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 243,
@@ -21367,7 +21350,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yuusha, Yamemasu/OVA/2.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 244,
@@ -21384,7 +21368,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Misaki no Mayoiga/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 245,
@@ -21461,7 +21446,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Fune wo Amu/S1/11.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 246,
@@ -21478,7 +21464,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Josee to Tora to Sakana-tachi/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 247,
@@ -21495,7 +21482,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Hello World/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 248,
@@ -21578,7 +21566,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kinsou no Vermeil/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 249,
@@ -21745,7 +21734,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kakuriyo no Yadomeshi/S1/26.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 250,
@@ -21828,7 +21818,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Hachi-nan tte, Sore wa Nai deshou/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 251,
@@ -21917,7 +21908,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Hataraku Maou-sama/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 252,
@@ -22000,7 +21992,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Hataraku Maou-sama/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 253,
@@ -22083,7 +22076,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Hataraku Maou-sama/S2_2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 254,
@@ -22166,7 +22160,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Isekai Meikyuu de Harem wo/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 255,
@@ -22249,7 +22244,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Koufuku Graffiti/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 256,
@@ -22332,7 +22328,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Isekai Yakkyoku/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 257,
@@ -22415,7 +22412,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kuro no Shoukanshi/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 258,
@@ -22498,7 +22496,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Prima Doll/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 259,
@@ -22581,7 +22580,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kumichou Musume to Sewagakari/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 260,
@@ -22664,7 +22664,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Warau Arsnotoria Sun/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 261,
@@ -22747,7 +22748,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tensei Kenja no Isekai Life/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 262,
@@ -22830,7 +22832,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Beelzebub-jou no Okinimesu mama/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 263,
@@ -22919,7 +22922,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Lycoris Recoil/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 264,
@@ -23002,7 +23006,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Maoujou de Oyasumi/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 265,
@@ -23085,7 +23090,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Komi-san wa, Comyushou desu/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 266,
@@ -23168,7 +23174,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Komi-san wa, Comyushou desu/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 267,
@@ -23185,7 +23192,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Zutto Mae kara Suki deshita/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 268,
@@ -23232,7 +23240,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Itsudatte Bokura no Koi wa 10 cm Datta/S1/6.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 269,
@@ -23249,7 +23258,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Saenai Heroine no Sodatekata/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 270,
@@ -23338,7 +23348,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tari Tari/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 271,
@@ -23505,7 +23516,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kaichou wa Maid-sama/S1/26.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 272,
@@ -23588,7 +23600,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Nyan Koi/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 273,
@@ -23743,7 +23756,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kumo desu ga, Nani ka/S1/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 274,
@@ -23826,7 +23840,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Nekopara/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 275,
@@ -23909,7 +23924,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Monster Musume no Oishasan/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 276,
@@ -23992,7 +24008,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Joukamachi no Dandelion/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 277,
@@ -24075,7 +24092,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Sasaki to Miyano/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 278,
@@ -24158,7 +24176,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yuri!!! on Ice/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 279,
@@ -24325,7 +24344,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Hanasaku Iroha/S1/26.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 280,
@@ -24486,7 +24506,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Toradora/S1/25.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 281,
@@ -24569,7 +24590,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yotsuiro Biyori/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 282,
@@ -24652,7 +24674,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Gaikotsu Kishi-sama/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 283,
@@ -24735,7 +24758,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Shijou Saikyou no Daimaou, Murabito A ni Tensei suru/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 284,
@@ -24818,7 +24842,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/RPG Fudousan/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 285,
@@ -24901,7 +24926,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kawaii dake ja Nai Shikimori-san/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 286,
@@ -24983,7 +25009,8 @@
                 "watched": false,
                 "file_path": "C:/Users/shour/Documents/Anime/Spy x Family/S1/12.mp4"
             }
-        ]
+        ],
+        "bookmarked": false
     },
     {
         "id": 287,
@@ -25071,7 +25098,8 @@
                 "watched": false,
                 "file_path": "C:/Users/shour/Documents/Anime/Spy x Family/S2/13.mp4"
             }
-        ]
+        ],
+        "bookmarked": false
     },
     {
         "id": 288,
@@ -25154,7 +25182,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Koi wa Sekai Seifuku no Ato de/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 289,
@@ -25237,7 +25266,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Machikado Mazoku/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 290,
@@ -25320,7 +25350,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Machikado Mazoku/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 291,
@@ -25403,7 +25434,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Shachiku-san wa Youjo Yuurei ni Iyasaretai/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 292,
@@ -25486,7 +25518,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Deaimon/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 293,
@@ -25641,7 +25674,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Lucky\u2606Star/S1/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 294,
@@ -26102,7 +26136,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Chibi\u2606Devi/S1/75.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 295,
@@ -26185,7 +26220,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Rikei ga Koi ni Ochita no de Shoumei shitemita/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 296,
@@ -26268,7 +26304,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Rikei ga Koi ni Ochita no de Shoumei shitemita/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 297,
@@ -26411,7 +26448,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Ansatsu Kyoushitsu/S1/22.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 298,
@@ -26572,7 +26610,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Ansatsu Kyoushitsu/S2/25.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 299,
@@ -26655,7 +26694,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Koutetsujou no Kabaneri/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 300,
@@ -26672,7 +26712,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Koutetsujou no Kabaneri/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 301,
@@ -26767,7 +26808,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Violet Evergarden/S1/14.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 302,
@@ -26784,7 +26826,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Violet Evergarden/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 303,
@@ -26867,7 +26910,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Witch Craft Works/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 304,
@@ -26950,7 +26994,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Vanitas no Karte/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 305,
@@ -27033,7 +27078,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Vanitas no Karte/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 306,
@@ -27116,7 +27162,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yuragi-sou no Yuuna-san/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 307,
@@ -27199,7 +27246,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Seven Knights Revolution/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 308,
@@ -27282,7 +27330,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Slow Loop/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 309,
@@ -27371,7 +27420,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Genjitsu Shugi Yuusha no Oukoku Saikenki/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 310,
@@ -27460,7 +27510,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Genjitsu Shugi Yuusha no Oukoku Saikenki/S2/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 311,
@@ -27543,7 +27594,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tensai Ouji no Akaji Kokka Saisei Jutsu/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 312,
@@ -27626,7 +27678,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Amaama to Inazuma/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 313,
@@ -27709,7 +27762,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Sounan desu ka/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 314,
@@ -27780,7 +27834,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Manaria Friends/S1/10.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 315,
@@ -27863,7 +27918,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Majo no Tabitabi/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 316,
@@ -27946,7 +28002,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kenja no Deshi wo Nanoru Kenja/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 317,
@@ -28029,7 +28086,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Sekai Saikou no Ansatsusha, Isekai Kizoku ni Tensei suru/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 318,
@@ -28112,7 +28170,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/D-Frag/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 319,
@@ -28195,7 +28254,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Akebi-chan no Sailor-fuku/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 320,
@@ -28278,7 +28338,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Karakai Jouzu no Takagi-san/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 321,
@@ -28361,7 +28422,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Karakai Jouzu no Takagi-san/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 322,
@@ -28444,7 +28506,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Karakai Jouzu no Takagi-san/S3/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 323,
@@ -28461,7 +28524,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Karakai Jouzu no Takagi-san/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 324,
@@ -28544,7 +28608,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Senpai ga Uzai Kouhai no Hanashi/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 325,
@@ -28627,7 +28692,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Hakumei to Mikochi/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 326,
@@ -28710,7 +28776,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Barakamon/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 327,
@@ -28865,7 +28932,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Ore Monogatari/S1/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 328,
@@ -28948,7 +29016,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/One Punch Man/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 329,
@@ -29031,7 +29100,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/One Punch Man/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 330,
@@ -29120,7 +29190,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/K-On/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 331,
@@ -29287,7 +29358,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/K-On/S2/26.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 332,
@@ -29304,7 +29376,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/K-On/OVA/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 333,
@@ -29321,7 +29394,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/K-On/OVA-2/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 334,
@@ -29338,7 +29412,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/K-On/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 335,
@@ -29421,7 +29496,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Isekai Shokudou/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 336,
@@ -29504,7 +29580,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Isekai Shokudou/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 337,
@@ -29587,7 +29664,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Super Cub/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 338,
@@ -29670,7 +29748,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Chuunibyou demo Koi ga Shitai/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 339,
@@ -29753,7 +29832,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Chuunibyou demo Koi ga Shitai/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 340,
@@ -29770,7 +29850,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Chuunibyou demo Koi ga Shitai/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 341,
@@ -29853,7 +29934,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Himouto! Umaru-chan/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 342,
@@ -29936,7 +30018,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Himouto! Umaru-chan/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 343,
@@ -29959,7 +30042,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Himouto! Umaru-chan/OVA/2.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 344,
@@ -30042,7 +30126,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Mieruko-chan/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 345,
@@ -30125,7 +30210,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Flying Witch/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 346,
@@ -30208,7 +30294,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Stella no Mahou/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 347,
@@ -30291,7 +30378,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Gakkougurashi/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 348,
@@ -30446,7 +30534,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Darling in the FranXX/S1/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 349,
@@ -30577,7 +30666,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Jahy-sama wa Kujikenai/S1/20.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 350,
@@ -30660,7 +30750,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kiniro Mosaic/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 351,
@@ -30743,7 +30834,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kiniro Mosaic/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 352,
@@ -30760,7 +30852,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kiniro Mosaic/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 353,
@@ -30777,7 +30870,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kiniro Mosaic/Movie-2/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 354,
@@ -30860,7 +30954,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Oneechan ga Kita/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 355,
@@ -30943,7 +31038,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Shoujo Shuumatsu Ryokou/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 356,
@@ -31026,7 +31122,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Danchigai/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 357,
@@ -31115,7 +31212,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Wakaba_Girl/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 358,
@@ -31132,7 +31230,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Wakaba_Girl/OVA/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 359,
@@ -31215,7 +31314,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Sansha Sanyou/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 360,
@@ -31298,7 +31398,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Nyanko Days/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 361,
@@ -31381,7 +31482,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Hinako Note/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 362,
@@ -31464,7 +31566,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Mitsuboshi Colors/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 363,
@@ -31547,7 +31650,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/BLEND-S/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 364,
@@ -31630,7 +31734,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Hitoribocchi no Marumaru Seikatsu/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 365,
@@ -31713,7 +31818,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Gochuumon wa Usagi desu ka/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 366,
@@ -31796,7 +31902,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Gochuumon wa Usagi desu ka/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 367,
@@ -31879,7 +31986,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Gochuumon wa Usagi desu ka/S3/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 368,
@@ -31896,7 +32004,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Gochuumon wa Usagi desu ka/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 369,
@@ -31913,7 +32022,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Gochuumon wa Usagi desu ka/OVA/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 370,
@@ -31996,7 +32106,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Koisuru Asteroid/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 371,
@@ -32079,7 +32190,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Isekai Maou to Shoukan Shoujo no Dorei Majutsu/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 372,
@@ -32162,13 +32274,14 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yuyushiki/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 373,
         "title": "Ameku Takao no Suiri Karte",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://animepahe.ru/anime/86aac07f-b98e-dde1-451a-c43fa17e8fce",
         "directory": "C:/Users/shour/Documents/Anime\\Ameku Takao no Suiri Karte\\S1",
         "episodes": [
@@ -32245,24 +32358,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Ameku Takao no Suiri Karte/S1/12.mp4"
             }
         ],
-        "watched": true
-    },
-    {
-        "id": 374,
-        "title": "Trapezium",
-        "season": "Movie",
-        "status": "Completed",
-        "download_link": "https://animepahe.ru/anime/7070b8ec-6295-f47a-7bb8-abc53581c30c",
-        "directory": "C:/Users/shour/Documents/Anime\\Trapezium\\Movie",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Trapezium/Movie/1.mp4"
-            }
-        ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 375,
@@ -32345,7 +32442,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Non Non Biyori/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 376,
@@ -32362,7 +32460,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Non Non Biyori/OVA/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 377,
@@ -32445,7 +32544,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Non Non Biyori/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 378,
@@ -32528,7 +32628,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Non Non Biyori/S3/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 379,
@@ -32545,7 +32646,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Non Non Biyori/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 380,
@@ -32628,7 +32730,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tonari no Kyuuketsuki-san/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 381,
@@ -32711,7 +32814,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Sakura Trick/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 382,
@@ -32794,7 +32898,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yagate Kimi ni Naru/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 383,
@@ -32877,7 +32982,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Houkago Teibou Nisshi/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 384,
@@ -32960,7 +33066,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Sorairo Utility/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 385,
@@ -33049,7 +33156,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Amagi Brilliant Park/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 386,
@@ -33066,7 +33174,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Amagi Brilliant Park/OVA/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 387,
@@ -33149,7 +33258,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kono Bijutsu-bu ni wa Mondai ga Aru/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 388,
@@ -33232,7 +33342,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Acchi Kocchi/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 389,
@@ -33315,7 +33426,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Shonen Maid/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 390,
@@ -33398,7 +33510,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Gakuen Babysitters/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 391,
@@ -33481,7 +33594,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Watashi, Nouryoku wa Heikinchi de tte Itta yo ne/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 392,
@@ -33564,7 +33678,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Cheat Kusushi no Slow Life/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 393,
@@ -33647,13 +33762,14 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Slime Taoshite 300-nen/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 394,
         "title": "Slime Taoshite 300-nen",
         "season": "S2",
-        "status": "Not_Aired",
+        "status": "Ongoing",
         "download_link": "https://animepahe.ru/anime/5f565bf2-d17e-07ee-fb2c-037e66a5c524",
         "directory": "C:/Users/shour/Documents/Anime\\Slime Taoshite 300-nen\\S2",
         "episodes": [
@@ -33730,7 +33846,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Slime Taoshite 300-nen/S2/12.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 395,
@@ -33819,7 +33936,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kobayashi-san Chi no Maid Dragon/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 396,
@@ -33836,7 +33954,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kobayashi-san Chi no Maid Dragon/OVA/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 397,
@@ -33919,7 +34038,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kobayashi-san Chi no Maid Dragon/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 398,
@@ -34002,7 +34122,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/GJ-bu/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 399,
@@ -34019,7 +34140,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kotonoha no Niwa/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 400,
@@ -34108,7 +34230,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tada-kun wa Koi wo Shinai/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 401,
@@ -34191,7 +34314,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Senryuu Shoujo/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 402,
@@ -34274,7 +34398,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Akagami no Shirayuki-hime/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 403,
@@ -34357,7 +34482,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Akagami no Shirayuki-hime/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 404,
@@ -34440,7 +34566,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tamako Market/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 405,
@@ -34457,7 +34584,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tamako Love Story/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 406,
@@ -34540,7 +34668,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kami-tachi ni Hirowareta Otoko/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 407,
@@ -34623,7 +34752,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kami-tachi ni Hirowareta Otoko/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 408,
@@ -34712,7 +34842,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Nazo no Kanojo X/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 409,
@@ -34729,7 +34860,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Nazo no Kanojo X/OVA/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 410,
@@ -34812,7 +34944,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kanata no Astra/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 411,
@@ -34973,7 +35106,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/My Sweet Tyrant/S1/25.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 412,
@@ -35050,7 +35184,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Darwin's Game/S1/11.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 413,
@@ -35133,7 +35268,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Sakamichi no Apollon/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 414,
@@ -35300,7 +35436,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Momokuri/S1/26.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 415,
@@ -35317,7 +35454,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Nakitai Watashi wa Neko wo Kaburu/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 416,
@@ -35334,7 +35472,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Ashita Sekai ga Owaru toshitemo/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 417,
@@ -35405,7 +35544,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Net-juu no Susume/S1/10.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 418,
@@ -35422,7 +35562,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Net-juu no Susume/OVA/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 419,
@@ -35505,7 +35646,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Ookami-san to Shichinin no Nakama-tachi/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 420,
@@ -35588,7 +35730,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Nogizaka Haruka no Himitsu/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 421,
@@ -35671,7 +35814,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Nogizaka Haruka no Himitsu/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 422,
@@ -35706,7 +35850,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Nogizaka Haruka no Himitsu/S3/4.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 423,
@@ -35777,7 +35922,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/My Girlfriend is Shobitch/S1/10.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 424,
@@ -35938,7 +36084,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kimi ni Todoke/S1/25.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 425,
@@ -36021,7 +36168,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kimi ni Todoke/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 426,
@@ -36104,7 +36252,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Ookami Shoujo to Kuro Ouji/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 427,
@@ -36121,7 +36270,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Ookami Shoujo to Kuro Ouji/OVA/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 428,
@@ -36282,7 +36432,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Itazurana Kiss/S1/25.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 429,
@@ -36365,7 +36516,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Bokura wa Minna Kawai-sou/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 430,
@@ -36382,7 +36534,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Bokura wa Minna Kawai-sou/OVA/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 431,
@@ -36465,7 +36618,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kotoura-san/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 432,
@@ -36548,7 +36702,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Mikakunin de Shinkoukei/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 433,
@@ -36565,7 +36720,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Mikakunin de Shinkoukei/OVA/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 434,
@@ -36582,7 +36738,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Mikakunin de Shinkoukei/Special/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 435,
@@ -36599,7 +36756,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Koe no Katachi/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 436,
@@ -36616,7 +36774,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Omoi, Omoware, Furi, Furare/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 437,
@@ -36632,7 +36791,8 @@
                 "watched": false,
                 "file_path": "C:/Users/shour/Documents/Anime/Omoide Poroporo/Movie/1.mp4"
             }
-        ]
+        ],
+        "bookmarked": false
     },
     {
         "id": 438,
@@ -36721,7 +36881,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tonari no Kaibutsu-kun/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 439,
@@ -36810,7 +36971,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Suki tte Ii na yo./S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 440,
@@ -36827,7 +36989,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Suki tte Ii na yo/OVA/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 441,
@@ -36910,7 +37073,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Assassins Pride/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 442,
@@ -36993,7 +37157,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Haiyore! Nyaruko-san/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 443,
@@ -37076,7 +37241,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Haiyore! Nyaruko-san/S2/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 444,
@@ -37093,7 +37259,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Haiyore! Nyaruko-san/OVA/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 445,
@@ -37176,7 +37343,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kamisama ni Natta Hi/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 446,
@@ -37259,7 +37427,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kamisama no Memochou/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 447,
@@ -37342,7 +37511,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Konohana Kitan/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 117,
@@ -37653,7 +37823,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Sousei no Onmyouji/S1/50.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 448,
@@ -37742,7 +37913,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Gleipnir/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 449,
@@ -37897,7 +38069,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Gosick/S1/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 450,
@@ -38052,7 +38225,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Akatsuki no Yona/S1/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 451,
@@ -38135,7 +38309,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Saijaku Muhai no Bahamut/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 452,
@@ -38218,7 +38393,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Gakusen Toshi Asterisk/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 453,
@@ -38301,7 +38477,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Miira no Kaikata/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 454,
@@ -38384,7 +38561,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Uchi no Ko no Tame naraba, Ore wa Moshikashitara Maou mo Taoseru kamo Shirenai./S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 455,
@@ -38467,7 +38645,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kakushigoto/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 456,
@@ -38556,7 +38735,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Servant x Service/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 457,
@@ -38639,7 +38819,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Gekkan Shoujo Nozaki-kun/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 458,
@@ -38722,7 +38903,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/UzaMaid/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 459,
@@ -38805,7 +38987,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kyoto Teramachi Sanjou no Holmes/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 460,
@@ -38948,7 +39131,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Hyouka/S1/22.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 461,
@@ -39037,7 +39221,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Danna ga Nani wo Itteiru ka Wakaranai Ken/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 462,
@@ -39126,7 +39311,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Danna ga Nani wo Itteiru ka Wakaranai Ken/S2/13.mp4"
             }
         ],
-        "watched": false
+        "watched": false,
+        "bookmarked": false
     },
     {
         "id": 463,
@@ -39209,7 +39395,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Eromanga-sensei/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 464,
@@ -39292,7 +39479,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tsuki ga Kirei/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 465,
@@ -39375,7 +39563,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Another/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 466,
@@ -39464,7 +39653,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Charlotte/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 467,
@@ -39481,7 +39671,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Charlotte/Special/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 468,
@@ -39564,7 +39755,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Rakudai Kishi no Cavalry/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 469,
@@ -39647,7 +39839,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Island/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 470,
@@ -39736,7 +39929,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Osake wa Fuufu ni Natte kara/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 471,
@@ -39819,7 +40013,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Miss Caretaker of Sunohara-sou/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 472,
@@ -39902,7 +40097,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Mayoiga/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 473,
@@ -39991,7 +40187,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yahari Ore no Seishun Love Comedy wa Machigatteiru/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 474,
@@ -40080,7 +40277,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yahari Ore no Seishun Love Comedy wa Machigatteiru/S2/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 475,
@@ -40163,7 +40361,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yahari Ore no Seishun Love Comedy wa Machigatteiru/S3/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 476,
@@ -40252,7 +40451,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Mayo Chiki/S1/13.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 477,
@@ -40335,7 +40535,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Daitoshokan no Hitsujikai/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 478,
@@ -40490,7 +40691,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Golden Time/S1/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 479,
@@ -40645,7 +40847,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Sakura-sou no Pet na Kanojo/S1/24.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 480,
@@ -40728,7 +40931,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Netoge no Yome wa Onnanoko ja Nai to Omotta/S1/12.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 481,
@@ -40805,7 +41009,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Wotakoi/S1/11.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 482,
@@ -40834,7 +41039,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Wotakoi/OVA/3.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 483,
@@ -40851,7 +41057,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kimi no Na wa/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
     },
     {
         "id": 484,
@@ -40868,6 +41075,97 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tenki no Ko/Movie/1.mp4"
             }
         ],
-        "watched": true
+        "watched": true,
+        "bookmarked": false
+    },
+    {
+        "id": 36,
+        "title": "Medalist",
+        "season": "S1",
+        "status": "Completed",
+        "download_link": "https://animepahe.ru/anime/61b3353f-7392-48ff-ef50-4687d6a3d477",
+        "directory": "C:/Users/shour/Documents/Anime\\Medalist\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Medalist/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Medalist/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Medalist/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Medalist/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Medalist/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Medalist/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Medalist/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Medalist/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Medalist/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Medalist/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Medalist/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Medalist/S1/12.mp4"
+            },
+            {
+                "number": 13,
+                "title": "Episode 13",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Medalist/S1/13.mp4"
+            }
+        ],
+        "watched": true,
+        "bookmarked": false
     }
 ]

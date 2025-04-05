@@ -20,6 +20,19 @@
 
         <!-- Mark Anime as Watched Button -->
         <div class="anime-actions">
+
+            <!-- Anime Status Dropdown -->
+            <p><strong>Status:</strong> 
+                <span id="anime-status-text" data-anime-id="{{ anime.id }}" data-current-status="{{ anime.status }}">
+                    {{ anime.status }}
+                </span>
+                <button onclick="cycleStatus()" class="watched-button" style="margin-left: 10px;">
+                    🔁 Change Status
+                </button>
+            </p>
+            
+            
+
             <button onclick="toggleAnimeWatched('{{ anime.id }}', this)" class="watched-button {% if anime.watched %}watched{% endif %}">
                 {% if anime.watched %}✔ Anime Watched{% else %}Mark Anime as Watched{% endif %}
             </button>
@@ -70,6 +83,44 @@
             });
     }
 </script>
+
+<script>
+    function cycleStatus() {
+    const statusSpan = document.getElementById('anime-status-text');
+    const animeId = statusSpan.dataset.animeId;
+    const currentStatus = statusSpan.dataset.currentStatus.trim();
+
+    const statuses = ["Ongoing", "Not Aired", "Completed"];
+    const newIndex = (statuses.indexOf(currentStatus) + 1) % statuses.length;
+    const newStatus = statuses[newIndex];
+
+    fetch(`/update_anime_status/${animeId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: newStatus })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            statusSpan.innerText = newStatus;
+            statusSpan.setAttribute('data-current-status', newStatus);
+        } else {
+            alert("Failed to update status: " + data.message);
+        }
+    })
+    .catch(err => {
+        console.error("Fetch error:", err);
+        alert("Error updating status");
+    });
+}
+
+</script>
+
+
+
+
 
 <style>
     body {

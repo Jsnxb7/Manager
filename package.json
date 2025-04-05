@@ -19,20 +19,48 @@
   },
   
   "build": {
+  
+    
   "appId": "com.yourapp.animemanager",
+  
+    
   "productName": "AnimeManager",
+  
+    
   "win": {
-    "target": "nsis"
+  
+    
+    
+  "target": "nsis"
+  
+    
   },
+  
+    
   "directories": {
-    "output": "dist"
+  
+    
+    
+  "output": "dist"
+  
+    
   },
+  
+    
   "files": [
-    "**/*",
-    "!node_modules/electron-builder"
+  
+    
+    
+  "**/*",
+  
+    
+    
+  "!node_modules/electron-builder"
+  
+    
   ]
-}
-,
+  
+  },
   
   "keywords": [],
   
@@ -49,6 +77,16 @@
   
     
   "electron-builder": "^26.0.12"
+  
+  },
+  
+  "dependencies": {
+  
+    
+  "electron-store": "^10.0.1",
+  
+    
+  "node-fetch": "^3.3.2"
   
   }
 }

@@ -10,9 +10,22 @@
         <!-- "Show Ongoing Anime" Button -->
         <button class="add-anime-button" onclick="resetFilters()">Reset Filters</button>
         <button class="add-anime-button" onclick="filterUnwatchedAnime()">Unwatched Anime</button>
-<button class="add-anime-button" onclick="filterOngoingAnime()">Ongoing Anime</button>
+        <button class="add-anime-button" onclick="filterOngoingAnime()">Ongoing Anime</button>
+        <button class="add-anime-button" onclick="sortBookmarkedFirst()">Sort Bookmarked First</button>
 
 <script>
+
+async function sortBookmarkedFirst() {
+    const animeData = await fetchAnimeData();
+
+    const sorted = animeData.sort((a, b) => {
+        const aBookmarked = a.bookmarked === true;
+        const bBookmarked = b.bookmarked === true;
+        return (bBookmarked - aBookmarked); // true comes first
+    });
+
+    renderAnimeList(sorted);
+}
 
     
     async function resetFilters() {
@@ -120,8 +133,8 @@
 }
 
 .anime-card {
-    width: 400px; /* Adjust width for horizontal layout */
-    height: 220px; /* Reduce height to make it more rectangular */
+    width: 600px; /* Adjust width for horizontal layout */
+    height: 240px; /* Reduce height to make it more rectangular */
     background: rgba(0, 0, 0, 0.6); /* Semi-transparent dark background */
     border-radius: 10px;
     padding: 10px;
@@ -284,7 +297,13 @@
         const animeActions = document.createElement('div');
         animeActions.className = 'anime-actions';
         
-        // "Mark as Watched" button
+// View Button
+        const viewButton = document.createElement('a');
+        viewButton.className = 'view-button';
+        viewButton.href = `/anime/${anime.id}`;
+        viewButton.textContent = 'View Anime';
+
+        // Mark as Watched Button
         const markWatchedButton = document.createElement('button');
         markWatchedButton.className = 'mark-watched-button';
         markWatchedButton.textContent = anime.watched ? "Watched ✅" : "Mark as Watched";
@@ -292,20 +311,26 @@
             await toggleAnimeWatched(anime.id, markWatchedButton);
         };
 
-        const viewButton = document.createElement('a');
-        viewButton.className = 'view-button';
-        viewButton.href = `/anime/${anime.id}`;
-        viewButton.textContent = 'View Anime';
+        // 🔖 Bookmark Button
+        const bookmarkButton = document.createElement('button');
+        bookmarkButton.className = 'mark-watched-button';
+        bookmarkButton.textContent = anime.bookmarked ? "Bookmarked ⭐" : "Bookmark 🔖";
+        bookmarkButton.onclick = async () => {
+            await toggleBookmark(anime.id, bookmarkButton);
+        };
 
+        // Delete Button
         const deleteButton = document.createElement('button');
         deleteButton.className = 'delete-button';
         deleteButton.textContent = 'Delete';
         deleteButton.onclick = () => deleteAnime(anime.id);
 
-        // Append buttons to actions container
+        // Append buttons
         animeActions.appendChild(viewButton);
         animeActions.appendChild(markWatchedButton);
+        animeActions.appendChild(bookmarkButton); // ✅ New button
         animeActions.appendChild(deleteButton);
+
 
         // Append elements to anime info section
         animeInfo.appendChild(animeTitle);
@@ -321,6 +346,27 @@
         animeGrid.appendChild(animeCard);
     });
 }
+
+// Function to toggle bookmark status
+async function toggleBookmark(animeId, button) {
+    try {
+        const response = await fetch(`/bookmark/${animeId}`, {
+            method: 'POST',
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.status === "success") {
+                button.textContent = data.bookmarked ? "Bookmarked ⭐" : "Bookmark 🔖";
+            }
+        } else {
+            console.error("Failed to toggle bookmark.");
+        }
+    } catch (error) {
+        console.error("Error toggling bookmark:", error);
+    }
+}
+
 
 // Function to toggle watched status for an anime
 async function toggleAnimeWatched(animeId, button) {

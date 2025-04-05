@@ -3,12 +3,11 @@ import json
 import os
 import sys
 
-# Get Flask data directory from Electron arguments
 if len(sys.argv) > 1:
     BASE_PATH = sys.argv[1]
 else:
-    print("Error: No Flask data directory provided by Electron.")
-    sys.exit(1)
+    BASE_PATH = os.getcwd()
+    print(f"No Flask data directory provided by Electron. Using current directory: {BASE_PATH}")
 
 # Use the path received from Electron (default to current dir if not provided)
 STATIC_FOLDER = os.path.join(BASE_PATH, 'static')
@@ -25,10 +24,13 @@ if not os.path.exists(STATIC_FOLDER) or not os.path.exists(TEMPLATES_FOLDER):
 app = Flask(__name__, static_folder=STATIC_FOLDER, template_folder=TEMPLATES_FOLDER)
 
 
-# Load anime data
 def load_anime_data():
     with open(DATA_FILE, 'r') as file:
-        return json.load(file)
+        data = json.load(file)
+        for anime in data:
+            if "bookmarked" not in anime:
+                anime["bookmarked"] = False
+        return data
 
 # Save anime data
 def save_anime_data(data):
@@ -156,7 +158,6 @@ def mark_anime_watched(anime_id):
 
     return jsonify({'status': 'error'}), 404
 
-
 @app.route('/delete_anime/<int:anime_id>', methods=['DELETE'])
 def delete_anime(anime_id):
     anime_data = load_anime_data()
@@ -173,9 +174,64 @@ def get_anime():
     for anime in anime_data:
         anime["downloaded"] = any(os.path.exists(ep["file_path"]) for ep in anime.get("episodes", []))
     return jsonify(anime_data)
+
 @app.route('/static/images/stars.mp4')
 def serve_video1():
     return send_file("static/images/stars.mp4", mimetype="video/mp4", conditional=True)
+
+@app.route('/bookmark/<int:anime_id>', methods=['POST'])
+def toggle_bookmark(anime_id):
+    anime_data = load_anime_data()
+
+    # Find the anime with the given ID
+    anime = next((item for item in anime_data if item.get('id') == anime_id), None)
+
+    if anime:
+        # Add the 'bookmarked' key if it doesn't exist
+        if 'bookmarked' not in anime:
+            anime['bookmarked'] = False
+
+        # Toggle the bookmark status
+        anime['bookmarked'] = not anime['bookmarked']
+
+        save_anime_data(anime_data)
+
+        return jsonify({'status': 'success', 'bookmarked': anime['bookmarked']})
+
+    return jsonify({'status': 'error', 'message': 'Anime not found'}), 403
+
+@app.route('/update_anime_status/<anime_id>', methods=['POST'])
+def update_anime_status(anime_id):
+    try:
+        anime_id = int(anime_id)
+        updated_data = request.get_json()
+        new_status = updated_data.get('status')
+
+        if not new_status:
+            return jsonify({'status': 'error', 'message': 'Missing status'}), 400
+
+        with open('data/anime_data.json', 'r+', encoding='utf-8') as f:
+            anime_list = json.load(f)
+            updated = False
+
+            for anime in anime_list:
+                if anime['id'] == anime_id:
+                    anime['status'] = new_status
+                    updated = True
+                    break
+
+            if not updated:
+                return jsonify({'status': 'error', 'message': 'Anime not found'}), 404
+
+            f.seek(0)
+            json.dump(anime_list, f, indent=4)
+            f.truncate()
+
+        return jsonify({'status': 'success', 'new_status': new_status})
+
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)  # Runs Flask on port 5000
