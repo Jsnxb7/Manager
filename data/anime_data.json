@@ -1257,7 +1257,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": false
+        "bookmarked": true
     },
     {
         "id": 14,
@@ -1347,7 +1347,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": false
+        "bookmarked": true
     },
     {
         "id": 15,
@@ -1431,7 +1431,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": false
+        "bookmarked": true
     },
     {
         "id": 16,
@@ -1445,11 +1445,11 @@
                 "number": 1,
                 "title": "Episode 1",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Yuru Camp/Movie/1.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Yuru Camp/Movie/1.mkv"
             }
         ],
         "watched": true,
-        "bookmarked": false
+        "bookmarked": true
     },
     {
         "id": 17,
@@ -2211,8 +2211,8 @@
         "id": 28,
         "title": "Kono Kaisha ni Suki na Hito ga Imasu",
         "season": "S1",
-        "status": "Ongoing",
-        "download_link": "https://animepahe.ru/anime/ec6032d9-4fb6-c4a1-7a5d-d2b19c78e858",
+        "status": "Completed",
+        "download_link": "https://kissanime.com.ru/Anime/Kono-Kaisha-ni-Suki-na-Hito-ga-Imasu/",
         "directory": "C:/Users/shour/Documents/Anime\\Kono Kaisha ni Suki na Hito ga Imasu\\S1",
         "episodes": [
             {
@@ -2288,8 +2288,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kono Kaisha ni Suki na Hito ga Imasu/S1/12.mp4"
             }
         ],
-        "watched": false,
-        "bookmarked": false
+        "watched": true,
+        "bookmarked": true
     },
     {
         "id": 29,
@@ -3027,7 +3027,7 @@
         "id": 38,
         "title": "Watashi no Shiawase na Kekkon",
         "season": "S2",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://animepahe.ru/anime/a30e0bd5-7158-2421-f91a-3befec5a2358",
         "directory": "C:/Users/shour/Documents/Anime\\Watashi no Shiawase na Kekkon\\S2",
         "episodes": [
@@ -3110,8 +3110,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Watashi no Shiawase na Kekkon/S2/13.mp4"
             }
         ],
-        "watched": false,
-        "bookmarked": false
+        "watched": true,
+        "bookmarked": true
     },
     {
         "id": 39,
@@ -3777,7 +3777,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": false
+        "bookmarked": true
     },
     {
         "id": 49,
@@ -3867,7 +3867,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": false
+        "bookmarked": true
     },
     {
         "id": 50,
@@ -3957,7 +3957,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": false
+        "bookmarked": true
     },
     {
         "id": 51,
@@ -4047,7 +4047,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": false
+        "bookmarked": true
     },
     {
         "id": 52,
@@ -4833,7 +4833,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": true
+        "bookmarked": false
     },
     {
         "id": 62,
@@ -10431,7 +10431,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": false
+        "bookmarked": true
     },
     {
         "id": 122,
@@ -14898,96 +14898,6 @@
         "bookmarked": false
     },
     {
-        "id": 169,
-        "title": "Mou Ippon",
-        "season": "S1",
-        "status": "Completed",
-        "download_link": "https://animepahe.ru/anime/27224483-337d-2e2f-5918-81e2100b4116",
-        "directory": "C:/Users/shour/Documents/Anime\\Mou Ippon\\S1",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mou Ippon/S1/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mou Ippon/S1/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mou Ippon/S1/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mou Ippon/S1/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mou Ippon/S1/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mou Ippon/S1/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mou Ippon/S1/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mou Ippon/S1/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mou Ippon/S1/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mou Ippon/S1/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mou Ippon/S1/11.mp4"
-            },
-            {
-                "number": 12,
-                "title": "Episode 12",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mou Ippon/S1/12.mp4"
-            },
-            {
-                "number": 13,
-                "title": "Episode 13",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mou Ippon/S1/13.mp4"
-            }
-        ],
-        "watched": true,
-        "bookmarked": true
-    },
-    {
         "id": 170,
         "title": "Niehime to Kemono no Ou",
         "season": "S1",
@@ -19401,7 +19311,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": false
+        "bookmarked": true
     },
     {
         "id": 219,
@@ -24107,7 +24017,7 @@
                 "number": 1,
                 "title": "Episode 1",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Yuri!!! on Ice/S1/1.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Yuri!!! on Ice/S1/1.mkv"
             },
             {
                 "number": 2,
@@ -24119,13 +24029,13 @@
                 "number": 3,
                 "title": "Episode 3",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Yuri!!! on Ice/S1/3.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Yuri!!! on Ice/S1/3.mkv"
             },
             {
                 "number": 4,
                 "title": "Episode 4",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Yuri!!! on Ice/S1/4.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Yuri!!! on Ice/S1/4.mkv"
             },
             {
                 "number": 5,
@@ -24137,7 +24047,7 @@
                 "number": 6,
                 "title": "Episode 6",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Yuri!!! on Ice/S1/6.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Yuri!!! on Ice/S1/6.mkv"
             },
             {
                 "number": 7,
@@ -24173,7 +24083,7 @@
                 "number": 12,
                 "title": "Episode 12",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Yuri!!! on Ice/S1/12.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Yuri!!! on Ice/S1/12.mkv"
             }
         ],
         "watched": true,
@@ -25519,7 +25429,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": false
+        "bookmarked": true
     },
     {
         "id": 293,
@@ -29497,7 +29407,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": false
+        "bookmarked": true
     },
     {
         "id": 336,
@@ -29581,7 +29491,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": false
+        "bookmarked": true
     },
     {
         "id": 337,
@@ -33769,7 +33679,7 @@
         "id": 394,
         "title": "Slime Taoshite 300-nen",
         "season": "S2",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://animepahe.ru/anime/5f565bf2-d17e-07ee-fb2c-037e66a5c524",
         "directory": "C:/Users/shour/Documents/Anime\\Slime Taoshite 300-nen\\S2",
         "episodes": [
@@ -33846,7 +33756,7 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Slime Taoshite 300-nen/S2/12.mp4"
             }
         ],
-        "watched": false,
+        "watched": true,
         "bookmarked": false
     },
     {
@@ -34567,7 +34477,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": false
+        "bookmarked": true
     },
     {
         "id": 405,
@@ -34585,7 +34495,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": false
+        "bookmarked": true
     },
     {
         "id": 406,
@@ -36792,7 +36702,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Omoide Poroporo/Movie/1.mp4"
             }
         ],
-        "bookmarked": false
+        "bookmarked": true,
+        "watched": true
     },
     {
         "id": 438,
@@ -41166,6 +41077,1510 @@
             }
         ],
         "watched": true,
+        "bookmarked": true
+    },
+    {
+        "id": 22,
+        "title": "Zatsu Tabi",
+        "season": "S1",
+        "status": "Completed",
+        "download_link": "https://animepahe.ru/anime/74a7b937-6d52-a599-4b6f-b74c8ff664ab",
+        "directory": "C:/Users/shour/Documents/Anime\\Zatsu Tabi\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Zatsu Tabi/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Zatsu Tabi/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Zatsu Tabi/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Zatsu Tabi/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Zatsu Tabi/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Zatsu Tabi/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Zatsu Tabi/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Zatsu Tabi/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Zatsu Tabi/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Zatsu Tabi/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Zatsu Tabi/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Zatsu Tabi/S1/12.mp4"
+            }
+        ],
         "bookmarked": false
+    },
+    {
+        "id": 23,
+        "title": "The Too-Perfect Saint",
+        "season": "S1",
+        "status": "Completed",
+        "download_link": "https://animepahe.ru/anime/35c39232-0133-ec5b-b3b9-0d6a7d7bf7b7",
+        "directory": "C:/Users/shour/Documents/Anime\\The Too-Perfect Saint\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Too-Perfect Saint/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Too-Perfect Saint/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Too-Perfect Saint/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Too-Perfect Saint/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Too-Perfect Saint/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Too-Perfect Saint/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Too-Perfect Saint/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Too-Perfect Saint/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Too-Perfect Saint/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Too-Perfect Saint/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Too-Perfect Saint/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Too-Perfect Saint/S1/12.mp4"
+            }
+        ],
+        "bookmarked": false,
+        "watched": true
+    },
+    {
+        "id": 169,
+        "title": "Lycoris Recoil",
+        "season": "OVA",
+        "status": "Completed",
+        "download_link": "https://animepahe.ru/anime/91066879-be61-c86f-7b80-9f45662083ce",
+        "directory": "C:/Users/shour/Documents/Anime\\Lycoris Recoil\\OVA",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Lycoris Recoil/OVA/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Lycoris Recoil/OVA/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Lycoris Recoil/OVA/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Lycoris Recoil/OVA/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Lycoris Recoil/OVA/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Lycoris Recoil/OVA/6.mp4"
+            }
+        ],
+        "bookmarked": false
+    },
+    {
+        "id": 374,
+        "title": "Uchuujin MuuMuu",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://animepahe.ru/anime/f9307dde-9fbb-66ee-4b19-a4f6364cbc6b",
+        "directory": "C:/Users/shour/Documents/Anime\\Uchuujin MuuMuu\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Uchuujin MuuMuu/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Uchuujin MuuMuu/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Uchuujin MuuMuu/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Uchuujin MuuMuu/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Uchuujin MuuMuu/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Uchuujin MuuMuu/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Uchuujin MuuMuu/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Uchuujin MuuMuu/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Uchuujin MuuMuu/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Uchuujin MuuMuu/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Uchuujin MuuMuu/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Uchuujin MuuMuu/S1/12.mp4"
+            }
+        ],
+        "bookmarked": false
+    },
+    {
+        "id": 485,
+        "title": "Rock wa Lady no Tashinami deshite",
+        "season": "S1",
+        "status": "Completed",
+        "download_link": "https://animepahe.ru/anime/06eaab74-0977-aebc-f50e-adc5d42bd574",
+        "directory": "C:/Users/shour/Documents/Anime\\Rock wa Lady no Tashinami deshite\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rock wa Lady no Tashinami deshite/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rock wa Lady no Tashinami deshite/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rock wa Lady no Tashinami deshite/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rock wa Lady no Tashinami deshite/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rock wa Lady no Tashinami deshite/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rock wa Lady no Tashinami deshite/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rock wa Lady no Tashinami deshite/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rock wa Lady no Tashinami deshite/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rock wa Lady no Tashinami deshite/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rock wa Lady no Tashinami deshite/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rock wa Lady no Tashinami deshite/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rock wa Lady no Tashinami deshite/S1/12.mp4"
+            },
+            {
+                "number": 13,
+                "title": "Episode 13",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rock wa Lady no Tashinami deshite/S1/13.mp4"
+            }
+        ],
+        "bookmarked": false
+    },
+    {
+        "id": 486,
+        "title": "Food for the Soul",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://animepahe.ru/anime/b79ed814-ac4b-3649-17a9-d04a9e27ae56",
+        "directory": "C:/Users/shour/Documents/Anime\\Food for the Soul\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Food for the Soul/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Food for the Soul/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Food for the Soul/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Food for the Soul/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Food for the Soul/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Food for the Soul/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Food for the Soul/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Food for the Soul/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Food for the Soul/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Food for the Soul/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Food for the Soul/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Food for the Soul/S1/12.mp4"
+            }
+        ],
+        "bookmarked": false
+    },
+    {
+        "id": 487,
+        "title": "Mono",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://animepahe.ru/anime/cdda01ba-50ca-a61b-f1ae-5e705c65994b",
+        "directory": "C:/Users/shour/Documents/Anime\\Mono\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mono/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mono/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mono/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mono/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mono/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mono/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mono/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mono/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mono/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mono/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mono/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mono/S1/12.mp4"
+            }
+        ],
+        "bookmarked": false
+    },
+    {
+        "id": 488,
+        "title": "Witch Watch",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://animepahe.ru/anime/55c1ad8c-4032-44b2-54ca-7fe1365595ae",
+        "directory": "C:/Users/shour/Documents/Anime\\Witch Watch\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/12.mp4"
+            },
+            {
+                "number": 13,
+                "title": "Episode 13",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/13.mp4"
+            },
+            {
+                "number": 14,
+                "title": "Episode 14",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/14.mp4"
+            },
+            {
+                "number": 15,
+                "title": "Episode 15",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/15.mp4"
+            },
+            {
+                "number": 16,
+                "title": "Episode 16",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/16.mp4"
+            },
+            {
+                "number": 17,
+                "title": "Episode 17",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/17.mp4"
+            },
+            {
+                "number": 18,
+                "title": "Episode 18",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/18.mp4"
+            },
+            {
+                "number": 19,
+                "title": "Episode 19",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/19.mp4"
+            },
+            {
+                "number": 20,
+                "title": "Episode 20",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/20.mp4"
+            },
+            {
+                "number": 21,
+                "title": "Episode 21",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/21.mp4"
+            },
+            {
+                "number": 22,
+                "title": "Episode 22",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/22.mp4"
+            },
+            {
+                "number": 23,
+                "title": "Episode 23",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/23.mp4"
+            },
+            {
+                "number": 24,
+                "title": "Episode 24",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/24.mp4"
+            },
+            {
+                "number": 25,
+                "title": "Episode 25",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/25.mp4"
+            },
+            {
+                "number": 26,
+                "title": "Episode 26",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Witch Watch/S1/26.mp4"
+            }
+        ],
+        "bookmarked": false
+    },
+    {
+        "id": 489,
+        "title": "Shirohiyo",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://animepahe.ru/anime/cb49b9d1-2396-39e6-8f76-f23b3607aff0",
+        "directory": "C:/Users/shour/Documents/Anime\\Shirohiyo\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Shirohiyo/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Shirohiyo/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Shirohiyo/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Shirohiyo/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Shirohiyo/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Shirohiyo/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Shirohiyo/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Shirohiyo/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Shirohiyo/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Shirohiyo/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Shirohiyo/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Shirohiyo/S1/12.mp4"
+            }
+        ],
+        "bookmarked": false
+    },
+    {
+        "id": 490,
+        "title": "The Brilliant Healer's New Life in the Shadows",
+        "season": "S1",
+        "status": "Completed",
+        "download_link": "https://animepahe.ru/anime/c487ca7f-036c-fc0f-da9d-a6f670f7751c",
+        "directory": "C:/Users/shour/Documents/Anime\\The Brilliant Healer's New Life in the Shadows\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Brilliant Healer's New Life in the Shadows/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Brilliant Healer's New Life in the Shadows/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Brilliant Healer's New Life in the Shadows/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Brilliant Healer's New Life in the Shadows/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Brilliant Healer's New Life in the Shadows/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Brilliant Healer's New Life in the Shadows/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Brilliant Healer's New Life in the Shadows/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Brilliant Healer's New Life in the Shadows/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Brilliant Healer's New Life in the Shadows/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Brilliant Healer's New Life in the Shadows/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Brilliant Healer's New Life in the Shadows/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Brilliant Healer's New Life in the Shadows/S1/12.mp4"
+            }
+        ],
+        "bookmarked": false,
+        "watched": true
+    },
+    {
+        "id": 491,
+        "title": "Ore wa Seikan Kokka no Akutoku Ryoushu",
+        "season": "S1",
+        "status": "Completed",
+        "download_link": "https://animepahe.ru/anime/83837af5-73ae-503d-4362-f5389e634697",
+        "directory": "C:/Users/shour/Documents/Anime\\Ore wa Seikan Kokka no Akutoku Ryoushu\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ore wa Seikan Kokka no Akutoku Ryoushu/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ore wa Seikan Kokka no Akutoku Ryoushu/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ore wa Seikan Kokka no Akutoku Ryoushu/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ore wa Seikan Kokka no Akutoku Ryoushu/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ore wa Seikan Kokka no Akutoku Ryoushu/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ore wa Seikan Kokka no Akutoku Ryoushu/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ore wa Seikan Kokka no Akutoku Ryoushu/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ore wa Seikan Kokka no Akutoku Ryoushu/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ore wa Seikan Kokka no Akutoku Ryoushu/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ore wa Seikan Kokka no Akutoku Ryoushu/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ore wa Seikan Kokka no Akutoku Ryoushu/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ore wa Seikan Kokka no Akutoku Ryoushu/S1/12.mp4"
+            }
+        ],
+        "bookmarked": false,
+        "watched": true
+    },
+    {
+        "id": 493,
+        "title": "Seitokai Yakuindomo",
+        "season": "S1",
+        "status": "Completed",
+        "download_link": "https://animepahe.ru/anime/ca7253ac-6f2a-4df8-8da4-a06c3b74697e",
+        "directory": "C:/Users/shour/Documents/Anime\\Seitokai Yakuindomo\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S1/12.mp4"
+            },
+            {
+                "number": 13,
+                "title": "Episode 13",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S1/13.mp4"
+            }
+        ],
+        "bookmarked": false,
+        "watched": true
+    },
+    {
+        "id": 494,
+        "title": "Seitokai Yakuindomo",
+        "season": "OVA_1",
+        "status": "Completed",
+        "download_link": "https://animepahe.ru/anime/967b567a-537a-cabd-e635-3b1885c3870c",
+        "directory": "C:/Users/shour/Documents/Anime\\Seitokai Yakuindomo\\OVA_1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/OVA_1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/OVA_1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/OVA_1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/OVA_1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/OVA_1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/OVA_1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/OVA_1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/OVA_1/8.mp4"
+            }
+        ],
+        "bookmarked": false,
+        "watched": true
+    },
+    {
+        "id": 495,
+        "title": "Seitokai Yakuindomo",
+        "season": "S2",
+        "status": "Completed",
+        "download_link": "https://animepahe.ru/anime/606ded54-037f-8855-7d1c-0850c889d118",
+        "directory": "C:/Users/shour/Documents/Anime\\Seitokai Yakuindomo\\S2",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S2/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S2/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S2/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S2/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S2/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S2/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S2/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S2/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S2/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S2/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S2/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S2/12.mp4"
+            },
+            {
+                "number": 13,
+                "title": "Episode 13",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/S2/13.mp4"
+            }
+        ],
+        "bookmarked": false,
+        "watched": true
+    },
+    {
+        "id": 496,
+        "title": "Seitokai Yakuindomo",
+        "season": "OVA_2",
+        "status": "Completed",
+        "download_link": "https://animepahe.ru/anime/822e632a-132f-3bd3-007a-449b0e165583",
+        "directory": "C:/Users/shour/Documents/Anime\\Seitokai Yakuindomo\\OVA_2",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/OVA_2/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/OVA_2/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/OVA_2/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/OVA_2/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/OVA_2/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/OVA_2/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/OVA_2/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/OVA_2/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/OVA_2/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/OVA_2/10.mp4"
+            }
+        ],
+        "bookmarked": false,
+        "watched": true
+    },
+    {
+        "id": 497,
+        "title": "Seitokai Yakuindomo",
+        "season": "Movie",
+        "status": "Completed",
+        "download_link": "https://animepahe.ru/anime/c6e81985-a4eb-148d-b8d1-9adc183f964a",
+        "directory": "C:/Users/shour/Documents/Anime\\Seitokai Yakuindomo\\Movie",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/Movie/1.mp4"
+            }
+        ],
+        "bookmarked": false,
+        "watched": true
+    },
+    {
+        "id": 498,
+        "title": "Seitokai Yakuindomo",
+        "season": "Movie_2",
+        "status": "Completed",
+        "download_link": "https://animepahe.ru/anime/e321fe1a-4162-e4b0-5459-54b98cd9c6e1",
+        "directory": "C:/Users/shour/Documents/Anime\\Seitokai Yakuindomo\\Movie_2",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Seitokai Yakuindomo/Movie_2/1.mp4"
+            }
+        ],
+        "bookmarked": false,
+        "watched": true
+    },
+    {
+        "id": 499,
+        "title": "Once Upon a Witch's Death",
+        "season": "S1",
+        "status": "Completed",
+        "download_link": "https://animepahe.ru/anime/72a32719-7054-f3d9-447f-19ef80df327d",
+        "directory": "C:/Users/shour/Documents/Anime\\Once Upon a Witch's Death\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Once Upon a Witch's Death/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Once Upon a Witch's Death/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Once Upon a Witch's Death/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Once Upon a Witch's Death/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Once Upon a Witch's Death/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Once Upon a Witch's Death/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Once Upon a Witch's Death/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Once Upon a Witch's Death/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Once Upon a Witch's Death/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Once Upon a Witch's Death/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Once Upon a Witch's Death/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Once Upon a Witch's Death/S1/12.mp4"
+            }
+        ],
+        "bookmarked": false,
+        "watched": true
+    },
+    {
+        "id": 500,
+        "title": "Momo e no Tegami",
+        "season": "Movie",
+        "status": "Completed",
+        "download_link": "https://animepahe.ru/anime/0a7a560f-d3ec-295a-ff37-a3b8ee7c1299",
+        "directory": "C:/Users/shour/Documents/Anime\\Momo e no Tegami\\Movie",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Momo e no Tegami/Movie/1.mp4"
+            }
+        ],
+        "bookmarked": false,
+        "watched": true
+    },
+    {
+        "id": 492,
+        "title": "The Beginning After the End",
+        "season": "S1",
+        "status": "Completed",
+        "download_link": "https://animepahe.ru/anime/5e6bd405-6f6d-e47f-caa2-34ea579f2d64",
+        "directory": "C:/Users/shour/Documents/Anime\\The Beginning After the End\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Beginning After the End/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Beginning After the End/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Beginning After the End/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Beginning After the End/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Beginning After the End/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Beginning After the End/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Beginning After the End/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Beginning After the End/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Beginning After the End/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Beginning After the End/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Beginning After the End/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/The Beginning After the End/S1/12.mp4"
+            }
+        ],
+        "bookmarked": false,
+        "watched": true
     }
 ]

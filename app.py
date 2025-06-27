@@ -232,6 +232,5 @@ def update_anime_status(anime_id):
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-
 if __name__ == '__main__':
     app.run(port=5000, debug=True)  # Runs Flask on port 5000
