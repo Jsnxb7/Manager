@@ -7,8 +7,134 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <!-- Video.js CSS -->
     <link href="https://vjs.zencdn.net/7.15.4/video-js.css" rel="stylesheet" />
+    <style>
+    /* Toggle Button */
+#toggle-queue-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #2563eb; /* Blue */
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 50%;
+    font-size: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    z-index: 1000;
+}
+
+/* Queue Panel */
+#global-queue {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 260px;
+    max-height: 260px;
+    overflow-y: auto;
+    background-color: #1f2937; /* Dark gray */
+    color: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    display: none; /* Hidden by default */
+}
+
+/* Queue Title */
+#global-queue h3 {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+/* Queue Items */
+#global-queue ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#global-queue li {
+    background-color: #374151; /* Slightly lighter gray */
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    font-size: 0.9em;
+}
+
+#global-queue a {
+    color: #60a5fa; /* Light blue */
+    text-decoration: underline;
+    margin-left: 8px;
+}
+</style>
 </head>
 <body>
+    
+<!-- Queue Toggle Button -->
+<button id="toggle-queue-btn"
+        class="fixed bottom-4 right-4 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg z-50">
+    📺
+</button>
+
+<!-- Queue Panel -->
+<div id="global-queue"
+     class="fixed bottom-16 right-4 bg-gray-900 text-white p-4 rounded-lg shadow-lg max-h-64 overflow-auto w-64 z-40 hidden">
+    <h3 class="text-lg font-bold mb-2">📺 Queue</h3>
+    {% if global_queue %}
+    <ul class="space-y-2">
+        {% for item in global_queue %}
+          <li class="bg-gray-800 p-2 rounded text-sm flex justify-between items-center">
+            <div>
+              <strong>{{ item.title }}</strong><br>
+              Season: {{ item.season }}
+              <a href="{{ url_for('player', index=loop.index0) }}?from_queue=true" class="text-blue-400 underline ml-2">▶️</a>
+            </div>
+            <button class="text-red-400 ml-2 delete-btn" data-index="{{ loop.index0 }}">🗑️</button>
+          </li>
+        {% endfor %}
+      </ul>      
+    {% else %}
+        <p class="text-sm text-gray-400">Queue is empty</p>
+    {% endif %}
+</div>
+<script>
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const index = btn.getAttribute('data-index');
+    
+            try {
+                const res = await fetch(`/delete_from_queue/${index}`, {
+                    method: 'DELETE'
+                });
+    
+                const data = await res.json();
+                if (data.status === 'success') {
+                    location.reload(); // Refresh to update queue
+                } else {
+                    alert('Failed to delete: ' + data.message);
+                }
+            } catch (err) {
+                alert('Error deleting: ' + err.message);
+            }
+        });
+    });
+    </script>
+    
+<script>
+    const toggleBtn = document.getElementById("toggle-queue-btn");
+    const queueBox = document.getElementById("global-queue");
+
+    toggleBtn.addEventListener("click", () => {
+        if (queueBox.style.display === "none" || queueBox.style.display === "") {
+            queueBox.style.display = "block";
+        } else {
+            queueBox.style.display = "none";
+        }
+    });
+</script>
+    
         <a style="color: azure;" href ="{{ url_for('index') }}" class="home-button">Back to Home</a>
     <main>
         {% block content %}{% endblock %}

@@ -80,14 +80,40 @@
             });
 
             // Handle End of Video - Auto Next Episode
-            player.on('ended', function () {
-                alert('Episode ended. Moving to the next episode...');
-                const nextEpisode = parseInt("{{ episode.number }}") + 1;
-                const totalEpisodes = parseInt("{{ anime.episodes|length }}");
-                if (nextEpisode <= totalEpisodes) {
-                    window.location.href = "{{ url_for('player', anime_id=anime.id, episode_number=0) }}".replace("0", nextEpisode);
+// Handle End of Video - Auto Next Episode or Anime
+player.on('ended', async function () {
+    const currentEpisode = parseInt("{{ episode.number }}");
+    const totalEpisodes = parseInt("{{ anime.episodes|length }}");
+    const currentAnimeId = "{{ anime.id }}";
+
+    if (currentEpisode < totalEpisodes) {
+        // Move to next episode
+        window.location.href = "{{ url_for('player', anime_id=anime.id, episode_number=0) }}".replace("0", currentEpisode + 1);
+    } else {
+        // Last episode reached, fetch next anime from queue
+        try {
+            const response = await fetch("/queue");
+            const queueData = await response.json();
+
+            if (queueData.queue && queueData.queue.length > 0) {
+                // Find the next anime entry in the queue that’s not the current one
+                const nextAnime = queueData.queue.find(item => item.id !== currentAnimeId);
+                
+                if (nextAnime) {
+                    // Redirect to episode 1 of next anime using its ID
+                    window.location.href = "/player/" + encodeURIComponent(nextAnime.id) + "/1";
+                } else {
+                    alert("Queue ended. No more anime to play.");
                 }
-            });
+            } else {
+                alert("Queue is empty. No more anime to play.");
+            }
+        } catch (error) {
+            console.error("Failed to fetch queue:", error);
+            alert("Could not retrieve next anime from queue.");
+        }
+    }
+});
 
             // Keyboard Shortcuts
             document.addEventListener('keydown', (event) => {

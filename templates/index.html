@@ -246,8 +246,87 @@ async function sortBookmarkedFirst() {
     background: rgba(231, 76, 60, 1);
     box-shadow: 0 0 10px rgba(231, 76, 60, 0.8);
 }
+.floating-queue {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    width: 280px;
+    background-color: rgba(30, 30, 30, 0.95);
+    color: #eee;
+    border: 1px solid #444;
+    padding: 15px;
+    border-radius: 10px;
+    font-family: sans-serif;
+    z-index: 999;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+}
+
+.floating-queue h4 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: #ffc107;
+}
+
+.floating-queue li {
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.next-button {
+    background-color: #ffc107;
+    border: none;
+    padding: 6px 12px;
+    font-weight: bold;
+    color: #222;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
     </style>
 
+<!-- Floating Queue UI
+<div id="queue-ui" style="
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    width: 280px;
+    max-height: 60vh;
+    overflow-y: auto;
+    background-color: rgba(0,0,0,0.8);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    z-index: 999;
+    box-shadow: 0 0 10px rgba(255,255,255,0.2);
+">
+
+<h3 class="text-xl font-bold mb-2">🎬 Queue</h3>
+
+{% if queue and queue|length > 0 %}
+     Play Full Queue Button -->
+    <!-- <a href="{{ url_for('player', index=0) }}?from_queue=true">
+        <button class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 w-full">
+            ▶️ Play Full Queue
+        </button>
+    </a>
+
+    <ul class="space-y-2 mt-3">
+        {% for item in queue %}
+            <li class="flex justify-between items-center bg-gray-800 p-2 rounded-lg">
+                <div>
+                    <strong>{{ item.anime }}</strong><br>
+                    <small>ID: {{ item.id }}</small>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p class="text-sm text-gray-400">No anime in queue.</p>
+{% endif %}
+ -->
+
+</div>
     <script>
         // Function to fetch anime data from the server
         async function fetchAnimeData() {
@@ -325,11 +404,27 @@ async function sortBookmarkedFirst() {
         deleteButton.textContent = 'Delete';
         deleteButton.onclick = () => deleteAnime(anime.id);
 
+// Create the "Add to Queue" button dynamically
+        const addToQueueButton = document.createElement('button');
+        addToQueueButton.className = 'view-button'; // You can define your own class in CSS
+        addToQueueButton.textContent = '➕ Add to Queue';
+
+        // Attach click handler
+        addToQueueButton.onclick = async () => {
+            try {
+                await addToQueue(anime.title, anime.id); // Ensure 'anime.title' exists
+            } catch (err) {
+                alert("Failed to add to queue: " + err.message);
+            }
+        };
+
+
         // Append buttons
         animeActions.appendChild(viewButton);
         animeActions.appendChild(markWatchedButton);
-        animeActions.appendChild(bookmarkButton); // ✅ New button
+        animeActions.appendChild(bookmarkButton);
         animeActions.appendChild(deleteButton);
+        animeActions.appendChild(addToQueueButton); 
 
 
         // Append elements to anime info section
@@ -366,6 +461,29 @@ async function toggleBookmark(animeId, button) {
         console.error("Error toggling bookmark:", error);
     }
 }
+async function addToQueue(animeTitle, animeId) {
+    try {
+        const response = await fetch("/add_video", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title: animeTitle, id: animeId }) // Send both title and id
+        });
+
+        const data = await response.json();
+
+        if (data.status === "success") {
+            location.reload(); // Refresh the page to update queue UI
+        } else {
+            alert("Error: " + data.message);
+        }
+
+    } catch (error) {
+        alert("Request failed: " + error.message);
+    }
+}
+
 
 
 // Function to toggle watched status for an anime
