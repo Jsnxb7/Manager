@@ -146,6 +146,16 @@ def inject_queue():
     except:
         return {'global_queue': []}
 
+@app.route("/queue")
+def get_queue():
+    try:
+        queue_data = load_queue()
+        return jsonify(queue_data)
+    except Exception as e:
+        print("Error loading queue:", e)
+        return jsonify({"queue": []}), 40114
+
+
 @app.route('/add_video', methods=['POST'])
 def add_to_queue():
     data = request.get_json()
@@ -167,7 +177,7 @@ def add_to_queue():
 
 def load_queue():
     if not os.path.exists(QUEUE_FILE):
-        return {"queue": [], "current": None}
+        return {"queue": []}
     with open(QUEUE_FILE, 'r') as f:
         return json.load(f)
 

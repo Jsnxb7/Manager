@@ -129,7 +129,7 @@ a:hover {
 }
 
 /* Home Button Styles */
-.add-anime-button, .home-button {
+.add-anime-button{
     display: inline-block;
     width: 220px;
     padding: 12px 20px;
@@ -146,6 +146,23 @@ a:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+.home-button {
+    display: flex;                     /* Changed from inline-block to flex */
+    align-items: center;              /* Vertically center */
+    justify-content: center;          /* Horizontally center */
+    height: 50px;
+    width: 50px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s ease-in-out;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
 
 .add-anime-button:hover {
     background: rgba(33, 167, 35, 0.7);

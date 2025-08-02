@@ -1,163 +1,129 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <!-- Background Video -->
-    <video autoplay muted loop id="bg-video" class="absolute top-0 left-0 w-full h-full object-cover z-[-1]">
-        <source src="{{ url_for('static', filename='images/stars.mp4') }}" type="video/mp4">
+<video autoplay muted loop id="bg-video">
+    <source src="{{ url_for('static', filename='images/stars.mp4') }}" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+
+<main class="player-container">
+    <h1>{{ anime.title }} - {{ anime.season }}</h1>
+
+    <video id="video-player"
+           class="video-js vjs-default-skin vjs-big-play-centered"
+           controls
+           autoplay
+           preload="auto"
+           data-setup='{}'>
+        <source src="{{ episode.video_url }}" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 
-    <div class="flex flex-col items-center justify-center p-6 relative z-10">
-        <!-- Anime Title -->
-        <h1 class="text-2xl font-bold text-center mb-4 text-white bg-black bg-opacity-50 p-2 rounded-lg">
-            {{ anime.title }} - {{ anime.season }}
-        </h1>
+    <p><strong>Now Playing:</strong> Episode {{ episode.number }} - {{ episode.title }}</p>
 
-        <!-- Video Player -->
-        <div class="relative w-full max-w-3xl">
-            <video id="video-player"
-                   class="video-js vjs-default-skin vjs-big-play-centered rounded-lg shadow-lg"
-                   controls
-                   autoplay
-                   preload="auto"
-                   width="800"
-                   height="450"
-                   data-setup='{}'>
-                <source src="{{ episode.video_url }}" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        </div>
+    <div class="episode-nav-container">
+        {% if episode.number > 1 %}
+            <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number - 1) }}" class="episode-nav-button previous">
+                ⬅️ Previous
+            </a>
+        {% endif %}
+    
+        {% if episode.number < anime.episodes|length %}
+            <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number + 1) }}" class="episode-nav-button next">
+                Next ➡️
+            </a>
+        {% endif %}
+    </div>
+    
+    
 
-        <!-- Episode Info -->
-        <p class="mt-4 text-lg font-semibold text-white bg-black bg-opacity-50 p-2 rounded-lg">
-            <strong>Now Playing:</strong> Episode {{ episode.number }} - {{ episode.title }}
-        </p>
-
-<!-- Episode Navigation -->
-<div class="mt-6 flex gap-4">
-    {% if episode.number > 1 %}
-        <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number - 1) }}" class="episode-nav-card prev">
-            <div class="nav-info">
-                <span class="nav-label">⬅️ Previous Episode</span>
-                <span class="nav-title">Episode {{ episode.number - 1 }}: {{ anime.episodes[episode.number - 2].title }}</span>
-            </div>
-        </a>
-    {% endif %}
-
-    {% if episode.number < anime.episodes|length %}
-        <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number + 1) }}" class="episode-nav-card next">
-            <div class="nav-info">
-                <span class="nav-label">Next Episode ➡️</span>
-                <span class="nav-title">Episode {{ episode.number + 1 }}: {{ anime.episodes[episode.number].title }}</span>
-            </div>
-        </a>
-    {% endif %}
-</div>
-
-
-        <!-- Back to Anime Details -->
-        <a href="{{ url_for('anime_detail', anime_id=anime.id) }}"
-           class="mt-6 text-lg text-gray-300 hover:underline">
-            ⬅️ Back to Anime Details
-        </a>
+    <div class="episode-jump">
+        <label for="episode-select">Jump to Episode:</label>
+        <select id="episode-select" onchange="jumpToEpisode(this)">
+            {% for ep in anime.episodes %}
+                <option value="{{ ep.number }}" {% if ep.number == episode.number %}selected{% endif %}>
+                    Episode {{ ep.number }} - {{ ep.title }}
+                </option>
+            {% endfor %}
+        </select>
     </div>
 
-    <script>
-        // Ensure Video.js is properly initialized
-        document.addEventListener("DOMContentLoaded", function () {
-            const player = videojs('video-player', {
-                controls: true,
-                autoplay: true,
-                preload: 'auto',
-                playbackRates: [0.5, 1, 1.5, 2], // Speed options
-                controlBar: {
-                    children: [
-                        'playToggle', 'volumePanel', 'currentTimeDisplay', 'timeDivider',
-                        'durationDisplay', 'progressControl', 'remainingTimeDisplay',
-                        'playbackRateMenuButton', 'fullscreenToggle'
-                    ]
-                }
-            });
+    <a href="{{ url_for('anime_detail', anime_id=anime.id) }}" class="back-link">⬅️ Back to Anime Details</a>
+</main>
 
-            // Handle End of Video - Auto Next Episode
-// Handle End of Video - Auto Next Episode or Anime
-player.on('ended', async function () {
-    const currentEpisode = parseInt("{{ episode.number }}");
-    const totalEpisodes = parseInt("{{ anime.episodes|length }}");
-    const currentAnimeId = "{{ anime.id }}";
+<script>
+function jumpToEpisode(select) {
+    const episodeNumber = select.value;
+    const animeId = "{{ anime.id }}";
+    window.location.href = `/player/${animeId}/${episodeNumber}`;
+}
 
-    if (currentEpisode < totalEpisodes) {
-        // Move to next episode
-        window.location.href = "{{ url_for('player', anime_id=anime.id, episode_number=0) }}".replace("0", currentEpisode + 1);
-    } else {
-        // Last episode reached, fetch next anime from queue
-        try {
-            const response = await fetch("/queue");
-            const queueData = await response.json();
+document.addEventListener("DOMContentLoaded", function () {
+    const player = videojs('video-player', {
+        controls: true,
+        autoplay: true,
+        preload: 'auto',
+        playbackRates: [0.5, 1, 1.5, 2],
+        controlBar: {
+            children: [
+                'playToggle', 'volumePanel', 'currentTimeDisplay', 'timeDivider',
+                'durationDisplay', 'progressControl', 'remainingTimeDisplay',
+                'playbackRateMenuButton', 'fullscreenToggle'
+            ]
+        }
+    });
 
-            if (queueData.queue && queueData.queue.length > 0) {
-                // Find the next anime entry in the queue that’s not the current one
-                const nextAnime = queueData.queue.find(item => item.id !== currentAnimeId);
-                
-                if (nextAnime) {
-                    // Redirect to episode 1 of next anime using its ID
-                    window.location.href = "/player/" + encodeURIComponent(nextAnime.id) + "/1";
+    player.on('ended', async function () {
+        const currentEpisode = parseInt("{{ episode.number }}");
+        const totalEpisodes = parseInt("{{ anime.episodes|length }}");
+        const currentAnimeId = parseInt("{{ anime.id }}");
+
+        if (currentEpisode < totalEpisodes) {
+            window.location.href = "{{ url_for('player', anime_id=anime.id, episode_number=0) }}".replace("0", currentEpisode + 1);
+        } else {
+            try {
+                const response = await fetch("/queue");
+                const queueData = await response.json();
+                const currentIndex = queueData.queue.findIndex(item => item.id === currentAnimeId);
+                const nextItem = queueData.queue[currentIndex + 1];
+
+                if (nextItem) {
+                    window.location.href = `/player/${nextItem.id}/1`;
                 } else {
                     alert("Queue ended. No more anime to play.");
                 }
-            } else {
-                alert("Queue is empty. No more anime to play.");
+            } catch (error) {
+                console.error("Failed to fetch queue:", error);
+                alert("Could not retrieve next anime from queue.");
             }
-        } catch (error) {
-            console.error("Failed to fetch queue:", error);
-            alert("Could not retrieve next anime from queue.");
         }
-    }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.target.tagName.toLowerCase() === 'input') return;
+        const player = videojs('video-player');
+        switch (event.key) {
+            case ' ': event.preventDefault(); player.paused() ? player.play() : player.pause(); break;
+            case 'ArrowLeft': player.currentTime(player.currentTime() - 10); break;
+            case 'ArrowRight': player.currentTime(player.currentTime() + 10); break;
+            case 'ArrowUp': player.volume(Math.min(player.volume() + 0.1, 1)); break;
+            case 'ArrowDown': player.volume(Math.max(player.volume() - 0.1, 0)); break;
+            case 'f': player.isFullscreen() ? player.exitFullscreen() : player.requestFullscreen(); break;
+            case 'm': player.muted(!player.muted()); break;
+        }
+    });
 });
+</script>
 
-            // Keyboard Shortcuts
-            document.addEventListener('keydown', (event) => {
-                if (event.target.tagName.toLowerCase() === 'input') return; // Prevent conflicts with input fields
-
-                switch (event.key) {
-                    case ' ': // Spacebar - Play/Pause
-                        event.preventDefault();
-                        player.paused() ? player.play() : player.pause();
-                        break;
-                    case 'ArrowLeft': // Rewind 10s
-                        player.currentTime(player.currentTime() - 10);
-                        break;
-                    case 'ArrowRight': // Forward 10s
-                        player.currentTime(player.currentTime() + 10);
-                        break;
-                    case 'ArrowUp': // Increase Volume
-                        player.volume(Math.min(player.volume() + 0.1, 1));
-                        break;
-                    case 'ArrowDown': // Decrease Volume
-                        player.volume(Math.max(player.volume() - 0.1, 0));
-                        break;
-                    case 'f': // Fullscreen Toggle
-                        player.isFullscreen() ? player.exitFullscreen() : player.requestFullscreen();
-                        break;
-                    case 'm': // Mute/Unmute
-                        player.muted(!player.muted());
-                        break;
-                }
-            });
-        });
-    </script>
-    <style>
-        /* Global Styles */
+<style>
 body {
     font-family: "Comic Sans MS", sans-serif;
     margin: 0;
     padding: 0;
     color: #fff;
-    background: none; /* No static background, using video */
+    background: none;
     overflow-x: hidden;
 }
-
-/* Background Video */
 #bg-video {
     position: fixed;
     top: 0;
@@ -167,173 +133,117 @@ body {
     object-fit: cover;
     z-index: -1;
 }
-
-/* Main Content Wrapper */
-.flex.flex-col {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 900px;
-    margin: auto;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.6); /* Semi-transparent dark background */
+.player-container {
+    max-width: 1200px;
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.6);
     border-radius: 12px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Anime Title */
 h1 {
-    font-size: 1.8rem;
     text-align: center;
-    margin-bottom: 15px;
-    color: #fff;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
     background: rgba(0, 0, 0, 0.7);
     padding: 10px;
     border-radius: 8px;
 }
-
-/* Video Player */
-.video-js {
-    width: 100%;
-    max-width: 800px;
-    border-radius: 10px;
-    overflow: hidden;
-    background-color: #000;
-}
-
-.video-js .vjs-big-play-button {
-    background-color: rgba(0, 0, 0, 0.7);
-    border-radius: 50%;
-    width: 80px;
-    height: 80px;
-    line-height: 80px;
-    font-size: 30px;
-}
-
-.video-js .vjs-control-bar {
-    background-color: rgba(0, 0, 0, 0.7);
-    color: #fff;
-}
-
-.video-js .vjs-play-progress,
-.video-js .vjs-volume-level {
-    background-color: #3498db;
-}
-
-/* Episode Info */
 p {
-    font-size: 1.2rem;
-    font-weight: 600;
     text-align: center;
     background: rgba(0, 0, 0, 0.6);
     padding: 10px;
     border-radius: 8px;
 }
-
-/* Episode Navigation */
-.episode-navigation {
+.video-js {
+    width: 100%;
+    max-height: 700px;
+    border-radius: 10px;
+    background-color: #000;
+}
+.video-js .vjs-big-play-button {
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 50%;
+}
+.video-js .vjs-control-bar {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+}
+.video-js .vjs-play-progress,
+.video-js .vjs-volume-level {
+    background-color: #3498db;
+}
+.episode-nav-container {
     display: flex;
-    justify-content: center;
-    gap: 15px;
+    justify-content: space-between;
     margin-top: 20px;
+    padding: 0 10px;
 }
 
-.episode-navigation a {
+.episode-nav-button {
     padding: 10px 20px;
     font-size: 1rem;
-    border-radius: 5px;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
     transition: background-color 0.3s ease;
+    width: 120px;
+    text-align: center;
 }
 
-.episode-navigation .previous {
+.episode-nav-button.previous {
     background-color: #7f8c8d;
 }
 
-.episode-navigation .previous:hover {
+.episode-nav-button.previous:hover {
     background-color: #666;
 }
 
-.episode-navigation .next {
-    background-color: #3498db;
+.episode-nav-button.next {
+    background-color: #3fade8f9;
 }
 
-.episode-navigation .next:hover {
-    background-color: #2980b9;
+.episode-nav-button.next:hover {
+    background-color: #22126c;
 }
 
-/* Episode Navigation Card */
-.episode-nav-card {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 300px;
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 8px;
-    transition: transform 0.3s ease, background 0.3s ease;
-    text-decoration: none;
-    color: white;
-}
-
-.episode-nav-card:hover {
-    background: rgba(0, 0, 0, 0.9);
-    transform: scale(1.05);
-}
-
-/* Navigation Info */
 .nav-info {
     display: flex;
     flex-direction: column;
 }
-
-.nav-label {
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: #ddd;
+.episode-jump {
+    margin-top: 1rem;
+    text-align: center;
+    
 }
-
-.nav-title {
-    font-size: 0.8rem;
-    font-weight: normal;
-    color: #bbb;
+.episode-jump label {
+    margin-right: 0.5rem;
 }
-
-
-/* Back to Anime Details */
+.episode-jump select {
+    padding: 6px 10px;
+    border-radius: 10px;
+    width: 40px;
+    outline: none;
+    color: #efe7e7;
+    background-color:  rgba(0, 0, 0, 0.6);  
+}
 .back-link {
     display: block;
-    margin-top: 20px;
     text-align: center;
-    font-size: 1.1rem;
-    color: #ddd;
+    margin-top: 2rem;
+    color: #ccc;
     text-decoration: none;
 }
-
 .back-link:hover {
     text-decoration: underline;
 }
-
-/* Responsive Design */
 @media (max-width: 768px) {
-    h1 {
-        font-size: 1.5rem;
-    }
-
-    .flex.flex-col {
-        padding: 15px;
-    }
-
-    .episode-navigation {
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .episode-navigation a {
-        width: 100%;
-        text-align: center;
-    }
+    h1 { font-size: 1.5rem; }
+    .player-container { padding: 1rem; }
+    .episode-nav-card { width: 100%; }
 }
-
-    </style>
+</style>
 {% endblock %}
