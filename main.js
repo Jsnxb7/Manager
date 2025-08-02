@@ -1,12 +1,40 @@
 const { app, BrowserWindow, dialog } = require('electron');
-const { exec } = require('child_process');
+const { spawn, exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
 const CONFIG_FILE = path.join(app.getPath('userData'), 'config.json');
+const LOG_FILE = path.join(app.getPath('userData'), 'flask_logs.json');
 
 let mainWindow;
 let flaskProcess;
+
+// 🧹 Clear previous logs
+fs.writeFileSync(LOG_FILE, '[]'); // Start fresh with empty JSON array
+
+// 🧾 Log helper
+function logToFile(type, data) {
+    try {
+        const logEntry = {
+            timestamp: new Date().toISOString(),
+            type,
+            message: data.toString().trim()
+        };
+
+        let existingLogs = [];
+        if (fs.existsSync(LOG_FILE)) {
+            const content = fs.readFileSync(LOG_FILE, 'utf-8');
+            existingLogs = JSON.parse(content || '[]');
+        }
+
+        existingLogs.push(logEntry);
+
+        fs.writeFileSync(LOG_FILE, JSON.stringify(existingLogs, null, 4));
+    } catch (err) {
+        console.error("Log error:", err);
+    }
+}
+
 
 // Load saved config or initialize empty object
 function loadConfig() {
@@ -42,11 +70,10 @@ async function selectFolder(title) {
 async function getPaths() {
     let config = loadConfig();
 
-    // Check if app.exe path is stored and exists
     if (!config.flaskExePath || !fs.existsSync(config.flaskExePath)) {
-        config.flaskExePath = await selectFolder("Select the folder containing app.exe");
-        if (config.flaskExePath) {
-            config.flaskExePath = path.join(config.flaskExePath, "app.exe");
+        const folder = await selectFolder("Select the folder containing app.exe");
+        if (folder) {
+            config.flaskExePath = path.join(folder, "app.exe");
             saveConfig(config);
         } else {
             console.error("No Flask executable selected.");
@@ -54,7 +81,6 @@ async function getPaths() {
         }
     }
 
-    // Check if Flask data path is stored and exists
     if (!config.flaskDataPath || !fs.existsSync(config.flaskDataPath)) {
         config.flaskDataPath = await selectFolder("Select the folder containing Flask data (static, templates, data)");
         if (config.flaskDataPath) {
@@ -80,11 +106,32 @@ app.whenReady().then(async () => {
         }
     });
 
-    // Start Flask server with data path as argument
-    flaskProcess = exec(`"${config.flaskExePath}" "${config.flaskDataPath}"`, (error, stdout, stderr) => {
-        if (error) console.error(`Flask error: ${error.message}`);
-        if (stderr) console.error(`Flask stderr: ${stderr}`);
+    // ✅ Spawn Flask with full process control
+    flaskProcess = spawn(config.flaskExePath, [config.flaskDataPath], {
+        detached: true,
+        stdio: ['ignore', 'pipe', 'pipe'],
+        shell: true,
     });
+
+    flaskProcess.stdout.on('data', (data) => {
+        const msg = `[FLASK]: ${data.toString().trim()}`;
+        console.log(msg);
+        logToFile('stdout', data);
+    });
+
+    flaskProcess.stderr.on('data', (data) => {
+        const msg = `[FLASK ERROR]: ${data.toString().trim()}`;
+        console.error(msg);
+        logToFile('stderr', data);
+    });
+
+    flaskProcess.on('close', (code) => {
+        const msg = `[FLASK CLOSED]: Process exited with code ${code}`;
+        console.log(msg);
+        logToFile('exit', msg);
+    });
+
+    flaskProcess.unref(); // allow Electron to quit without waiting
 
     setTimeout(() => {
         mainWindow.loadURL('http://127.0.0.1:5000');
@@ -101,12 +148,28 @@ app.on('window-all-closed', () => {
     app.quit();
 });
 
-// Function to properly terminate Flask
 function closeFlaskProcess() {
-    if (flaskProcess) {
-        exec(`taskkill /F /IM app.exe`, (error, stdout, stderr) => {
-            if (error) console.error(`Error closing Flask: ${error.message}`);
-        });
+    if (flaskProcess && flaskProcess.pid) {
+        console.log(`Attempting to kill Flask process with PID ${flaskProcess.pid}...`);
+
+        try {
+            process.kill(flaskProcess.pid);
+            console.log(`Killed Flask process by PID: ${flaskProcess.pid}`);
+        } catch (error) {
+            console.warn(`Could not kill by PID: ${error.message}`);
+        }
+
+        if (process.platform === 'win32') {
+            exec('taskkill /IM app.exe /F', (err, stdout, stderr) => {
+                if (err) {
+                    console.error(`[taskkill ERROR]: ${err.message}`);
+                } else {
+                    console.log(`[taskkill OUTPUT]: ${stdout}`);
+                    if (stderr) console.error(`[taskkill STDERR]: ${stderr}`);
+                }
+            });
+        }
+
         flaskProcess = null;
     }
 }

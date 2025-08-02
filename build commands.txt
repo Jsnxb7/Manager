@@ -1,3 +1,4 @@
 npx electron-builder build --win
 pyinstaller --noconsole --onefile --add-data "static;static" --add-data "templates;templates" app.py
 npx run build
+npx run dist

@@ -3,6 +3,7 @@ import json
 import os
 import sys
 from werkzeug.utils import secure_filename
+import logging
 
 if len(sys.argv) > 1:
     BASE_PATH = sys.argv[1]
@@ -358,4 +359,5 @@ def delete_from_queue(index):
         return jsonify({"status": "error", "message": "Invalid index"}), 400
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     app.run(port=5000, debug=True)  # Runs Flask on port 5000
