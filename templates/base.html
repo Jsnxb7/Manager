@@ -136,8 +136,11 @@
 </script>
     
 <a href="{{ url_for('index') }}" class="home-button" style="font-size: 0;">
-    <img src="{{ url_for('static', filename='home.png') }}" alt="Home" style="width: 28px; height: 28px;">
+    <img src="{{ url_for('static', filename='home.webp  ') }}" alt="Home" style="width: 28px; height: 28px;">
   </a>
+
+  <button onclick="history.back()" class="back-button">←</button>
+
   
     <main>
         {% block content %}{% endblock %}

@@ -72,32 +72,40 @@ document.addEventListener("DOMContentLoaded", function () {
             ]
         }
     });
+player.on('ended', async function () {
+    const currentEpisode = parseInt("{{ episode.number }}");
+    const totalEpisodes = parseInt("{{ anime.episodes|length }}");
+    const currentAnimeId = parseInt("{{ anime.id }}");
 
-    player.on('ended', async function () {
-        const currentEpisode = parseInt("{{ episode.number }}");
-        const totalEpisodes = parseInt("{{ anime.episodes|length }}");
-        const currentAnimeId = parseInt("{{ anime.id }}");
+    console.log(`🎬 Episode ${currentEpisode} ended for anime ${currentAnimeId}`);
 
-        if (currentEpisode < totalEpisodes) {
-            window.location.href = "{{ url_for('player', anime_id=anime.id, episode_number=0) }}".replace("0", currentEpisode + 1);
+    // ▶️ If there’s a next episode, play it
+    if (currentEpisode < totalEpisodes) {
+        const nextEp = currentEpisode + 1;
+        console.log(`➡️ Moving to next episode: ${nextEp}`);
+        window.location.href = `/player/${currentAnimeId}/${nextEp}`;
+        return;
+    }
+
+    // 📺 If no next episode, move to next anime in queue
+    try {
+        const response = await fetch("/queue");
+        const queueData = await response.json();
+        const currentIndex = queueData.queue.findIndex(item => item.id === currentAnimeId);
+        const nextItem = queueData.queue[currentIndex + 1];
+
+        if (nextItem) {
+            console.log(`🍿 All episodes done. Moving to next anime: ${nextItem.title}`);
+            window.location.href = `/player/${nextItem.id}/1`;
         } else {
-            try {
-                const response = await fetch("/queue");
-                const queueData = await response.json();
-                const currentIndex = queueData.queue.findIndex(item => item.id === currentAnimeId);
-                const nextItem = queueData.queue[currentIndex + 1];
-
-                if (nextItem) {
-                    window.location.href = `/player/${nextItem.id}/1`;
-                } else {
-                    alert("Queue ended. No more anime to play.");
-                }
-            } catch (error) {
-                console.error("Failed to fetch queue:", error);
-                alert("Could not retrieve next anime from queue.");
-            }
+            alert("🎉 Queue ended. No more anime to play.");
         }
-    });
+    } catch (error) {
+        console.error("Failed to fetch queue:", error);
+        alert("Could not retrieve next anime from queue.");
+    }
+});
+
 
     document.addEventListener('keydown', (event) => {
         if (event.target.tagName.toLowerCase() === 'input') return;

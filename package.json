@@ -8,10 +8,17 @@
     "dist": "electron-builder"
   },
   "build": {
+    "asar": false,
+  "extraResources": [
+    {
+      "from": "dist/app.exe",
+      "to": "backend/app.exe"
+    }
+  ],
     "appId": "com.yourapp.animemanager",
     "productName": "AnimeManager",
     "directories": {
-      "output": "dist"
+      "output": "jsdist"
     },
     "files": [
       "**/*",
@@ -26,7 +33,7 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
-    "electron": "^35.7.2",
+    "electron": "37.2.6",
     "electron-builder": "^26.0.12"
   },
   "dependencies": {
