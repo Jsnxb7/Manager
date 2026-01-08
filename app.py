@@ -4,6 +4,7 @@ import os
 import sys
 from werkzeug.utils import secure_filename
 import logging
+import shutil
 
 if len(sys.argv) > 1:
     BASE_PATH = sys.argv[1]
@@ -18,6 +19,10 @@ TEMPLATES_FOLDER = os.path.join(BASE_PATH, 'templates')
 DATA_FILE = os.path.join(BASE_PATH, 'data', 'anime_data.json')
 IMAGE_FOLDER = os.path.join(BASE_PATH, "static", "anime_images")
 DEFAULT_IMAGE = os.path.join(BASE_PATH, "static", "placeholder.jpg")
+MANGA_DATA_FILE = os.path.join(BASE_PATH, 'data', 'manga_data.json')
+MANGA_IMAGE_FOLDER = os.path.join(BASE_PATH, "static", "manga_images")
+DEFAULT_MANGA_IMAGE = os.path.join(BASE_PATH, "static", "placeholder.jpg")
+
 
 # Ensure folders exist
 if not os.path.exists(STATIC_FOLDER) or not os.path.exists(TEMPLATES_FOLDER):
@@ -26,6 +31,144 @@ if not os.path.exists(STATIC_FOLDER) or not os.path.exists(TEMPLATES_FOLDER):
 
 app = Flask(__name__, static_folder=STATIC_FOLDER, template_folder=TEMPLATES_FOLDER)
 
+def load_manga_data():
+    if not os.path.exists(MANGA_DATA_FILE):
+        return []
+    with open(MANGA_DATA_FILE, 'r') as file:
+        data = json.load(file)
+        for manga in data:
+            if "bookmarked" not in manga:
+                manga["bookmarked"] = False
+            if "read" not in manga:
+                manga["read"] = False
+        data.sort(key=lambda m: m.get("title", "").lower())
+        return data
+
+def save_manga_data(data):
+    with open(MANGA_DATA_FILE, 'w') as file:
+        json.dump(data, file, indent=4)
+
+def get_manga_image(title):
+    for ext in ["jpg", "png", "jpeg", "avif"]:
+        filename = f"{title}.{ext}"
+        filepath = os.path.join(MANGA_IMAGE_FOLDER, filename)
+        if os.path.exists(filepath):
+            return f"/static/manga_images/{filename}"
+    return DEFAULT_MANGA_IMAGE
+
+@app.route('/api/manga')
+def api_manga():
+    manga_data = load_manga_data()
+    for manga in manga_data:
+        manga["thumbnail_url"] = get_manga_image(manga["title"])
+    return jsonify(manga_data)
+
+@app.route('/manga')
+def manga_index():
+    return render_template("manga_index.html")
+
+@app.route('/manga/<int:manga_id>')
+def manga_detail(manga_id):
+    manga_data = load_manga_data()
+    manga = next((m for m in manga_data if m["id"] == manga_id), None)
+
+    if manga:
+        return render_template("manga_detail.html", manga=manga)
+
+    return "Manga not found", 404
+
+@app.route('/add_manga', methods=['GET', 'POST'])
+def add_manga():
+    if request.method == 'POST':
+        title = request.form.get('title').strip()
+        chapters = int(request.form.get('chapters'))
+        status = request.form.get('status')
+        link = request.form.get("link")
+
+        manga_data = load_manga_data()
+        existing_ids = {m["id"] for m in manga_data}
+        new_id = 1
+        while new_id in existing_ids:
+            new_id += 1
+
+        new_manga = {
+            "id": new_id,
+            "title": title,
+            "status": status,
+            "link": link,
+            "read": False,
+            "bookmarked": False
+        }
+
+        manga_data.append(new_manga)
+        save_manga_data(manga_data)
+
+        return redirect(url_for('manga_index'))
+
+    return render_template("add_manga.html")
+
+@app.route('/mark_manga_read/<int:manga_id>', methods=['POST'])
+def mark_manga_read(manga_id):
+    manga_data = load_manga_data()
+    manga = next((m for m in manga_data if m["id"] == manga_id), None)
+
+    if manga:
+        manga["read"] = not manga.get("read", False)
+        save_manga_data(manga_data)
+        return jsonify({"status": "success", "read": manga["read"]})
+
+    return jsonify({"status": "error"}), 404
+
+@app.route('/manga_bookmark/<int:manga_id>', methods=['POST'])
+def manga_bookmark(manga_id):
+    manga_data = load_manga_data()
+    manga = next((m for m in manga_data if m["id"] == manga_id), None)
+
+    if manga:
+        manga["bookmarked"] = not manga.get("bookmarked", False)
+        save_manga_data(manga_data)
+        return jsonify({"status": "success", "bookmarked": manga["bookmarked"]})
+
+    return jsonify({"status": "error"}), 404
+
+@app.route('/toggle_manga_status/<int:manga_id>', methods=['POST'])
+def toggle_manga_status(manga_id):
+    manga_data = load_manga_data()   # same pattern as anime
+    manga = next((m for m in manga_data if m['id'] == manga_id), None)
+
+    if not manga:
+        return jsonify({'error': 'Manga not found'}), 404
+
+    # Toggle status
+    current_status = manga.get('status', 'Ongoing').lower()
+    manga['status'] = 'Completed' if current_status == 'ongoing' else 'Ongoing'
+
+    save_manga_data(manga_data)
+
+    return jsonify({
+        'status': manga['status']
+    })
+
+@app.route('/delete_manga/<int:manga_id>', methods=['DELETE'])
+def delete_manga(manga_id):
+    manga_data = load_manga_data()
+    index = next((i for i, m in enumerate(manga_data) if m["id"] == manga_id), None)
+
+    if index is None:
+        return jsonify({"status": "error"}), 404
+
+    title = manga_data[index]["title"]
+
+    for ext in [".jpg", ".png", ".jpeg"]:
+        path = os.path.join(MANGA_IMAGE_FOLDER, title + ext)
+        if os.path.exists(path):
+            os.remove(path)
+            break
+
+    manga_data.pop(index)
+    save_manga_data(manga_data)
+
+    return jsonify({"status": "success"})
 
 def load_anime_data():
     with open(DATA_FILE, 'r') as file:
@@ -156,7 +299,6 @@ def get_queue():
         print("Error loading queue:", e)
         return jsonify({"queue": []}), 40114
 
-
 @app.route('/add_video', methods=['POST'])
 def add_to_queue():
     data = request.get_json()
@@ -266,18 +408,40 @@ def mark_anime_watched(anime_id):
 @app.route('/delete_anime/<int:anime_id>', methods=['DELETE'])
 def delete_anime(anime_id):
     anime_data = load_anime_data()
-    anime_index = next((index for index, item in enumerate(anime_data) if item['id'] == anime_id), None)
+    anime_index = next(
+        (index for index, item in enumerate(anime_data) if item['id'] == anime_id),
+        None
+    )
+
     if anime_index is not None:
-        anime_title = anime_data[anime_index]['title']
+        anime = anime_data[anime_index]
+        anime_title = anime['title']
+
+        # ---------- Delete anime image ----------
         for ext in ['.jpg', '.jpeg', '.png']:
             image_path = os.path.join('static/anime_images', anime_title + ext)
-            print(image_path)
             if os.path.exists(image_path):
-                print(image_path)
                 os.remove(image_path)
-                break   
+                break
+
+        # ---------- Delete season directory ----------
+        season_dir = anime.get('directory')
+        if season_dir and os.path.exists(season_dir):
+            shutil.rmtree(season_dir)
+
+            # ---------- Check & delete parent anime directory ----------
+            parent_anime_dir = os.path.dirname(season_dir)
+
+            # Normalize path (important because of mixed slashes)
+            parent_anime_dir = os.path.normpath(parent_anime_dir)
+
+            if os.path.exists(parent_anime_dir) and not os.listdir(parent_anime_dir):
+                os.rmdir(parent_anime_dir)
+
+        # ---------- Remove anime entry ----------
         anime_data.pop(anime_index)
         save_anime_data(anime_data)
+
         return jsonify({'status': 'success'})
 
     return jsonify({'status': 'error'}), 425
@@ -360,4 +524,4 @@ def delete_from_queue(index):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    app.run(port=5000, debug=True)  # Runs Flask on port 5000
+    app.run(port=5000, debug=False)  # Runs Flask on port 5000

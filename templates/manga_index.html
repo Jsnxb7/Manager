@@ -1,0 +1,468 @@
+{% extends "base.html" %}
+
+{% block content %}
+<video class="video-background" autoplay loop muted playsinline>
+    <source src="{{ url_for('static', filename='images/stars.mp4') }}" type="video/mp4">
+</video>
+
+<div class="anime-list">
+
+    <!-- FILTER BUTTONS -->
+    <button class="add-anime-button" onclick="resetFilters()">Reset Filters</button>
+    <button class="add-anime-button" onclick="filterUnreadManga()">Unread Manga</button>
+    <button class="add-anime-button" onclick="filterOngoingManga()">Ongoing Manga</button>
+    <button class="add-anime-button" onclick="sortBookmarkedFirst()">Sort Bookmarked First</button>
+
+    <button class="add-anime-button" onclick="window.location.href='/'">🎬 Anime Center</button>
+
+    <!-- Add Manga -->
+    <a href="{{ url_for('add_manga') }}">
+        <button class="add-anime-button">Add New Manga</button>
+    </a>
+
+    <!-- Search -->
+    <input type="text" id="search-bar" class="search-bar" placeholder="Search manga..." onkeyup="filterManga()">
+
+    <!-- MANGA GRID -->
+    <div class="anime-grid" id="manga-grid"></div>
+
+</div>
+
+<script>
+
+// -----------------------------
+// FETCH MANGA
+// -----------------------------
+async function fetchMangaData() {
+    try {
+        const response = await fetch('/api/manga');
+        if (!response.ok) throw new Error('Failed to fetch manga data');
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching manga:", error);
+        return [];
+    }
+}
+
+// -----------------------------
+// RENDER MANGA LIST
+// -----------------------------
+function renderMangaList(mangaList) {
+    const grid = document.getElementById("manga-grid");
+    grid.innerHTML = "";
+
+    mangaList.forEach(manga => {
+        const card = document.createElement("div");
+        card.className = "anime-card";
+        card.id = `manga-${manga.id}`;
+        card.setAttribute("data-title", manga.title.toLowerCase());
+
+        // Thumbnail
+        const img = document.createElement("img");
+        img.className = "anime-thumbnail";
+        img.src = manga.thumbnail_url || "https://via.placeholder.com/250x180?text=No+Image";
+        img.alt = manga.title;
+
+        // Info section
+        const info = document.createElement("div");
+        info.className = "anime-info";
+
+        const title = document.createElement("div");
+        title.className = "anime-title";
+        title.textContent = manga.title;
+
+        const status = document.createElement("div");
+        status.className = "anime-status";
+        status.textContent = `Status: ${manga.status}`;
+
+        info.append(title, status);
+
+        // Actions (BOTTOM)
+        const actions = document.createElement("div");
+        actions.className = "anime-actions";
+
+        // VIEW BUTTON
+        const viewBtn = document.createElement("a");
+        viewBtn.href = manga.link;
+        viewBtn.target = "_blank";
+        viewBtn.className = "view-button";
+        viewBtn.textContent = "View Manga";
+
+        // READ BUTTON
+        const readBtn = document.createElement("button");
+        readBtn.className = "mark-watched-button";
+        readBtn.textContent = manga.read ? "Read ✅" : "Mark as Read";
+        readBtn.onclick = () => toggleMangaRead(manga.id, readBtn);
+
+        // BOOKMARK BUTTON
+        const bookmarkBtn = document.createElement("button");
+        bookmarkBtn.className = "mark-watched-button";
+        bookmarkBtn.textContent = manga.bookmarked ? "Bookmarked ⭐" : "Bookmark 🔖";
+        bookmarkBtn.onclick = () => toggleMangaBookmark(manga.id, bookmarkBtn);
+
+        // STATUS TOGGLE BUTTON
+        const statusBtn = document.createElement("button");
+        statusBtn.className = "mark-watched-button";
+        statusBtn.textContent =
+            manga.status.toLowerCase() === "ongoing"
+                ? "Mark Completed"
+                : "Mark Ongoing";
+        statusBtn.onclick = () => toggleMangaStatus(manga.id, status, statusBtn);
+
+        // DELETE BUTTON
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "delete-button";
+        deleteBtn.textContent = "Delete";
+        deleteBtn.onclick = () => deleteManga(manga.id);
+
+        actions.append(viewBtn, readBtn, bookmarkBtn, statusBtn, deleteBtn);
+
+        // Final structure
+        card.append(img, info, actions);
+        grid.appendChild(card);
+    });
+}
+
+
+function toggleMangaStatus(mangaId, statusEl, btn) {
+    fetch(`/toggle_manga_status/${mangaId}`, { method: "POST" })
+        .then(res => res.json())
+        .then(data => {
+            statusEl.textContent = `Status: ${data.status}`;
+            btn.textContent =
+                data.status.toLowerCase() === "ongoing"
+                    ? "Mark Completed"
+                    : "Mark Ongoing";
+        });
+}
+
+
+// -----------------------------
+// SORT: BOOKMARKED FIRST
+// -----------------------------
+async function sortBookmarkedFirst() {
+    const mangaData = await fetchMangaData();
+
+    const sorted = mangaData.sort((a, b) => {
+        return (b.bookmarked === true) - (a.bookmarked === true);
+    });
+
+    renderMangaList(sorted);
+}
+
+// -----------------------------
+// RESET FILTERS
+// -----------------------------
+async function resetFilters() {
+    const mangaData = await fetchMangaData();
+    renderMangaList(mangaData);
+    document.getElementById("search-bar").value = "";
+}
+
+// -----------------------------
+// MARK AS READ
+// -----------------------------
+async function toggleMangaRead(id, button) {
+    try {
+        const res = await fetch(`/mark_manga_read/${id}`, { method: "POST" });
+        const data = await res.json();
+
+        if (data.status === "success") {
+            button.textContent = data.read ? "Read ✅" : "Mark as Read";
+        }
+    } catch (err) {
+        console.error("Error marking read:", err);
+    }
+}
+
+// -----------------------------
+// BOOKMARK TOGGLE
+// -----------------------------
+async function toggleMangaBookmark(id, button) {
+    try {
+        const res = await fetch(`/manga_bookmark/${id}`, { method: "POST" });
+        const data = await res.json();
+
+        if (data.status === "success") {
+            button.textContent = data.bookmarked ? "Bookmarked ⭐" : "Bookmark 🔖";
+        }
+    } catch (err) {
+        console.error("Error bookmarking:", err);
+    }
+}
+
+// -----------------------------
+// DELETE MANGA
+// -----------------------------
+async function deleteManga(id) {
+    if (!confirm("Delete this manga?")) return;
+
+    try {
+        const res = await fetch(`/delete_manga/${id}`, { method: "DELETE" });
+        if (res.ok) {
+            document.getElementById(`manga-${id}`).remove();
+        }
+    } catch (err) {
+        console.error("Error deleting manga:", err);
+    }
+}
+
+// -----------------------------
+// FILTER: SEARCH
+// -----------------------------
+function filterManga() {
+    const q = document.getElementById("search-bar").value.toLowerCase();
+    document.querySelectorAll(".anime-card").forEach(card => {
+        const title = card.getAttribute("data-title");
+        card.style.display = title.includes(q) ? "flex" : "none";
+    });
+}
+
+// -----------------------------
+// FILTER: UNREAD FIRST
+// -----------------------------
+function filterUnreadManga() {
+    const grid = document.getElementById("manga-grid");
+    const cards = Array.from(grid.children);
+
+    const unread = cards.filter(card =>
+        card.querySelector(".mark-watched-button").textContent.includes("Mark")
+    );
+
+    const others = cards.filter(card => !unread.includes(card));
+
+    grid.innerHTML = "";
+    unread.concat(others).forEach(c => grid.appendChild(c));
+}
+
+// -----------------------------
+// FILTER: ONGOING FIRST
+// -----------------------------
+function filterOngoingManga() {
+    const grid = document.getElementById("manga-grid");
+    const cards = Array.from(grid.children);
+
+    const ongoing = cards.filter(card =>
+        card.querySelector(".anime-status").textContent.toLowerCase() === "ongoing"
+    );
+
+    const others = cards.filter(card => !ongoing.includes(card));
+
+    grid.innerHTML = "";
+    ongoing.concat(others).forEach(c => grid.appendChild(c));
+}
+
+// -----------------------------
+// PAGE LOAD
+// -----------------------------
+document.addEventListener("DOMContentLoaded", async () => {
+    const manga = await fetchMangaData();
+    renderMangaList(manga);
+});
+
+</script>
+<style>
+    /* -------------------------------------- */
+/* GLOBAL BODY + VIDEO BACKGROUND         */
+/* -------------------------------------- */
+       body {
+    font-family: "Comic Sans MS", sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #fff;
+    background: none; /* No static background, using video */
+    overflow-x: hidden;
+}
+
+/* Video Background */
+.video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover; /* Covers full screen */
+    z-index: -1; /* Behind everything */
+}
+
+/* Content Container */
+.content {
+    position: relative;
+    z-index: 1;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Search Bar */
+.search-bar {
+    width: 100%;
+    max-width: 400px;
+    padding: 12px;
+    margin: 20px auto;
+    display: block;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    font-size: 1rem;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    outline: none;
+}
+
+/* Anime Grid Layout */
+.anime-grid {
+    display: flex; /* Makes items align horizontally */
+    flex-wrap: wrap; /* Wraps to new line if screen is small */
+    justify-content: center; /* Centers items */
+    gap: 20px; /* Adds spacing between items */
+}
+
+.anime-card {
+    width: 250px;
+    height: auto;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    padding: 10px;
+
+    display: flex;   
+    flex-direction: column;           /* ROW layout */
+    align-items: flex-start;
+    gap: 12px;
+
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+.anime-card img {
+    width: 200px; /* Smaller image */
+    height: 300px;
+    object-fit: cover;
+    align-self: center;
+    border-radius: 10px 10px 10px 10px; /* Rounded corners on the left */
+}
+
+
+.anime-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+}
+
+.anime-info {
+    flex: 1;
+    padding: 10px;
+    color: white;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+.anime-title {
+    font-weight: bold;
+    font-size: 1.3rem;
+    color: #fff;
+    text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.8);
+}
+
+.anime-season {
+    color: #ffcccb;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.anime-status {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #32cd32;
+    text-shadow: 1px 1px 10px rgba(50, 205, 50, 0.8);
+}
+
+/* Buttons */
+.anime-actions {
+    margin-top: auto;           /* 🔥 PUSH TO BOTTOM */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+}
+
+
+/* Individual Buttons */
+.view-button, .delete-button, .mark-watched-button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    text-align: center;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    width: auto; /* Ensures all buttons adjust to content */
+}
+
+.view-button {
+    background: rgb(28 42 48);
+    color: white;
+}
+
+.view-button:hover {
+    background: rgba(0, 162, 255, 1);
+    box-shadow: 0 0 10px rgba(0, 162, 255, 0.8);
+}
+
+.mark-watched-button {
+    background: rgb(28 42 48);
+    color: white;
+}
+
+.mark-watched-button:hover {
+    background: rgba(46, 204, 113, 1);
+    box-shadow: 0 0 10px rgba(46, 204, 113, 0.8);
+}
+
+.delete-button {
+    background: rgb(148 51 41 / 78%);
+    color: white;
+}
+
+.delete-button:hover {
+    background: rgba(231, 76, 60, 1);
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.8);
+}
+.floating-queue {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    width: 280px;
+    background-color: rgba(30, 30, 30, 0.95);
+    color: #eee;
+    border: 1px solid #444;
+    padding: 15px;
+    border-radius: 10px;
+    font-family: sans-serif;
+    z-index: 999;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+}
+
+.floating-queue h4 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: #ffc107;
+}
+
+.floating-queue li {
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.next-button {
+    background-color: #ffc107;
+    border: none;
+    padding: 6px 12px;
+    font-weight: bold;
+    color: #222;
+    border-radius: 6px;
+    cursor: pointer;
+}
+</style>
+{% endblock %}

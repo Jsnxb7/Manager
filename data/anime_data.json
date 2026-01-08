@@ -1275,7 +1275,7 @@
         "id": 32,
         "title": "Akujiki Reijou to Kyouketsu Koushaku",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://animepahe.si/anime/c83d2023-0165-e51c-3501-64efd4645493",
         "directory": "C:/Users/shour/Documents/Anime\\Akujiki Reijou to Kyouketsu Koushaku\\S1",
         "episodes": [
@@ -1352,7 +1352,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Akujiki Reijou to Kyouketsu Koushaku/S1/12.mp4"
             }
         ],
-        "bookmarked": false
+        "bookmarked": false,
+        "watched": true
     },
     {
         "id": 5,
@@ -1604,83 +1605,6 @@
             }
         ],
         "watched": true,
-        "bookmarked": false
-    },
-    {
-        "id": 203,
-        "title": "Alma-chan wa Kazoku ni Naritai",
-        "season": "S1",
-        "status": "Ongoing",
-        "download_link": "https://animepahe.si/anime/6b65025d-9846-0824-271c-cee699107e35",
-        "directory": "C:/Users/shour/Documents/Anime\\Alma-chan wa Kazoku ni Naritai\\S1",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Alma-chan wa Kazoku ni Naritai/S1/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Alma-chan wa Kazoku ni Naritai/S1/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Alma-chan wa Kazoku ni Naritai/S1/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Alma-chan wa Kazoku ni Naritai/S1/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Alma-chan wa Kazoku ni Naritai/S1/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Alma-chan wa Kazoku ni Naritai/S1/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Alma-chan wa Kazoku ni Naritai/S1/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Alma-chan wa Kazoku ni Naritai/S1/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Alma-chan wa Kazoku ni Naritai/S1/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Alma-chan wa Kazoku ni Naritai/S1/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Alma-chan wa Kazoku ni Naritai/S1/11.mp4"
-            }
-        ],
         "bookmarked": false
     },
     {
@@ -3042,7 +2966,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Arte/S1/12.mp4"
             }
         ],
-        "bookmarked": false
+        "bookmarked": false,
+        "watched": true
     },
     {
         "id": 416,
@@ -4899,6 +4824,90 @@
         "bookmarked": false
     },
     {
+        "id": 82,
+        "title": "Bukiyou na Senpai",
+        "season": "S1",
+        "status": "Completed",
+        "download_link": "https://animepahe.si/anime/2d67ff99-e31d-bf7d-1d54-0cd0f62802b8",
+        "directory": "C:/Users/shour/Documents/Anime\\Bukiyou na Senpai\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Bukiyou na Senpai/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Bukiyou na Senpai/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Bukiyou na Senpai/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Bukiyou na Senpai/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Bukiyou na Senpai/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Bukiyou na Senpai/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Bukiyou na Senpai/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Bukiyou na Senpai/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Bukiyou na Senpai/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Bukiyou na Senpai/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Bukiyou na Senpai/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Bukiyou na Senpai/S1/12.mp4"
+            }
+        ],
+        "bookmarked": false,
+        "watched": true
+    },
+    {
         "id": 155,
         "title": "Centaur no Nayami",
         "season": "S1",
@@ -6083,7 +6092,7 @@
         "id": 201,
         "title": "Dad is a Hero, Mom is a Spirit, I'm a Reincarnator",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://animepahe.si/anime/b8c26a1f-4c2d-2465-6c91-6aed6b41a022",
         "directory": "C:/Users/shour/Documents/Anime\\Dad is a Hero, Mom is a Spirit, I'm a Reincarnator\\S1",
         "episodes": [
@@ -6160,7 +6169,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Dad is a Hero, Mom is a Spirit, I'm a Reincarnator/S1/12.mp4"
             }
         ],
-        "bookmarked": false
+        "bookmarked": false,
+        "watched": true
     },
     {
         "id": 477,
@@ -7477,54 +7487,6 @@
         "bookmarked": false
     },
     {
-        "id": 512,
-        "title": "Food Court de, Mata Ashita.",
-        "season": "S1",
-        "status": "Completed",
-        "download_link": "https://animepahe.si/anime/fb8c4048-fdb7-0d73-c932-d3e7ecad16a4",
-        "directory": "C:/Users/shour/Documents/Anime\\Food Court de, Mata Ashita.\\S1",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Food Court de, Mata Ashita./S1/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Food Court de, Mata Ashita./S1/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Food Court de, Mata Ashita./S1/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Food Court de, Mata Ashita./S1/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Food Court de, Mata Ashita./S1/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Food Court de, Mata Ashita./S1/6.mp4"
-            }
-        ],
-        "bookmarked": false,
-        "watched": true
-    },
-    {
         "id": 486,
         "title": "Food for the Soul",
         "season": "S1",
@@ -8416,161 +8378,6 @@
             }
         ],
         "watched": true,
-        "bookmarked": false
-    },
-    {
-        "id": 515,
-        "title": "Futari Solo Camp",
-        "season": "S1",
-        "status": "Ongoing",
-        "download_link": "https://animepahe.si/anime/121849f4-890d-db95-3a0b-34e0e9a9360b",
-        "directory": "C:/Users/shour/Documents/Anime\\Futari Solo Camp\\S1",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/11.mp4"
-            },
-            {
-                "number": 12,
-                "title": "Episode 12",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/12.mp4"
-            },
-            {
-                "number": 13,
-                "title": "Episode 13",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/13.mp4"
-            },
-            {
-                "number": 14,
-                "title": "Episode 14",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/14.mp4"
-            },
-            {
-                "number": 15,
-                "title": "Episode 15",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/15.mp4"
-            },
-            {
-                "number": 16,
-                "title": "Episode 16",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/16.mp4"
-            },
-            {
-                "number": 17,
-                "title": "Episode 17",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/17.mp4"
-            },
-            {
-                "number": 18,
-                "title": "Episode 18",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/18.mp4"
-            },
-            {
-                "number": 19,
-                "title": "Episode 19",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/19.mp4"
-            },
-            {
-                "number": 20,
-                "title": "Episode 20",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/20.mp4"
-            },
-            {
-                "number": 21,
-                "title": "Episode 21",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/21.mp4"
-            },
-            {
-                "number": 22,
-                "title": "Episode 22",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/22.mp4"
-            },
-            {
-                "number": 23,
-                "title": "Episode 23",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/23.mp4"
-            },
-            {
-                "number": 24,
-                "title": "Episode 24",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Futari Solo Camp/S1/24.mp4"
-            }
-        ],
         "bookmarked": false
     },
     {
@@ -13460,6 +13267,89 @@
         "bookmarked": false
     },
     {
+        "id": 203,
+        "title": "Ikoku Nikki",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://animepahe.si/anime/2383da24-221b-915c-48c4-bcd910cdda99",
+        "directory": "C:/Users/shour/Documents/Anime\\Ikoku Nikki\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ikoku Nikki/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ikoku Nikki/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ikoku Nikki/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ikoku Nikki/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ikoku Nikki/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ikoku Nikki/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ikoku Nikki/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ikoku Nikki/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ikoku Nikki/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ikoku Nikki/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ikoku Nikki/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ikoku Nikki/S1/12.mp4"
+            }
+        ],
+        "bookmarked": false
+    },
+    {
         "id": 133,
         "title": "Inu x Boku SS",
         "season": "S1",
@@ -17015,7 +16905,7 @@
         "id": 81,
         "title": "Kao ni Denai Kashiwada-san to Kao ni Deru Oota-kun",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://animepahe.si/anime/4c146932-72e4-b276-5fe1-6fd4a01541da",
         "directory": "C:/Users/shour/Documents/Anime\\Kao ni Denai Kashiwada-san to Kao ni Deru Oota-kun\\S1",
         "episodes": [
@@ -17092,7 +16982,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kao ni Denai Kashiwada-san to Kao ni Deru Oota-kun/S1/12.mp4"
             }
         ],
-        "bookmarked": false
+        "bookmarked": false,
+        "watched": true
     },
     {
         "id": 510,
@@ -19085,6 +18976,89 @@
         "bookmarked": false
     },
     {
+        "id": 515,
+        "title": "Kirei ni Shitemoraemasu ka",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://animepahe.si/anime/31d30f30-f3cf-5df8-4fc6-f9412b5cf7f3",
+        "directory": "C:/Users/shour/Documents/Anime\\Kirei ni Shitemoraemasu ka\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kirei ni Shitemoraemasu ka/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kirei ni Shitemoraemasu ka/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kirei ni Shitemoraemasu ka/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kirei ni Shitemoraemasu ka/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kirei ni Shitemoraemasu ka/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kirei ni Shitemoraemasu ka/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kirei ni Shitemoraemasu ka/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kirei ni Shitemoraemasu ka/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kirei ni Shitemoraemasu ka/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kirei ni Shitemoraemasu ka/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kirei ni Shitemoraemasu ka/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kirei ni Shitemoraemasu ka/S1/12.mp4"
+            }
+        ],
+        "bookmarked": false
+    },
+    {
         "id": 116,
         "title": "Kisaki Kyouiku kara Nigetai Watashi",
         "season": "S1",
@@ -19250,6 +19224,89 @@
             }
         ],
         "watched": true,
+        "bookmarked": false
+    },
+    {
+        "id": 526,
+        "title": "Kizoku Tensei-Megumareta Umare kara Saikyou no Chikara wo Eru",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://animepahe.si/anime/a361b5dd-e478-b40e-972d-1bf414b39668",
+        "directory": "C:/Users/shour/Documents/Anime\\Kizoku Tensei-Megumareta Umare kara Saikyou no Chikara wo Eru\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kizoku Tensei-Megumareta Umare kara Saikyou no Chikara wo Eru/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kizoku Tensei-Megumareta Umare kara Saikyou no Chikara wo Eru/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kizoku Tensei-Megumareta Umare kara Saikyou no Chikara wo Eru/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kizoku Tensei-Megumareta Umare kara Saikyou no Chikara wo Eru/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kizoku Tensei-Megumareta Umare kara Saikyou no Chikara wo Eru/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kizoku Tensei-Megumareta Umare kara Saikyou no Chikara wo Eru/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kizoku Tensei-Megumareta Umare kara Saikyou no Chikara wo Eru/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kizoku Tensei-Megumareta Umare kara Saikyou no Chikara wo Eru/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kizoku Tensei-Megumareta Umare kara Saikyou no Chikara wo Eru/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kizoku Tensei-Megumareta Umare kara Saikyou no Chikara wo Eru/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kizoku Tensei-Megumareta Umare kara Saikyou no Chikara wo Eru/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kizoku Tensei-Megumareta Umare kara Saikyou no Chikara wo Eru/S1/12.mp4"
+            }
+        ],
         "bookmarked": false
     },
     {
@@ -23473,6 +23530,89 @@
         "bookmarked": false
     },
     {
+        "id": 525,
+        "title": "Majutsushi Kunon wa Mieteiru",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://animepahe.si/anime/2a2c0932-36ab-9d20-0e37-b14489d08232",
+        "directory": "C:/Users/shour/Documents/Anime\\Majutsushi Kunon wa Mieteiru\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Majutsushi Kunon wa Mieteiru/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Majutsushi Kunon wa Mieteiru/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Majutsushi Kunon wa Mieteiru/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Majutsushi Kunon wa Mieteiru/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Majutsushi Kunon wa Mieteiru/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Majutsushi Kunon wa Mieteiru/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Majutsushi Kunon wa Mieteiru/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Majutsushi Kunon wa Mieteiru/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Majutsushi Kunon wa Mieteiru/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Majutsushi Kunon wa Mieteiru/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Majutsushi Kunon wa Mieteiru/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Majutsushi Kunon wa Mieteiru/S1/12.mp4"
+            }
+        ],
+        "bookmarked": false
+    },
+    {
         "id": 182,
         "title": "Mamahaha no Tsurego ga Motokano datta",
         "season": "S1",
@@ -23884,6 +24024,89 @@
             }
         ],
         "watched": true,
+        "bookmarked": false
+    },
+    {
+        "id": 512,
+        "title": "Maou no Musume wa Yasashisugiru",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://animepahe.si/anime/f7a3de17-d75b-d8cc-af75-88e84a193cfc",
+        "directory": "C:/Users/shour/Documents/Anime\\Maou no Musume wa Yasashisugiru\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Maou no Musume wa Yasashisugiru/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Maou no Musume wa Yasashisugiru/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Maou no Musume wa Yasashisugiru/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Maou no Musume wa Yasashisugiru/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Maou no Musume wa Yasashisugiru/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Maou no Musume wa Yasashisugiru/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Maou no Musume wa Yasashisugiru/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Maou no Musume wa Yasashisugiru/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Maou no Musume wa Yasashisugiru/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Maou no Musume wa Yasashisugiru/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Maou no Musume wa Yasashisugiru/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Maou no Musume wa Yasashisugiru/S1/12.mp4"
+            }
+        ],
         "bookmarked": false
     },
     {
@@ -24775,89 +24998,6 @@
         "bookmarked": false
     },
     {
-        "id": 86,
-        "title": "Mikata ga Yowasugite Hojo Mahou ni Tesshiteita Kyuutei Mahoushi, Tsuihou sarete Saikyou wo Mezashimasu",
-        "season": "S1",
-        "status": "Ongoing",
-        "download_link": "https://animepahe.si/anime/c7fa5a22-480c-d920-e28d-afb70eddf0c4",
-        "directory": "C:/Users/shour/Documents/Anime\\Mikata ga Yowasugite Hojo Mahou ni Tesshiteita Kyuutei Mahoushi, Tsuihou sarete Saikyou wo Mezashimasu\\S1",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mikata ga Yowasugite Hojo Mahou ni Tesshiteita Kyuutei Mahoushi, Tsuihou sarete Saikyou wo Mezashimasu/S1/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mikata ga Yowasugite Hojo Mahou ni Tesshiteita Kyuutei Mahoushi, Tsuihou sarete Saikyou wo Mezashimasu/S1/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mikata ga Yowasugite Hojo Mahou ni Tesshiteita Kyuutei Mahoushi, Tsuihou sarete Saikyou wo Mezashimasu/S1/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mikata ga Yowasugite Hojo Mahou ni Tesshiteita Kyuutei Mahoushi, Tsuihou sarete Saikyou wo Mezashimasu/S1/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mikata ga Yowasugite Hojo Mahou ni Tesshiteita Kyuutei Mahoushi, Tsuihou sarete Saikyou wo Mezashimasu/S1/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mikata ga Yowasugite Hojo Mahou ni Tesshiteita Kyuutei Mahoushi, Tsuihou sarete Saikyou wo Mezashimasu/S1/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mikata ga Yowasugite Hojo Mahou ni Tesshiteita Kyuutei Mahoushi, Tsuihou sarete Saikyou wo Mezashimasu/S1/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mikata ga Yowasugite Hojo Mahou ni Tesshiteita Kyuutei Mahoushi, Tsuihou sarete Saikyou wo Mezashimasu/S1/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mikata ga Yowasugite Hojo Mahou ni Tesshiteita Kyuutei Mahoushi, Tsuihou sarete Saikyou wo Mezashimasu/S1/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mikata ga Yowasugite Hojo Mahou ni Tesshiteita Kyuutei Mahoushi, Tsuihou sarete Saikyou wo Mezashimasu/S1/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mikata ga Yowasugite Hojo Mahou ni Tesshiteita Kyuutei Mahoushi, Tsuihou sarete Saikyou wo Mezashimasu/S1/11.mp4"
-            },
-            {
-                "number": 12,
-                "title": "Episode 12",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Mikata ga Yowasugite Hojo Mahou ni Tesshiteita Kyuutei Mahoushi, Tsuihou sarete Saikyou wo Mezashimasu/S1/12.mp4"
-            }
-        ],
-        "bookmarked": false
-    },
-    {
         "id": 244,
         "title": "Misaki no Mayoiga",
         "season": "Movie",
@@ -25719,6 +25859,89 @@
             }
         ],
         "watched": true,
+        "bookmarked": false
+    },
+    {
+        "id": 86,
+        "title": "Mushoku no Eiyuu-Betsu ni Skill Nanka Iranakatta n da ga",
+        "season": "S!",
+        "status": "Completed",
+        "download_link": "https://animepahe.si/anime/07f2bf11-6d12-dee6-4917-1f2d18a256ac",
+        "directory": "C:/Users/shour/Documents/Anime\\Mushoku no Eiyuu-Betsu ni Skill Nanka Iranakatta n da ga\\S!",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mushoku no Eiyuu-Betsu ni Skill Nanka Iranakatta n da ga/S!/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mushoku no Eiyuu-Betsu ni Skill Nanka Iranakatta n da ga/S!/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mushoku no Eiyuu-Betsu ni Skill Nanka Iranakatta n da ga/S!/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mushoku no Eiyuu-Betsu ni Skill Nanka Iranakatta n da ga/S!/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mushoku no Eiyuu-Betsu ni Skill Nanka Iranakatta n da ga/S!/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mushoku no Eiyuu-Betsu ni Skill Nanka Iranakatta n da ga/S!/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mushoku no Eiyuu-Betsu ni Skill Nanka Iranakatta n da ga/S!/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mushoku no Eiyuu-Betsu ni Skill Nanka Iranakatta n da ga/S!/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mushoku no Eiyuu-Betsu ni Skill Nanka Iranakatta n da ga/S!/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mushoku no Eiyuu-Betsu ni Skill Nanka Iranakatta n da ga/S!/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mushoku no Eiyuu-Betsu ni Skill Nanka Iranakatta n da ga/S!/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mushoku no Eiyuu-Betsu ni Skill Nanka Iranakatta n da ga/S!/12.mp4"
+            }
+        ],
         "bookmarked": false
     },
     {
@@ -29457,89 +29680,6 @@
             }
         ],
         "watched": true,
-        "bookmarked": false
-    },
-    {
-        "id": 82,
-        "title": "Potion, Wagami wo Tasukeru",
-        "season": "S1",
-        "status": "Ongoing",
-        "download_link": "https://animepahe.si/anime/80001918-2c6d-f629-413e-1e48bf14a2d4",
-        "directory": "C:/Users/shour/Documents/Anime\\Potion, Wagami wo Tasukeru\\S1",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Potion, Wagami wo Tasukeru/S1/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Potion, Wagami wo Tasukeru/S1/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Potion, Wagami wo Tasukeru/S1/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Potion, Wagami wo Tasukeru/S1/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Potion, Wagami wo Tasukeru/S1/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Potion, Wagami wo Tasukeru/S1/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Potion, Wagami wo Tasukeru/S1/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Potion, Wagami wo Tasukeru/S1/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Potion, Wagami wo Tasukeru/S1/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Potion, Wagami wo Tasukeru/S1/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Potion, Wagami wo Tasukeru/S1/11.mp4"
-            },
-            {
-                "number": 12,
-                "title": "Episode 12",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Potion, Wagami wo Tasukeru/S1/12.mp4"
-            }
-        ],
         "bookmarked": false
     },
     {
@@ -35652,7 +35792,7 @@
         "id": 461,
         "title": "Sozai Saishuka no Isekai Ryokouki",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://animepahe.si/anime/365871a1-0bb0-3105-cf56-61d492ebda9f",
         "directory": "C:/Users/shour/Documents/Anime\\Sozai Saishuka no Isekai Ryokouki\\S1",
         "episodes": [
@@ -35729,7 +35869,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Sozai Saishuka no Isekai Ryokouki/S1/12.mp4"
             }
         ],
-        "bookmarked": false
+        "bookmarked": false,
+        "watched": true
     },
     {
         "id": 286,
@@ -38813,7 +38954,7 @@
         "id": 462,
         "title": "Tondemo Skill de Isekai Hourou Meshi",
         "season": "S2",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://animepahe.si/anime/38782966-a6fb-7f3b-ecd9-a2cf0593fde4",
         "directory": "C:/Users/shour/Documents/Anime\\Tondemo Skill de Isekai Hourou Meshi\\S2",
         "episodes": [
@@ -38890,7 +39031,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Tondemo Skill de Isekai Hourou Meshi/S2/12.mp4"
             }
         ],
-        "bookmarked": false
+        "bookmarked": false,
+        "watched": true
     },
     {
         "id": 150,
@@ -43262,7 +43404,7 @@
         "id": 523,
         "title": "Yasei no Last Boss ga Arawareta",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://animepahe.si/anime/9a4b872f-71b1-dca4-7e25-0f4861c83019",
         "directory": "C:/Users/shour/Documents/Anime\\Yasei no Last Boss ga Arawareta\\S1",
         "episodes": [
@@ -43339,7 +43481,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Yasei no Last Boss ga Arawareta/S1/12.mp4"
             }
         ],
-        "bookmarked": false
+        "bookmarked": false,
+        "watched": true
     },
     {
         "id": 54,
@@ -44320,6 +44463,89 @@
         "bookmarked": false
     },
     {
+        "id": 527,
+        "title": "Yuusha-kei ni Shosu-Choubatsu Yuusha 9004-tai Keimu Kiroku",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://animepahe.si/anime/4a9abc55-0a54-c544-3e14-736c79ddafe7",
+        "directory": "C:/Users/shour/Documents/Anime\\Yuusha-kei ni Shosu-Choubatsu Yuusha 9004-tai Keimu Kiroku\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha-kei ni Shosu-Choubatsu Yuusha 9004-tai Keimu Kiroku/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha-kei ni Shosu-Choubatsu Yuusha 9004-tai Keimu Kiroku/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha-kei ni Shosu-Choubatsu Yuusha 9004-tai Keimu Kiroku/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha-kei ni Shosu-Choubatsu Yuusha 9004-tai Keimu Kiroku/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha-kei ni Shosu-Choubatsu Yuusha 9004-tai Keimu Kiroku/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha-kei ni Shosu-Choubatsu Yuusha 9004-tai Keimu Kiroku/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha-kei ni Shosu-Choubatsu Yuusha 9004-tai Keimu Kiroku/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha-kei ni Shosu-Choubatsu Yuusha 9004-tai Keimu Kiroku/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha-kei ni Shosu-Choubatsu Yuusha 9004-tai Keimu Kiroku/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha-kei ni Shosu-Choubatsu Yuusha 9004-tai Keimu Kiroku/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha-kei ni Shosu-Choubatsu Yuusha 9004-tai Keimu Kiroku/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha-kei ni Shosu-Choubatsu Yuusha 9004-tai Keimu Kiroku/S1/12.mp4"
+            }
+        ],
+        "bookmarked": false
+    },
+    {
         "id": 372,
         "title": "Yuyushiki",
         "season": "S1",
@@ -44588,5 +44814,87 @@
         ],
         "watched": true,
         "bookmarked": false
+    },
+    {
+        "id": 514,
+        "title": "Yuusha Party ni Kawaii Ko ga Ita node, Kokuhaku shitemita",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://animepahe.si/anime/9f2d9f52-f412-2b7b-e8f9-9cc0a09738dd",
+        "directory": "C:/Users/shour/Documents/Anime\\Yuusha Party ni Kawaii Ko ga Ita node, Kokuhaku shitemita\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha Party ni Kawaii Ko ga Ita node, Kokuhaku shitemita/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha Party ni Kawaii Ko ga Ita node, Kokuhaku shitemita/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha Party ni Kawaii Ko ga Ita node, Kokuhaku shitemita/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha Party ni Kawaii Ko ga Ita node, Kokuhaku shitemita/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha Party ni Kawaii Ko ga Ita node, Kokuhaku shitemita/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha Party ni Kawaii Ko ga Ita node, Kokuhaku shitemita/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha Party ni Kawaii Ko ga Ita node, Kokuhaku shitemita/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha Party ni Kawaii Ko ga Ita node, Kokuhaku shitemita/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha Party ni Kawaii Ko ga Ita node, Kokuhaku shitemita/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha Party ni Kawaii Ko ga Ita node, Kokuhaku shitemita/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha Party ni Kawaii Ko ga Ita node, Kokuhaku shitemita/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yuusha Party ni Kawaii Ko ga Ita node, Kokuhaku shitemita/S1/12.mp4"
+            }
+        ]
     }
 ]
