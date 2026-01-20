@@ -22,7 +22,8 @@ DEFAULT_IMAGE = os.path.join(BASE_PATH, "static", "placeholder.jpg")
 MANGA_DATA_FILE = os.path.join(BASE_PATH, 'data', 'manga_data.json')
 MANGA_IMAGE_FOLDER = os.path.join(BASE_PATH, "static", "manga_images")
 DEFAULT_MANGA_IMAGE = os.path.join(BASE_PATH, "static", "placeholder.jpg")
-
+DATA_FILE_SEC = os.path.join(BASE_PATH, 'data', 'sections.json')
+DATA_FOLDER = os.path.join(BASE_PATH, 'data')
 
 # Ensure folders exist
 if not os.path.exists(STATIC_FOLDER) or not os.path.exists(TEMPLATES_FOLDER):
@@ -30,6 +31,222 @@ if not os.path.exists(STATIC_FOLDER) or not os.path.exists(TEMPLATES_FOLDER):
     sys.exit(1)
 
 app = Flask(__name__, static_folder=STATIC_FOLDER, template_folder=TEMPLATES_FOLDER)
+
+
+def get_section_paths(section):
+    section = section.lower()
+
+    return {
+        "DATA_FILE": os.path.join(DATA_FOLDER, f"{section}_data.json"),
+        "IMAGE_FOLDER": os.path.join(STATIC_FOLDER, f"{section}_images"),
+        "IMAGE_URL": f"/static/{section}_images",
+        "INDEX_TEMPLATE": f"{section}_index.html",
+        "DETAIL_TEMPLATE": f"{section}_detail.html"
+    }
+
+def load_section_data(section):
+    paths = get_section_paths(section)
+    data_file = paths["DATA_FILE"]
+
+    if not os.path.exists(data_file):
+        return []
+
+    with open(data_file, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    for item in data:
+        item.setdefault("read", False)
+        item.setdefault("bookmarked", False)
+
+    data.sort(key=lambda x: x.get("title", "").lower())
+    return data
+
+def save_section_data(section, data):
+    paths = get_section_paths(section)
+    with open(paths["DATA_FILE"], "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+
+def get_section_image(section, title):
+    paths = get_section_paths(section)
+
+    for ext in ["jpg", "png", "jpeg", "avif"]:
+        filename = f"{title}.{ext}"
+        filepath = os.path.join(paths["IMAGE_FOLDER"], filename)
+
+        if os.path.exists(filepath):
+            return f"{paths['IMAGE_URL']}/{filename}"
+
+    return DEFAULT_IMAGE
+
+@app.route("/api/<section>")
+def api_section(section):
+    data = load_section_data(section)
+
+    for item in data:
+        item["thumbnail_url"] = get_section_image(section, item["title"])
+
+    return jsonify(data)
+
+@app.route("/<section>/<int:item_id>")
+def section_detail(section, item_id):
+    data = load_section_data(section)
+    item = next((i for i in data if i["id"] == item_id), None)
+
+    if not item:
+        return "Not found", 404
+
+    return render_template(f"{section}_detail.html", item=item)
+
+@app.route("/<section>/add", methods=["GET", "POST"])
+def add_section_item(section):
+    section = normalize_section(section)
+
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        status = request.form.get("status")
+        link = request.form.get("link")
+
+        if not title:
+            return redirect(url_for("add_section_item", section=section))
+
+        data = load_section_data(section)
+
+        existing_ids = {i["id"] for i in data}
+        new_id = 1
+        while new_id in existing_ids:
+            new_id += 1
+
+        data.append({
+            "id": new_id,
+            "title": title,
+            "status": status,
+            "link": link,
+            "read": False,
+            "bookmarked": False
+        })
+
+        save_section_data(section, data)
+
+        return redirect(url_for("section_index", section=section))
+
+    return render_template(
+        "add_section_item.html",
+        section=section.capitalize()
+    )
+
+
+@app.route("/mark_read/<section>/<int:item_id>", methods=["POST"])
+def toggle_read(section, item_id):
+    data = load_section_data(section)
+    item = next((i for i in data if i["id"] == item_id), None)
+
+    if not item:
+        return jsonify({"error": "Not found"}), 404
+
+    item["read"] = not item["read"]
+    save_section_data(section, data)
+
+    return jsonify({"read": item["read"]})
+
+@app.route("/bookmark/<section>/<int:item_id>", methods=["POST"])
+def toggle_bookmark_1(section, item_id):
+    data = load_section_data(section)
+    item = next((i for i in data if i["id"] == item_id), None)
+
+    if not item:
+        return jsonify({"error": "Not found"}), 404
+
+    item["bookmarked"] = not item["bookmarked"]
+    save_section_data(section, data)
+
+    return jsonify({"bookmarked": item["bookmarked"]})
+
+@app.route("/toggle_status/<section>/<int:item_id>", methods=["POST"])
+def toggle_status_1(section, item_id):
+    data = load_section_data(section)
+    item = next((i for i in data if i["id"] == item_id), None)
+
+    if not item:
+        return jsonify({"error": "Not found"}), 404
+
+    current = item.get("status", "Ongoing").lower()
+    item["status"] = "Completed" if current == "ongoing" else "Ongoing"
+
+    save_section_data(section, data)
+    return jsonify({"status": item["status"]})
+
+@app.route("/delete/<section>/<int:item_id>", methods=["DELETE"])
+def delete_item_1(section, item_id):
+    data = load_section_data(section)
+    index = next((i for i, x in enumerate(data) if x["id"] == item_id), None)
+
+    if index is None:
+        return jsonify({"error": "Not found"}), 404
+
+    title = data[index]["title"]
+    paths = get_section_paths(section)
+
+    for ext in [".jpg", ".png", ".jpeg", ".avif"]:
+        path = os.path.join(paths["IMAGE_FOLDER"], title + ext)
+        if os.path.exists(path):
+            os.remove(path)
+            break
+
+    data.pop(index)
+    save_section_data(section, data)
+
+    return jsonify({"status": "success"})
+
+
+@app.route("/<section>")
+def section_index(section):
+    return render_template(
+        "section_index.html",
+        section=section
+    )
+
+def load_sections():
+    with open(DATA_FILE_SEC, "r") as f:
+        return json.load(f)["sections"]
+
+def save_section(sections):
+    with open(DATA_FILE_SEC, "w") as f:
+        json.dump({"sections": sections}, f, indent=2)
+
+def normalize_section(name):
+    return name.strip().lower().replace(" ", "_")
+
+def create_section(section):
+    paths = get_section_paths(section)
+
+    os.makedirs(paths["IMAGE_FOLDER"], exist_ok=True)
+
+    if not os.path.exists(paths["DATA_FILE"]):
+        with open(paths["DATA_FILE"], "w") as f:
+            json.dump([], f, indent=2)
+
+@app.route("/add-section", methods=["POST"])
+def add_section():
+    name = request.form.get("name")
+
+    if not name:
+        return redirect(url_for("hub"))
+
+    display_name = name.strip()
+    slug = normalize_section(display_name)
+
+    sections = load_sections()
+
+    # avoid duplicates (case-insensitive)
+    existing_slugs = {normalize_section(s) for s in sections}
+
+    if slug not in existing_slugs:
+        sections.append(display_name)      # 👈 STORE DISPLAY NAME
+        save_section(sections)
+        create_section(slug)               # 👈 USE SLUG FOR FILES
+
+    return redirect(url_for("hub"))
+
 
 def load_manga_data():
     if not os.path.exists(MANGA_DATA_FILE):
@@ -81,7 +298,6 @@ def manga_detail(manga_id):
 def add_manga():
     if request.method == 'POST':
         title = request.form.get('title').strip()
-        chapters = int(request.form.get('chapters'))
         status = request.form.get('status')
         link = request.form.get("link")
 
@@ -173,11 +389,15 @@ def delete_manga(manga_id):
 def load_anime_data():
     with open(DATA_FILE, 'r') as file:
         data = json.load(file)
+        new_data = []
         for anime in data:
-            if "bookmarked" not in anime:
+            if isinstance(anime, str):
+                anime = {"title": anime, "bookmarked": False}
+            elif "bookmarked" not in anime:
                 anime["bookmarked"] = False
-        data.sort(key=lambda anime : anime.get("title", "").lower())
-        return data
+            new_data.append(anime)
+        new_data.sort(key=lambda anime: anime.get("title", "").lower())
+        return new_data
 
 # Save anime data
 def save_anime_data(data):
@@ -185,6 +405,11 @@ def save_anime_data(data):
         json.dump(data, file, indent=4)
 
 @app.route('/')
+def hub():
+    sections = load_sections()
+    return render_template("hub.html", sections=sections)
+
+@app.route('/anime')
 def index():
     anime_data = load_anime_data()  # loads anime_details.json
     queue_raw = load_queue()["queue"]
@@ -339,8 +564,6 @@ def anime_detail(anime_id):
         return render_template('anime_detail.html', anime=anime)
     else:
         return "Anime not found", 404
-
-BASE_PATH = "C:/Users/shour/Documents/Anime"
 
 @app.route('/add_anime', methods=['GET', 'POST'])
 def add_anime():

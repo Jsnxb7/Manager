@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Content Hub</title>
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #0f172a;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        button {
+            padding: 18px 36px;
+            font-size: 16px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            background: #1e293b;
+            color: #fff;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        button:hover {
+            background: #334155;
+            transform: scale(1.05);
+        }
+
+        .add-btn {
+            font-size: 24px;
+            padding: 16px 22px;
+            background: #22c55e;
+            color: #000;
+        }
+
+        .add-btn:hover {
+            background: #16a34a;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    {% for section in sections %}
+        <a href="/{{ section|lower|replace(' ', '_') }}">
+            <button>{{ section }}</button>
+        </a>
+    {% endfor %}
+
+    <!-- Add button -->
+    <button class="add-btn" onclick="addNew()">+</button>
+</div>
+
+<form id="addForm" method="POST" action="/add-section" style="display:none;">
+    <input type="hidden" name="name" id="sectionName">
+</form>
+
+<script>
+    function addNew() {
+        const name = prompt("Enter new section name:");
+        if (!name) return;
+
+        document.getElementById("sectionName").value = name;
+        document.getElementById("addForm").submit();
+    }
+</script>
+
+</body>
+</html>

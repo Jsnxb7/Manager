@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block content %}
+<video class="video-background" autoplay loop muted playsinline>
+    <source src="{{ url_for('static', filename='images/stars.mp4') }}" type="video/mp4">
+</video>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/uni_style.css') }}">
+
+<div class="anime-list">
+
+    <!-- FILTER BUTTONS -->
+    <button class="add-anime-button" onclick="resetFilters()">Reset Filters</button>
+    <button class="add-anime-button" onclick="filterUnread()">Unread {{ section|capitalize }}</button>
+    <button class="add-anime-button" onclick="filterOngoing()">Ongoing {{ section|capitalize }}</button>
+    <button class="add-anime-button" onclick="sortBookmarkedFirst()">Sort Bookmarked First</button>
+    <!-- Add Item -->
+<a href="/{{ section }}/add">
+    <button class="add-anime-button">Add New {{ section|capitalize }}</button>
+</a>
+
+
+    <!-- Search -->
+    <input
+        type="text"
+        id="search-bar"
+        class="search-bar"
+        placeholder="Search {{ section }}..."
+        onkeyup="filterItems()"
+    >
+
+    <!-- GRID -->
+    <div class="anime-grid" id="grid"></div>
+
+</div>
+
+<script>
+const SECTION = "{{ section }}";
+
+// -----------------------------
+// FETCH DATA
+// -----------------------------
+async function fetchData() {
+    const res = await fetch(`/api/${SECTION}`);
+    return await res.json();
+}
+
+// -----------------------------
+// RENDER LIST
+// -----------------------------
+function renderList(items) {
+    const grid = document.getElementById("grid");
+    grid.innerHTML = "";
+
+    items.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "anime-card";
+        card.id = `${SECTION}-${item.id}`;
+        card.dataset.title = item.title.toLowerCase();
+
+        const img = document.createElement("img");
+        img.className = "anime-thumbnail";
+        img.src = item.thumbnail_url;
+        img.alt = item.title;
+
+        const info = document.createElement("div");
+        info.className = "anime-info";
+
+        const title = document.createElement("div");
+        title.className = "anime-title";
+        title.textContent = item.title;
+
+        const status = document.createElement("div");
+        status.className = "anime-status";
+        status.textContent = `Status: ${item.status}`;
+
+        info.append(title, status);
+
+        const actions = document.createElement("div");
+        actions.className = "anime-actions";
+
+        const viewBtn = document.createElement("a");
+        viewBtn.href = item.link;
+        viewBtn.target = "_blank";
+        viewBtn.className = "view-button";
+        viewBtn.textContent = `View ${SECTION}`;
+
+        const readBtn = document.createElement("button");
+        readBtn.className = "mark-watched-button";
+        readBtn.textContent = item.read ? "Read ✅" : "Mark as Read";
+        readBtn.onclick = () => toggleRead(item.id, readBtn);
+
+        const bookmarkBtn = document.createElement("button");
+        bookmarkBtn.className = "mark-watched-button";
+        bookmarkBtn.textContent = item.bookmarked ? "Bookmarked ⭐" : "Bookmark 🔖";
+        bookmarkBtn.onclick = () => toggleBookmark(item.id, bookmarkBtn);
+
+        const statusBtn = document.createElement("button");
+        statusBtn.className = "mark-watched-button";
+        statusBtn.textContent =
+            item.status.toLowerCase() === "ongoing"
+                ? "Mark Completed"
+                : "Mark Ongoing";
+        statusBtn.onclick = () => toggleStatus(item.id, status, statusBtn);
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "delete-button";
+        deleteBtn.textContent = "Delete";
+        deleteBtn.onclick = () => deleteItem(item.id);
+
+        actions.append(viewBtn, readBtn, bookmarkBtn, statusBtn, deleteBtn);
+        card.append(img, info, actions);
+        grid.appendChild(card);
+    });
+}
+
+// -----------------------------
+// ACTIONS
+// -----------------------------
+function toggleRead(id, btn) {
+    fetch(`/mark_read/${SECTION}/${id}`, { method: "POST" })
+        .then(r => r.json())
+        .then(d => btn.textContent = d.read ? "Read ✅" : "Mark as Read");
+}
+
+function toggleBookmark(id, btn) {
+    fetch(`/bookmark/${SECTION}/${id}`, { method: "POST" })
+        .then(r => r.json())
+        .then(d => btn.textContent = d.bookmarked ? "Bookmarked ⭐" : "Bookmark 🔖");
+}
+
+function toggleStatus(id, statusEl, btn) {
+    fetch(`/toggle_status/${SECTION}/${id}`, { method: "POST" })
+        .then(r => r.json())
+        .then(d => {
+            statusEl.textContent = `Status: ${d.status}`;
+            btn.textContent =
+                d.status.toLowerCase() === "ongoing"
+                    ? "Mark Completed"
+                    : "Mark Ongoing";
+        });
+}
+
+function deleteItem(id) {
+    if (!confirm("Delete this item?")) return;
+
+    fetch(`/delete/${SECTION}/${id}`, { method: "DELETE" })
+        .then(() => document.getElementById(`${SECTION}-${id}`).remove());
+}
+
+// -----------------------------
+// FILTERS
+// -----------------------------
+function filterItems() {
+    const q = document.getElementById("search-bar").value.toLowerCase();
+    document.querySelectorAll(".anime-card").forEach(c => {
+        c.style.display = c.dataset.title.includes(q) ? "flex" : "none";
+    });
+}
+
+function resetFilters() {
+    fetchData().then(renderList);
+    document.getElementById("search-bar").value = "";
+}
+
+async function sortBookmarkedFirst() {
+    const data = await fetchData();
+    renderList(data.sort((a, b) => b.bookmarked - a.bookmarked));
+}
+
+function filterUnread() {
+    reorder(card =>
+        card.querySelector(".mark-watched-button").textContent.includes("Mark")
+    );
+}
+
+function filterOngoing() {
+    reorder(card =>
+        card.querySelector(".anime-status").textContent.toLowerCase().includes("ongoing")
+    );
+}
+
+function reorder(predicate) {
+    const grid = document.getElementById("grid");
+    const cards = [...grid.children];
+    const match = cards.filter(predicate);
+    const rest = cards.filter(c => !match.includes(c));
+    grid.innerHTML = "";
+    [...match, ...rest].forEach(c => grid.appendChild(c));
+}
+
+// -----------------------------
+// LOAD
+// -----------------------------
+document.addEventListener("DOMContentLoaded", async () => {
+    renderList(await fetchData());
+});
+</script>
+{% endblock %}
