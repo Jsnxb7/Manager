@@ -19,7 +19,9 @@
                  class="anime-thumbnail">
 
             <div class="anime-info">
-                <h1>{{ anime.title }}</h1>
+                <h1 style="font-size:34px; letter-spacing:1px;">
+                    🎬 {{ anime.title }}
+                </h1>
                 <p><strong>Season:</strong> {{ anime.season }}</p>
                 <p><strong>Status:</strong> {{ anime.status }}</p>
                 <p><strong>Total Episodes:</strong> {{ anime.episodes|length }}</p>
@@ -140,106 +142,158 @@
             }
         }
     });
+    document.querySelectorAll(".preview-video").forEach(video => {
+    video.parentElement.addEventListener("mouseenter", () => {
+        video.play();
+    });
+
+    video.parentElement.addEventListener("mouseleave", () => {
+        video.pause();
+        video.currentTime = 0;
+    });
+});
 </script>
 
 <style>
-    body {
-        font-family: "Comic Sans MS", sans-serif;
-        margin: 0;
-        padding: 0;
-        color: #f1f1f1;
-        background: none;
-        overflow-x: hidden;
-    }
 
+/* Base */
+body {
+    margin: 0;
+    font-family: "Comic Sans MS", sans-serif;
+    color: white;
+}
+
+/* Background */
 .video-background {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    z-index: -2;
+}
+
+/* Overlay */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
     z-index: -1;
 }
 
-/* ✅ Added thumbnail styling */
-.anime-thumbnail-container {
-    text-align: center;
-    margin-bottom: 20px;
+/* MAIN CONTAINER */
+.anime-detail-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 100px auto;
+    padding: 25px;
+
+    border-radius: 20px;
+
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(18px);
+
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
 }
 
-/* Layout for Thumbnail + Info Side by Side */
+/* HEADER */
 .anime-header {
     display: flex;
-    align-items: flex-start;
-    gap: 20px;
+    gap: 30px;
+    flex-wrap: wrap;
 }
 
+/* Thumbnail */
 .anime-thumbnail {
-    width: 300px;
-    height: auto;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    width: 280px;
+    border-radius: 14px;
     object-fit: cover;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
+/* Info */
 .anime-info {
     flex: 1;
 }
 
 .anime-info h1 {
     margin-top: 0;
-    color: #fff;
+    font-size: 32px;
 }
 
-
-.anime-detail-container {
-    position: absolute;
-    z-index: 2;
-    width: 90%;
-    margin-top: 90px;
-    margin-left: 50px;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+/* Info text */
+.anime-info p {
+    margin: 6px 0;
+    color: #ddd;
 }
 
-.anime-detail {
-    color: #fff;
-    margin: 20px;
+/* Download link */
+.download-link {
+    color: #60a5fa;
+    text-decoration: underline;
 }
 
-.anime-detail p {
-    font-size: 1.2rem;
+/* ACTIONS */
+.anime-actions {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
+/* Buttons */
+.watched-button {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: none;
+
+    background: rgba(59,130,246,0.8);
+    color: white;
+
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.watched-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(59,130,246,0.5);
+}
+
+.watched-button.watched {
+    background: rgba(34,197,94,0.9);
+}
+
+/* EPISODES GRID */
 .episode-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 20px;
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
+/* CARD */
 .episode-card {
-    background-color: rgba(61, 79, 115, 0.8);
-    border-radius: 10px;
+    border-radius: 14px;
     overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+
+    transition: 0.25s;
 }
 
 .episode-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
 }
 
+/* VIDEO PREVIEW */
 .episode-preview {
     position: relative;
-    width: 100%;
     height: 150px;
-    overflow: hidden;
-    background-color: #000;
+    background: black;
 }
 
 .preview-video {
@@ -248,28 +302,28 @@
     object-fit: cover;
 }
 
+/* PLAY OVERLAY */
 .play-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: #fff;
+
+    background: rgba(0,0,0,0.5);
     font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
+
     opacity: 0;
-    transition: opacity 0.3s ease;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
 .episode-preview:hover .play-overlay {
     opacity: 1;
 }
 
+/* EPISODE INFO */
 .episode-info {
     padding: 10px;
     text-align: center;
@@ -277,32 +331,32 @@
 
 .episode-number {
     font-weight: bold;
-    color: #fff;
 }
 
 .episode-title {
-    color: #ddd;
     font-size: 0.9rem;
+    color: #ccc;
 }
 
-.watched-button {
-    padding: 10px 15px;
-    background-color: #3498db;
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-size: 16px;
+/* BUTTON AREA */
+.episode-actions {
+    padding: 10px;
+    text-align: center;
+}
+#anime-status-text {
+    font-weight: bold;
 }
 
-.watched-button.watched {
-    background-color: #27ae60;
+#anime-status-text[data-current-status="Ongoing"] {
+    color: #22c55e;
 }
 
-.watched-button:hover {
-    background-color: #2980b9;
+#anime-status-text[data-current-status="Completed"] {
+    color: #60a5fa;
+}
+
+#anime-status-text[data-current-status="Not Aired"] {
+    color: #f59e0b;
 }
 </style>
-
 {% endblock %}

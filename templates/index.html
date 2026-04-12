@@ -80,26 +80,32 @@ async function sortBookmarkedFirst() {
     
 
     <style>
-       body {
+body {
     font-family: "Comic Sans MS", sans-serif;
     margin: 0;
     padding: 0;
-    color: #fff;
-    background: none; /* No static background, using video */
+    color: #e5e7eb;
+    background: none;
     overflow-x: hidden;
 }
 
-/* Video Background */
-.video-background {
+/* Subtle overlay for readability */
+body::before {
+    content: "";
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    object-fit: cover; /* Covers full screen */
-    z-index: -1; /* Behind everything */
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.85));
+    z-index: -1;
 }
 
+.video-background {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+}
 /* Content Container */
 .content {
     position: relative;
@@ -108,40 +114,50 @@ async function sortBookmarkedFirst() {
     text-align: center;
 }
 
-/* Search Bar */
 .search-bar {
     width: 100%;
-    max-width: 400px;
-    padding: 12px;
+    max-width: 420px;
+    padding: 12px 16px;
     margin: 20px auto;
     display: block;
-    border: 2px solid rgba(255, 255, 255, 0.7);
-    border-radius: 8px;
-    font-size: 1rem;
-    background: rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
     color: white;
-    outline: none;
+    font-size: 0.95rem;
+    transition: 0.2s ease;
 }
 
+.search-bar:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 10px rgba(96,165,250,0.5);
+}
 /* Anime Grid Layout */
 .anime-grid {
-    display: flex; /* Makes items align horizontally */
-    flex-wrap: wrap; /* Wraps to new line if screen is small */
-    justify-content: center; /* Centers items */
-    gap: 20px; /* Adds spacing between items */
-}
-
-.anime-card {
-    width: 600px; /* Adjust width for horizontal layout */
-    height: 240px; /* Reduce height to make it more rectangular */
-    background: rgba(0, 0, 0, 0.6); /* Semi-transparent dark background */
-    border-radius: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
     padding: 10px;
-    display: flex; /* Aligns image and text in a row */
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.anime-card {
+    display: flex;
+    gap: 14px;
+    padding: 14px;
+    border-radius: 16px;
+
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(14px);
+
+    border: 1px solid rgba(255,255,255,0.1);
+
+    transition: all 0.25s ease;
 }
 
+.anime-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
 .anime-card img {
     width: 120px; /* Smaller image */
     height: 100%;
@@ -155,95 +171,85 @@ async function sortBookmarkedFirst() {
     color: white;
 }
 
-.anime-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
-}
 
 .anime-thumbnail {
-            width: 100%;
-            height: fit-content;
-            object-fit: cover;
-        }
-
-    .anime-info {
-    flex: 1; /* Expands text to fill space */
-    padding: 10px;
-    color: white;
+    width: 100px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+.anime-info {
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
-
 .anime-title {
-    font-weight: bold;
-    font-size: 1.3rem;
-    color: #fff;
-    text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
 }
 
 .anime-season {
-    color: #ffcccb;
-    font-size: 1rem;
-    margin-bottom: 5px;
+    font-size: 0.9rem;
+    color: #9ca3af;
 }
 
 .anime-status {
-    font-size: 1rem;
-    font-weight: bold;
-    color: #32cd32;
-    text-shadow: 1px 1px 10px rgba(50, 205, 50, 0.8);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #4ade80;
 }
 
 /* Buttons */
 .anime-actions {
     display: flex;
-    justify-content: center; /* Center buttons horizontally */
-    gap: 10px; /* Adds spacing between buttons */
+    flex-wrap: wrap;
+    gap: 6px;
     margin-top: 10px;
 }
-
 /* Individual Buttons */
-.view-button, .delete-button, .mark-watched-button {
-    padding: 8px 14px;
+button {
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-size: 0.8rem;
     cursor: pointer;
-    font-size: 1rem;
-    text-align: center;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-    width: auto; /* Ensures all buttons adjust to content */
+    transition: 0.2s ease;
 }
-
 .view-button {
-    background: rgb(28 42 48);
+    border: none;
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: 0.2s ease;
+    background: #2563eb;
     color: white;
 }
 
 .view-button:hover {
-    background: rgba(0, 162, 255, 1);
-    box-shadow: 0 0 10px rgba(0, 162, 255, 0.8);
+    background: #3b82f6;
+    box-shadow: 0 0 10px rgba(59,130,246,0.7);
 }
 
 .mark-watched-button {
-    background: rgb(28 42 48);
-    color: white;
+    background: rgba(34,197,94,0.2);
+    color: #4ade80;
 }
 
 .mark-watched-button:hover {
-    background: rgba(46, 204, 113, 1);
-    box-shadow: 0 0 10px rgba(46, 204, 113, 0.8);
+    background: rgba(34,197,94,0.4);
 }
 
 .delete-button {
-    background: rgb(148 51 41 / 78%);
-    color: white;
+    background: rgba(239,68,68,0.2);
+    color: #f87171;
 }
 
 .delete-button:hover {
-    background: rgba(231, 76, 60, 1);
-    box-shadow: 0 0 10px rgba(231, 76, 60, 0.8);
+    background: rgba(239,68,68,0.4);
 }
 .floating-queue {
     position: fixed;
@@ -281,7 +287,34 @@ async function sortBookmarkedFirst() {
     border-radius: 6px;
     cursor: pointer;
 }
+.add-anime-button {
+    margin: 5px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: none;
 
+    background: rgba(255,255,255,0.08);
+    color: white;
+
+    backdrop-filter: blur(10px);
+    transition: 0.2s ease;
+}
+
+.add-anime-button:hover {
+    background: rgba(255,255,255,0.15);
+}
+@media (max-width: 600px) {
+    .anime-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .anime-thumbnail {
+        width: 100%;
+        height: 200px;
+    }
+}
     </style>
 
 </div>

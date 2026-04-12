@@ -573,13 +573,20 @@ def add_anime():
         status = request.form.get('status')
         download_link = request.form.get('download_link')
         episodes = int(request.form.get('episodes'))
+
         anime_data = load_anime_data()
+
         existing_ids = {anime["id"] for anime in anime_data}
         new_id = 1
         while new_id in existing_ids:
             new_id += 1
-        directory = os.path.join(BASE_PATH, title, f"{season}")
+
+        # ✅ FIX: remove "manager"
+        ROOT_PATH = os.path.dirname(BASE_PATH)
+
+        directory = os.path.join(ROOT_PATH, title, f"{season}")
         os.makedirs(directory, exist_ok=True)
+
         episodes_list = [
             {
                 "number": i + 1,
@@ -589,6 +596,7 @@ def add_anime():
             }
             for i in range(episodes)
         ]
+
         new_anime = {
             "id": new_id,
             "title": title,
@@ -598,9 +606,12 @@ def add_anime():
             "directory": directory,
             "episodes": episodes_list
         }
+
         anime_data.append(new_anime)
         save_anime_data(anime_data)
+
         return redirect(url_for('index'))
+
     return render_template('add_anime.html')
 
 @app.route('/mark_watched/<int:anime_id>/<int:episode_number>', methods=['POST'])

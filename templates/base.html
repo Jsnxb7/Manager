@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anime Manager</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <!-- Video.js CSS -->
     <link href="https://vjs.zencdn.net/7.15.4/video-js.css" rel="stylesheet" />
     <style>
@@ -22,6 +21,225 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     cursor: pointer;
     z-index: 1000;
+}
+/* General Styles */
+
+header {
+    background-color: #a3ccf3dc;
+    color: #ecf0f1;
+    padding: 20px 0;
+    text-align: center;
+    height: 40px;
+}
+
+h1 {
+    margin: 0;
+    font-size: 2.5rem;
+}
+
+a {
+    text-decoration: none;
+    color: #3498db;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #2980b9;
+}
+/* Anime List Styles */
+.anime-list {
+    max-width: auto;
+    margin: 20px;
+    padding: 60px;
+    background-color: #ffffff00;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.anime-list h1 {
+    text-align: center;
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.anime-titles {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.anime-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.3s ease;
+}
+
+.anime-item:hover {
+    background-color: #f9f9f9;
+}
+
+.anime-link {
+    text-decoration: none;
+    color: #3498db;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+}
+
+.anime-link:hover {
+    color: #2980b9;
+}
+
+.anime-status {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: #ecf0f1;
+}
+/* Set Directory Button Styles */
+.set-directory-button {
+    display: block;
+    margin: 20px 0;
+    padding: 10px 20px;
+    background-color: #9b59b6;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Set Directory Button Styles */
+.set-directory-button {
+    display: inline-block;
+    margin-left: 10px;
+    padding: 8px 16px;
+    background-color: #9b59b6;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.set-directory-button:hover {
+    background-color: #8e44ad;
+}
+/* Open Directory Button Styles */
+.open-directory-button {
+    display: block;
+    margin: 20px 0;
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+/* Video.js Player Styles */
+.video-js {
+    margin: 0 auto 20px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Home Button Styles */
+.add-anime-button{
+    display: inline-block;
+    width: 220px;
+    padding: 12px 20px;
+    text-align: center;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s ease-in-out;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+/* Back Button Styling (mirrors home button) */
+.back-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    width: 50px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s ease-in-out;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: 20px;
+    left: 20px; /* ← mirror the home button to the left side */
+}
+
+.back-button:hover {
+    background: rgba(32, 65, 88, 0.7);
+    box-shadow: 0 0 15px rgba(32, 65, 88, 0.8);
+}
+
+.home-button {
+    display: flex;                     /* Changed from inline-block to flex */
+    align-items: center;              /* Vertically center */
+    justify-content: center;          /* Horizontally center */
+    height: 50px;
+    width: 50px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s ease-in-out;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+.home-button:hover {
+    background: rgba(32, 65, 88, 0.7);
+    box-shadow: 0 0 15px rgba(32, 65, 88, 0.8);
+}
+
+/* Home Button Positioning */
+.home-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+.add-anime-button:hover {
+    background: rgba(33, 167, 35, 0.7);
+    box-shadow: 0 0 15px rgba(33, 167, 35, 0.8);
+}
+
+/* Delete Button Styles */
+.delete-button {
+    padding: 5px 10px;
+    background-color: #e74c3c;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+    background-color: #c0392b;
 }
 
 /* Queue Panel */

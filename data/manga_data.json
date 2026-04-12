@@ -1,10 +1,98 @@
 [
     {
+        "id": 10,
+        "title": "Class de 2 Banme ni Kawaii Onna no Ko to Tomodachi ni Natta",
+        "status": "Ongoing",
+        "link": "https://mangafire.to/manga/class-de-2-banme-ni-kawaii-onna-no-ko-to-tomodachi-ni-nattaa.jj6o8",
+        "read": false,
+        "bookmarked": false
+    },
+    {
+        "id": 2,
+        "title": "Dramatic Love Starts From The Basics",
+        "status": "Ongoing",
+        "link": "https://mangabuddy.com/dramatic-love-starts-from-the-basics",
+        "read": false,
+        "bookmarked": false
+    },
+    {
+        "id": 7,
+        "title": "Flying Witch",
+        "status": "Ongoing",
+        "link": "https://mangafire.to/manga/flying-witchh.y3mp",
+        "read": false,
+        "bookmarked": false
+    },
+    {
+        "id": 8,
+        "title": "Hanging Out With a Gamer Girl",
+        "status": "Completed",
+        "link": "https://mangabuddy.com/hanging-out-with-a-gamer-girl",
+        "read": false,
+        "bookmarked": false
+    },
+    {
+        "id": 4,
+        "title": "Hibi Chouchou",
+        "status": "Completed",
+        "link": "https://mangabuddy.com/hibi-chouchou",
+        "read": false,
+        "bookmarked": false
+    },
+    {
         "id": 1,
         "title": "Kaoru Hana wa Rin to Saku",
         "chapters": 172,
         "status": "Ongoing",
         "link": "https://mangafire.to/manga/the-fragrant-flower-blooms-with-dignityy.zlw6m",
+        "read": false,
+        "bookmarked": false
+    },
+    {
+        "id": 5,
+        "title": "Kono Kaisha ni Suki na Hito ga Imasu",
+        "status": "Ongoing",
+        "link": "https://mangabuddy.com/kono-kaisha-ni-suki-na-hito-ga-imasu",
+        "read": false,
+        "bookmarked": false
+    },
+    {
+        "id": 12,
+        "title": "Mieruko-chan",
+        "status": "Ongoing",
+        "link": "https://mangafire.to/manga/mieruko-chann.pry84",
+        "read": false,
+        "bookmarked": false
+    },
+    {
+        "id": 11,
+        "title": "Okashiratsuki",
+        "status": "Completed",
+        "link": "https://mangafire.to/manga/okashiratsukii.6vypz",
+        "read": false,
+        "bookmarked": false
+    },
+    {
+        "id": 3,
+        "title": "The Angel Next Door Spoils Me Rotten",
+        "status": "Ongoing",
+        "link": "https://mangabuddy.com/the-angel-next-door-spoils-me-rotten",
+        "read": false,
+        "bookmarked": false
+    },
+    {
+        "id": 6,
+        "title": "They Are Still Being Shaken This Morning",
+        "status": "Ongoing",
+        "link": "https://mangafire.to/manga/kesa-mo-yuraretemasuu.0q7m9",
+        "read": false,
+        "bookmarked": false
+    },
+    {
+        "id": 9,
+        "title": "Whisper Me a Love Song",
+        "status": "Ongoing",
+        "link": "https://mangafire.to/manga/whispering-you-a-love-songg.7j9p6",
         "read": false,
         "bookmarked": false
     }

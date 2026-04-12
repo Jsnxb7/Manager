@@ -1,67 +1,192 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+<video class="video-background" autoplay loop muted playsinline>
+    <source src="{{ url_for('static', filename='images/stars.mp4') }}" type="video/mp4">
+</video>
+
+<div class="form-wrapper">
     <div class="add-anime-form">
-        <h1>Add New Anime</h1>
-        <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        color: #333;
-    }
-    /* Video Background */
+
+        <h1>✨ Add New Anime</h1>
+
+        <form method="POST" id="add-anime-form">
+
+            <div class="form-group">
+                <label>Anime Title</label>
+                <input type="text" id="title" name="title" required oninput="updateDirectory()">
+            </div>
+
+            <div class="form-group">
+                <label>Season</label>
+                <input type="text" id="season" name="season" required oninput="updateDirectory()">
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+                <select id="status" name="status" required>
+                    <option value="Ongoing">Ongoing</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Not_Aired">Not Aired</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Download Link</label>
+                <input type="url" id="download_link" name="download_link" required>
+            </div>
+
+            <div class="form-group">
+                <label>Episodes</label>
+                <input type="number" id="episodes" name="episodes" min="1" required>
+            </div>
+
+            <button type="submit" class="submit-btn">➕ Add Anime</button>
+
+        </form>
+
+    </div>
+</div>
+
+<style>
+
+/* Base */
+body {
+    margin: 0;
+    font-family: "Comic Sans MS", sans-serif;
+    color: white;
+}
+
+/* Video Background */
 .video-background {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    object-fit: cover; /* Covers full screen */
-    z-index: -1; /* Behind everything */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
 }
-    </style>
-    <video class="video-background" autoplay loop muted>
-        <source src="{{ url_for('static', filename='images/stars.mp4') }}" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-        <form method="POST" id="add-anime-form">
-            <label for="title">Anime Title:</label>
-            <input type="text" id="title" name="title" required oninput="updateDirectory()">
 
-            <label for="season">Season:</label>
-            <input type="text" id="season" name="season" required oninput="updateDirectory()">
+/* Dark overlay */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: -1;
+}
 
-            <label for="status">Status:</label>
-            <select id="status" name="status" required>
-                <option value="Ongoing">Ongoing</option>
-                <option value="Completed">Completed</option>
-                <option value="Not_Aired">Not_Aired</option>
-            </select>
+/* Center wrapper */
+.form-wrapper {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-            <label for="download_link">Download Link:</label>
-            <input type="url" id="download_link" name="download_link" required>
+/* Glass Card */
+.add-anime-form {
+    width: 400px;
+    padding: 30px;
 
-            <label for="episodes">Number of Episodes:</label>
-            <input type="number" id="episodes" name="episodes" min="1" required>
+    border-radius: 18px;
 
-            <button type="submit">Add Anime</button>
-        </form>
-    </div>
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
 
-    <script>
-        const BASE_PATH = "C:/Users/shour/Documents/Anime"; // Base directory
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
 
-        function updateDirectory() {
-            const title = document.getElementById("title").value.trim();
-            const season = document.getElementById("season").value.trim();
-            if (title && season) {
-                document.getElementById("add-anime-form").setAttribute("data-directory", `${BASE_PATH}/${title}/${season}`);
-            }
-        }
-    </script>
+    animation: fadeIn 0.5s ease;
+}
+
+/* Title */
+.add-anime-form h1 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+/* Inputs */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+label {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #ddd;
+}
+
+input, select {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+
+    color: white !important;
+    background: rgba(255,255,255,0.15);
+
+    transition: 0.2s;
+}
+
+/* Focus glow */
+input:focus, select:focus {
+    background: rgba(255,255,255,0.25);
+    box-shadow: 0 0 10px rgba(59,130,246,0.6);
+}
+
+/* Submit button */
+.submit-btn {
+    width: 100%;
+    margin-top: 10px;
+
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    font-weight: bold;
+
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+/* Hover */
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(37,99,235,0.6);
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+</style>
+
+<script>
+const BASE_PATH = "C:/Users/shour/Documents/Anime";
+
+function updateDirectory() {
+    const title = document.getElementById("title").value.trim();
+    const season = document.getElementById("season").value.trim();
+
+    if (title && season) {
+        document.getElementById("add-anime-form")
+            .setAttribute("data-directory", `${BASE_PATH}/${title}/${season}`);
+    }
+}
+</script>
 
 {% endblock %}
