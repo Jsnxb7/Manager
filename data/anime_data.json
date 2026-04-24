@@ -3400,6 +3400,89 @@
         "bookmarked": false
     },
     {
+        "id": 562,
+        "title": "Awajima Hyakkei",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://myanimelist.net/anime/58820",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Awajima Hyakkei\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Awajima Hyakkei/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Awajima Hyakkei/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Awajima Hyakkei/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Awajima Hyakkei/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Awajima Hyakkei/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Awajima Hyakkei/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Awajima Hyakkei/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Awajima Hyakkei/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Awajima Hyakkei/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Awajima Hyakkei/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Awajima Hyakkei/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Awajima Hyakkei/S1/12.mp4"
+            }
+        ],
+        "bookmarked": false
+    },
+    {
         "id": 178,
         "title": "Baby Steps",
         "season": "S1",
@@ -15915,7 +15998,7 @@
         "id": 533,
         "title": "Jingai Kyoushitsu no Ningengirai Kyoushi",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://animepahe.si/anime/d6ef56e2-6455-5349-6b03-73bae92fa7e8",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Jingai Kyoushitsu no Ningengirai Kyoushi\\S1",
         "episodes": [
@@ -15998,7 +16081,8 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Jingai Kyoushitsu no Ningengirai Kyoushi/S1/13.mp4"
             }
         ],
-        "bookmarked": false
+        "bookmarked": false,
+        "watched": true
     },
     {
         "id": 530,
@@ -17490,6 +17574,89 @@
             }
         ],
         "watched": true,
+        "bookmarked": false
+    },
+    {
+        "id": 563,
+        "title": "Kamiina Botan, Yoeru Sugata wa Yuri no Hana",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://myanimelist.net/anime/61186",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Kamiina Botan, Yoeru Sugata wa Yuri no Hana\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/12.mp4"
+            }
+        ],
         "bookmarked": false
     },
     {
@@ -25651,6 +25818,65 @@
         "bookmarked": false
     },
     {
+        "id": 561,
+        "title": "Marika-chan no Koukando wa Bukkowareteiru",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://myanimelist.net/anime/62983",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Marika-chan no Koukando wa Bukkowareteiru\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Marika-chan no Koukando wa Bukkowareteiru/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Marika-chan no Koukando wa Bukkowareteiru/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Marika-chan no Koukando wa Bukkowareteiru/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Marika-chan no Koukando wa Bukkowareteiru/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Marika-chan no Koukando wa Bukkowareteiru/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Marika-chan no Koukando wa Bukkowareteiru/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Marika-chan no Koukando wa Bukkowareteiru/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Marika-chan no Koukando wa Bukkowareteiru/S1/8.mp4"
+            }
+        ],
+        "bookmarked": false
+    },
+    {
         "id": 557,
         "title": "Marriagetoxin",
         "season": "S1",
@@ -31475,82 +31701,82 @@
     {
         "id": 534,
         "title": "Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken",
-        "season": "S1",
+        "season": "S2",
         "status": "Ongoing",
         "download_link": "https://myanimelist.net/anime/56876",
-        "directory": "C:\\Users\\shour\\Documents\\Anime\\Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken\\S1",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken\\S2",
         "episodes": [
             {
                 "number": 1,
                 "title": "Episode 1",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S1/1.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S2/1.mp4"
             },
             {
                 "number": 2,
                 "title": "Episode 2",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S1/2.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S2/2.mp4"
             },
             {
                 "number": 3,
                 "title": "Episode 3",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S1/3.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S2/3.mp4"
             },
             {
                 "number": 4,
                 "title": "Episode 4",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S1/4.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S2/4.mp4"
             },
             {
                 "number": 5,
                 "title": "Episode 5",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S1/5.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S2/5.mp4"
             },
             {
                 "number": 6,
                 "title": "Episode 6",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S1/6.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S2/6.mp4"
             },
             {
                 "number": 7,
                 "title": "Episode 7",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S1/7.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S2/7.mp4"
             },
             {
                 "number": 8,
                 "title": "Episode 8",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S1/8.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S2/8.mp4"
             },
             {
                 "number": 9,
                 "title": "Episode 9",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S1/9.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S2/9.mp4"
             },
             {
                 "number": 10,
                 "title": "Episode 10",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S1/10.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S2/10.mp4"
             },
             {
                 "number": 11,
                 "title": "Episode 11",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S1/11.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S2/11.mp4"
             },
             {
                 "number": 12,
                 "title": "Episode 12",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S1/12.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken/S2/12.mp4"
             }
         ],
         "bookmarked": false
@@ -42057,7 +42283,7 @@
         "id": 537,
         "title": "Toumei Otoko to Ningen Onna-Sonouchi Fuufu ni Naru Futari",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://animepahe.si/anime/11141c9f-65f8-4067-81b7-a8aa6467d97b",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Toumei Otoko to Ningen Onna-Sonouchi Fuufu ni Naru Futari\\S1",
         "episodes": [
@@ -43801,6 +44027,89 @@
             }
         ],
         "watched": true,
+        "bookmarked": false
+    },
+    {
+        "id": 560,
+        "title": "Wandance",
+        "season": "S1",
+        "status": "Completed",
+        "download_link": "https://myanimelist.net/anime/59623",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Wandance\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/12.mp4"
+            }
+        ],
         "bookmarked": false
     },
     {
@@ -47450,84 +47759,78 @@
         "bookmarked": false
     },
     {
-        "id": 560,
-        "title": "Wandance",
+        "id": 564,
+        "title": "Ichijouma Mankitsugurashi",
         "season": "S1",
-        "status": "Completed",
-        "download_link": "https://myanimelist.net/anime/59623",
-        "directory": "C:\\Users\\shour\\Documents\\Anime\\Wandance\\S1",
+        "status": "Ongoing",
+        "download_link": "https://myanimelist.net/anime/62018",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Ichijouma Mankitsugurashi\\S1",
         "episodes": [
             {
                 "number": 1,
                 "title": "Episode 1",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/1.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Ichijouma Mankitsugurashi/S1/1.mp4"
             },
             {
                 "number": 2,
                 "title": "Episode 2",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/2.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Ichijouma Mankitsugurashi/S1/2.mp4"
             },
             {
                 "number": 3,
                 "title": "Episode 3",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/3.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Ichijouma Mankitsugurashi/S1/3.mp4"
             },
             {
                 "number": 4,
                 "title": "Episode 4",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/4.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Ichijouma Mankitsugurashi/S1/4.mp4"
             },
             {
                 "number": 5,
                 "title": "Episode 5",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/5.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Ichijouma Mankitsugurashi/S1/5.mp4"
             },
             {
                 "number": 6,
                 "title": "Episode 6",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/6.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Ichijouma Mankitsugurashi/S1/6.mp4"
             },
             {
                 "number": 7,
                 "title": "Episode 7",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/7.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Ichijouma Mankitsugurashi/S1/7.mp4"
             },
             {
                 "number": 8,
                 "title": "Episode 8",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/8.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Ichijouma Mankitsugurashi/S1/8.mp4"
             },
             {
                 "number": 9,
                 "title": "Episode 9",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/9.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Ichijouma Mankitsugurashi/S1/9.mp4"
             },
             {
                 "number": 10,
                 "title": "Episode 10",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/10.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Ichijouma Mankitsugurashi/S1/10.mp4"
             },
             {
                 "number": 11,
                 "title": "Episode 11",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/11.mp4"
-            },
-            {
-                "number": 12,
-                "title": "Episode 12",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Wandance/S1/12.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Ichijouma Mankitsugurashi/S1/11.mp4"
             }
         ]
     }
