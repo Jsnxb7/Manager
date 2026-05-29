@@ -1,241 +1,240 @@
-# 🎬 Entertainment Manager
+# Entertainment Manager
 
-A local, self-hosted entertainment tracker and media player built with **Flask** and a glassmorphism UI. Track and manage your anime, manga, movies, TV shows, Netflix watchlists, and any other content category you want — all from a sleek hub running on your own machine.
+A local Flask app for managing anime, manga, and custom media sections from one browser-based dashboard. It stores library data in JSON files, serves local video files, and keeps thumbnails, links, tags, watch states, bookmarks, and queue data close to the app.
 
----
+## Features
 
-## ✨ Features
+### Content Hub
 
-### 🏠 Content Hub
-- Dynamic hub page showing all your custom sections (Anime, Manga, Movies, TV Shows, Netflix, etc.)
-- Add new content sections on the fly with a single click — no code changes needed
-- Animated starfield video background with a premium glassmorphism card design
+- Create custom sections such as Movies, TV Shows, Netflix, or any other list you want to track.
+- Each custom section gets its own grid page, add form, search, filters, status controls, bookmarks, and editable links.
+- Shared layout, animated backgrounds, and a persistent watch queue panel.
 
-### 🎌 Anime
-- Browse your anime library in a responsive grid with cover thumbnails
-- Per-anime detail pages showing all episodes with video preview on hover
-- Built-in **video player** powered by [Video.js](https://videojs.com/) with:
-  - Keyboard shortcuts (Space, arrows, F, M)
-  - Playback speed controls (0.5×, 1×, 1.5×, 2×)
-  - Auto-advance to next episode on completion
-- Mark individual episodes or entire series as watched
-- Cycle anime status: **Ongoing → Not Aired → Completed**
-- Automatic thumbnail fetching via the [Jikan API](https://jikan.moe/) if no local image is found
-- **Watch Queue** — add anime to a persistent queue and play them sequentially
-- Add new anime with auto-generated episode file paths based on your local directory structure
-- Delete anime with automatic cleanup of files and directories
+### Anime Library
 
-### 📚 Manga
-- Grid view with cover images
-- Mark manga as read / unread
-- Bookmark favourites (⭐)
-- Toggle status between Ongoing, Completed, and Hiatus
-- Sort by bookmarked first, filter by unread or ongoing, and live search
-- Direct links to read online
+- Responsive anime grid with local cover thumbnails.
+- Live search across titles, seasons, status, and anime metadata headers.
+- Filter accordion for status, sort controls, and metadata header filters.
+- Floating add button on the anime index page.
+- Add-anime form with thumbnail upload, safe filename validation, duplicate checks, and metadata selection.
+- Anime metadata headers are stored in `data/unique_anime_tags.json`; each anime must include at least one value from every required header group.
+- Anime detail page shows the thumbnail, metadata tags, editable download link, watched state, and episode list.
+- Add or delete episodes from the anime detail page and persist those changes to JSON.
+- Mark individual episodes or full anime entries as watched.
+- Bookmark anime and cycle anime status values.
 
-### 🗂️ Custom Sections (Netflix, Movies, TV Shows, etc.)
-- Any section you create through the hub gets its own full-featured index page
-- Supports read/unread tracking, bookmarks, status toggling, and deletion
-- Add items with a title, status, and a link (streaming URL, page, etc.)
-- Live search and filter controls (Unread, Ongoing, Bookmarked First)
+### Video Player
 
----
+- Video.js based player for local episode playback.
+- Keyboard shortcuts for playback, seeking, volume, fullscreen, and mute.
+- Watch queue integration with auto-advance support.
+- Previous and next episode side preview panels.
+- Episode file lookup first checks the stored file path, then falls back to matching local video filenames such as `1.mp4`, `EP.01.mkv`, `episode-01.webm`, or `Show_-_01.mp4`.
+- Episode matching uses the full episode number so `12.mp4` is not treated as episode `1`.
 
-## 📁 Project Structure
+### Manga Library
 
-```
+- Manga grid with thumbnails, read state, bookmarks, status toggles, sorting, filtering, and live search.
+- Editable manga links after creation.
+- Thumbnail upload with preview on the add form.
+- Small header/tag hover UI is ready for future manga metadata fields.
+
+### Custom Sections
+
+- Add custom items with title, status, link, and thumbnail.
+- Upload thumbnails through the form instead of manually placing every image.
+- Edit item links after creation.
+- Track read state, bookmarks, and status per item.
+
+## Project Structure
+
+```text
 entertainment-manager/
-├── app.py                    # Flask backend
-├── data/
-│   ├── sections.json         # List of all hub sections
-│   ├── anime_data.json       # Anime library data
-│   ├── manga_data.json       # Manga library data
-│   ├── queue.json            # Watch queue
-│   └── <section>_data.json   # Auto-created for each custom section
-├── static/
-│   ├── images/
-│   │   ├── stars.mp4         # Background video (anime pages)
-│   │   └── stars1.mp4        # Background video (hub)
-│   ├── home.webp             # Home button icon
-│   ├── placeholder.jpg       # Default cover image
-│   ├── anime_images/         # Anime cover images (<Title>.jpg/png)
-│   ├── manga_images/         # Manga cover images
-│   ├── <section>_images/     # Auto-created per custom section
-│   ├── css/
-│   │   └── uni_style.css     # Shared grid/card styles
-│   └── js/
-│       └── scripts.js
-└── templates/
-    ├── base.html             # Shared layout, nav, queue panel
-    ├── hub.html              # Section hub
-    ├── index.html            # Anime index
-    ├── anime_detail.html     # Anime detail + episode grid
-    ├── player.html           # Video player
-    ├── add_anime.html        # Add anime form
-    ├── manga_index.html      # Manga index
-    ├── add_manga.html        # Add manga form
-    ├── section_index.html    # Generic section index (reused for all custom sections)
-    └── add_section_item.html # Generic add item form
+|-- app.py
+|-- config.json
+|-- main.js
+|-- data/
+|   |-- sections.json
+|   |-- anime_data.json
+|   |-- unique_anime_tags.json
+|   |-- manga_data.json
+|   |-- queue.json
+|   `-- <section>_data.json
+|-- static/
+|   |-- anime_images/
+|   |-- manga_images/
+|   |-- <section>_images/
+|   |-- css/
+|   |   `-- uni_style.css
+|   |-- js/
+|   |   `-- scripts.js
+|   |-- images/
+|   `-- placeholder.jpeg
+`-- templates/
+    |-- base.html
+    |-- hub.html
+    |-- index.html
+    |-- anime_detail.html
+    |-- player.html
+    |-- add_anime.html
+    |-- manga_index.html
+    |-- add_manga.html
+    |-- section_index.html
+    `-- add_section_item.html
 ```
 
----
+Generated build folders, personal media, local database backups, and private JSON data should stay out of public commits unless you intentionally want to publish them.
 
-## 🚀 Getting Started
+## Getting Started
 
-### Prerequisites
+### Requirements
 
 - Python 3.8+
-- pip
+- Flask
+- Werkzeug
 
-### Installation
+### Install
 
 ```bash
-git clone https://github.com/your-username/entertainment-manager.git
-cd entertainment-manager
 pip install flask werkzeug
 ```
 
-### Running the App
+### Run
 
 ```bash
 python app.py
 ```
 
-Then open your browser at **http://localhost:5000**.
+Open the app at:
 
-Optionally, pass a custom base path (used by Electron wrappers):
-
-```bash
-python app.py "C:/Users/you/Documents/EntertainmentManager"
+```text
+http://localhost:5000
 ```
 
----
+You can also pass a custom base path when launching the app:
 
-## 🗃️ Data Format
+```bash
+python app.py "C:/Path/To/EntertainmentManager"
+```
+
+## Data Files
 
 ### `data/sections.json`
+
 ```json
 {
-  "sections": ["Anime", "Manga", "Movies", "TV Shows", "Netflix"]
+  "sections": ["Anime", "Manga", "Movies"]
 }
 ```
 
 ### `data/anime_data.json`
+
 ```json
 [
   {
     "id": 1,
-    "title": "Attack on Titan",
+    "title": "Example Anime",
     "season": "Season 1",
-    "status": "Completed",
-    "download_link": "https://...",
-    "directory": "C:/Users/you/Anime/Attack on Titan/Season 1",
+    "status": "Ongoing",
+    "download_link": "https://example.com",
+    "directory": "C:/Media/Example Anime/Season 1",
     "watched": false,
     "bookmarked": false,
+    "genres": ["Action"],
+    "themes": ["School"],
+    "demographics": ["Shounen"],
+    "tags": ["Dubbed"],
     "episodes": [
       {
         "number": 1,
         "title": "Episode 1",
         "watched": false,
-        "file_path": "C:/Users/you/Anime/Attack on Titan/Season 1/1.mp4"
+        "file_path": "C:/Media/Example Anime/Season 1/1.mp4"
       }
     ]
   }
 ]
 ```
 
-### `data/manga_data.json` / `data/<section>_data.json`
+### `data/unique_anime_tags.json`
+
+```json
+{
+  "genres": ["Action", "Comedy"],
+  "themes": ["School", "Supernatural"],
+  "demographics": ["Shounen", "Seinen"],
+  "tags": ["Dubbed", "Subbed"]
+}
+```
+
+### `data/manga_data.json` and `data/<section>_data.json`
+
 ```json
 [
   {
     "id": 1,
-    "title": "One Piece",
+    "title": "Example Item",
     "status": "Ongoing",
-    "link": "https://...",
+    "link": "https://example.com",
     "read": false,
     "bookmarked": false
   }
 ]
 ```
 
----
+## Thumbnail Uploads
 
-## 🖼️ Adding Cover Images
+Anime, manga, and custom section add forms accept thumbnail uploads and show a preview before submitting. The server saves uploaded images into the matching static folder:
 
-Place image files in the matching `static/<section>_images/` folder with the filename matching the title exactly:
-
-```
-static/anime_images/Attack on Titan.jpg
-static/manga_images/One Piece.png
-static/movies_images/Inception.jpg
+```text
+static/anime_images/
+static/manga_images/
+static/<section>_images/
 ```
 
-Supported formats: `.jpg`, `.jpeg`, `.png`, `.avif`
+The saved filename is based on a secured version of the title so it can be loaded back as the card thumbnail. Legacy manually named images are still supported as fallbacks.
 
-For anime, if no local image is found, the app will automatically fetch one from the [Jikan API](https://jikan.moe/).
+Supported image types include:
 
----
+```text
+.jpg, .jpeg, .png, .avif, .webp, .gif
+```
 
-## ⌨️ Player Keyboard Shortcuts
+## Episode File Matching
+
+The app normally uses the episode file paths stored in `data/anime_data.json`. If that exact file is not found, it scans the anime directory and tries to match the requested episode number against supported video files.
+
+Supported fallback filename patterns include:
+
+```text
+1.mp4
+001.mkv
+Show EP.01.mp4
+Show episode-01.webm
+Show_-_01.m4v
+```
+
+Supported video types include:
+
+```text
+.mp4, .mkv, .avi, .mov, .webm, .m4v
+```
+
+## Player Shortcuts
 
 | Key | Action |
-|-----|--------|
-| `Space` | Play / Pause |
-| `←` | Rewind 10 seconds |
-| `→` | Skip forward 10 seconds |
-| `↑` | Volume up |
-| `↓` | Volume down |
+| --- | --- |
+| `Space` | Play or pause |
+| `Left Arrow` | Rewind |
+| `Right Arrow` | Skip forward |
+| `Up Arrow` | Volume up |
+| `Down Arrow` | Volume down |
 | `F` | Toggle fullscreen |
 | `M` | Toggle mute |
 
----
+## Development Notes
 
-## 🛠️ API Endpoints
-
-| Method | Route | Description |
-|--------|-------|-------------|
-| GET | `/` | Hub page |
-| POST | `/add-section` | Create a new section |
-| GET | `/anime` | Anime index |
-| GET | `/api/anime` | Anime data as JSON |
-| GET | `/anime/<id>` | Anime detail page |
-| POST | `/add_anime` | Add a new anime |
-| DELETE | `/delete_anime/<id>` | Delete an anime |
-| POST | `/mark_watched/<id>/<ep>` | Toggle episode watched |
-| POST | `/mark_anime_watched/<id>` | Toggle anime watched |
-| POST | `/update_anime_status/<id>` | Update anime status |
-| POST | `/bookmark/<id>` | Toggle anime bookmark |
-| GET | `/player/<anime_id>/<episode>` | Play an episode |
-| GET | `/manga` | Manga index |
-| GET | `/api/manga` | Manga data as JSON |
-| POST | `/add_manga` | Add new manga |
-| POST | `/mark_manga_read/<id>` | Toggle manga read |
-| POST | `/manga_bookmark/<id>` | Toggle manga bookmark |
-| POST | `/toggle_manga_status/<id>` | Toggle manga status |
-| DELETE | `/delete_manga/<id>` | Delete manga |
-| GET | `/<section>` | Generic section index |
-| GET | `/api/<section>` | Generic section data as JSON |
-| POST | `/<section>/add` | Add item to section |
-| POST | `/mark_read/<section>/<id>` | Toggle read for section item |
-| POST | `/bookmark/<section>/<id>` | Toggle bookmark for section item |
-| POST | `/toggle_status/<section>/<id>` | Toggle status for section item |
-| DELETE | `/delete/<section>/<id>` | Delete a section item |
-| GET | `/queue` | Get watch queue |
-| POST | `/add_video` | Add anime to queue |
-| DELETE | `/delete_from_queue/<index>` | Remove item from queue |
-
----
-
-## 🎨 Tech Stack
-
-- **Backend:** Python / Flask
-- **Frontend:** Vanilla HTML, CSS, JavaScript (Jinja2 templates)
-- **Video Player:** [Video.js 7.15](https://videojs.com/)
-- **Anime Metadata:** [Jikan REST API](https://jikan.moe/)
-- **Design:** Glassmorphism, animated video backgrounds, CSS `backdrop-filter`
-
----
-
-## 📝 License
-
-MIT — feel free to fork and adapt for your own media library.
+- The app is designed as a local personal manager, so JSON files can contain private paths, links, and watch history.
+- Do not claim a license in the README unless a matching license file is added to the repository.
+- Do not document external integrations unless they are actually implemented in `app.py` or the frontend.
+- Keep generated build output and large media files out of GitHub unless they are required sample assets.
