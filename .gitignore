@@ -144,3 +144,5 @@ package-lock.json
 *.gz
 /flask_flutter_phase1_backend
 /anime_tag_tools
+folder_structure.txt
+map.py
