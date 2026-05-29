@@ -32,10 +32,33 @@
     <!-- GRID -->
     <div class="anime-grid" id="grid"></div>
 
+    <!-- PAGINATION -->
+    <div class="pagination-wrap" id="section-pagination-wrap">
+        <div class="pagination-info" id="section-page-info">Showing 0 items</div>
+        <div class="pagination-controls">
+            <button class="pagination-btn" id="section-prev-btn" onclick="prevPage()">Prev</button>
+            <div class="pagination-pages" id="section-page-buttons"></div>
+            <button class="pagination-btn" id="section-next-btn" onclick="nextPage()">Next</button>
+        </div>
+        <label class="page-size-label">
+            Per page
+            <select id="section-page-size" onchange="changePageSize(this.value)">
+                <option value="8">8</option>
+                <option value="12" selected>12</option>
+                <option value="16">16</option>
+                <option value="24">24</option>
+            </select>
+        </label>
+    </div>
+
 </div>
 
 <script>
 const SECTION = "{{ section }}";
+let allSectionData = [];
+let currentSectionData = [];
+let currentPage = 1;
+let itemsPerPage = 12;
 
 // -----------------------------
 // FETCH DATA
@@ -45,14 +68,35 @@ async function fetchData() {
     return await res.json();
 }
 
+function getTotalPages() {
+    return Math.max(1, Math.ceil(currentSectionData.length / itemsPerPage));
+}
+
+function setSectionData(items, page = 1) {
+    currentSectionData = [...items];
+    currentPage = Math.min(Math.max(page, 1), getTotalPages());
+    renderPage();
+}
+
+function getPageItems() {
+    const start = (currentPage - 1) * itemsPerPage;
+    return currentSectionData.slice(start, start + itemsPerPage);
+}
+
 // -----------------------------
-// RENDER LIST
+// RENDER PAGE
 // -----------------------------
-function renderList(items) {
+function renderPage() {
     const grid = document.getElementById("grid");
     grid.innerHTML = "";
 
-    items.forEach(item => {
+    const pageItems = getPageItems();
+
+    if (!pageItems.length) {
+        grid.innerHTML = `<div class="empty-state">No ${SECTION} items found.</div>`;
+    }
+
+    pageItems.forEach(item => {
         const card = document.createElement("div");
         card.className = "anime-card";
         card.id = `${SECTION}-${item.id}`;
@@ -60,7 +104,7 @@ function renderList(items) {
 
         const img = document.createElement("img");
         img.className = "anime-thumbnail";
-        img.src = item.thumbnail_url;
+        img.src = item.thumbnail_url || "/static/placeholder.jpeg";
         img.alt = item.title;
 
         const info = document.createElement("div");
@@ -85,6 +129,11 @@ function renderList(items) {
         viewBtn.className = "view-button";
         viewBtn.textContent = `View ${SECTION}`;
 
+        const editLinkBtn = document.createElement("button");
+        editLinkBtn.className = "mark-watched-button";
+        editLinkBtn.textContent = "Edit Link";
+        editLinkBtn.onclick = () => updateItemLink(item.id, viewBtn);
+
         const readBtn = document.createElement("button");
         readBtn.className = "mark-watched-button";
         readBtn.textContent = item.read ? "Read ✅" : "Mark as Read";
@@ -97,10 +146,7 @@ function renderList(items) {
 
         const statusBtn = document.createElement("button");
         statusBtn.className = "mark-watched-button";
-        statusBtn.textContent =
-            item.status.toLowerCase() === "ongoing"
-                ? "Mark Completed"
-                : "Mark Ongoing";
+        statusBtn.textContent = item.status.toLowerCase() === "ongoing" ? "Mark Completed" : "Mark Ongoing";
         statusBtn.onclick = () => toggleStatus(item.id, status, statusBtn);
 
         const deleteBtn = document.createElement("button");
@@ -108,10 +154,65 @@ function renderList(items) {
         deleteBtn.textContent = "Delete";
         deleteBtn.onclick = () => deleteItem(item.id);
 
-        actions.append(viewBtn, readBtn, bookmarkBtn, statusBtn, deleteBtn);
+        actions.append(viewBtn, editLinkBtn, readBtn, bookmarkBtn, statusBtn, deleteBtn);
         card.append(img, info, actions);
         grid.appendChild(card);
     });
+
+    renderPagination();
+}
+
+function renderPagination() {
+    const totalPages = getTotalPages();
+    const total = currentSectionData.length;
+    const start = total ? ((currentPage - 1) * itemsPerPage) + 1 : 0;
+    const end = Math.min(currentPage * itemsPerPage, total);
+
+    document.getElementById("section-page-info").textContent =
+        total ? `Showing ${start}-${end} of ${total}` : "Showing 0 items";
+
+    document.getElementById("section-prev-btn").disabled = currentPage <= 1;
+    document.getElementById("section-next-btn").disabled = currentPage >= totalPages;
+
+    const pageButtons = document.getElementById("section-page-buttons");
+    pageButtons.innerHTML = "";
+
+    const windowSize = 5;
+    let first = Math.max(1, currentPage - Math.floor(windowSize / 2));
+    let last = Math.min(totalPages, first + windowSize - 1);
+    first = Math.max(1, last - windowSize + 1);
+
+    for (let page = first; page <= last; page++) {
+        const btn = document.createElement("button");
+        btn.className = `pagination-page ${page === currentPage ? "active" : ""}`;
+        btn.textContent = page;
+        btn.onclick = () => goToPage(page);
+        pageButtons.appendChild(btn);
+    }
+}
+
+function goToPage(page) {
+    currentPage = Math.min(Math.max(page, 1), getTotalPages());
+    renderPage();
+    document.querySelector(".anime-list")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function prevPage() {
+    goToPage(currentPage - 1);
+}
+
+function nextPage() {
+    goToPage(currentPage + 1);
+}
+
+function changePageSize(value) {
+    itemsPerPage = parseInt(value, 10) || 12;
+    goToPage(1);
+}
+
+function syncSectionItem(id, changes) {
+    allSectionData = allSectionData.map(item => item.id === id ? { ...item, ...changes } : item);
+    currentSectionData = currentSectionData.map(item => item.id === id ? { ...item, ...changes } : item);
 }
 
 // -----------------------------
@@ -120,24 +221,28 @@ function renderList(items) {
 function toggleRead(id, btn) {
     fetch(`/mark_read/${SECTION}/${id}`, { method: "POST" })
         .then(r => r.json())
-        .then(d => btn.textContent = d.read ? "Read ✅" : "Mark as Read");
+        .then(d => {
+            syncSectionItem(id, { read: d.read });
+            btn.textContent = d.read ? "Read ✅" : "Mark as Read";
+        });
 }
 
 function toggleBookmark(id, btn) {
     fetch(`/bookmark/${SECTION}/${id}`, { method: "POST" })
         .then(r => r.json())
-        .then(d => btn.textContent = d.bookmarked ? "Bookmarked ⭐" : "Bookmark 🔖");
+        .then(d => {
+            syncSectionItem(id, { bookmarked: d.bookmarked });
+            btn.textContent = d.bookmarked ? "Bookmarked ⭐" : "Bookmark 🔖";
+        });
 }
 
 function toggleStatus(id, statusEl, btn) {
     fetch(`/toggle_status/${SECTION}/${id}`, { method: "POST" })
         .then(r => r.json())
         .then(d => {
+            syncSectionItem(id, { status: d.status });
             statusEl.textContent = `Status: ${d.status}`;
-            btn.textContent =
-                d.status.toLowerCase() === "ongoing"
-                    ? "Mark Completed"
-                    : "Mark Ongoing";
+            btn.textContent = d.status.toLowerCase() === "ongoing" ? "Mark Completed" : "Mark Ongoing";
         });
 }
 
@@ -145,55 +250,82 @@ function deleteItem(id) {
     if (!confirm("Delete this item?")) return;
 
     fetch(`/delete/${SECTION}/${id}`, { method: "DELETE" })
-        .then(() => document.getElementById(`${SECTION}-${id}`).remove());
+        .then(() => {
+            allSectionData = allSectionData.filter(item => item.id !== id);
+            currentSectionData = currentSectionData.filter(item => item.id !== id);
+            if (currentPage > getTotalPages()) currentPage = getTotalPages();
+            renderPage();
+        });
+}
+
+async function updateItemLink(id, viewBtn) {
+    const link = prompt(`Update ${SECTION} link`, viewBtn.href || "");
+    if (link === null) return;
+
+    const trimmed = link.trim();
+    if (!trimmed) {
+        alert("Link cannot be empty.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`/update_link/${SECTION}/${id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ link: trimmed })
+        });
+        const data = await response.json();
+
+        if (data.status === "success") {
+            syncSectionItem(id, { link: data.link });
+            viewBtn.href = data.link;
+        } else {
+            alert(data.message || "Failed to update link");
+        }
+    } catch (error) {
+        console.error("Error updating link:", error);
+    }
 }
 
 // -----------------------------
 // FILTERS
 // -----------------------------
 function filterItems() {
-    const q = document.getElementById("search-bar").value.toLowerCase();
-    document.querySelectorAll(".anime-card").forEach(c => {
-        c.style.display = c.dataset.title.includes(q) ? "flex" : "none";
-    });
+    const q = document.getElementById("search-bar").value.toLowerCase().trim();
+    const filtered = allSectionData.filter(item => item.title.toLowerCase().includes(q));
+    setSectionData(filtered, 1);
 }
 
 function resetFilters() {
-    fetchData().then(renderList);
     document.getElementById("search-bar").value = "";
+    setSectionData(allSectionData, 1);
 }
 
 async function sortBookmarkedFirst() {
-    const data = await fetchData();
-    renderList(data.sort((a, b) => b.bookmarked - a.bookmarked));
+    const sorted = [...currentSectionData].sort((a, b) => (b.bookmarked === true) - (a.bookmarked === true));
+    setSectionData(sorted, 1);
 }
 
 function filterUnread() {
-    reorder(card =>
-        card.querySelector(".mark-watched-button").textContent.includes("Mark")
-    );
+    const sorted = [...currentSectionData].sort((a, b) => (a.read === true) - (b.read === true));
+    setSectionData(sorted, 1);
 }
 
 function filterOngoing() {
-    reorder(card =>
-        card.querySelector(".anime-status").textContent.toLowerCase().includes("ongoing")
-    );
-}
-
-function reorder(predicate) {
-    const grid = document.getElementById("grid");
-    const cards = [...grid.children];
-    const match = cards.filter(predicate);
-    const rest = cards.filter(c => !match.includes(c));
-    grid.innerHTML = "";
-    [...match, ...rest].forEach(c => grid.appendChild(c));
+    const sorted = [...currentSectionData].sort((a, b) => {
+        const aOngoing = String(a.status || "").toLowerCase() === "ongoing";
+        const bOngoing = String(b.status || "").toLowerCase() === "ongoing";
+        return (bOngoing === true) - (aOngoing === true);
+    });
+    setSectionData(sorted, 1);
 }
 
 // -----------------------------
 // LOAD
 // -----------------------------
 document.addEventListener("DOMContentLoaded", async () => {
-    renderList(await fetchData());
+    allSectionData = await fetchData();
+    setSectionData(allSectionData, 1);
 });
 </script>
 {% endblock %}

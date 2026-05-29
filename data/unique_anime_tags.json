@@ -1,0 +1,576 @@
+{
+    "summary": {
+        "unique_tags": 70,
+        "unique_genres": 20,
+        "unique_themes": 45,
+        "unique_demographics": 5
+    },
+    "tags": [
+        {
+            "name": "Comedy",
+            "count": 248
+        },
+        {
+            "name": "Romance",
+            "count": 195
+        },
+        {
+            "name": "School",
+            "count": 183
+        },
+        {
+            "name": "Fantasy",
+            "count": 179
+        },
+        {
+            "name": "Shounen",
+            "count": 107
+        },
+        {
+            "name": "Action",
+            "count": 97
+        },
+        {
+            "name": "Drama",
+            "count": 87
+        },
+        {
+            "name": "Slice of Life",
+            "count": 86
+        },
+        {
+            "name": "Isekai",
+            "count": 85
+        },
+        {
+            "name": "Adventure",
+            "count": 79
+        },
+        {
+            "name": "Seinen",
+            "count": 70
+        },
+        {
+            "name": "CGDCT",
+            "count": 68
+        },
+        {
+            "name": "Supernatural",
+            "count": 56
+        },
+        {
+            "name": "Adult Cast",
+            "count": 53
+        },
+        {
+            "name": "Reincarnation",
+            "count": 49
+        },
+        {
+            "name": "Iyashikei",
+            "count": 41
+        },
+        {
+            "name": "Workplace",
+            "count": 35
+        },
+        {
+            "name": "Shoujo",
+            "count": 30
+        },
+        {
+            "name": "Love Status Quo",
+            "count": 27
+        },
+        {
+            "name": "Otaku Culture",
+            "count": 26
+        },
+        {
+            "name": "Award Winning",
+            "count": 25
+        },
+        {
+            "name": "Mystery",
+            "count": 22
+        },
+        {
+            "name": "Harem",
+            "count": 21
+        },
+        {
+            "name": "Historical",
+            "count": 20
+        },
+        {
+            "name": "Sci-Fi",
+            "count": 18
+        },
+        {
+            "name": "Gourmet",
+            "count": 18
+        },
+        {
+            "name": "Music",
+            "count": 17
+        },
+        {
+            "name": "Ecchi",
+            "count": 17
+        },
+        {
+            "name": "Gag Humor",
+            "count": 16
+        },
+        {
+            "name": "Childcare",
+            "count": 16
+        },
+        {
+            "name": "Mythology",
+            "count": 16
+        },
+        {
+            "name": "Performing Arts",
+            "count": 15
+        },
+        {
+            "name": "Urban Fantasy",
+            "count": 14
+        },
+        {
+            "name": "Parody",
+            "count": 14
+        },
+        {
+            "name": "Super Power",
+            "count": 13
+        },
+        {
+            "name": "Sports",
+            "count": 13
+        },
+        {
+            "name": "Anthropomorphic",
+            "count": 10
+        },
+        {
+            "name": "Horror",
+            "count": 9
+        },
+        {
+            "name": "Visual Arts",
+            "count": 9
+        },
+        {
+            "name": "Medical",
+            "count": 8
+        },
+        {
+            "name": "Gore",
+            "count": 8
+        },
+        {
+            "name": "Suspense",
+            "count": 8
+        },
+        {
+            "name": "Survival",
+            "count": 8
+        },
+        {
+            "name": "Josei",
+            "count": 8
+        },
+        {
+            "name": "Video Game",
+            "count": 7
+        },
+        {
+            "name": "Love Polygon",
+            "count": 7
+        },
+        {
+            "name": "Girls Love",
+            "count": 7
+        },
+        {
+            "name": "Pets",
+            "count": 6
+        },
+        {
+            "name": "Villainess",
+            "count": 5
+        },
+        {
+            "name": "Organized Crime",
+            "count": 5
+        },
+        {
+            "name": "Vampire",
+            "count": 5
+        },
+        {
+            "name": "Military",
+            "count": 5
+        },
+        {
+            "name": "Time Travel",
+            "count": 4
+        },
+        {
+            "name": "Strategy Game",
+            "count": 4
+        },
+        {
+            "name": "Mecha",
+            "count": 4
+        },
+        {
+            "name": "Space",
+            "count": 4
+        },
+        {
+            "name": "Crossdressing",
+            "count": 3
+        },
+        {
+            "name": "Hentai",
+            "count": 3
+        },
+        {
+            "name": "Mahou Shoujo",
+            "count": 3
+        },
+        {
+            "name": "Psychological",
+            "count": 2
+        },
+        {
+            "name": "Educational",
+            "count": 2
+        },
+        {
+            "name": "Magical Sex Shift",
+            "count": 2
+        },
+        {
+            "name": "Racing",
+            "count": 2
+        },
+        {
+            "name": "Reverse Harem",
+            "count": 1
+        },
+        {
+            "name": "High Stakes Game",
+            "count": 1
+        },
+        {
+            "name": "Erotica",
+            "count": 1
+        },
+        {
+            "name": "Samurai",
+            "count": 1
+        },
+        {
+            "name": "Detective",
+            "count": 1
+        },
+        {
+            "name": "Boys Love",
+            "count": 1
+        },
+        {
+            "name": "Kids",
+            "count": 1
+        }
+    ],
+    "genres": [
+        {
+            "name": "Comedy",
+            "count": 248
+        },
+        {
+            "name": "Romance",
+            "count": 195
+        },
+        {
+            "name": "Fantasy",
+            "count": 179
+        },
+        {
+            "name": "Action",
+            "count": 97
+        },
+        {
+            "name": "Drama",
+            "count": 87
+        },
+        {
+            "name": "Slice of Life",
+            "count": 86
+        },
+        {
+            "name": "Adventure",
+            "count": 79
+        },
+        {
+            "name": "Supernatural",
+            "count": 56
+        },
+        {
+            "name": "Award Winning",
+            "count": 25
+        },
+        {
+            "name": "Mystery",
+            "count": 22
+        },
+        {
+            "name": "Sci-Fi",
+            "count": 18
+        },
+        {
+            "name": "Gourmet",
+            "count": 18
+        },
+        {
+            "name": "Ecchi",
+            "count": 17
+        },
+        {
+            "name": "Sports",
+            "count": 13
+        },
+        {
+            "name": "Horror",
+            "count": 9
+        },
+        {
+            "name": "Suspense",
+            "count": 8
+        },
+        {
+            "name": "Girls Love",
+            "count": 7
+        },
+        {
+            "name": "Hentai",
+            "count": 3
+        },
+        {
+            "name": "Erotica",
+            "count": 1
+        },
+        {
+            "name": "Boys Love",
+            "count": 1
+        }
+    ],
+    "themes": [
+        {
+            "name": "School",
+            "count": 183
+        },
+        {
+            "name": "Isekai",
+            "count": 85
+        },
+        {
+            "name": "CGDCT",
+            "count": 68
+        },
+        {
+            "name": "Adult Cast",
+            "count": 53
+        },
+        {
+            "name": "Reincarnation",
+            "count": 49
+        },
+        {
+            "name": "Iyashikei",
+            "count": 41
+        },
+        {
+            "name": "Workplace",
+            "count": 35
+        },
+        {
+            "name": "Love Status Quo",
+            "count": 27
+        },
+        {
+            "name": "Otaku Culture",
+            "count": 26
+        },
+        {
+            "name": "Harem",
+            "count": 21
+        },
+        {
+            "name": "Historical",
+            "count": 20
+        },
+        {
+            "name": "Music",
+            "count": 17
+        },
+        {
+            "name": "Gag Humor",
+            "count": 16
+        },
+        {
+            "name": "Childcare",
+            "count": 16
+        },
+        {
+            "name": "Mythology",
+            "count": 16
+        },
+        {
+            "name": "Performing Arts",
+            "count": 15
+        },
+        {
+            "name": "Urban Fantasy",
+            "count": 14
+        },
+        {
+            "name": "Parody",
+            "count": 14
+        },
+        {
+            "name": "Super Power",
+            "count": 13
+        },
+        {
+            "name": "Anthropomorphic",
+            "count": 10
+        },
+        {
+            "name": "Visual Arts",
+            "count": 9
+        },
+        {
+            "name": "Medical",
+            "count": 8
+        },
+        {
+            "name": "Gore",
+            "count": 8
+        },
+        {
+            "name": "Survival",
+            "count": 8
+        },
+        {
+            "name": "Video Game",
+            "count": 7
+        },
+        {
+            "name": "Love Polygon",
+            "count": 7
+        },
+        {
+            "name": "Pets",
+            "count": 6
+        },
+        {
+            "name": "Villainess",
+            "count": 5
+        },
+        {
+            "name": "Organized Crime",
+            "count": 5
+        },
+        {
+            "name": "Vampire",
+            "count": 5
+        },
+        {
+            "name": "Military",
+            "count": 5
+        },
+        {
+            "name": "Time Travel",
+            "count": 4
+        },
+        {
+            "name": "Strategy Game",
+            "count": 4
+        },
+        {
+            "name": "Mecha",
+            "count": 4
+        },
+        {
+            "name": "Space",
+            "count": 4
+        },
+        {
+            "name": "Crossdressing",
+            "count": 3
+        },
+        {
+            "name": "Mahou Shoujo",
+            "count": 3
+        },
+        {
+            "name": "Psychological",
+            "count": 2
+        },
+        {
+            "name": "Educational",
+            "count": 2
+        },
+        {
+            "name": "Magical Sex Shift",
+            "count": 2
+        },
+        {
+            "name": "Racing",
+            "count": 2
+        },
+        {
+            "name": "Reverse Harem",
+            "count": 1
+        },
+        {
+            "name": "High Stakes Game",
+            "count": 1
+        },
+        {
+            "name": "Samurai",
+            "count": 1
+        },
+        {
+            "name": "Detective",
+            "count": 1
+        }
+    ],
+    "demographics": [
+        {
+            "name": "Shounen",
+            "count": 107
+        },
+        {
+            "name": "Seinen",
+            "count": 70
+        },
+        {
+            "name": "Shoujo",
+            "count": 30
+        },
+        {
+            "name": "Josei",
+            "count": 8
+        },
+        {
+            "name": "Kids",
+            "count": 1
+        }
+    ]
+}

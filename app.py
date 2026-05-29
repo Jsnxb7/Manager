@@ -24,6 +24,14 @@ MANGA_IMAGE_FOLDER = os.path.join(BASE_PATH, "static", "manga_images")
 DEFAULT_MANGA_IMAGE = os.path.join(BASE_PATH, "static", "placeholder.jpg")
 DATA_FILE_SEC = os.path.join(BASE_PATH, 'data', 'sections.json')
 DATA_FOLDER = os.path.join(BASE_PATH, 'data')
+ANIME_TAGS_FILE = os.path.join(BASE_PATH, 'data', 'unique_anime_tags.json')
+ALLOWED_IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "avif", "webp", "gif"}
+IMAGE_EXTENSION_ORDER = ["jpg", "png", "jpeg", "avif", "webp", "gif"]
+WINDOWS_RESERVED_NAMES = {
+    "con", "prn", "aux", "nul",
+    "com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8", "com9",
+    "lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9"
+}
 
 # Ensure folders exist
 if not os.path.exists(STATIC_FOLDER) or not os.path.exists(TEMPLATES_FOLDER):
@@ -31,6 +39,126 @@ if not os.path.exists(STATIC_FOLDER) or not os.path.exists(TEMPLATES_FOLDER):
     sys.exit(1)
 
 app = Flask(__name__, static_folder=STATIC_FOLDER, template_folder=TEMPLATES_FOLDER)
+
+
+def allowed_image_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
+
+
+def normalize_compare(value):
+    return (value or "").strip().casefold()
+
+
+def secure_path_title(title):
+    cleaned = "".join("-" if char in '<>:"/\\|?*\x00' else char for char in (title or "").strip())
+    cleaned = " ".join(cleaned.split()).strip(" .")
+    if not cleaned:
+        return ""
+    if cleaned.casefold() in WINDOWS_RESERVED_NAMES:
+        cleaned = f"{cleaned}_"
+    return cleaned
+
+
+def title_security_info(title):
+    safe_title = secure_path_title(title)
+    original = (title or "").strip()
+    return {
+        "safe_title": safe_title,
+        "is_safe": bool(safe_title) and safe_title == original,
+        "has_title": bool(original),
+        "message": "Title is safe for filenames." if safe_title and safe_title == original else "Title will be saved with a safe filename."
+    }
+
+
+def title_to_image_filename(title, extension):
+    return f"{secure_path_title(title)}.{extension.lower()}"
+
+
+def image_filename_candidates(title, extension):
+    extension = extension.lower()
+    candidates = [title_to_image_filename(title, extension)]
+    legacy = f"{(title or '').strip()}.{extension}"
+    if legacy not in candidates:
+        candidates.append(legacy)
+    return candidates
+
+
+def save_uploaded_thumbnail(file_storage, title, image_folder):
+    if not file_storage or not file_storage.filename:
+        return None
+
+    original_filename = secure_filename(file_storage.filename)
+    if not allowed_image_file(original_filename):
+        return None
+
+    os.makedirs(image_folder, exist_ok=True)
+    extension = original_filename.rsplit(".", 1)[1].lower()
+    filename = title_to_image_filename(title, extension)
+    if filename.startswith("."):
+        return None
+    file_storage.save(os.path.join(image_folder, filename))
+    return filename
+
+
+def find_duplicate(data, fields):
+    for item in data:
+        if all(normalize_compare(item.get(key)) == normalize_compare(value) for key, value in fields.items()):
+            return item
+    return None
+
+
+def find_same_title(data, title):
+    return [item for item in data if normalize_compare(item.get("title")) == normalize_compare(title)]
+
+
+def build_validation_payload(data, fields):
+    title = fields.get("title", "")
+    exact_duplicate = find_duplicate(data, fields)
+    same_title = find_same_title(data, title) if title else []
+    security = title_security_info(title)
+
+    return {
+        **security,
+        "exact_duplicate": exact_duplicate is not None,
+        "same_title_count": len(same_title),
+        "can_submit": security["has_title"] and bool(security["safe_title"]) and exact_duplicate is None,
+        "duplicate_message": "This exact entry already exists." if exact_duplicate else (
+            "This title exists, but the other fields are different." if same_title else "No matching title found."
+        )
+    }
+
+
+@app.route("/api/validate-entry")
+def validate_entry():
+    entry_type = request.args.get("type", "")
+    title = request.args.get("title", "")
+    status = request.args.get("status", "")
+    link = request.args.get("link", "")
+    season = request.args.get("season", "")
+
+    if entry_type == "anime":
+        payload = build_validation_payload(load_anime_data(), {
+            "title": title,
+            "season": season,
+            "status": status
+        })
+    elif entry_type == "manga":
+        payload = build_validation_payload(load_manga_data(), {
+            "title": title,
+            "status": status,
+            "link": link
+        })
+    elif entry_type == "section":
+        section = normalize_section(request.args.get("section", ""))
+        payload = build_validation_payload(load_section_data(section), {
+            "title": title,
+            "status": status,
+            "link": link
+        })
+    else:
+        return jsonify({"error": "Unknown entry type"}), 400
+
+    return jsonify(payload)
 
 
 def get_section_paths(section):
@@ -66,20 +194,39 @@ def save_section_data(section, data):
     with open(paths["DATA_FILE"], "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
 
+def find_by_id(data, item_id):
+    return next((item for item in data if item.get("id") == item_id), None)
+
+def renumber_anime_episodes(anime):
+    directory = anime.get("directory", "")
+    episodes = sorted(anime.get("episodes", []), key=lambda episode: episode.get("number", 0))
+
+    for index, episode in enumerate(episodes, start=1):
+        episode["number"] = index
+        episode["title"] = episode.get("title") or f"Episode {index}"
+        if directory:
+            episode["file_path"] = os.path.join(directory, f"{index}.mp4").replace("\\", "/")
+
+    anime["episodes"] = episodes
+    return episodes
+
 def get_section_image(section, title):
     paths = get_section_paths(section)
 
-    for ext in ["jpg", "png", "jpeg", "avif"]:
-        filename = f"{title}.{ext}"
-        filepath = os.path.join(paths["IMAGE_FOLDER"], filename)
+    for ext in IMAGE_EXTENSION_ORDER:
+        for filename in image_filename_candidates(title, ext):
+            filepath = os.path.join(paths["IMAGE_FOLDER"], filename)
 
-        if os.path.exists(filepath):
-            return f"{paths['IMAGE_URL']}/{filename}"
+            if os.path.exists(filepath):
+                return f"{paths['IMAGE_URL']}/{filename}"
 
     return DEFAULT_IMAGE
 
 @app.route("/api/<section>")
 def api_section(section):
+    if section == "anime-tags":
+        return api_anime_tags()
+
     data = load_section_data(section)
 
     for item in data:
@@ -97,6 +244,25 @@ def section_detail(section, item_id):
 
     return render_template(f"{section}_detail.html", item=item)
 
+@app.route("/update_link/<section>/<int:item_id>", methods=["POST"])
+def update_section_link(section, item_id):
+    data = load_section_data(section)
+    item = find_by_id(data, item_id)
+
+    if not item:
+        return jsonify({"status": "error", "message": "Item not found"}), 404
+
+    payload = request.get_json(silent=True) or {}
+    link = payload.get("link", "").strip()
+
+    if not link:
+        return jsonify({"status": "error", "message": "Missing link"}), 400
+
+    item["link"] = link
+    save_section_data(section, data)
+
+    return jsonify({"status": "success", "link": link})
+
 @app.route("/<section>/add", methods=["GET", "POST"])
 def add_section_item(section):
     section = normalize_section(section)
@@ -106,10 +272,12 @@ def add_section_item(section):
         status = request.form.get("status")
         link = request.form.get("link")
 
-        if not title:
+        if not title or not secure_path_title(title):
             return redirect(url_for("add_section_item", section=section))
 
         data = load_section_data(section)
+        if find_duplicate(data, {"title": title, "status": status, "link": link}):
+            return redirect(url_for("add_section_item", section=section, duplicate=1))
 
         existing_ids = {i["id"] for i in data}
         new_id = 1
@@ -125,13 +293,15 @@ def add_section_item(section):
             "bookmarked": False
         })
 
+        save_uploaded_thumbnail(request.files.get("thumbnail"), title, get_section_paths(section)["IMAGE_FOLDER"])
         save_section_data(section, data)
 
         return redirect(url_for("section_index", section=section))
 
     return render_template(
         "add_section_item.html",
-        section=section.capitalize()
+        section=section.capitalize(),
+        section_slug=section
     )
 
 
@@ -186,11 +356,12 @@ def delete_item_1(section, item_id):
     title = data[index]["title"]
     paths = get_section_paths(section)
 
-    for ext in [".jpg", ".png", ".jpeg", ".avif"]:
-        path = os.path.join(paths["IMAGE_FOLDER"], title + ext)
-        if os.path.exists(path):
-            os.remove(path)
-            break
+    for ext in IMAGE_EXTENSION_ORDER:
+        for filename in image_filename_candidates(title, ext):
+            path = os.path.join(paths["IMAGE_FOLDER"], filename)
+            if os.path.exists(path):
+                os.remove(path)
+                break
 
     data.pop(index)
     save_section_data(section, data)
@@ -266,11 +437,11 @@ def save_manga_data(data):
         json.dump(data, file, indent=4)
 
 def get_manga_image(title):
-    for ext in ["jpg", "png", "jpeg", "avif"]:
-        filename = f"{title}.{ext}"
-        filepath = os.path.join(MANGA_IMAGE_FOLDER, filename)
-        if os.path.exists(filepath):
-            return f"/static/manga_images/{filename}"
+    for ext in IMAGE_EXTENSION_ORDER:
+        for filename in image_filename_candidates(title, ext):
+            filepath = os.path.join(MANGA_IMAGE_FOLDER, filename)
+            if os.path.exists(filepath):
+                return f"/static/manga_images/{filename}"
     return DEFAULT_MANGA_IMAGE
 
 @app.route('/api/manga')
@@ -297,11 +468,17 @@ def manga_detail(manga_id):
 @app.route('/add_manga', methods=['GET', 'POST'])
 def add_manga():
     if request.method == 'POST':
-        title = request.form.get('title').strip()
+        title = request.form.get('title', '').strip()
+        chapters = request.form.get('chapters')
         status = request.form.get('status')
         link = request.form.get("link")
 
+        if not title or not secure_path_title(title):
+            return redirect(url_for('add_manga'))
+
         manga_data = load_manga_data()
+        if find_duplicate(manga_data, {"title": title, "status": status, "link": link}):
+            return redirect(url_for('add_manga', duplicate=1))
         existing_ids = {m["id"] for m in manga_data}
         new_id = 1
         while new_id in existing_ids:
@@ -310,6 +487,7 @@ def add_manga():
         new_manga = {
             "id": new_id,
             "title": title,
+            "chapters": int(chapters) if chapters else None,
             "status": status,
             "link": link,
             "read": False,
@@ -317,6 +495,7 @@ def add_manga():
         }
 
         manga_data.append(new_manga)
+        save_uploaded_thumbnail(request.files.get("thumbnail"), title, MANGA_IMAGE_FOLDER)
         save_manga_data(manga_data)
 
         return redirect(url_for('manga_index'))
@@ -347,6 +526,25 @@ def manga_bookmark(manga_id):
 
     return jsonify({"status": "error"}), 404
 
+@app.route('/update_manga_link/<int:manga_id>', methods=['POST'])
+def update_manga_link(manga_id):
+    manga_data = load_manga_data()
+    manga = find_by_id(manga_data, manga_id)
+
+    if not manga:
+        return jsonify({"status": "error", "message": "Manga not found"}), 404
+
+    payload = request.get_json(silent=True) or {}
+    link = payload.get("link", "").strip()
+
+    if not link:
+        return jsonify({"status": "error", "message": "Missing link"}), 400
+
+    manga["link"] = link
+    save_manga_data(manga_data)
+
+    return jsonify({"status": "success", "link": link})
+
 @app.route('/toggle_manga_status/<int:manga_id>', methods=['POST'])
 def toggle_manga_status(manga_id):
     manga_data = load_manga_data()   # same pattern as anime
@@ -375,11 +573,12 @@ def delete_manga(manga_id):
 
     title = manga_data[index]["title"]
 
-    for ext in [".jpg", ".png", ".jpeg"]:
-        path = os.path.join(MANGA_IMAGE_FOLDER, title + ext)
-        if os.path.exists(path):
-            os.remove(path)
-            break
+    for ext in IMAGE_EXTENSION_ORDER:
+        for filename in image_filename_candidates(title, ext):
+            path = os.path.join(MANGA_IMAGE_FOLDER, filename)
+            if os.path.exists(path):
+                os.remove(path)
+                break
 
     manga_data.pop(index)
     save_manga_data(manga_data)
@@ -403,6 +602,65 @@ def load_anime_data():
 def save_anime_data(data):
     with open(DATA_FILE, 'w') as file:
         json.dump(data, file, indent=4)
+
+def normalize_metadata_values(values):
+    seen = set()
+    normalized = []
+
+    for value in values:
+        clean_value = " ".join(str(value or "").strip().split())
+        key = clean_value.casefold()
+        if clean_value and key not in seen:
+            seen.add(key)
+            normalized.append(clean_value)
+
+    return normalized
+
+def parse_anime_metadata_form():
+    metadata = {}
+
+    for group in ["tags", "genres", "themes", "demographics"]:
+        raw_value = request.form.get(group, "[]")
+        try:
+            parsed = json.loads(raw_value)
+        except json.JSONDecodeError:
+            parsed = []
+        metadata[group] = normalize_metadata_values(parsed if isinstance(parsed, list) else [])
+
+    return metadata
+
+def missing_anime_metadata_groups(metadata):
+    labels = {
+        "genres": "Genres",
+        "themes": "Themes",
+        "demographics": "Demographics",
+        "tags": "Tags"
+    }
+    return [label for group, label in labels.items() if not metadata.get(group)]
+
+def rebuild_unique_anime_tags(anime_data):
+    groups = {"tags": {}, "genres": {}, "themes": {}, "demographics": {}}
+
+    for anime in anime_data:
+        for group in groups:
+            for value in anime.get(group, []) or []:
+                clean_value = " ".join(str(value or "").strip().split())
+                if clean_value:
+                    groups[group][clean_value] = groups[group].get(clean_value, 0) + 1
+
+    payload = {
+        "summary": {f"unique_{group}": len(values) for group, values in groups.items()}
+    }
+    payload.update({
+        group: [
+            {"name": name, "count": count}
+            for name, count in sorted(values.items(), key=lambda item: (-item[1], item[0].lower()))
+        ]
+        for group, values in groups.items()
+    })
+
+    with open(ANIME_TAGS_FILE, "w", encoding="utf-8") as file:
+        json.dump(payload, file, indent=4, ensure_ascii=False)
 
 @app.route('/')
 def hub():
@@ -428,11 +686,11 @@ def index():
     return render_template("index.html", global_queue=enriched_queue)
 
 def get_anime_image(title):
-    for ext in ["jpg", "png", "jpeg"]:
-        filename = f"{title}.{ext}"
-        filepath = os.path.join(IMAGE_FOLDER, filename)
-        if os.path.exists(filepath):
-            return f"/static/anime_images/{filename}"
+    for ext in IMAGE_EXTENSION_ORDER:
+        for filename in image_filename_candidates(title, ext):
+            filepath = os.path.join(IMAGE_FOLDER, filename)
+            if os.path.exists(filepath):
+                return f"/static/anime_images/{filename}"
     return DEFAULT_IMAGE
 
 @app.route('/api/anime')
@@ -441,6 +699,31 @@ def api_anime():
     for anime in anime_data:
         anime["thumbnail_url"] = get_anime_image(anime["title"])
     return jsonify(anime_data)
+
+@app.route('/api/anime-tags')
+def api_anime_tags():
+    if os.path.exists(ANIME_TAGS_FILE):
+        with open(ANIME_TAGS_FILE, 'r', encoding='utf-8') as file:
+            return jsonify(json.load(file))
+
+    anime_data = load_anime_data()
+    groups = {"tags": {}, "genres": {}, "themes": {}, "demographics": {}}
+
+    for anime in anime_data:
+        for group in groups:
+            for value in anime.get(group, []) or []:
+                groups[group][value] = groups[group].get(value, 0) + 1
+
+    return jsonify({
+        "summary": {f"unique_{group}": len(values) for group, values in groups.items()},
+        **{
+            group: [
+                {"name": name, "count": count}
+                for name, count in sorted(values.items(), key=lambda item: (-item[1], item[0].lower()))
+            ]
+            for group, values in groups.items()
+        }
+    })
 
 @app.route('/videos/<int:anime_id>/<path:filename>')
 def serve_video(anime_id, filename):
@@ -568,13 +851,23 @@ def anime_detail(anime_id):
 @app.route('/add_anime', methods=['GET', 'POST'])
 def add_anime():
     if request.method == 'POST':
-        title = request.form.get('title').strip()
-        season = request.form.get('season').strip()
+        title = request.form.get('title', '').strip()
+        season = request.form.get('season', '').strip()
         status = request.form.get('status')
         download_link = request.form.get('download_link')
         episodes = int(request.form.get('episodes'))
+        metadata = parse_anime_metadata_form()
+        missing_metadata = missing_anime_metadata_groups(metadata)
+
+        if not title or not secure_path_title(title):
+            return redirect(url_for('add_anime'))
+
+        if missing_metadata:
+            return redirect(url_for('add_anime', missing_metadata=",".join(missing_metadata)))
 
         anime_data = load_anime_data()
+        if find_duplicate(anime_data, {"title": title, "season": season, "status": status}):
+            return redirect(url_for('add_anime', duplicate=1))
 
         existing_ids = {anime["id"] for anime in anime_data}
         new_id = 1
@@ -604,11 +897,19 @@ def add_anime():
             "status": status,
             "download_link": download_link,
             "directory": directory,
-            "episodes": episodes_list
+            "episodes": episodes_list,
+            "tags": metadata["tags"],
+            "genres": metadata["genres"],
+            "themes": metadata["themes"],
+            "demographics": metadata["demographics"],
+            "tag_source": "manual",
+            "tag_match_status": "manual"
         }
 
         anime_data.append(new_anime)
+        save_uploaded_thumbnail(request.files.get("thumbnail"), title, IMAGE_FOLDER)
         save_anime_data(anime_data)
+        rebuild_unique_anime_tags(anime_data)
 
         return redirect(url_for('index'))
 
@@ -627,6 +928,51 @@ def mark_watched(anime_id, episode_number):
         return jsonify({'status': 'success'})
     return jsonify({'status': 'error'}), 404
 
+@app.route('/anime/<int:anime_id>/episodes', methods=['POST'])
+def add_anime_episode(anime_id):
+    anime_data = load_anime_data()
+    anime = find_by_id(anime_data, anime_id)
+
+    if not anime:
+        return jsonify({'status': 'error', 'message': 'Anime not found'}), 404
+
+    payload = request.get_json(silent=True) or {}
+    next_number = max((episode.get("number", 0) for episode in anime.get("episodes", [])), default=0) + 1
+    episode_title = payload.get("title", "").strip() or f"Episode {next_number}"
+    directory = anime.get("directory", "")
+
+    new_episode = {
+        "number": next_number,
+        "title": episode_title,
+        "watched": False,
+        "file_path": os.path.join(directory, f"{next_number}.mp4").replace("\\", "/") if directory else f"{next_number}.mp4"
+    }
+
+    anime.setdefault("episodes", []).append(new_episode)
+    save_anime_data(anime_data)
+
+    return jsonify({'status': 'success', 'episode': new_episode, 'total_episodes': len(anime["episodes"])})
+
+@app.route('/anime/<int:anime_id>/episodes/<int:episode_number>', methods=['DELETE'])
+def delete_anime_episode(anime_id, episode_number):
+    anime_data = load_anime_data()
+    anime = find_by_id(anime_data, anime_id)
+
+    if not anime:
+        return jsonify({'status': 'error', 'message': 'Anime not found'}), 404
+
+    episodes = anime.get("episodes", [])
+    next_episodes = [episode for episode in episodes if episode.get("number") != episode_number]
+
+    if len(next_episodes) == len(episodes):
+        return jsonify({'status': 'error', 'message': 'Episode not found'}), 404
+
+    anime["episodes"] = next_episodes
+    renumber_anime_episodes(anime)
+    save_anime_data(anime_data)
+
+    return jsonify({'status': 'success', 'episodes': anime["episodes"], 'total_episodes': len(anime["episodes"])})
+
 @app.route('/mark_anime_watched/<int:anime_id>', methods=['POST'])
 def mark_anime_watched(anime_id):
     anime_data = load_anime_data()
@@ -638,6 +984,25 @@ def mark_anime_watched(anime_id):
         return jsonify({'status': 'success'})
 
     return jsonify({'status': 'error'}), 404
+
+@app.route('/update_anime_link/<int:anime_id>', methods=['POST'])
+def update_anime_link(anime_id):
+    anime_data = load_anime_data()
+    anime = find_by_id(anime_data, anime_id)
+
+    if not anime:
+        return jsonify({'status': 'error', 'message': 'Anime not found'}), 404
+
+    payload = request.get_json(silent=True) or {}
+    link = payload.get("link", "").strip()
+
+    if not link:
+        return jsonify({'status': 'error', 'message': 'Missing link'}), 400
+
+    anime["download_link"] = link
+    save_anime_data(anime_data)
+
+    return jsonify({'status': 'success', 'link': link})
 
 @app.route('/delete_anime/<int:anime_id>', methods=['DELETE'])
 def delete_anime(anime_id):
@@ -652,11 +1017,12 @@ def delete_anime(anime_id):
         anime_title = anime['title']
 
         # ---------- Delete anime image ----------
-        for ext in ['.jpg', '.jpeg', '.png']:
-            image_path = os.path.join('static/anime_images', anime_title + ext)
-            if os.path.exists(image_path):
-                os.remove(image_path)
-                break
+        for ext in IMAGE_EXTENSION_ORDER:
+            for filename in image_filename_candidates(anime_title, ext):
+                image_path = os.path.join(IMAGE_FOLDER, filename)
+                if os.path.exists(image_path):
+                    os.remove(image_path)
+                    break
 
         # ---------- Delete season directory ----------
         season_dir = anime.get('directory')
@@ -684,6 +1050,7 @@ def delete_anime(anime_id):
 def get_anime():
     anime_data = load_anime_data()
     for anime in anime_data:
+        anime["thumbnail_url"] = get_anime_image(anime["title"])
         anime["downloaded"] = any(os.path.exists(ep["file_path"]) for ep in anime.get("episodes", []))
     return jsonify(anime_data)
 

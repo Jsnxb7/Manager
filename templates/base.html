@@ -6,6 +6,7 @@
     <title>Anime Manager</title>
     <!-- Video.js CSS -->
     <link href="https://vjs.zencdn.net/7.15.4/video-js.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/uni_style.css') }}">
     <style>
     /* Toggle Button */
 #toggle-queue-btn {
@@ -354,7 +355,7 @@ a:hover {
 </script>
     
 <a href="{{ url_for('hub') }}" class="home-button" style="font-size: 0;">
-    <img src="{{ url_for('static', filename='home.webp  ') }}" alt="Home" style="width: 28px; height: 28px;">
+    <img src="{{ url_for('static', filename='home.webp') }}" alt="Home" style="width: 28px; height: 28px;">
   </a>
 
   <button onclick="history.back()" class="back-button">←</button>

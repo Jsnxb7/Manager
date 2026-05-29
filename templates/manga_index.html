@@ -23,9 +23,32 @@
     <!-- MANGA GRID -->
     <div class="anime-grid" id="manga-grid"></div>
 
+    <!-- PAGINATION -->
+    <div class="pagination-wrap" id="manga-pagination-wrap">
+        <div class="pagination-info" id="manga-page-info">Showing 0 items</div>
+        <div class="pagination-controls">
+            <button class="pagination-btn" id="manga-prev-btn" onclick="prevMangaPage()">Prev</button>
+            <div class="pagination-pages" id="manga-page-buttons"></div>
+            <button class="pagination-btn" id="manga-next-btn" onclick="nextMangaPage()">Next</button>
+        </div>
+        <label class="page-size-label">
+            Per page
+            <select id="manga-page-size" onchange="changeMangaPageSize(this.value)">
+                <option value="8">8</option>
+                <option value="12" selected>12</option>
+                <option value="16">16</option>
+                <option value="24">24</option>
+            </select>
+        </label>
+    </div>
+
 </div>
 
 <script>
+let allMangaData = [];
+let currentMangaData = [];
+let currentMangaPage = 1;
+let mangaItemsPerPage = 12;
 
 // -----------------------------
 // FETCH MANGA
@@ -41,26 +64,45 @@ async function fetchMangaData() {
     }
 }
 
+function getMangaTotalPages() {
+    return Math.max(1, Math.ceil(currentMangaData.length / mangaItemsPerPage));
+}
+
+function setMangaData(list, page = 1) {
+    currentMangaData = [...list];
+    currentMangaPage = Math.min(Math.max(page, 1), getMangaTotalPages());
+    renderMangaPage();
+}
+
+function getMangaPageItems() {
+    const start = (currentMangaPage - 1) * mangaItemsPerPage;
+    return currentMangaData.slice(start, start + mangaItemsPerPage);
+}
+
 // -----------------------------
-// RENDER MANGA LIST
+// RENDER MANGA PAGE
 // -----------------------------
-function renderMangaList(mangaList) {
+function renderMangaPage() {
     const grid = document.getElementById("manga-grid");
     grid.innerHTML = "";
 
-    mangaList.forEach(manga => {
+    const pageItems = getMangaPageItems();
+
+    if (!pageItems.length) {
+        grid.innerHTML = `<div class="empty-state">No manga found.</div>`;
+    }
+
+    pageItems.forEach(manga => {
         const card = document.createElement("div");
         card.className = "anime-card";
         card.id = `manga-${manga.id}`;
         card.setAttribute("data-title", manga.title.toLowerCase());
 
-        // Thumbnail
         const img = document.createElement("img");
         img.className = "anime-thumbnail";
-        img.src = manga.thumbnail_url || "https://via.placeholder.com/250x180?text=No+Image";
+        img.src = manga.thumbnail_url || "/static/placeholder.jpeg";
         img.alt = manga.title;
 
-        // Info section
         const info = document.createElement("div");
         info.className = "anime-info";
 
@@ -74,97 +116,128 @@ function renderMangaList(mangaList) {
 
         info.append(title, status);
 
-        // Actions (BOTTOM)
         const actions = document.createElement("div");
         actions.className = "anime-actions";
 
-        // VIEW BUTTON
         const viewBtn = document.createElement("a");
         viewBtn.href = manga.link;
         viewBtn.target = "_blank";
         viewBtn.className = "view-button";
         viewBtn.textContent = "View Manga";
 
-        // READ BUTTON
+        const editLinkBtn = document.createElement("button");
+        editLinkBtn.className = "mark-watched-button";
+        editLinkBtn.textContent = "Edit Link";
+        editLinkBtn.onclick = () => updateMangaLink(manga.id, viewBtn);
+
         const readBtn = document.createElement("button");
         readBtn.className = "mark-watched-button";
         readBtn.textContent = manga.read ? "Read ✅" : "Mark as Read";
         readBtn.onclick = () => toggleMangaRead(manga.id, readBtn);
 
-        // BOOKMARK BUTTON
         const bookmarkBtn = document.createElement("button");
         bookmarkBtn.className = "mark-watched-button";
         bookmarkBtn.textContent = manga.bookmarked ? "Bookmarked ⭐" : "Bookmark 🔖";
         bookmarkBtn.onclick = () => toggleMangaBookmark(manga.id, bookmarkBtn);
 
-        // STATUS TOGGLE BUTTON
         const statusBtn = document.createElement("button");
         statusBtn.className = "mark-watched-button";
-        statusBtn.textContent =
-            manga.status.toLowerCase() === "ongoing"
-                ? "Mark Completed"
-                : "Mark Ongoing";
+        statusBtn.textContent = manga.status.toLowerCase() === "ongoing" ? "Mark Completed" : "Mark Ongoing";
         statusBtn.onclick = () => toggleMangaStatus(manga.id, status, statusBtn);
 
-        // DELETE BUTTON
         const deleteBtn = document.createElement("button");
         deleteBtn.className = "delete-button";
         deleteBtn.textContent = "Delete";
         deleteBtn.onclick = () => deleteManga(manga.id);
 
-        actions.append(viewBtn, readBtn, bookmarkBtn, statusBtn, deleteBtn);
-
-        // Final structure
+        actions.append(viewBtn, editLinkBtn, readBtn, bookmarkBtn, statusBtn, deleteBtn);
         card.append(img, info, actions);
         grid.appendChild(card);
     });
+
+    renderMangaPagination();
 }
 
+function renderMangaPagination() {
+    const totalPages = getMangaTotalPages();
+    const total = currentMangaData.length;
+    const start = total ? ((currentMangaPage - 1) * mangaItemsPerPage) + 1 : 0;
+    const end = Math.min(currentMangaPage * mangaItemsPerPage, total);
+
+    document.getElementById("manga-page-info").textContent =
+        total ? `Showing ${start}-${end} of ${total}` : "Showing 0 items";
+
+    document.getElementById("manga-prev-btn").disabled = currentMangaPage <= 1;
+    document.getElementById("manga-next-btn").disabled = currentMangaPage >= totalPages;
+
+    const pageButtons = document.getElementById("manga-page-buttons");
+    pageButtons.innerHTML = "";
+
+    const windowSize = 5;
+    let first = Math.max(1, currentMangaPage - Math.floor(windowSize / 2));
+    let last = Math.min(totalPages, first + windowSize - 1);
+    first = Math.max(1, last - windowSize + 1);
+
+    for (let page = first; page <= last; page++) {
+        const btn = document.createElement("button");
+        btn.className = `pagination-page ${page === currentMangaPage ? "active" : ""}`;
+        btn.textContent = page;
+        btn.onclick = () => goToMangaPage(page);
+        pageButtons.appendChild(btn);
+    }
+}
+
+function goToMangaPage(page) {
+    currentMangaPage = Math.min(Math.max(page, 1), getMangaTotalPages());
+    renderMangaPage();
+    document.querySelector(".anime-list")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function prevMangaPage() {
+    goToMangaPage(currentMangaPage - 1);
+}
+
+function nextMangaPage() {
+    goToMangaPage(currentMangaPage + 1);
+}
+
+function changeMangaPageSize(value) {
+    mangaItemsPerPage = parseInt(value, 10) || 12;
+    goToMangaPage(1);
+}
+
+function syncMangaItem(id, changes) {
+    allMangaData = allMangaData.map(item => item.id === id ? { ...item, ...changes } : item);
+    currentMangaData = currentMangaData.map(item => item.id === id ? { ...item, ...changes } : item);
+}
 
 function toggleMangaStatus(mangaId, statusEl, btn) {
     fetch(`/toggle_manga_status/${mangaId}`, { method: "POST" })
         .then(res => res.json())
         .then(data => {
+            syncMangaItem(mangaId, { status: data.status });
             statusEl.textContent = `Status: ${data.status}`;
-            btn.textContent =
-                data.status.toLowerCase() === "ongoing"
-                    ? "Mark Completed"
-                    : "Mark Ongoing";
+            btn.textContent = data.status.toLowerCase() === "ongoing" ? "Mark Completed" : "Mark Ongoing";
         });
 }
 
-
-// -----------------------------
-// SORT: BOOKMARKED FIRST
-// -----------------------------
 async function sortBookmarkedFirst() {
-    const mangaData = await fetchMangaData();
-
-    const sorted = mangaData.sort((a, b) => {
-        return (b.bookmarked === true) - (a.bookmarked === true);
-    });
-
-    renderMangaList(sorted);
+    const sorted = [...currentMangaData].sort((a, b) => (b.bookmarked === true) - (a.bookmarked === true));
+    setMangaData(sorted, 1);
 }
 
-// -----------------------------
-// RESET FILTERS
-// -----------------------------
 async function resetFilters() {
-    const mangaData = await fetchMangaData();
-    renderMangaList(mangaData);
     document.getElementById("search-bar").value = "";
+    setMangaData(allMangaData, 1);
 }
 
-// -----------------------------
-// MARK AS READ
-// -----------------------------
 async function toggleMangaRead(id, button) {
     try {
         const res = await fetch(`/mark_manga_read/${id}`, { method: "POST" });
         const data = await res.json();
 
         if (data.status === "success") {
+            syncMangaItem(id, { read: data.read });
             button.textContent = data.read ? "Read ✅" : "Mark as Read";
         }
     } catch (err) {
@@ -172,15 +245,13 @@ async function toggleMangaRead(id, button) {
     }
 }
 
-// -----------------------------
-// BOOKMARK TOGGLE
-// -----------------------------
 async function toggleMangaBookmark(id, button) {
     try {
         const res = await fetch(`/manga_bookmark/${id}`, { method: "POST" });
         const data = await res.json();
 
         if (data.status === "success") {
+            syncMangaItem(id, { bookmarked: data.bookmarked });
             button.textContent = data.bookmarked ? "Bookmarked ⭐" : "Bookmark 🔖";
         }
     } catch (err) {
@@ -188,74 +259,77 @@ async function toggleMangaBookmark(id, button) {
     }
 }
 
-// -----------------------------
-// DELETE MANGA
-// -----------------------------
 async function deleteManga(id) {
     if (!confirm("Delete this manga?")) return;
 
     try {
         const res = await fetch(`/delete_manga/${id}`, { method: "DELETE" });
         if (res.ok) {
-            document.getElementById(`manga-${id}`).remove();
+            allMangaData = allMangaData.filter(item => item.id !== id);
+            currentMangaData = currentMangaData.filter(item => item.id !== id);
+            if (currentMangaPage > getMangaTotalPages()) currentMangaPage = getMangaTotalPages();
+            renderMangaPage();
         }
     } catch (err) {
         console.error("Error deleting manga:", err);
     }
 }
 
-// -----------------------------
-// FILTER: SEARCH
-// -----------------------------
+async function updateMangaLink(id, viewBtn) {
+    const link = prompt("Update manga link", viewBtn.href || "");
+    if (link === null) return;
+
+    const trimmed = link.trim();
+    if (!trimmed) {
+        alert("Link cannot be empty.");
+        return;
+    }
+
+    try {
+        const res = await fetch(`/update_manga_link/${id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ link: trimmed })
+        });
+        const data = await res.json();
+
+        if (data.status === "success") {
+            syncMangaItem(id, { link: data.link });
+            viewBtn.href = data.link;
+        } else {
+            alert(data.message || "Failed to update link");
+        }
+    } catch (err) {
+        console.error("Error updating manga link:", err);
+    }
+}
+
 function filterManga() {
-    const q = document.getElementById("search-bar").value.toLowerCase();
-    document.querySelectorAll(".anime-card").forEach(card => {
-        const title = card.getAttribute("data-title");
-        card.style.display = title.includes(q) ? "flex" : "none";
-    });
+    const q = document.getElementById("search-bar").value.toLowerCase().trim();
+    const filtered = allMangaData.filter(manga => manga.title.toLowerCase().includes(q));
+    setMangaData(filtered, 1);
 }
 
-// -----------------------------
-// FILTER: UNREAD FIRST
-// -----------------------------
 function filterUnreadManga() {
-    const grid = document.getElementById("manga-grid");
-    const cards = Array.from(grid.children);
-
-    const unread = cards.filter(card =>
-        card.querySelector(".mark-watched-button").textContent.includes("Mark")
-    );
-
-    const others = cards.filter(card => !unread.includes(card));
-
-    grid.innerHTML = "";
-    unread.concat(others).forEach(c => grid.appendChild(c));
+    const sorted = [...currentMangaData].sort((a, b) => (a.read === true) - (b.read === true));
+    setMangaData(sorted, 1);
 }
 
-// -----------------------------
-// FILTER: ONGOING FIRST
-// -----------------------------
 function filterOngoingManga() {
-    const grid = document.getElementById("manga-grid");
-    const cards = Array.from(grid.children);
-
-    const ongoing = cards.filter(card =>
-        card.querySelector(".anime-status").textContent.toLowerCase() === "ongoing"
-    );
-
-    const others = cards.filter(card => !ongoing.includes(card));
-
-    grid.innerHTML = "";
-    ongoing.concat(others).forEach(c => grid.appendChild(c));
+    const sorted = [...currentMangaData].sort((a, b) => {
+        const aOngoing = String(a.status || "").toLowerCase() === "ongoing";
+        const bOngoing = String(b.status || "").toLowerCase() === "ongoing";
+        return (bOngoing === true) - (aOngoing === true);
+    });
+    setMangaData(sorted, 1);
 }
 
 // -----------------------------
 // PAGE LOAD
 // -----------------------------
 document.addEventListener("DOMContentLoaded", async () => {
-    const manga = await fetchMangaData();
-    renderMangaList(manga);
+    allMangaData = await fetchMangaData();
+    setMangaData(allMangaData, 1);
 });
-
 </script>
 {% endblock %}

@@ -6,531 +6,435 @@
     Your browser does not support the video tag.
 </video>
 
-    <div class="anime-list">
-        <!-- "Show Ongoing Anime" Button -->
-        <button class="add-anime-button" onclick="resetFilters()">Reset Filters</button>
-        <button class="add-anime-button" onclick="filterUnwatchedAnime()">Unwatched Anime</button>
-        <button class="add-anime-button" onclick="filterOngoingAnime()">Ongoing Anime</button>
-        <button class="add-anime-button" onclick="sortBookmarkedFirst()">Sort Bookmarked First</button>
+<div class="anime-list">
+    <input type="text" id="search-bar" class="search-bar" placeholder="Search anime..." onkeyup="filterAnime()">
+
+    <details class="filter-accordion">
+        <summary>Filters</summary>
+        <div class="filter-accordion-body">
+            <details class="filter-section" open>
+                <summary>Quick Filters</summary>
+                <div class="filter-actions">
+                    <button class="add-anime-button" onclick="resetFilters()">Reset Filters</button>
+                    <button class="add-anime-button" onclick="filterUnwatchedAnime()">Unwatched Anime</button>
+                    <button class="add-anime-button" onclick="filterOngoingAnime()">Ongoing Anime</button>
+                    <button class="add-anime-button" onclick="sortBookmarkedFirst()">Sort Bookmarked First</button>
+                </div>
+            </details>
+
+            <div id="anime-tag-filters" class="tag-filter-groups"></div>
+        </div>
+    </details>
+
+    <div class="anime-grid" id="anime-grid"></div>
+
+    <div class="pagination-wrap" id="anime-pagination-wrap">
+        <div class="pagination-info" id="anime-page-info">Showing 0 anime</div>
+        <div class="pagination-controls">
+            <button class="pagination-btn" id="anime-prev-btn" onclick="prevPage()">Prev</button>
+            <div class="pagination-pages" id="anime-page-buttons"></div>
+            <button class="pagination-btn" id="anime-next-btn" onclick="nextPage()">Next</button>
+        </div>
+        <label class="page-size-label">
+            Per page
+            <select id="anime-page-size" onchange="changePageSize(this.value)">
+                <option value="8">8</option>
+                <option value="12" selected>12</option>
+                <option value="16">16</option>
+                <option value="24">24</option>
+            </select>
+        </label>
+    </div>
+</div>
+
+<a href="{{ url_for('add_anime') }}" class="floating-add-anime" aria-label="Add new anime" title="Add New Anime">
+    +
+</a>
+
 <script>
+let allAnimeData = [];
+let currentAnimeData = [];
+let currentPage = 1;
+let itemsPerPage = 12;
+let animeTagCatalog = {};
+const activeTagFilters = {
+    tags: new Set(),
+    genres: new Set(),
+    themes: new Set(),
+    demographics: new Set()
+};
 
-async function sortBookmarkedFirst() {
-    const animeData = await fetchAnimeData();
+async function fetchAnimeData() {
+    try {
+        const response = await fetch('/api/anime');
+        if (!response.ok) throw new Error('Failed to fetch anime data');
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching anime data:', error);
+        return [];
+    }
+}
 
-    const sorted = animeData.sort((a, b) => {
-        const aBookmarked = a.bookmarked === true;
-        const bBookmarked = b.bookmarked === true;
-        return (bBookmarked - aBookmarked); // true comes first
+async function fetchAnimeTagCatalog() {
+    try {
+        const response = await fetch('/api/anime-tags');
+        if (!response.ok) throw new Error('Failed to fetch anime tags');
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching anime tag filters:', error);
+        return {};
+    }
+}
+
+function getAnimeValues(anime, group) {
+    return Array.isArray(anime[group]) ? anime[group] : [];
+}
+
+function animeMatchesSelectedTags(anime) {
+    return Object.entries(activeTagFilters).every(([group, selected]) => {
+        if (!selected.size) return true;
+        const values = getAnimeValues(anime, group).map(value => String(value).toLowerCase());
+        return [...selected].some(value => values.includes(value.toLowerCase()));
     });
-
-    renderAnimeList(sorted);
 }
 
-    
-    async function resetFilters() {
-    const animeData = await fetchAnimeData(); // Fetch original data
-    renderAnimeList(animeData); // Re-render the list
-}
-    function filterOngoingAnime() {
-        const animeGrid = document.getElementById('anime-grid');
-        const animeCards = Array.from(animeGrid.children);
+function animeMatchesSearch(anime, query) {
+    if (!query) return true;
 
-        // Separate ongoing and other anime
-        const ongoingAnime = animeCards.filter(card => {
-            return card.querySelector('.anime-status').textContent.trim().toLowerCase() === 'ongoing';
+    const searchable = [
+        anime.title,
+        anime.season,
+        anime.status,
+        ...(anime.tags || []),
+        ...(anime.genres || []),
+        ...(anime.themes || []),
+        ...(anime.demographics || [])
+    ];
+
+    return searchable.some(value => String(value || '').toLowerCase().includes(query));
+}
+
+function getFilteredAnimeData() {
+    const query = document.getElementById('search-bar').value.toLowerCase().trim();
+    return allAnimeData.filter(anime => animeMatchesSearch(anime, query) && animeMatchesSelectedTags(anime));
+}
+
+function applyAnimeFilters(page = 1) {
+    setAnimeData(getFilteredAnimeData(), page);
+}
+
+function renderAnimeTagFilters() {
+    const container = document.getElementById('anime-tag-filters');
+    if (!container) return;
+
+    const groups = [
+        ['genres', 'Genres'],
+        ['themes', 'Themes'],
+        ['demographics', 'Demographics'],
+        ['tags', 'Tags']
+    ];
+
+    container.innerHTML = '';
+
+    groups.forEach(([key, label]) => {
+        const items = Array.isArray(animeTagCatalog[key]) ? animeTagCatalog[key] : [];
+        if (!items.length) return;
+
+        const details = document.createElement('details');
+        details.className = 'filter-section tag-filter-section';
+
+        const summary = document.createElement('summary');
+        summary.textContent = label;
+
+        const options = document.createElement('div');
+        options.className = 'tag-filter-options';
+
+        items.forEach(item => {
+            const name = typeof item === 'string' ? item : item.name;
+            const count = typeof item === 'string' ? null : item.count;
+            if (!name) return;
+
+            const option = document.createElement('label');
+            option.className = 'tag-filter-option';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = name;
+            checkbox.dataset.group = key;
+            checkbox.addEventListener('change', () => {
+                if (checkbox.checked) {
+                    activeTagFilters[key].add(name);
+                } else {
+                    activeTagFilters[key].delete(name);
+                }
+                applyAnimeFilters(1);
+            });
+
+            const text = document.createElement('span');
+            text.textContent = count ? `${name} (${count})` : name;
+
+            option.append(checkbox, text);
+            options.appendChild(option);
         });
 
-        const otherAnime = animeCards.filter(card => !ongoingAnime.includes(card));
-
-        // Clear grid and append sorted elements
-        animeGrid.innerHTML = '';
-        ongoingAnime.forEach(card => animeGrid.appendChild(card));
-        otherAnime.forEach(card => animeGrid.appendChild(card));
-    }
-
-    function filterUnwatchedAnime() {
-    const animeGrid = document.getElementById('anime-grid');
-    const animeCards = Array.from(animeGrid.children);
-
-    // Separate unwatched and other anime
-    const unwatchedAnime = animeCards.filter(card => {
-        const watchedStatus = card.querySelector('.mark-watched-button').textContent.trim().toLowerCase();
-        return watchedStatus === "mark as watched"; // Treat null or unwatched as unwatched
+        details.append(summary, options);
+        container.appendChild(details);
     });
-
-    const otherAnime = animeCards.filter(card => !unwatchedAnime.includes(card));
-
-    // Clear grid and append sorted elements
-    animeGrid.innerHTML = '';
-    unwatchedAnime.forEach(card => animeGrid.appendChild(card));
-    otherAnime.forEach(card => animeGrid.appendChild(card));
-}
-</script>
-
-        <a href="{{ url_for('add_anime') }}" style="color: #ffffff;"><button class="add-anime-button">Add New Anime</button></a>
-
-        <!-- Search Bar -->
-        <input type="text" id="search-bar" class="search-bar" placeholder="Search anime..." onkeyup="filterAnime()">
-
-        <!-- Anime Grid Container -->
-        <div class="anime-grid" id="anime-grid">
-            <!-- Anime cards will be dynamically inserted here -->
-        </div>
-    </div>
-    
-
-    <style>
-body {
-    font-family: "Comic Sans MS", sans-serif;
-    margin: 0;
-    padding: 0;
-    color: #e5e7eb;
-    background: none;
-    overflow-x: hidden;
 }
 
-/* Subtle overlay for readability */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.85));
-    z-index: -1;
+function getTotalPages() {
+    return Math.max(1, Math.ceil(currentAnimeData.length / itemsPerPage));
 }
 
-.video-background {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: -2;
-}
-/* Content Container */
-.content {
-    position: relative;
-    z-index: 1;
-    padding: 20px;
-    text-align: center;
+function setAnimeData(items, page = 1) {
+    currentAnimeData = [...items];
+    currentPage = Math.min(Math.max(page, 1), getTotalPages());
+    renderAnimePage();
 }
 
-.search-bar {
-    width: 100%;
-    max-width: 420px;
-    padding: 12px 16px;
-    margin: 20px auto;
-    display: block;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.2);
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(10px);
-    color: white;
-    font-size: 0.95rem;
-    transition: 0.2s ease;
+function getPageItems() {
+    const start = (currentPage - 1) * itemsPerPage;
+    return currentAnimeData.slice(start, start + itemsPerPage);
 }
 
-.search-bar:focus {
-    border-color: #60a5fa;
-    box-shadow: 0 0 10px rgba(96,165,250,0.5);
-}
-/* Anime Grid Layout */
-.anime-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 20px;
-    padding: 10px;
-}
-.anime-card {
-    display: flex;
-    gap: 14px;
-    padding: 14px;
-    border-radius: 16px;
-
-    background: rgba(255,255,255,0.06);
-    backdrop-filter: blur(14px);
-
-    border: 1px solid rgba(255,255,255,0.1);
-
-    transition: all 0.25s ease;
-}
-
-.anime-card:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-}
-.anime-card img {
-    width: 120px; /* Smaller image */
-    height: 100%;
-    object-fit: cover;
-    border-radius: 10px 10px 10px 10px; /* Rounded corners on the left */
-}
-
-.anime-card .info {
-    flex: 1; /* Expands text to fill space */
-    padding: 10px;
-    color: white;
-}
-
-
-.anime-thumbnail {
-    width: 100px;
-    height: 140px;
-    object-fit: cover;
-    border-radius: 10px;
-}
-.anime-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.anime-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: white;
-}
-
-.anime-season {
-    font-size: 0.9rem;
-    color: #9ca3af;
-}
-
-.anime-status {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #4ade80;
-}
-
-/* Buttons */
-.anime-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 10px;
-}
-/* Individual Buttons */
-button {
-    border: none;
-    border-radius: 10px;
-    padding: 6px 10px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-.view-button {
-    border: none;
-    border-radius: 10px;
-    padding: 6px 10px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: 0.2s ease;
-    background: #2563eb;
-    color: white;
-}
-
-.view-button:hover {
-    background: #3b82f6;
-    box-shadow: 0 0 10px rgba(59,130,246,0.7);
-}
-
-.mark-watched-button {
-    background: rgba(34,197,94,0.2);
-    color: #4ade80;
-}
-
-.mark-watched-button:hover {
-    background: rgba(34,197,94,0.4);
-}
-
-.delete-button {
-    background: rgba(239,68,68,0.2);
-    color: #f87171;
-}
-
-.delete-button:hover {
-    background: rgba(239,68,68,0.4);
-}
-.floating-queue {
-    position: fixed;
-    top: 100px;
-    right: 20px;
-    width: 280px;
-    background-color: rgba(30, 30, 30, 0.95);
-    color: #eee;
-    border: 1px solid #444;
-    padding: 15px;
-    border-radius: 10px;
-    font-family: sans-serif;
-    z-index: 999;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-}
-
-.floating-queue h4 {
-    margin-top: 0;
-    margin-bottom: 8px;
-    font-size: 15px;
-    color: #ffc107;
-}
-
-.floating-queue li {
-    font-size: 13px;
-    line-height: 1.4;
-}
-
-.next-button {
-    background-color: #ffc107;
-    border: none;
-    padding: 6px 12px;
-    font-weight: bold;
-    color: #222;
-    border-radius: 6px;
-    cursor: pointer;
-}
-.add-anime-button {
-    margin: 5px;
-    padding: 10px 14px;
-    border-radius: 12px;
-    border: none;
-
-    background: rgba(255,255,255,0.08);
-    color: white;
-
-    backdrop-filter: blur(10px);
-    transition: 0.2s ease;
-}
-
-.add-anime-button:hover {
-    background: rgba(255,255,255,0.15);
-}
-@media (max-width: 600px) {
-    .anime-card {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-
-    .anime-thumbnail {
-        width: 100%;
-        height: 200px;
-    }
-}
-    </style>
-
-</div>
-    <script>
-        // Function to fetch anime data from the server
-        async function fetchAnimeData() {
-            try {
-                const response = await fetch('/api/anime');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch anime data');
-                }
-                return await response.json();
-            } catch (error) {
-                console.error('Error fetching anime data:', error);
-                return [];
-            }
-        }
-
-        function renderAnimeList(animeData) {
+function renderAnimePage() {
     const animeGrid = document.getElementById('anime-grid');
-    animeGrid.innerHTML = ''; // Clear existing content
+    animeGrid.innerHTML = '';
 
-    animeData.forEach(anime => {
+    const pageItems = getPageItems();
+
+    if (!pageItems.length) {
+        animeGrid.innerHTML = `<div class="empty-state">No anime found.</div>`;
+    }
+
+    pageItems.forEach(anime => {
         const animeCard = document.createElement('div');
         animeCard.className = 'anime-card';
         animeCard.id = `anime-${anime.id}`;
-        animeCard.setAttribute("data-title", anime.title.toLowerCase());
+        animeCard.dataset.title = (anime.title || '').toLowerCase();
 
         const animeThumbnail = document.createElement('img');
         animeThumbnail.className = 'anime-thumbnail';
-        animeThumbnail.src = anime.thumbnail_url || 'https://via.placeholder.com/250x180?text=No+Image';
-        animeThumbnail.alt = anime.title;
+        animeThumbnail.src = anime.thumbnail_url || '/static/placeholder.jpeg';
+        animeThumbnail.alt = anime.title || 'Anime thumbnail';
+        animeThumbnail.onerror = function () {
+            this.onerror = null;
+            this.src = '/static/placeholder.jpeg';
+        };
 
         const animeInfo = document.createElement('div');
         animeInfo.className = 'anime-info';
 
         const animeTitle = document.createElement('div');
         animeTitle.className = 'anime-title';
-        animeTitle.textContent = anime.title;
+        animeTitle.textContent = anime.title || 'Untitled';
 
         const animeSeason = document.createElement('div');
         animeSeason.className = 'anime-season';
-        animeSeason.textContent = `Season: ${anime.season}`;
+        animeSeason.textContent = `Season: ${anime.season || 'N/A'}`;
 
         const animeStatus = document.createElement('div');
         animeStatus.className = 'anime-status';
-        animeStatus.textContent = anime.status;
+        animeStatus.textContent = anime.status || 'Ongoing';
 
-        // Actions container
         const animeActions = document.createElement('div');
         animeActions.className = 'anime-actions';
-        
-// View Button
+
         const viewButton = document.createElement('a');
         viewButton.className = 'view-button';
         viewButton.href = `/anime/${anime.id}`;
         viewButton.textContent = 'View Anime';
 
-        // Mark as Watched Button
         const markWatchedButton = document.createElement('button');
         markWatchedButton.className = 'mark-watched-button';
-        markWatchedButton.textContent = anime.watched ? "Watched ✅" : "Mark as Watched";
-        markWatchedButton.onclick = async () => {
-            await toggleAnimeWatched(anime.id, markWatchedButton);
-        };
+        markWatchedButton.textContent = anime.watched ? 'Watched ✅' : 'Mark as Watched';
+        markWatchedButton.onclick = () => toggleAnimeWatched(anime.id, markWatchedButton);
 
-        // 🔖 Bookmark Button
         const bookmarkButton = document.createElement('button');
         bookmarkButton.className = 'mark-watched-button';
-        bookmarkButton.textContent = anime.bookmarked ? "Bookmarked ⭐" : "Bookmark 🔖";
-        bookmarkButton.onclick = async () => {
-            await toggleBookmark(anime.id, bookmarkButton);
-        };
+        bookmarkButton.textContent = anime.bookmarked ? 'Bookmarked ⭐' : 'Bookmark 🔖';
+        bookmarkButton.onclick = () => toggleBookmark(anime.id, bookmarkButton);
 
-        // Delete Button
         const deleteButton = document.createElement('button');
         deleteButton.className = 'delete-button';
         deleteButton.textContent = 'Delete';
         deleteButton.onclick = () => deleteAnime(anime.id);
 
-// Create the "Add to Queue" button dynamically
         const addToQueueButton = document.createElement('button');
-        addToQueueButton.className = 'view-button'; // You can define your own class in CSS
+        addToQueueButton.className = 'view-button';
         addToQueueButton.textContent = '➕ Add to Queue';
-
-        // Attach click handler
         addToQueueButton.onclick = async () => {
             try {
-                await addToQueue(anime.title, anime.id); // Ensure 'anime.title' exists
+                await addToQueue(anime.title, anime.id);
             } catch (err) {
-                alert("Failed to add to queue: " + err.message);
+                alert('Failed to add to queue: ' + err.message);
             }
         };
 
-
-        // Append buttons
-        animeActions.appendChild(viewButton);
-        animeActions.appendChild(markWatchedButton);
-        animeActions.appendChild(bookmarkButton);
-        animeActions.appendChild(deleteButton);
-        animeActions.appendChild(addToQueueButton); 
-
-
-        // Append elements to anime info section
-        animeInfo.appendChild(animeTitle);
-        animeInfo.appendChild(animeSeason);
-        animeInfo.appendChild(animeStatus);
-        animeInfo.appendChild(animeActions); // ✅ Buttons go inside anime-info
-
-        // Append all elements to anime card
-        animeCard.appendChild(animeThumbnail);
-        animeCard.appendChild(animeInfo);
-
-        // Append anime card to grid
+        animeActions.append(viewButton, markWatchedButton, bookmarkButton, deleteButton, addToQueueButton);
+        animeInfo.append(animeTitle, animeSeason, animeStatus, animeActions);
+        animeCard.append(animeThumbnail, animeInfo);
         animeGrid.appendChild(animeCard);
     });
+
+    renderPagination();
 }
 
-// Function to toggle bookmark status
+function renderPagination() {
+    const totalPages = getTotalPages();
+    const total = currentAnimeData.length;
+    const start = total ? ((currentPage - 1) * itemsPerPage) + 1 : 0;
+    const end = Math.min(currentPage * itemsPerPage, total);
+
+    document.getElementById('anime-page-info').textContent =
+        total ? `Showing ${start}-${end} of ${total}` : 'Showing 0 anime';
+
+    document.getElementById('anime-prev-btn').disabled = currentPage <= 1;
+    document.getElementById('anime-next-btn').disabled = currentPage >= totalPages;
+
+    const pageButtons = document.getElementById('anime-page-buttons');
+    pageButtons.innerHTML = '';
+
+    const windowSize = 5;
+    let first = Math.max(1, currentPage - Math.floor(windowSize / 2));
+    let last = Math.min(totalPages, first + windowSize - 1);
+    first = Math.max(1, last - windowSize + 1);
+
+    for (let page = first; page <= last; page++) {
+        const btn = document.createElement('button');
+        btn.className = `pagination-page ${page === currentPage ? 'active' : ''}`;
+        btn.textContent = page;
+        btn.onclick = () => goToPage(page);
+        pageButtons.appendChild(btn);
+    }
+}
+
+function goToPage(page) {
+    currentPage = Math.min(Math.max(page, 1), getTotalPages());
+    renderAnimePage();
+    document.querySelector('.anime-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function prevPage() {
+    goToPage(currentPage - 1);
+}
+
+function nextPage() {
+    goToPage(currentPage + 1);
+}
+
+function changePageSize(value) {
+    itemsPerPage = parseInt(value, 10) || 12;
+    goToPage(1);
+}
+
+function syncAnimeItem(id, changes) {
+    allAnimeData = allAnimeData.map(anime => anime.id === id ? { ...anime, ...changes } : anime);
+    currentAnimeData = currentAnimeData.map(anime => anime.id === id ? { ...anime, ...changes } : anime);
+}
+
+function filterAnime() {
+    applyAnimeFilters(1);
+}
+
+function resetFilters() {
+    document.getElementById('search-bar').value = '';
+    Object.values(activeTagFilters).forEach(selected => selected.clear());
+    document.querySelectorAll('#anime-tag-filters input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    setAnimeData(allAnimeData, 1);
+}
+
+function filterOngoingAnime() {
+    const sorted = [...getFilteredAnimeData()].sort((a, b) => {
+        const aOngoing = (a.status || '').toLowerCase() === 'ongoing';
+        const bOngoing = (b.status || '').toLowerCase() === 'ongoing';
+        return bOngoing - aOngoing;
+    });
+    setAnimeData(sorted, 1);
+}
+
+function filterUnwatchedAnime() {
+    const sorted = [...getFilteredAnimeData()].sort((a, b) => (a.watched === true) - (b.watched === true));
+    setAnimeData(sorted, 1);
+}
+
+function sortBookmarkedFirst() {
+    const sorted = [...getFilteredAnimeData()].sort((a, b) => (b.bookmarked === true) - (a.bookmarked === true));
+    setAnimeData(sorted, 1);
+}
+
 async function toggleBookmark(animeId, button) {
     try {
-        const response = await fetch(`/bookmark/${animeId}`, {
-            method: 'POST',
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            if (data.status === "success") {
-                button.textContent = data.bookmarked ? "Bookmarked ⭐" : "Bookmark 🔖";
-            }
-        } else {
-            console.error("Failed to toggle bookmark.");
-        }
-    } catch (error) {
-        console.error("Error toggling bookmark:", error);
-    }
-}
-async function addToQueue(animeTitle, animeId) {
-    try {
-        const response = await fetch("/add_video", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ title: animeTitle, id: animeId }) // Send both title and id
-        });
+        const response = await fetch(`/bookmark/${animeId}`, { method: 'POST' });
+        if (!response.ok) throw new Error('Failed to toggle bookmark');
 
         const data = await response.json();
-
-        if (data.status === "success") {
-            location.reload(); // Refresh the page to update queue UI
-        } else {
-            alert("Error: " + data.message);
+        if (data.status === 'success') {
+            syncAnimeItem(animeId, { bookmarked: data.bookmarked });
+            button.textContent = data.bookmarked ? 'Bookmarked ⭐' : 'Bookmark 🔖';
         }
-
     } catch (error) {
-        alert("Request failed: " + error.message);
+        console.error('Error toggling bookmark:', error);
     }
 }
 
-
-
-// Function to toggle watched status for an anime
 async function toggleAnimeWatched(animeId, button) {
-    const response = await fetch(`/mark_anime_watched/${animeId}`, {
+    try {
+        const response = await fetch(`/mark_anime_watched/${animeId}`, { method: 'POST' });
+        if (!response.ok) throw new Error('Failed to toggle watched status');
+
+        const data = await response.json();
+        if (data.status === 'success') {
+            const watched = button.textContent === 'Mark as Watched';
+            syncAnimeItem(animeId, { watched });
+            button.textContent = watched ? 'Watched ✅' : 'Mark as Watched';
+        }
+    } catch (error) {
+        console.error('Error toggling watched status:', error);
+    }
+}
+
+async function addToQueue(animeTitle, animeId) {
+    const response = await fetch('/add_video', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: animeTitle, id: animeId })
     });
 
-    if (response.ok) {
-        const data = await response.json();
-        if (data.status === "success") {
-            button.textContent = button.textContent === "Mark as Watched" ? "Watched ✅" : "Mark as Watched";
-        }
+    const data = await response.json();
+    if (data.status === 'success') {
+        location.reload();
+    } else {
+        alert('Error: ' + data.message);
     }
 }
-        // Function to filter anime based on search query
-        function filterAnime() {
-            const query = document.getElementById('search-bar').value.toLowerCase();
-            const animeCards = document.querySelectorAll('.anime-card');
 
-            animeCards.forEach(card => {
-                const title = card.getAttribute("data-title");
-                if (title.includes(query)) {
-                    card.style.display = "flex";
-                } else {
-                    card.style.display = "none";
-                }
-            });
-        }
+async function deleteAnime(animeId) {
+    if (!confirm('Are you sure you want to delete this anime?')) return;
 
-        // Function to delete an anime
-        async function deleteAnime(animeId) {
-            if (confirm("Are you sure you want to delete this anime?")) {
-                try {
-                    const response = await fetch(`/delete_anime/${animeId}`, {
-                        method: 'DELETE',
-                    });
+    try {
+        const response = await fetch(`/delete_anime/${animeId}`, { method: 'DELETE' });
+        if (!response.ok) throw new Error('Delete failed');
 
-                    if (response.ok) {
-                        // Remove the anime card from the grid
-                        document.getElementById(`anime-${animeId}`).remove();
-                        alert("Anime deleted successfully.");
-                    } else {
-                        alert("Failed to delete anime.");
-                    }
-                } catch (error) {
-                    console.error("Error deleting anime:", error);
-                    alert("An error occurred while deleting the anime.");
-                }
-            }
-        }
+        allAnimeData = allAnimeData.filter(anime => anime.id !== animeId);
+        currentAnimeData = currentAnimeData.filter(anime => anime.id !== animeId);
+        if (currentPage > getTotalPages()) currentPage = getTotalPages();
+        renderAnimePage();
+    } catch (error) {
+        console.error('Error deleting anime:', error);
+        alert('An error occurred while deleting the anime.');
+    }
+}
 
-        // Load and render anime data when the page loads
-        document.addEventListener('DOMContentLoaded', async () => {
-            const animeData = await fetchAnimeData();
-            renderAnimeList(animeData);
-        });
-    </script>
+document.addEventListener('DOMContentLoaded', async () => {
+    [allAnimeData, animeTagCatalog] = await Promise.all([
+        fetchAnimeData(),
+        fetchAnimeTagCatalog()
+    ]);
+    renderAnimeTagFilters();
+    setAnimeData(allAnimeData, 1);
+});
+</script>
 {% endblock %}

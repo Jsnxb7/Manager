@@ -13,10 +13,10 @@
 
         <!-- ✅ Thumbnail and Details Side-by-Side -->
         <div class="anime-header">
-            <img id="anime-thumbnail" 
-                 src="{{ anime.thumbnail_url or 'https://via.placeholder.com/400x250?text=No+Image' }}" 
-                 alt="{{ anime.title }}" 
-                 class="anime-thumbnail">
+            <img id="anime-thumbnail"
+                src=""
+                alt="{{ anime.title }}"
+                class="anime-thumbnail">
 
             <div class="anime-info">
                 <h1 style="font-size:34px; letter-spacing:1px;">
@@ -24,10 +24,35 @@
                 </h1>
                 <p><strong>Season:</strong> {{ anime.season }}</p>
                 <p><strong>Status:</strong> {{ anime.status }}</p>
-                <p><strong>Total Episodes:</strong> {{ anime.episodes|length }}</p>
+                <p><strong>Total Episodes:</strong> <span id="total-episodes">{{ anime.episodes|length }}</span></p>
                 <p><strong>Download Anime:</strong> 
-                    <a href="{{ anime.download_link }}" target="_blank" class="download-link">{{ anime.download_link }}</a>
+                    <a href="{{ anime.download_link }}" target="_blank" class="download-link" id="anime-download-link">{{ anime.download_link }}</a>
                 </p>
+                <form class="inline-edit-form" id="anime-link-form">
+                    <input type="url" id="anime-link-input" value="{{ anime.download_link }}" required>
+                    <button type="submit" class="watched-button">Save Link</button>
+                </form>
+
+                <div class="anime-tag-details">
+                    {% set tag_groups = [
+                        ("Genres", anime.genres),
+                        ("Themes", anime.themes),
+                        ("Demographics", anime.demographics),
+                        ("Tags", anime.tags)
+                    ] %}
+                    {% for label, values in tag_groups %}
+                        {% if values %}
+                            <div class="anime-tag-group">
+                                <strong>{{ label }}:</strong>
+                                <div class="anime-tag-chips">
+                                    {% for value in values %}
+                                        <span class="anime-tag-chip">{{ value }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
 
                 <!-- Actions -->
                 <div class="anime-actions">
@@ -51,6 +76,13 @@
     </div>
 
 
+
+    <div class="episode-manager">
+        <form id="add-episode-form" class="inline-edit-form">
+            <input type="text" id="new-episode-title" placeholder="Episode title (optional)">
+            <button type="submit" class="watched-button">Add Episode</button>
+        </form>
+    </div>
 
     <!-- Episode Cards -->
     <div class="episode-cards">
@@ -78,6 +110,7 @@
                     <button onclick="toggleWatched('{{ anime.id }}', '{{ episode.number }}', this)" class="watched-button {% if episode.watched %}watched{% endif %}">
                         {% if episode.watched %}✔ Watched{% else %}Mark as Watched{% endif %}
                     </button>
+                    <button onclick="deleteEpisode('{{ episode.number }}')" class="delete-button">Delete Episode</button>
                 </div>
             </div>
         {% endfor %}
@@ -85,6 +118,8 @@
 </div>
 
 <script>
+    const ANIME_ID = "{{ anime.id }}";
+
     // === Anime Watched Toggle ===
     function toggleAnimeWatched(animeId, button) {
         fetch(`/mark_anime_watched/${animeId}`, { method: 'POST' })
@@ -95,6 +130,93 @@
                     button.textContent = button.classList.contains("watched") ? "✔ Anime Watched" : "Mark Anime as Watched";
                 }
             });
+    }
+    async function fetchAnimeData() {
+        try {
+            const response = await fetch('/api/anime');
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch anime data');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching anime data:', error);
+            return [];
+        }
+    }
+
+    async function loadAnimeThumbnail() {
+        const animeData = await fetchAnimeData();
+
+        const currentAnimeId = "{{ anime.id }}";
+        const currentAnime = animeData.find(anime => String(anime.id) === String(currentAnimeId));
+
+        const animeThumbnail = document.getElementById('anime-thumbnail');
+
+        if (currentAnime && currentAnime.thumbnail_url) {
+            animeThumbnail.src = currentAnime.thumbnail_url;
+        } else {
+            animeThumbnail.src = 'https://via.placeholder.com/250x180?text=No+Image';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadAnimeThumbnail);
+
+    document.getElementById("anime-link-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const input = document.getElementById("anime-link-input");
+        const link = input.value.trim();
+
+        if (!link) return;
+
+        const response = await fetch(`/update_anime_link/${ANIME_ID}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ link })
+        });
+        const data = await response.json();
+
+        if (data.status === "success") {
+            const anchor = document.getElementById("anime-download-link");
+            anchor.href = data.link;
+            anchor.textContent = data.link;
+        } else {
+            alert(data.message || "Failed to update link");
+        }
+    });
+
+    document.getElementById("add-episode-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const input = document.getElementById("new-episode-title");
+
+        const response = await fetch(`/anime/${ANIME_ID}/episodes`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title: input.value.trim() })
+        });
+        const data = await response.json();
+
+        if (data.status === "success") {
+            window.location.reload();
+        } else {
+            alert(data.message || "Failed to add episode");
+        }
+    });
+
+    async function deleteEpisode(episodeNumber) {
+        if (!confirm(`Delete episode ${episodeNumber}?`)) return;
+
+        const response = await fetch(`/anime/${ANIME_ID}/episodes/${episodeNumber}`, {
+            method: "DELETE"
+        });
+        const data = await response.json();
+
+        if (data.status === "success") {
+            window.location.reload();
+        } else {
+            alert(data.message || "Failed to delete episode");
+        }
     }
 
     // === Anime Status Cycle ===
@@ -127,21 +249,6 @@
         });
     }
 
-    // === 🔍 Thumbnail Fetch Fallback Logic ===
-    document.addEventListener('DOMContentLoaded', async () => {
-        const img = document.getElementById("anime-thumbnail");
-        if (img.src.includes("placeholder.com")) {
-            try {
-                const response = await fetch(`https://api.jikan.moe/v4/anime?q={{ anime.title }}&limit=1`);
-                const data = await response.json();
-                if (data.data && data.data[0] && data.data[0].images.jpg.image_url) {
-                    img.src = data.data[0].images.jpg.image_url;
-                }
-            } catch (err) {
-                console.warn("Could not fetch external image:", err);
-            }
-        }
-    });
     document.querySelectorAll(".preview-video").forEach(video => {
     video.parentElement.addEventListener("mouseenter", () => {
         video.play();
