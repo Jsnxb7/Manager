@@ -50,6 +50,46 @@ let currentMangaData = [];
 let currentMangaPage = 1;
 let mangaItemsPerPage = 12;
 
+function getMangaValues(manga, group) {
+    return Array.isArray(manga[group]) ? manga[group] : [];
+}
+
+function buildMetadataHover(groups) {
+    const wrap = document.createElement("div");
+    wrap.className = "card-metadata-hover";
+
+    const trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "metadata-hover-trigger";
+    trigger.textContent = "Tags";
+
+    const panel = document.createElement("div");
+    panel.className = "metadata-hover-panel";
+
+    const visibleGroups = groups.filter(group => group.values.length);
+    if (!visibleGroups.length) {
+        panel.innerHTML = '<div class="metadata-hover-empty">No headers added yet.</div>';
+    } else {
+        visibleGroups.forEach(group => {
+            const block = document.createElement("div");
+            block.className = "metadata-hover-group";
+
+            const title = document.createElement("strong");
+            title.textContent = group.label;
+
+            const values = document.createElement("div");
+            values.className = "metadata-hover-values";
+            values.textContent = group.values.join(", ");
+
+            block.append(title, values);
+            panel.appendChild(block);
+        });
+    }
+
+    wrap.append(trigger, panel);
+    return wrap;
+}
+
 // -----------------------------
 // FETCH MANGA
 // -----------------------------
@@ -114,7 +154,14 @@ function renderMangaPage() {
         status.className = "anime-status";
         status.textContent = `Status: ${manga.status}`;
 
-        info.append(title, status);
+        const metadataHover = buildMetadataHover([
+            { label: "Genres", values: getMangaValues(manga, "genres") },
+            { label: "Themes", values: getMangaValues(manga, "themes") },
+            { label: "Demographics", values: getMangaValues(manga, "demographics") },
+            { label: "Tags", values: getMangaValues(manga, "tags") }
+        ]);
+
+        info.append(title, status, metadataHover);
 
         const actions = document.createElement("div");
         actions.className = "anime-actions";

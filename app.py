@@ -2,6 +2,7 @@ from flask import Flask, send_file, render_template, jsonify, request, redirect,
 import json
 import os
 import sys
+import re
 from werkzeug.utils import secure_filename
 import logging
 import shutil
@@ -27,6 +28,7 @@ DATA_FOLDER = os.path.join(BASE_PATH, 'data')
 ANIME_TAGS_FILE = os.path.join(BASE_PATH, 'data', 'unique_anime_tags.json')
 ALLOWED_IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "avif", "webp", "gif"}
 IMAGE_EXTENSION_ORDER = ["jpg", "png", "jpeg", "avif", "webp", "gif"]
+VIDEO_EXTENSIONS = {".mp4", ".mkv", ".avi", ".mov", ".webm", ".m4v"}
 WINDOWS_RESERVED_NAMES = {
     "con", "prn", "aux", "nul",
     "com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8", "com9",
@@ -209,6 +211,59 @@ def renumber_anime_episodes(anime):
 
     anime["episodes"] = episodes
     return episodes
+
+def get_episode_number_from_filename(filename):
+    stem, ext = os.path.splitext(os.path.basename(filename))
+    if ext.lower() not in VIDEO_EXTENSIONS:
+        return None
+
+    if stem.isdigit():
+        return int(stem)
+
+    episode_pattern = re.compile(r'(?:EP\.|episode-|_-_)(\d{1,3})(?!\d)', re.IGNORECASE)
+    match = episode_pattern.search(stem)
+
+    if match:
+        return int(match.group(1).lstrip("0") or "0")
+
+    return None
+
+def find_episode_video_file(directory, episode_number):
+    if not directory or not os.path.isdir(directory):
+        return None
+
+    matches = []
+    for filename in os.listdir(directory):
+        filepath = os.path.join(directory, filename)
+        if not os.path.isfile(filepath):
+            continue
+        if get_episode_number_from_filename(filename) == episode_number:
+            matches.append(filepath)
+
+    if not matches:
+        return None
+
+    def match_rank(filepath):
+        filename = os.path.basename(filepath).lower()
+        stem, ext = os.path.splitext(filename)
+        exact_rank = 0 if stem == str(episode_number) else 1
+        ext_rank = 0 if ext == ".mp4" else 1
+        return (exact_rank, ext_rank, filename)
+
+    return sorted(matches, key=match_rank)[0]
+
+def resolve_episode_video_file(anime, filename):
+    directory = anime.get("directory")
+    requested_path = os.path.join(directory, filename)
+
+    if os.path.exists(requested_path):
+        return requested_path
+
+    episode_number = get_episode_number_from_filename(filename)
+    if episode_number is None:
+        return None
+
+    return find_episode_video_file(directory, episode_number)
 
 def get_section_image(section, title):
     paths = get_section_paths(section)
@@ -730,8 +785,8 @@ def serve_video(anime_id, filename):
     anime_data = load_anime_data()
     anime = next((item for item in anime_data if item['id'] == anime_id), None)
     if anime:
-        file_path = os.path.join(anime["directory"], filename)
-        if os.path.exists(file_path):
+        file_path = resolve_episode_video_file(anime, filename)
+        if file_path:
             return send_file(file_path, mimetype='video/mp4')
     return "File not found", 404
 

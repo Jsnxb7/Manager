@@ -1535,8 +1535,9 @@ main,
 }
 
 .anime-tag-details {
-    display: grid;
-    gap: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
     margin: 16px 0;
 }
 
@@ -1562,6 +1563,80 @@ main,
     border: 1px solid rgba(255, 245, 229, 0.75);
     font-size: 0.84rem;
     font-weight: 700;
+}
+
+.card-metadata-hover,
+.detail-metadata-hover {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+}
+
+.metadata-hover-trigger {
+    min-height: 32px;
+    padding: 7px 11px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 218, 235, 0.42);
+    color: rgba(255, 248, 251, 0.92);
+    background: rgba(255, 248, 252, 0.12);
+    cursor: default;
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
+.metadata-hover-panel {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 8px);
+    z-index: 30;
+    width: min(280px, 78vw);
+    max-height: 240px;
+    overflow-y: auto;
+    padding: 12px;
+    border-radius: 16px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    color: rgba(255, 248, 251, 0.92);
+    background: rgba(34, 18, 27, 0.94);
+    border: 1px solid rgba(255, 218, 235, 0.44);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.38);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.card-metadata-hover:hover .metadata-hover-panel,
+.card-metadata-hover:focus-within .metadata-hover-panel,
+.detail-metadata-hover:hover .metadata-hover-panel,
+.detail-metadata-hover:focus-within .metadata-hover-panel {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.metadata-hover-group {
+    display: grid;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.metadata-hover-group:last-child {
+    margin-bottom: 0;
+}
+
+.metadata-hover-values,
+.metadata-hover-empty {
+    font-size: 0.84rem;
+    line-height: 1.35;
+    color: rgba(255, 248, 251, 0.78);
+}
+
+.detail-metadata-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
 }
 
 .filter-accordion,

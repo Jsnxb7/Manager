@@ -90,6 +90,42 @@ function getAnimeValues(anime, group) {
     return Array.isArray(anime[group]) ? anime[group] : [];
 }
 
+function buildMetadataHover(groups) {
+    const wrap = document.createElement('div');
+    wrap.className = 'card-metadata-hover';
+
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'metadata-hover-trigger';
+    trigger.textContent = 'Tags';
+
+    const panel = document.createElement('div');
+    panel.className = 'metadata-hover-panel';
+
+    const visibleGroups = groups.filter(group => group.values.length);
+    if (!visibleGroups.length) {
+        panel.innerHTML = '<div class="metadata-hover-empty">No headers added yet.</div>';
+    } else {
+        visibleGroups.forEach(group => {
+            const block = document.createElement('div');
+            block.className = 'metadata-hover-group';
+
+            const title = document.createElement('strong');
+            title.textContent = group.label;
+
+            const values = document.createElement('div');
+            values.className = 'metadata-hover-values';
+            values.textContent = group.values.join(', ');
+
+            block.append(title, values);
+            panel.appendChild(block);
+        });
+    }
+
+    wrap.append(trigger, panel);
+    return wrap;
+}
+
 function animeMatchesSelectedTags(anime) {
     return Object.entries(activeTagFilters).every(([group, selected]) => {
         if (!selected.size) return true;
@@ -237,6 +273,13 @@ function renderAnimePage() {
         animeStatus.className = 'anime-status';
         animeStatus.textContent = anime.status || 'Ongoing';
 
+        const metadataHover = buildMetadataHover([
+            { label: 'Genres', values: getAnimeValues(anime, 'genres') },
+            { label: 'Themes', values: getAnimeValues(anime, 'themes') },
+            { label: 'Demographics', values: getAnimeValues(anime, 'demographics') },
+            { label: 'Tags', values: getAnimeValues(anime, 'tags') }
+        ]);
+
         const animeActions = document.createElement('div');
         animeActions.className = 'anime-actions';
 
@@ -272,7 +315,7 @@ function renderAnimePage() {
         };
 
         animeActions.append(viewButton, markWatchedButton, bookmarkButton, deleteButton, addToQueueButton);
-        animeInfo.append(animeTitle, animeSeason, animeStatus, animeActions);
+        animeInfo.append(animeTitle, animeSeason, animeStatus, metadataHover, animeActions);
         animeCard.append(animeThumbnail, animeInfo);
         animeGrid.appendChild(animeCard);
     });
