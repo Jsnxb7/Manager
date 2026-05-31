@@ -6,34 +6,26 @@
     Your browser does not support the video tag.
 </video>
 
-{% set previous_ep_url = url_for('player', anime_id=anime.id, episode_number=episode.number - 1) if episode.number > 1 else none %}
 {% if next_url is defined and next_url %}
     {% set next_ep_url = next_url %}
 {% else %}
-    {% set next_ep_url = url_for('player', anime_id=anime.id, episode_number=episode.number + 1) if episode.number < anime.episodes|length else none %}
+    {% set next_ep_url = next_episode_url %}
 {% endif %}
 
-{% set prev_episode = anime.episodes[episode.number - 2] if episode.number > 1 else none %}
-{% set next_episode = anime.episodes[episode.number] if episode.number < anime.episodes|length else none %}
-{% set prev_episode_file = prev_episode.file_path.replace('\\', '/').split('/')[-1] if prev_episode else none %}
-{% set next_episode_file = next_episode.file_path.replace('\\', '/').split('/')[-1] if next_episode else none %}
-{% set prev_ep_video_url = url_for('serve_video', anime_id=anime.id, filename=prev_episode_file) if prev_episode_file else none %}
-{% set next_ep_video_url = url_for('serve_video', anime_id=anime.id, filename=next_episode_file) if next_episode_file else none %}
-
 <div class="player-nav-rails" id="player-nav-rails" data-anime-id="{{ anime.id }}" aria-hidden="false">
-    {% if previous_ep_url %}
-        <a href="{{ previous_ep_url }}" class="player-side-panel player-side-prev" aria-label="Previous episode">
+    {% if previous_episode_url %}
+        <a href="{{ previous_episode_url }}" class="player-side-panel player-side-prev" aria-label="Previous episode">
             <span class="player-side-bg"></span>
-            {% if prev_ep_video_url %}
+            {% if previous_episode_video_url %}
                 <video class="player-side-video player-prev-video" muted playsinline preload="metadata">
-                    <source src="{{ prev_ep_video_url }}" type="video/mp4">
+                    <source src="{{ previous_episode_video_url }}" type="video/mp4">
                 </video>
             {% endif %}
             <span class="player-side-fade"></span>
             <span class="player-side-content">
                 <span class="player-side-text">
                     <span class="player-side-kicker">Previous</span>
-                    <span class="player-side-title">Episode {{ episode.number - 1 }}</span>
+                    <span class="player-side-title">Episode {{ previous_episode.number }}</span>
                 </span>
             </span>
         </a>
@@ -47,9 +39,9 @@
     {% if next_ep_url %}
         <a href="{{ next_ep_url }}" class="player-side-panel player-side-next" aria-label="Next episode">
             <span class="player-side-bg"></span>
-            {% if next_ep_video_url %}
+            {% if next_episode_video_url %}
                 <video class="player-side-video player-next-video" muted playsinline preload="metadata">
-                    <source src="{{ next_ep_video_url }}" type="video/mp4">
+                    <source src="{{ next_episode_video_url }}" type="video/mp4">
                 </video>
             {% endif %}
             <span class="player-side-fade"></span>
@@ -84,6 +76,9 @@
                    controls
                    autoplay
                    preload="auto"
+                   data-anime-id="{{ anime.id }}"
+                   data-episode-number="{{ episode.number }}"
+                   data-resume-time="{{ saved_progress.current_time|default(0) }}"
                    data-setup='{}'>
                 <source src="{{ episode.video_url }}" type="video/mp4">
                 Your browser does not support the video tag.
@@ -194,6 +189,63 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    const trackingState = {
+        animeId: parseInt("{{ anime.id }}", 10),
+        episodeNumber: parseInt("{{ episode.number }}", 10),
+        saveTimer: null,
+        lastSavedAt: 0
+    };
+
+    function buildProgressPayload(completed = false) {
+        return {
+            anime_id: trackingState.animeId,
+            episode_number: trackingState.episodeNumber,
+            current_time: Number(player.currentTime() || 0),
+            total_duration: Number(player.duration() || 0),
+            completed
+        };
+    }
+
+    async function saveEpisodeProgress(completed = false, useBeacon = false) {
+        const payload = buildProgressPayload(completed);
+        if (!payload.total_duration && !payload.current_time && !completed) return;
+
+        if (useBeacon && navigator.sendBeacon) {
+            const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
+            navigator.sendBeacon("/api/tracking/progress", blob);
+            return;
+        }
+
+        await fetch("/api/tracking/progress", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+            keepalive: true
+        }).catch(error => console.warn("Could not save episode progress:", error));
+    }
+
+    function scheduleProgressSave() {
+        window.clearTimeout(trackingState.saveTimer);
+        trackingState.saveTimer = window.setTimeout(() => {
+            const now = Date.now();
+            if (now - trackingState.lastSavedAt < 8000) return;
+            trackingState.lastSavedAt = now;
+            saveEpisodeProgress(false);
+        }, 600);
+    }
+
+    player.ready(() => {
+        const shouldResume = new URLSearchParams(window.location.search).get("resume") === "1";
+        const resumeTime = Number(document.getElementById("video-player")?.dataset.resumeTime || 0);
+        if (shouldResume && resumeTime > 1) {
+            player.currentTime(resumeTime);
+        }
+    });
+
+    player.on("timeupdate", scheduleProgressSave);
+    player.on("pause", () => saveEpisodeProgress(false));
+    window.addEventListener("beforeunload", () => saveEpisodeProgress(false, true));
+
     const hideBigPlayButton = () => {
         player.el().classList.add("player-hide-big-play");
     };
@@ -213,6 +265,7 @@ player.on('ended', async function () {
     const currentAnimeId = parseInt("{{ anime.id }}");
 
     console.log(`🎬 Episode ${currentEpisode} ended for anime ${currentAnimeId}`);
+    await saveEpisodeProgress(true);
 
     // ▶️ If there’s a next episode, play it
     if (currentEpisode < totalEpisodes) {

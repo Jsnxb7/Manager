@@ -6,6 +6,13 @@
     Your browser does not support the video tag.
 </video>
 
+<section class="continue-watching-shell" id="continue-watching-shell" hidden>
+    <div class="continue-watching-header">
+        <h2>Continue Watching</h2>
+    </div>
+    <div class="continue-watching-row" id="continue-watching-row"></div>
+</section>
+
 <div class="anime-list">
     <input type="text" id="search-bar" class="search-bar" placeholder="Search anime..." onkeyup="filterAnime()">
 
@@ -84,6 +91,181 @@ async function fetchAnimeTagCatalog() {
         console.error('Error fetching anime tag filters:', error);
         return {};
     }
+}
+
+async function fetchContinueWatching() {
+    try {
+        const response = await fetch('/api/tracking/continue-watching');
+        if (!response.ok) throw new Error('Failed to fetch continue watching');
+        const data = await response.json();
+        return Array.isArray(data.items) ? data.items : [];
+    } catch (error) {
+        console.error('Error fetching continue watching:', error);
+        return [];
+    }
+}
+
+function formatWatchTime(seconds) {
+    const total = Math.max(0, Math.floor(Number(seconds) || 0));
+    const hours = Math.floor(total / 3600);
+    const minutes = Math.floor((total % 3600) / 60);
+    const secs = total % 60;
+    if (hours) {
+        return `${hours}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+    return `${minutes}:${String(secs).padStart(2, '0')}`;
+}
+
+async function discardContinueWatching(animeId, episodeNumber) {
+    const response = await fetch('/api/tracking/discard', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ anime_id: animeId, episode_number: episodeNumber })
+    });
+    if (!response.ok) throw new Error('Failed to discard continue watching item');
+    renderContinueWatching((await response.json()).continue_watching || []);
+}
+
+function renderContinueWatching(items) {
+    const shell = document.getElementById('continue-watching-shell');
+    const row = document.getElementById('continue-watching-row');
+    if (!shell || !row) return;
+
+    row.innerHTML = '';
+    shell.hidden = !items.length;
+    if (!items.length) return;
+
+    items.forEach(item => {
+        const card = document.createElement('article');
+        card.className = 'continue-card';
+
+        const identity = document.createElement('div');
+        identity.className = 'continue-card-identity';
+
+        const poster = document.createElement('img');
+        poster.className = 'continue-card-poster';
+        poster.src = item.anime_thumbnail || '/static/placeholder.jpeg';
+        poster.alt = item.anime_title || 'Anime thumbnail';
+        poster.onerror = function () {
+            this.onerror = null;
+            this.src = '/static/placeholder.jpeg';
+        };
+
+        const titleBlock = document.createElement('div');
+        titleBlock.className = 'continue-card-title-block';
+
+        const title = document.createElement('h3');
+        title.textContent = item.anime_title || 'Untitled';
+
+        const status = document.createElement('span');
+        status.className = 'continue-card-status';
+        status.textContent = item.watch_status || 'Watching';
+
+        titleBlock.append(title, status);
+        identity.append(poster, titleBlock);
+
+        const preview = document.createElement('div');
+        preview.className = 'continue-card-preview';
+
+        if (item.episode_video_url) {
+            const video = document.createElement('video');
+            video.className = 'continue-preview-media';
+            video.muted = true;
+            video.loop = true;
+            video.playsInline = true;
+            video.preload = 'metadata';
+
+            const source = document.createElement('source');
+            source.src = item.episode_video_url;
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            card.addEventListener('mouseenter', () => video.play().catch(() => {}));
+            card.addEventListener('mouseleave', () => {
+                video.pause();
+                try { video.currentTime = 0.2; } catch (error) {}
+            });
+            preview.appendChild(video);
+        } else {
+            const fallback = document.createElement('img');
+            fallback.className = 'continue-preview-media';
+            fallback.src = item.anime_thumbnail || '/static/placeholder.jpeg';
+            fallback.alt = '';
+            fallback.onerror = function () {
+                this.onerror = null;
+                this.src = '/static/placeholder.jpeg';
+            };
+            preview.appendChild(fallback);
+        }
+
+        const previewShade = document.createElement('div');
+        previewShade.className = 'continue-preview-shade';
+
+        const previewText = document.createElement('div');
+        previewText.className = 'continue-preview-text';
+
+        const previewKicker = document.createElement('span');
+        previewKicker.className = 'continue-preview-kicker';
+        previewKicker.textContent = 'Currently on';
+
+        const previewEpisode = document.createElement('strong');
+        previewEpisode.textContent = item.episode_number ? `Episode ${item.episode_number}` : 'Current Episode';
+
+        const previewName = document.createElement('span');
+        previewName.textContent = item.episode_title || item.anime_title || '';
+
+        previewText.append(previewKicker, previewEpisode, previewName);
+        preview.append(previewShade, previewText);
+
+        const overlay = document.createElement('div');
+        overlay.className = 'continue-card-overlay';
+
+        const continueLink = document.createElement('a');
+        continueLink.className = 'continue-play-button';
+        continueLink.href = item.continue_url;
+        continueLink.textContent = 'Continue';
+
+        const startOverLink = document.createElement('a');
+        startOverLink.className = 'continue-start-button';
+        startOverLink.href = item.start_over_url;
+        startOverLink.textContent = 'Start Over';
+
+        const discardButton = document.createElement('button');
+        discardButton.type = 'button';
+        discardButton.className = 'continue-discard-button';
+        discardButton.textContent = 'Discard';
+        discardButton.onclick = async () => {
+            try {
+                await discardContinueWatching(item.anime_id, item.episode_number);
+            } catch (error) {
+                alert(error.message);
+            }
+        };
+
+        const actionGroup = document.createElement('div');
+        actionGroup.className = 'continue-overlay-actions';
+        actionGroup.append(continueLink, startOverLink);
+
+        overlay.append(preview, actionGroup, discardButton);
+
+        const info = document.createElement('div');
+        info.className = 'continue-card-info';
+
+        const meta = document.createElement('p');
+        meta.textContent = `Episode ${item.episode_number || '?'} - ${formatWatchTime(item.current_time)} / ${formatWatchTime(item.total_duration)}`;
+
+        const progressTrack = document.createElement('div');
+        progressTrack.className = 'continue-progress-track';
+
+        const progressBar = document.createElement('span');
+        progressBar.className = 'continue-progress-bar';
+        progressBar.style.width = `${Math.min(100, Math.max(0, Number(item.progress_percentage) || 0))}%`;
+
+        progressTrack.appendChild(progressBar);
+        info.append(meta, progressTrack);
+        card.append(identity, overlay, info);
+        row.appendChild(card);
+    });
 }
 
 function getAnimeValues(anime, group) {
@@ -472,10 +654,14 @@ async function deleteAnime(animeId) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    [allAnimeData, animeTagCatalog] = await Promise.all([
+    const [animeItems, tagCatalog, continueItems] = await Promise.all([
         fetchAnimeData(),
-        fetchAnimeTagCatalog()
+        fetchAnimeTagCatalog(),
+        fetchContinueWatching()
     ]);
+    allAnimeData = animeItems;
+    animeTagCatalog = tagCatalog;
+    renderContinueWatching(continueItems);
     renderAnimeTagFilters();
     setAnimeData(allAnimeData, 1);
 });

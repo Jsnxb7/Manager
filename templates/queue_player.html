@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block content %}
+<video class="video-background" autoplay loop muted playsinline>
+    <source src="{{ url_for('static', filename='images/stars.mp4') }}" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+
+<div class="queue-player-rails">
+    {% if previous_item %}
+        <a href="{{ previous_item.player_url }}" class="queue-side-preview queue-side-prev" aria-label="Previous queue item">
+            {% if previous_item.video_url %}
+                <video class="queue-side-video" muted playsinline preload="metadata">
+                    <source src="{{ previous_item.video_url }}" type="video/mp4">
+                </video>
+            {% else %}
+                <img src="{{ previous_item.thumbnail_url }}" alt="">
+            {% endif %}
+            <span class="queue-side-shade"></span>
+            <span class="queue-side-text"><span>Previous</span><strong>{{ previous_item.anime_title }}</strong><em>Episode {{ previous_item.episode_number }}</em></span>
+        </a>
+    {% endif %}
+
+    {% if next_item %}
+        <a href="{{ next_item.player_url }}" class="queue-side-preview queue-side-next" aria-label="Next queue item">
+            {% if next_item.video_url %}
+                <video class="queue-side-video" muted playsinline preload="metadata">
+                    <source src="{{ next_item.video_url }}" type="video/mp4">
+                </video>
+            {% else %}
+                <img src="{{ next_item.thumbnail_url }}" alt="">
+            {% endif %}
+            <span class="queue-side-shade"></span>
+            <span class="queue-side-text"><span>Next</span><strong>{{ next_item.anime_title }}</strong><em>Episode {{ next_item.episode_number }}</em></span>
+        </a>
+    {% endif %}
+</div>
+
+<main class="queue-player-shell queue-player-clean" data-sidebar-state="expanded">
+    <section class="queue-player-main">
+        <div class="queue-player-topbar">
+            <div class="queue-player-titleblock">
+                <span class="page-eyebrow">Playing {{ queue_position }} / {{ queue_total }}</span>
+                <strong>{{ anime.title }}</strong>
+                <small>Episode {{ episode.number }} — {{ episode.title }}</small>
+            </div>
+            <div class="queue-player-actions">
+                <a href="{{ url_for('queue_page') }}" class="queue-page-action subtle">Queue</a>
+                <button type="button" class="queue-sidebar-toggle" id="queue-sidebar-toggle">Collapse</button>
+            </div>
+        </div>
+
+        <div class="queue-progress-summary queue-clean-summary">
+            <span>Current: {{ current_item.anime_title }} EP {{ current_item.episode_number }}</span>
+            {% if next_item %}
+                <span>Next: {{ next_item.anime_title }} EP {{ next_item.episode_number }}</span>
+            {% else %}
+                <span>Next: Queue end</span>
+            {% endif %}
+            <span>{{ remaining_count }} remaining</span>
+        </div>
+
+        <div class="queue-player-core">
+            <video id="queue-video-player"
+                   class="video-js vjs-default-skin vjs-big-play-centered"
+                   controls
+                   autoplay
+                   preload="auto"
+                   data-anime-id="{{ anime.id }}"
+                   data-episode-number="{{ episode.number }}"
+                   data-resume-time="{{ saved_progress.current_time|default(0) }}"
+                   data-next-url="{{ next_item.player_url if next_item else '' }}"
+                   data-setup='{}'>
+                <source src="{{ episode.video_url }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </section>
+
+    <aside class="queue-player-sidebar" id="queue-player-sidebar">
+        <div class="queue-sidebar-header">
+            <strong>Queue</strong>
+            <span>{{ queue_position }} / {{ queue_total }}</span>
+        </div>
+        <div class="queue-sidebar-list" id="queue-player-list">
+            {% for item in queue_items %}
+                <article class="queue-sidebar-card {% if loop.index0 == queue_index %}is-active{% endif %}" data-index="{{ item.index }}">
+                    <span class="queue-card-position">#{{ item.position }}</span>
+                    <img src="{{ item.thumbnail_url }}" alt="{{ item.anime_title }}">
+                    <div>
+                        <strong>{{ item.anime_title }}</strong>
+                        <span>Episode {{ item.episode_number }} - {{ item.episode_title }}</span>
+                    </div>
+                    {% if loop.index0 == queue_index %}
+                        <span class="queue-now-indicator">Now</span>
+                    {% else %}
+                        <a href="{{ item.player_url }}" class="queue-play-link">Play</a>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </div>
+    </aside>
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const shell = document.querySelector(".queue-player-shell");
+    const toggle = document.getElementById("queue-sidebar-toggle");
+    const videoElement = document.getElementById("queue-video-player");
+
+    toggle?.addEventListener("click", () => {
+        const collapsed = shell.dataset.sidebarState === "collapsed";
+        shell.dataset.sidebarState = collapsed ? "expanded" : "collapsed";
+        toggle.textContent = collapsed ? "Collapse" : "Expand";
+    });
+
+    document.querySelectorAll(".queue-side-video").forEach(video => {
+        video.addEventListener("loadedmetadata", () => {
+            try { video.currentTime = 0.2; } catch (error) {}
+        }, { once: true });
+        video.parentElement?.addEventListener("mouseenter", () => video.play().catch(() => {}));
+        video.parentElement?.addEventListener("mouseleave", () => {
+            video.pause();
+            try { video.currentTime = 0.2; } catch (error) {}
+        });
+    });
+
+    const player = videojs("queue-video-player", {
+        controls: true,
+        autoplay: true,
+        preload: "auto",
+        playbackRates: [0.5, 1, 1.5, 2],
+        controlBar: { children: ["playToggle", "volumePanel", "currentTimeDisplay", "timeDivider", "durationDisplay", "progressControl", "remainingTimeDisplay", "playbackRateMenuButton", "fullscreenToggle"] }
+    });
+
+    const state = {
+        animeId: Number(videoElement.dataset.animeId),
+        episodeNumber: Number(videoElement.dataset.episodeNumber),
+        saveTimer: null,
+        lastSavedAt: 0
+    };
+
+    function progressPayload(completed = false) {
+        return {
+            anime_id: state.animeId,
+            episode_number: state.episodeNumber,
+            current_time: Number(player.currentTime() || 0),
+            total_duration: Number(player.duration() || 0),
+            completed
+        };
+    }
+
+    async function saveQueueProgress(completed = false, useBeacon = false) {
+        const payload = progressPayload(completed);
+        if (!payload.total_duration && !payload.current_time && !completed) return;
+        if (useBeacon && navigator.sendBeacon) {
+            navigator.sendBeacon("/api/tracking/progress", new Blob([JSON.stringify(payload)], { type: "application/json" }));
+            return;
+        }
+        await fetch("/api/tracking/progress", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+            keepalive: true
+        }).catch(error => console.warn("Could not save queue progress:", error));
+    }
+
+    player.ready(() => {
+        const resumeTime = Number(videoElement.dataset.resumeTime || 0);
+        if (resumeTime > 1 && new URLSearchParams(window.location.search).get("start_over") !== "1") {
+            player.currentTime(resumeTime);
+        }
+    });
+
+    player.on("timeupdate", () => {
+        window.clearTimeout(state.saveTimer);
+        state.saveTimer = window.setTimeout(() => {
+            const now = Date.now();
+            if (now - state.lastSavedAt < 8000) return;
+            state.lastSavedAt = now;
+            saveQueueProgress(false);
+        }, 600);
+    });
+
+    player.on("pause", () => saveQueueProgress(false));
+    player.on("ended", async () => {
+        await saveQueueProgress(true);
+        if (videoElement.dataset.nextUrl) window.location.href = videoElement.dataset.nextUrl;
+        else alert("Queue ended. No more episodes to play.");
+    });
+
+    window.addEventListener("beforeunload", () => saveQueueProgress(false, true));
+});
+</script>
+{% endblock %}

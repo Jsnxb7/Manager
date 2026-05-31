@@ -7,18 +7,25 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/uni_style.css') }}">
 <div class="anime-list">
 
-    <!-- FILTER BUTTONS -->
-    <button class="add-anime-button" onclick="resetFilters()">Reset Filters</button>
-    <button class="add-anime-button" onclick="filterUnreadManga()">Unread Manga</button>
-    <button class="add-anime-button" onclick="filterOngoingManga()">Ongoing Manga</button>
-    <button class="add-anime-button" onclick="sortBookmarkedFirst()">Sort Bookmarked First</button>
-    <!-- Add Manga -->
-    <a href="{{ url_for('add_manga') }}">
-        <button class="add-anime-button">Add New Manga</button>
-    </a>
-
     <!-- Search -->
     <input type="text" id="search-bar" class="search-bar" placeholder="Search manga..." onkeyup="filterManga()">
+
+    <details class="filter-accordion">
+        <summary>Filters</summary>
+        <div class="filter-accordion-body">
+            <details class="filter-section" open>
+                <summary>Quick Filters</summary>
+                <div class="filter-actions">
+                    <button class="add-anime-button" onclick="resetFilters()">Reset Filters</button>
+                    <button class="add-anime-button" onclick="filterUnreadManga()">Unread Manga</button>
+                    <button class="add-anime-button" onclick="filterOngoingManga()">Ongoing Manga</button>
+                    <button class="add-anime-button" onclick="sortBookmarkedFirst()">Sort Bookmarked First</button>
+                </div>
+            </details>
+
+            <div id="manga-tag-filters" class="tag-filter-groups"></div>
+        </div>
+    </details>
 
     <!-- MANGA GRID -->
     <div class="anime-grid" id="manga-grid"></div>
@@ -44,11 +51,22 @@
 
 </div>
 
+<a href="{{ url_for('add_manga') }}" class="floating-add-anime" aria-label="Add new manga" title="Add New Manga">
+    +
+</a>
+
 <script>
 let allMangaData = [];
 let currentMangaData = [];
 let currentMangaPage = 1;
 let mangaItemsPerPage = 12;
+let mangaHeaderCatalog = {};
+const activeMangaHeaderFilters = {
+    tags: new Set(),
+    genres: new Set(),
+    themes: new Set(),
+    demographics: new Set()
+};
 
 function getMangaValues(manga, group) {
     return Array.isArray(manga[group]) ? manga[group] : [];
@@ -104,6 +122,109 @@ async function fetchMangaData() {
     }
 }
 
+async function fetchMangaHeaderCatalog() {
+    try {
+        const response = await fetch('/api/manga-headers');
+        if (!response.ok) throw new Error('Failed to fetch manga headers');
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching manga headers:", error);
+        return {};
+    }
+}
+
+function mangaMatchesSelectedHeaders(manga) {
+    return Object.entries(activeMangaHeaderFilters).every(([group, selected]) => {
+        if (!selected.size) return true;
+        const values = getMangaValues(manga, group).map(value => String(value).toLowerCase());
+        return [...selected].some(value => values.includes(value.toLowerCase()));
+    });
+}
+
+function mangaMatchesSearch(manga, query) {
+    if (!query) return true;
+
+    const searchable = [
+        manga.title,
+        manga.status,
+        manga.source_list_name,
+        ...(manga.tags || []),
+        ...(manga.genres || []),
+        ...(manga.themes || []),
+        ...(manga.demographics || [])
+    ];
+
+    return searchable.some(value => String(value || "").toLowerCase().includes(query));
+}
+
+function getFilteredMangaData() {
+    const query = document.getElementById("search-bar").value.toLowerCase().trim();
+    return allMangaData.filter(manga => mangaMatchesSearch(manga, query) && mangaMatchesSelectedHeaders(manga));
+}
+
+function applyMangaFilters(page = 1) {
+    setMangaData(getFilteredMangaData(), page);
+}
+
+function renderMangaHeaderFilters() {
+    const container = document.getElementById("manga-tag-filters");
+    if (!container) return;
+
+    const groups = [
+        ["genres", "Genres"],
+        ["themes", "Themes"],
+        ["demographics", "Demographics"],
+        ["tags", "Tags"]
+    ];
+
+    container.innerHTML = "";
+
+    groups.forEach(([key, label]) => {
+        const items = Array.isArray(mangaHeaderCatalog[key]) ? mangaHeaderCatalog[key] : [];
+        if (!items.length) return;
+
+        const details = document.createElement("details");
+        details.className = "filter-section tag-filter-section";
+
+        const summary = document.createElement("summary");
+        summary.textContent = label;
+
+        const options = document.createElement("div");
+        options.className = "tag-filter-options";
+
+        items.forEach(item => {
+            const name = typeof item === "string" ? item : item.name;
+            const count = typeof item === "string" ? null : item.count;
+            if (!name) return;
+
+            const option = document.createElement("label");
+            option.className = "tag-filter-option";
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.value = name;
+            checkbox.dataset.group = key;
+            checkbox.addEventListener("change", () => {
+                if (checkbox.checked) {
+                    activeMangaHeaderFilters[key].add(name);
+                } else {
+                    activeMangaHeaderFilters[key].delete(name);
+                }
+                applyMangaFilters(1);
+            });
+
+            const text = document.createElement("span");
+            text.textContent = count ? `${name} (${count})` : name;
+
+            option.append(checkbox, text);
+            options.appendChild(option);
+        });
+
+        details.append(summary, options);
+        container.appendChild(details);
+    });
+}
+
 function getMangaTotalPages() {
     return Math.max(1, Math.ceil(currentMangaData.length / mangaItemsPerPage));
 }
@@ -142,6 +263,10 @@ function renderMangaPage() {
         img.className = "anime-thumbnail";
         img.src = manga.thumbnail_url || "/static/placeholder.jpeg";
         img.alt = manga.title;
+        img.onerror = function () {
+            this.onerror = null;
+            this.src = "/static/placeholder.jpeg";
+        };
 
         const info = document.createElement("div");
         info.className = "anime-info";
@@ -269,12 +394,16 @@ function toggleMangaStatus(mangaId, statusEl, btn) {
 }
 
 async function sortBookmarkedFirst() {
-    const sorted = [...currentMangaData].sort((a, b) => (b.bookmarked === true) - (a.bookmarked === true));
+    const sorted = [...getFilteredMangaData()].sort((a, b) => (b.bookmarked === true) - (a.bookmarked === true));
     setMangaData(sorted, 1);
 }
 
 async function resetFilters() {
     document.getElementById("search-bar").value = "";
+    Object.values(activeMangaHeaderFilters).forEach(selected => selected.clear());
+    document.querySelectorAll('#manga-tag-filters input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
     setMangaData(allMangaData, 1);
 }
 
@@ -352,18 +481,16 @@ async function updateMangaLink(id, viewBtn) {
 }
 
 function filterManga() {
-    const q = document.getElementById("search-bar").value.toLowerCase().trim();
-    const filtered = allMangaData.filter(manga => manga.title.toLowerCase().includes(q));
-    setMangaData(filtered, 1);
+    applyMangaFilters(1);
 }
 
 function filterUnreadManga() {
-    const sorted = [...currentMangaData].sort((a, b) => (a.read === true) - (b.read === true));
+    const sorted = [...getFilteredMangaData()].sort((a, b) => (a.read === true) - (b.read === true));
     setMangaData(sorted, 1);
 }
 
 function filterOngoingManga() {
-    const sorted = [...currentMangaData].sort((a, b) => {
+    const sorted = [...getFilteredMangaData()].sort((a, b) => {
         const aOngoing = String(a.status || "").toLowerCase() === "ongoing";
         const bOngoing = String(b.status || "").toLowerCase() === "ongoing";
         return (bOngoing === true) - (aOngoing === true);
@@ -375,7 +502,11 @@ function filterOngoingManga() {
 // PAGE LOAD
 // -----------------------------
 document.addEventListener("DOMContentLoaded", async () => {
-    allMangaData = await fetchMangaData();
+    [allMangaData, mangaHeaderCatalog] = await Promise.all([
+        fetchMangaData(),
+        fetchMangaHeaderCatalog()
+    ]);
+    renderMangaHeaderFilters();
     setMangaData(allMangaData, 1);
 });
 </script>

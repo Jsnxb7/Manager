@@ -1,0 +1,60 @@
+{
+    "schema_version": 1,
+    "updated_at": "2026-05-31T10:32:10.031270+00:00",
+    "last_use": {
+        "anime_id": 83,
+        "anime_title": "Shuumatsu Touring",
+        "episode_number": 1,
+        "episode_title": "Episode 1",
+        "current_time": 1.12,
+        "total_duration": 1420.11,
+        "progress_percentage": 0.08,
+        "last_watched_at": "2026-05-31T10:32:10.029697+00:00"
+    },
+    "queue": {
+        "updated_at": "2026-05-31T08:15:34.810563+00:00",
+        "order": [
+            {
+                "position": 1,
+                "anime_id": 83,
+                "anime_title": "Shuumatsu Touring",
+                "episode_number": 1
+            }
+        ]
+    },
+    "anime": {
+        "83": {
+            "anime_id": 83,
+            "anime_title": "Shuumatsu Touring",
+            "anime_thumbnail": "/static/placeholder.jpeg",
+            "watch_status": "Watching",
+            "last_watched_episode": 1,
+            "last_watched_at": "2026-05-31T10:32:10.029697+00:00",
+            "completion_percentage": 0.0,
+            "episodes": {
+                "3": {
+                    "episode_number": 3,
+                    "episode_title": "Episode 3",
+                    "episode_video_path": "C:/Users/shour/Documents/Anime/Shuumatsu Touring/S1/3.mp4",
+                    "current_time": 3.94,
+                    "total_duration": 1420.11,
+                    "progress_percentage": 0.28,
+                    "completed": false,
+                    "active_continue": true,
+                    "last_watched_at": "2026-05-31T08:10:21.658602+00:00"
+                },
+                "1": {
+                    "episode_number": 1,
+                    "episode_title": "Episode 1",
+                    "episode_video_path": "C:/Users/shour/Documents/Anime/Shuumatsu Touring/S1/1.mp4",
+                    "current_time": 1.12,
+                    "total_duration": 1420.11,
+                    "progress_percentage": 0.08,
+                    "completed": false,
+                    "active_continue": true,
+                    "last_watched_at": "2026-05-31T10:32:10.029697+00:00"
+                }
+            }
+        }
+    }
+}

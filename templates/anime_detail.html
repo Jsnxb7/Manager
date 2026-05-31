@@ -1,31 +1,54 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- Video Background -->
-<video class="video-background" autoplay loop muted>
+<video class="video-background" autoplay loop muted playsinline>
     <source src="{{ url_for('static', filename='images/stars.mp4') }}" type="video/mp4">
-    Your browser does not support the video tag.
 </video>
 
-<!-- Anime Details Container -->
-<div class="anime-detail-container">
-    <div class="anime-detail">
+<div class="anime-detail-container detail-polish-shell">
+    <section class="anime-detail detail-hero-card">
+        <div class="anime-header detail-hero-layout">
+            <img id="anime-thumbnail" src="{{ anime.thumbnail_url if anime.thumbnail_url is defined else '' }}" alt="{{ anime.title }}" class="anime-thumbnail detail-poster">
 
-        <!-- ✅ Thumbnail and Details Side-by-Side -->
-        <div class="anime-header">
-            <img id="anime-thumbnail"
-                src=""
-                alt="{{ anime.title }}"
-                class="anime-thumbnail">
+            <div class="anime-info detail-hero-info">
+                <span class="detail-kicker">Anime Details</span>
+                <h1>🎬 {{ anime.title }}</h1>
 
-            <div class="anime-info">
-                <h1 style="font-size:34px; letter-spacing:1px;">
-                    🎬 {{ anime.title }}
-                </h1>
-                <p><strong>Season:</strong> {{ anime.season }}</p>
-                <p><strong>Status:</strong> {{ anime.status }}</p>
-                <p><strong>Total Episodes:</strong> <span id="total-episodes">{{ anime.episodes|length }}</span></p>
-                <p><strong>Download Anime:</strong> 
+                <div class="detail-stat-grid">
+                    <div><strong>{{ anime.season }}</strong><span>Season</span></div>
+                    <div><strong>{{ anime.episodes|length }}</strong><span>Total Episodes</span></div>
+                    <div><strong>{{ progress_summary.completed_episodes }}</strong><span>Completed</span></div>
+                    <div><strong>{{ progress_summary.completion_percentage }}%</strong><span>Progress</span></div>
+                </div>
+
+                <div class="anime-progress-panel">
+                    <div class="anime-progress-header">
+                        <span>Overall Episode Progress</span>
+                        <strong>{{ progress_summary.completed_episodes }} / {{ progress_summary.total_episodes }}</strong>
+                    </div>
+                    <div class="anime-detail-progress-track">
+                        <span style="width: {{ progress_summary.completion_percentage }}%;"></span>
+                    </div>
+                    {% if tracking_entry.last_watched_episode %}
+                        <p>Last watched: Episode {{ tracking_entry.last_watched_episode }}{% if tracking_entry.last_watched_at %} • {{ tracking_entry.last_watched_at[:10] }}{% endif %}</p>
+                    {% else %}
+                        <p>No saved episode progress yet.</p>
+                    {% endif %}
+                </div>
+
+                <div class="watch-status-panel">
+                    <label for="watch-status-select">Watch Status</label>
+                    <div class="watch-status-control">
+                        <select id="watch-status-select" data-anime-id="{{ anime.id }}">
+                            {% for status in watch_status_options %}
+                                <option value="{{ status }}" {% if active_watch_status == status %}selected{% endif %}>{{ status }}</option>
+                            {% endfor %}
+                        </select>
+                        <span id="watch-status-pill" class="watch-status-pill status-{{ active_watch_status|lower|replace(' ', '-') }}">{{ active_watch_status }}</span>
+                    </div>
+                </div>
+
+                <p class="detail-download-row"><strong>Download Anime:</strong>
                     <a href="{{ anime.download_link }}" target="_blank" class="download-link" id="anime-download-link">{{ anime.download_link }}</a>
                 </p>
                 <form class="inline-edit-form" id="anime-link-form">
@@ -34,12 +57,7 @@
                 </form>
 
                 <div class="anime-tag-details">
-                    {% set tag_groups = [
-                        ("Genres", anime.genres),
-                        ("Themes", anime.themes),
-                        ("Demographics", anime.demographics),
-                        ("Tags", anime.tags)
-                    ] %}
+                    {% set tag_groups = [("Genres", anime.genres), ("Themes", anime.themes), ("Demographics", anime.demographics), ("Tags", anime.tags)] %}
                     {% for label, values in tag_groups %}
                         {% if values %}
                             <div class="detail-metadata-hover">
@@ -54,65 +72,86 @@
                     {% endfor %}
                 </div>
 
-                <!-- Actions -->
                 <div class="anime-actions">
-                    <p><strong>Status:</strong> 
-                        <span id="anime-status-text" data-anime-id="{{ anime.id }}" data-current-status="{{ anime.status }}">
-                            {{ anime.status }}
-                        </span>
-                        <button onclick="cycleStatus()" class="watched-button" style="margin-left: 10px;">
-                            🔁 Change Status
-                        </button>
-                    </p>
-
-                    <button onclick="toggleAnimeWatched('{{ anime.id }}', this)" 
-                            class="watched-button {% if anime.watched %}watched{% endif %}">
+                    <button onclick="toggleAnimeWatched('{{ anime.id }}', this)" class="watched-button {% if anime.watched %}watched{% endif %}">
                         {% if anime.watched %}✔ Anime Watched{% else %}Mark Anime as Watched{% endif %}
                     </button>
                 </div>
             </div>
         </div>
+    </section>
 
-    </div>
-
-
-
-    <div class="episode-manager">
+    <div class="episode-manager detail-episode-manager">
         <form id="add-episode-form" class="inline-edit-form">
             <input type="text" id="new-episode-title" placeholder="Episode title (optional)">
             <button type="submit" class="watched-button">Add Episode</button>
         </form>
     </div>
 
-    <!-- Episode Cards -->
-    <div class="episode-cards">
+    <section class="episode-section-header">
+        <div>
+            <span class="detail-kicker">Episode Progress</span>
+            <h2>Episodes</h2>
+        </div>
+        <p>Resume unfinished episodes, restart from zero, or mark episodes as watched.</p>
+    </section>
+
+    <div class="episode-cards episode-progress-grid">
         {% for episode in anime.episodes %}
-            <div class="episode-card">
-                <!-- Episode Preview -->
+            <article class="episode-card episode-progress-card {% if episode.watched %}is-complete{% elif episode.has_resume %}is-in-progress{% endif %}">
                 <div class="episode-preview">
                     <video class="preview-video" muted loop preload="metadata">
                         <source src="{{ episode.video_url }}" type="video/mp4">
-                        Your browser does not support the video tag.
                     </video>
-                    <div class="play-overlay" onclick="window.location.href=`{{ url_for('player', anime_id=anime.id, episode_number=episode.number) }}`">
-                        ▶️ Play
+                    <div class="play-overlay" onclick="window.location.href=`{{ url_for('player', anime_id=anime.id, episode_number=episode.number) }}{% if episode.has_resume %}?resume=1{% endif %}`">
+                        {% if episode.has_resume %}▶ Continue{% elif episode.watched %}↺ Rewatch{% else %}▶ Play{% endif %}
                     </div>
                 </div>
 
-                <!-- Episode Info -->
-                <div class="episode-info">
-                    <span class="episode-number">Episode {{ episode.number }}</span>
+                <div class="episode-info episode-progress-info">
+                    <div class="episode-title-row">
+                        <span class="episode-number">Episode {{ episode.number }}</span>
+                        {% if episode.watched %}
+                            <span class="episode-state-badge complete">Completed</span>
+                        {% elif episode.has_resume %}
+                            <span class="episode-state-badge progress">In Progress</span>
+                        {% else %}
+                            <span class="episode-state-badge fresh">Unwatched</span>
+                        {% endif %}
+                    </div>
                     <span class="episode-title">{{ episode.title }}</span>
+
+                    <div class="episode-card-progress">
+                        <div class="episode-card-progress-track">
+                            <span style="width: {% if episode.watched %}100{% else %}{{ episode.progress_percentage }}{% endif %}%;"></span>
+                        </div>
+                        <small>
+                            {% if episode.watched %}
+                                Completed
+                            {% elif episode.has_resume %}
+                                {{ episode.current_time_label }} / {{ episode.duration_label }} • {{ episode.progress_percentage }}%
+                            {% else %}
+                                Not started
+                            {% endif %}
+                        </small>
+                    </div>
                 </div>
 
-                <!-- Episode Actions -->
-                <div class="episode-actions">
+                <div class="episode-actions episode-progress-actions">
+                    {% if episode.has_resume %}
+                        <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number) }}?resume=1" class="watched-button episode-action-link">Continue</a>
+                        <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number) }}?start_over=1" class="watched-button episode-action-link secondary">Start Over</a>
+                    {% elif episode.watched %}
+                        <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number) }}?start_over=1" class="watched-button episode-action-link secondary">Rewatch</a>
+                    {% else %}
+                        <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number) }}" class="watched-button episode-action-link">Start Episode</a>
+                    {% endif %}
                     <button onclick="toggleWatched('{{ anime.id }}', '{{ episode.number }}', this)" class="watched-button {% if episode.watched %}watched{% endif %}">
-                        {% if episode.watched %}✔ Watched{% else %}Mark as Watched{% endif %}
+                        {% if episode.watched %}✔ Watched{% else %}Mark Watched{% endif %}
                     </button>
-                    <button onclick="deleteEpisode('{{ episode.number }}')" class="delete-button">Delete Episode</button>
+                    <button onclick="deleteEpisode('{{ episode.number }}')" class="delete-button">Delete</button>
                 </div>
-            </div>
+            </article>
         {% endfor %}
     </div>
 </div>
@@ -120,7 +159,6 @@
 <script>
     const ANIME_ID = "{{ anime.id }}";
 
-    // === Anime Watched Toggle ===
     function toggleAnimeWatched(animeId, button) {
         fetch(`/mark_anime_watched/${animeId}`, { method: 'POST' })
             .then(response => response.json())
@@ -131,14 +169,11 @@
                 }
             });
     }
+
     async function fetchAnimeData() {
         try {
             const response = await fetch('/api/anime');
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch anime data');
-            }
-
+            if (!response.ok) throw new Error('Failed to fetch anime data');
             return await response.json();
         } catch (error) {
             console.error('Error fetching anime data:', error);
@@ -148,35 +183,42 @@
 
     async function loadAnimeThumbnail() {
         const animeData = await fetchAnimeData();
-
-        const currentAnimeId = "{{ anime.id }}";
-        const currentAnime = animeData.find(anime => String(anime.id) === String(currentAnimeId));
-
+        const currentAnime = animeData.find(anime => String(anime.id) === String(ANIME_ID));
         const animeThumbnail = document.getElementById('anime-thumbnail');
-
-        if (currentAnime && currentAnime.thumbnail_url) {
-            animeThumbnail.src = currentAnime.thumbnail_url;
-        } else {
-            animeThumbnail.src = 'https://via.placeholder.com/250x180?text=No+Image';
-        }
+        animeThumbnail.src = currentAnime?.thumbnail_url || '/static/placeholder.jpeg';
     }
 
     document.addEventListener('DOMContentLoaded', loadAnimeThumbnail);
+
+    document.getElementById("watch-status-select").addEventListener("change", async (event) => {
+        const select = event.target;
+        const newStatus = select.value;
+        const response = await fetch(`/update_anime_status/${ANIME_ID}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
+        });
+        const data = await response.json();
+        if (data.status === 'success') {
+            const pill = document.getElementById('watch-status-pill');
+            pill.textContent = data.new_status;
+            pill.className = `watch-status-pill status-${data.new_status.toLowerCase().replaceAll(' ', '-')}`;
+        } else {
+            alert(data.message || 'Failed to update status');
+        }
+    });
 
     document.getElementById("anime-link-form").addEventListener("submit", async (event) => {
         event.preventDefault();
         const input = document.getElementById("anime-link-input");
         const link = input.value.trim();
-
         if (!link) return;
-
         const response = await fetch(`/update_anime_link/${ANIME_ID}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ link })
         });
         const data = await response.json();
-
         if (data.status === "success") {
             const anchor = document.getElementById("anime-download-link");
             anchor.href = data.link;
@@ -189,281 +231,39 @@
     document.getElementById("add-episode-form").addEventListener("submit", async (event) => {
         event.preventDefault();
         const input = document.getElementById("new-episode-title");
-
         const response = await fetch(`/anime/${ANIME_ID}/episodes`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ title: input.value.trim() })
         });
         const data = await response.json();
-
-        if (data.status === "success") {
-            window.location.reload();
-        } else {
-            alert(data.message || "Failed to add episode");
-        }
+        if (data.status === "success") window.location.reload();
+        else alert(data.message || "Failed to add episode");
     });
 
     async function deleteEpisode(episodeNumber) {
         if (!confirm(`Delete episode ${episodeNumber}?`)) return;
-
-        const response = await fetch(`/anime/${ANIME_ID}/episodes/${episodeNumber}`, {
-            method: "DELETE"
-        });
+        const response = await fetch(`/anime/${ANIME_ID}/episodes/${episodeNumber}`, { method: "DELETE" });
         const data = await response.json();
-
-        if (data.status === "success") {
-            window.location.reload();
-        } else {
-            alert(data.message || "Failed to delete episode");
-        }
+        if (data.status === "success") window.location.reload();
+        else alert(data.message || "Failed to delete episode");
     }
 
-    // === Anime Status Cycle ===
-    function cycleStatus() {
-        const statusSpan = document.getElementById('anime-status-text');
-        const animeId = statusSpan.dataset.animeId;
-        const currentStatus = statusSpan.dataset.currentStatus.trim();
+    function toggleWatched(animeId, episodeNumber, button) {
+        fetch(`/mark_watched/${animeId}/${episodeNumber}`, { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') window.location.reload();
+                else alert('Failed to update watched status');
+            });
+    }
 
-        const statuses = ["Ongoing", "Not Aired", "Completed"];
-        const newIndex = (statuses.indexOf(currentStatus) + 1) % statuses.length;
-        const newStatus = statuses[newIndex];
-
-        fetch(`/update_anime_status/${animeId}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: newStatus })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.status === 'success') {
-                statusSpan.innerText = newStatus;
-                statusSpan.setAttribute('data-current-status', newStatus);
-            } else {
-                alert("Failed to update status: " + data.message);
-            }
-        })
-        .catch(err => {
-            console.error("Fetch error:", err);
-            alert("Error updating status");
+    document.querySelectorAll('.preview-video').forEach(video => {
+        video.parentElement.addEventListener('mouseenter', () => video.play().catch(() => {}));
+        video.parentElement.addEventListener('mouseleave', () => {
+            video.pause();
+            video.currentTime = 0;
         });
-    }
-
-    document.querySelectorAll(".preview-video").forEach(video => {
-    video.parentElement.addEventListener("mouseenter", () => {
-        video.play();
     });
-
-    video.parentElement.addEventListener("mouseleave", () => {
-        video.pause();
-        video.currentTime = 0;
-    });
-});
 </script>
-
-<style>
-
-/* Base */
-body {
-    margin: 0;
-    font-family: "Comic Sans MS", sans-serif;
-    color: white;
-}
-
-/* Background */
-.video-background {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: -2;
-}
-
-/* Overlay */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.65);
-    z-index: -1;
-}
-
-/* MAIN CONTAINER */
-.anime-detail-container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 100px auto;
-    padding: 25px;
-
-    border-radius: 20px;
-
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(18px);
-
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-}
-
-/* HEADER */
-.anime-header {
-    display: flex;
-    gap: 30px;
-    flex-wrap: wrap;
-}
-
-/* Thumbnail */
-.anime-thumbnail {
-    width: 280px;
-    border-radius: 14px;
-    object-fit: cover;
-
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-
-/* Info */
-.anime-info {
-    flex: 1;
-}
-
-.anime-info h1 {
-    margin-top: 0;
-    font-size: 32px;
-}
-
-/* Info text */
-.anime-info p {
-    margin: 6px 0;
-    color: #ddd;
-}
-
-/* Download link */
-.download-link {
-    color: #60a5fa;
-    text-decoration: underline;
-}
-
-/* ACTIONS */
-.anime-actions {
-    margin-top: 15px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-/* Buttons */
-.watched-button {
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: none;
-
-    background: rgba(59,130,246,0.8);
-    color: white;
-
-    cursor: pointer;
-    transition: 0.25s;
-}
-
-.watched-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(59,130,246,0.5);
-}
-
-.watched-button.watched {
-    background: rgba(34,197,94,0.9);
-}
-
-/* EPISODES GRID */
-.episode-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 20px;
-    margin-top: 30px;
-}
-
-/* CARD */
-.episode-card {
-    border-radius: 14px;
-    overflow: hidden;
-
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(10px);
-
-    transition: 0.25s;
-}
-
-.episode-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-}
-
-/* VIDEO PREVIEW */
-.episode-preview {
-    position: relative;
-    height: 150px;
-    background: black;
-}
-
-.preview-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* PLAY OVERLAY */
-.play-overlay {
-    position: absolute;
-    inset: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: rgba(0,0,0,0.5);
-    font-size: 20px;
-
-    opacity: 0;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.episode-preview:hover .play-overlay {
-    opacity: 1;
-}
-
-/* EPISODE INFO */
-.episode-info {
-    padding: 10px;
-    text-align: center;
-}
-
-.episode-number {
-    font-weight: bold;
-}
-
-.episode-title {
-    font-size: 0.9rem;
-    color: #ccc;
-}
-
-/* BUTTON AREA */
-.episode-actions {
-    padding: 10px;
-    text-align: center;
-}
-#anime-status-text {
-    font-weight: bold;
-}
-
-#anime-status-text[data-current-status="Ongoing"] {
-    color: #22c55e;
-}
-
-#anime-status-text[data-current-status="Completed"] {
-    color: #60a5fa;
-}
-
-#anime-status-text[data-current-status="Not Aired"] {
-    color: #f59e0b;
-}
-</style>
 {% endblock %}

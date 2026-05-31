@@ -17,11 +17,6 @@
             </div>
 
             <div class="form-group">
-                <label for="chapters">Total Chapters</label>
-                <input type="number" id="chapters" name="chapters" min="1" required placeholder="172">
-            </div>
-
-            <div class="form-group">
                 <label for="status">Status</label>
                 <select id="status" name="status" required data-validate-field>
                     <option value="Ongoing">Ongoing</option>
@@ -33,6 +28,15 @@
             <div class="form-group">
                 <label for="link">Read / Download Link</label>
                 <input type="url" id="link" name="link" required data-validate-field placeholder="https://...">
+            </div>
+
+            <div class="form-group anime-metadata-group">
+                <label>Manga Headers</label>
+                <div id="manga-metadata-picker" class="metadata-picker" aria-live="polite"></div>
+                <input type="hidden" id="genres-input" name="genres" value="[]">
+                <input type="hidden" id="themes-input" name="themes" value="[]">
+                <input type="hidden" id="demographics-input" name="demographics" value="[]">
+                <input type="hidden" id="tags-input" name="tags" value="[]">
             </div>
 
             <div class="form-group thumbnail-upload-group">
@@ -50,4 +54,200 @@
         </form>
     </div>
 </div>
+
+<script>
+const MANGA_METADATA_GROUPS = [
+    ["genres", "Genres"],
+    ["themes", "Themes"],
+    ["demographics", "Demographics"],
+    ["tags", "Tags"]
+];
+
+let mangaMetadataCatalog = {};
+const selectedMangaMetadata = {
+    genres: new Set(),
+    themes: new Set(),
+    demographics: new Set(),
+    tags: new Set()
+};
+
+function normalizeMangaMetadataName(value) {
+    return String(value || "").trim().replace(/\s+/g, " ");
+}
+
+function findExistingMangaMetadataGroup(name) {
+    const target = normalizeMangaMetadataName(name).toLowerCase();
+    if (!target) return null;
+
+    for (const [group] of MANGA_METADATA_GROUPS) {
+        const items = Array.isArray(mangaMetadataCatalog[group]) ? mangaMetadataCatalog[group] : [];
+        if (items.some(item => normalizeMangaMetadataName(item.name || item).toLowerCase() === target)) {
+            return group;
+        }
+    }
+
+    return null;
+}
+
+function syncMangaMetadataInputs() {
+    MANGA_METADATA_GROUPS.forEach(([group]) => {
+        const input = document.getElementById(`${group}-input`);
+        if (input) {
+            input.value = JSON.stringify([...selectedMangaMetadata[group]]);
+        }
+    });
+}
+
+function updateMangaMetadataSelected(group, value, checked) {
+    const name = normalizeMangaMetadataName(value);
+    if (!name) return;
+
+    if (checked) {
+        selectedMangaMetadata[group].add(name);
+    } else {
+        selectedMangaMetadata[group].delete(name);
+    }
+
+    syncMangaMetadataInputs();
+}
+
+function setMangaMetadataCheckbox(group, value, checked) {
+    const checkbox = [...document.querySelectorAll(`input[data-metadata-group="${group}"]`)]
+        .find(input => input.value === value);
+    if (checkbox) {
+        checkbox.checked = checked;
+    }
+}
+
+function addCustomMangaMetadata(group, input) {
+    const name = normalizeMangaMetadataName(input.value);
+    if (!name) return;
+
+    const existingGroup = findExistingMangaMetadataGroup(name);
+    const finalGroup = existingGroup || group;
+
+    if (existingGroup && existingGroup !== group) {
+        alert(`"${name}" already exists under ${existingGroup}. It will be added there instead.`);
+    }
+
+    selectedMangaMetadata[finalGroup].add(name);
+    setMangaMetadataCheckbox(finalGroup, name, true);
+    input.value = "";
+    syncMangaMetadataInputs();
+}
+
+function confirmNewMangaMetadataValues() {
+    const newValues = [];
+
+    MANGA_METADATA_GROUPS.forEach(([group, label]) => {
+        selectedMangaMetadata[group].forEach(value => {
+            if (!findExistingMangaMetadataGroup(value)) {
+                newValues.push(`${label}: ${value}`);
+            }
+        });
+    });
+
+    if (!newValues.length) return true;
+
+    return confirm(
+        `These new manga header values are not in the unique list yet:\n\n${newValues.join("\n")}\n\nAdd them to the manga and update unique_manga_headers.json?`
+    );
+}
+
+function validateRequiredMangaMetadata() {
+    const missing = MANGA_METADATA_GROUPS
+        .filter(([group]) => selectedMangaMetadata[group].size === 0)
+        .map(([, label]) => label);
+
+    if (!missing.length) return true;
+
+    alert(`Select at least one value from each manga header before adding.\n\nMissing: ${missing.join(", ")}`);
+    return false;
+}
+
+function renderMangaMetadataPicker() {
+    const picker = document.getElementById("manga-metadata-picker");
+    if (!picker) return;
+
+    picker.innerHTML = "";
+
+    MANGA_METADATA_GROUPS.forEach(([group, label]) => {
+        const details = document.createElement("details");
+        details.className = "metadata-section";
+
+        const summary = document.createElement("summary");
+        summary.textContent = label;
+
+        const options = document.createElement("div");
+        options.className = "metadata-options";
+
+        const items = Array.isArray(mangaMetadataCatalog[group]) ? mangaMetadataCatalog[group] : [];
+        items.forEach(item => {
+            const name = item.name || item;
+            const count = item.count;
+            const option = document.createElement("label");
+            option.className = "tag-filter-option";
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.value = name;
+            checkbox.dataset.metadataGroup = group;
+            checkbox.addEventListener("change", () => updateMangaMetadataSelected(group, name, checkbox.checked));
+
+            const text = document.createElement("span");
+            text.textContent = count ? `${name} (${count})` : name;
+
+            option.append(checkbox, text);
+            options.appendChild(option);
+        });
+
+        const customRow = document.createElement("div");
+        customRow.className = "metadata-custom-row";
+
+        const customInput = document.createElement("input");
+        customInput.type = "text";
+        customInput.placeholder = `Add ${label.slice(0, -1).toLowerCase()}`;
+
+        const customButton = document.createElement("button");
+        customButton.type = "button";
+        customButton.className = "submit-btn metadata-add-btn";
+        customButton.textContent = "Add";
+        customButton.addEventListener("click", () => addCustomMangaMetadata(group, customInput));
+
+        customInput.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                addCustomMangaMetadata(group, customInput);
+            }
+        });
+
+        customRow.append(customInput, customButton);
+        details.append(summary, options, customRow);
+        picker.appendChild(details);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const response = await fetch("/api/manga-headers");
+        mangaMetadataCatalog = response.ok ? await response.json() : {};
+    } catch (error) {
+        console.error("Failed to load manga headers:", error);
+        mangaMetadataCatalog = {};
+    }
+
+    renderMangaMetadataPicker();
+
+    document.getElementById("add-manga-form")?.addEventListener("submit", (event) => {
+        syncMangaMetadataInputs();
+        if (!validateRequiredMangaMetadata()) {
+            event.preventDefault();
+            return;
+        }
+        if (!confirmNewMangaMetadataValues()) {
+            event.preventDefault();
+        }
+    });
+});
+</script>
 {% endblock %}

@@ -289,7 +289,22 @@ a:hover {
 }
 </style>
 </head>
-<body>
+<body class="theme-{{ active_theme }}{% if theme_settings.dark_mode %} theme-dark{% endif %} section-{{ active_section_key }} theme-media-{{ theme_settings.background.mode }}" style="{{ theme_css_overrides }}">
+<style id="theme-runtime-overrides">
+    body[class*="theme-"] {
+        color: var(--theme-body, #f8f2f8) !important;
+    }
+</style>
+{% if theme_settings.background.mode not in ["none", "solid"] %}
+    {% if theme_settings.background.type == "image" %}
+        <div class="theme-background-image" style="background-image: url('{{ theme_settings.background.url }}');"></div>
+    {% elif theme_settings.background.type == "video" %}
+        <video class="theme-background-video" autoplay loop muted playsinline>
+            <source src="{{ theme_settings.background.url }}" type="video/{{ 'webm' if theme_settings.background.url.endswith('.webm') else 'mp4' }}">
+        </video>
+    {% endif %}
+{% endif %}
+
     
 <!-- Queue Toggle Button -->
 <button id="toggle-queue-btn"
@@ -300,14 +315,28 @@ a:hover {
 <!-- Queue Panel -->
 <div id="global-queue"
      class="fixed bottom-16 right-4 bg-gray-900 text-white p-4 rounded-lg shadow-lg max-h-64 overflow-auto w-64 z-40 hidden">
-    <h3 class="text-lg font-bold mb-2">📺 Queue</h3>
+    <div class="queue-panel-header">
+        <strong class="text-lg font-bold mb-2">Queue</strong>
+        <a href="{{ url_for('queue_page') }}" class="queue-expand-link">Expand</a>
+        <a href="{{ url_for('settings_page') }}" class="queue-expand-link">Themes</a>
+    </div>
     {% if global_queue %}
-    <ul class="space-y-2">
+    <ul class="space-y-2 queue-card-list" id="global-queue-list">
         {% for item in global_queue %}
-          <li class="bg-gray-800 p-2 rounded text-sm flex justify-between items-center">
-            <div>
-              <strong>{{ item.title }}</strong><br>
-              Season: {{ item.season }}
+          <li class="queue-card-mini {% if item.is_now_playing %}is-now-playing{% endif %}" draggable="true" data-index="{{ item.index }}">
+            <span class="queue-drag-handle" aria-label="Drag handle">::</span>
+            <img class="queue-thumb-mini" src="{{ item.thumbnail_url }}" alt="{{ item.anime_title }}">
+            <div class="queue-mini-body">
+              <div class="queue-mini-topline">
+                <span class="queue-position">#{{ item.position }}</span>
+                {% if item.is_now_playing %}
+                    <span class="queue-now-indicator">Now Playing</span>
+                {% endif %}
+              </div>
+              <strong>{{ item.anime_title }}</strong>
+              <span>Episode {{ item.episode_number }} - {{ item.episode_title }}</span>
+              <span>Duration: {{ item.duration_label }}</span>
+              <a href="{{ item.player_url }}" class="queue-play-link">Queue Player</a>
               <a href="{{ url_for('player', index=loop.index0) }}?from_queue=true" class="text-blue-400 underline ml-2">▶️</a>
             </div>
             <button class="text-red-400 ml-2 delete-btn" data-index="{{ loop.index0 }}">🗑️</button>
@@ -340,6 +369,51 @@ a:hover {
         });
     });
     </script>
+
+<script>
+    function setupQueueDrag(listId) {
+        const list = document.getElementById(listId);
+        if (!list) return;
+
+        let draggedItem = null;
+
+        list.querySelectorAll('[draggable="true"]').forEach(item => {
+            item.addEventListener('dragstart', () => {
+                draggedItem = item;
+                item.classList.add('is-dragging');
+            });
+
+            item.addEventListener('dragend', async () => {
+                item.classList.remove('is-dragging');
+                const order = [...list.querySelectorAll('[data-index]')].map(card => Number(card.dataset.index));
+                draggedItem = null;
+
+                try {
+                    const response = await fetch('/queue/reorder', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ order })
+                    });
+                    if (!response.ok) throw new Error('Failed to save queue order');
+                    location.reload();
+                } catch (error) {
+                    alert(error.message);
+                    location.reload();
+                }
+            });
+
+            item.addEventListener('dragover', event => {
+                event.preventDefault();
+                if (!draggedItem || draggedItem === item) return;
+                const rect = item.getBoundingClientRect();
+                const placeAfter = event.clientY > rect.top + rect.height / 2;
+                list.insertBefore(draggedItem, placeAfter ? item.nextSibling : item);
+            });
+        });
+    }
+
+    setupQueueDrag('global-queue-list');
+</script>
     
 <script>
     const toggleBtn = document.getElementById("toggle-queue-btn");

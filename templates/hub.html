@@ -143,10 +143,16 @@ button:hover {
 }
     </style>
 </head>
-<body>
-<video class="video-background" autoplay loop muted playsinline>
-    <source src="{{ url_for('static', filename='images/stars1.mp4') }}" type="video/mp4">
-</video>
+<body class="hub-page theme-{{ active_theme }}{% if theme_settings.dark_mode %} theme-dark{% endif %} section-{{ active_section_key }} theme-media-{{ theme_settings.background.mode }}" style="{{ theme_css_overrides }}">
+{% if theme_settings.background.mode not in ["none", "solid"] %}
+    {% if theme_settings.background.type == "image" %}
+        <div class="theme-background-image" style="background-image: url('{{ theme_settings.background.url }}');"></div>
+    {% elif theme_settings.background.type == "video" %}
+        <video class="theme-background-video video-background" autoplay loop muted playsinline>
+            <source src="{{ theme_settings.background.url }}" type="video/{{ 'webm' if theme_settings.background.url.endswith('.webm') else 'mp4' }}">
+        </video>
+    {% endif %}
+{% endif %}
 <div class="container">
     {% for section in sections %}
         <a href="/{{ section|lower|replace(' ', '_') }}">

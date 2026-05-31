@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="queue-page-shell queue-clean-shell">
+    {% set active = namespace(position=1) %}
+    {% if queue_items %}
+        {% for item in queue_items %}
+            {% if item.is_now_playing %}
+                {% set active.position = item.position %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    <div class="page-commandbar queue-commandbar">
+        <div class="page-commandbar-copy">
+            <span class="page-eyebrow">Queue</span>
+            <strong>{{ queue_items|length if queue_items else 0 }} queued</strong>
+            <small>
+                {% if queue_items %}
+                    Item {{ active.position }} of {{ queue_items|length }} • {{ queue_items|length - active.position }} remaining
+                {% else %}
+                    Add episodes from anime details to build your playlist
+                {% endif %}
+            </small>
+        </div>
+        <div class="page-commandbar-actions">
+            <a href="{{ url_for('queue_player', index=0) if queue_items else url_for('index') }}" class="queue-page-action {% if not queue_items %}is-disabled{% endif %}">Start</a>
+            <button type="button" class="queue-page-action queue-clear-watched-btn" {% if not queue_items %}disabled{% endif %}>Clear Watched</button>
+            <button type="button" class="queue-page-action danger queue-clear-btn" {% if not queue_items %}disabled{% endif %}>Clear</button>
+            <a href="{{ url_for('settings_page') }}" class="queue-page-action subtle">Themes</a>
+            <a href="{{ url_for('index') }}" class="queue-page-action subtle">Library</a>
+        </div>
+    </div>
+
+    {% if queue_items %}
+        <div class="queue-stat-row queue-clean-stats">
+            <div><strong>{{ queue_items|length }}</strong><span>Total items</span></div>
+            <div><strong>{{ queue_items[0].anime_title }}</strong><span>First</span></div>
+            <div><strong>{{ queue_items[-1].anime_title }}</strong><span>Last</span></div>
+        </div>
+
+        <div class="queue-page-list queue-clean-list" id="queue-page-list">
+            {% for item in queue_items %}
+                <article class="queue-card-full queue-clean-card {% if item.is_now_playing %}is-now-playing{% endif %}" draggable="true" data-index="{{ item.index }}">
+                    <span class="queue-drag-handle queue-drag-handle-full" aria-label="Drag handle">⋮⋮</span>
+                    <img class="queue-card-thumb" src="{{ item.thumbnail_url }}" alt="{{ item.anime_title }}">
+                    <div class="queue-card-main">
+                        <div class="queue-card-title-row">
+                            <span class="queue-card-position">#{{ item.position }}</span>
+                            {% if item.is_now_playing %}<span class="queue-now-indicator">Now</span>{% endif %}
+                        </div>
+                        <strong class="queue-clean-title">{{ item.anime_title }}</strong>
+                        <p>Episode {{ item.episode_number }} — {{ item.episode_title }}</p>
+                        <div class="queue-card-meta">
+                            <span>{{ item.duration_label }}</span>
+                            <span>{{ item.season }}</span>
+                            <span>{{ loop.revindex0 }} after this</span>
+                        </div>
+                    </div>
+                    <div class="queue-card-actions">
+                        <a href="{{ item.player_url }}" class="queue-play-link">Play</a>
+                        <button class="queue-move-top-btn" data-index="{{ item.index }}" type="button">Top</button>
+                        <button class="delete-btn queue-remove-btn" data-index="{{ item.index }}" type="button">Remove</button>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state queue-empty-state queue-clean-empty">
+            <strong>No queued episodes</strong>
+            <p>Your queue will appear here once you add episodes from an anime details page.</p>
+            <a href="{{ url_for('index') }}" class="queue-page-action">Browse Anime</a>
+        </div>
+    {% endif %}
+</section>
+
+<script>
+    async function queuePost(url) {
+        const response = await fetch(url, { method: 'POST' });
+        const data = await response.json();
+        if (data.status === 'success') location.reload();
+        else alert(data.message || 'Queue action failed');
+    }
+
+    document.querySelector('.queue-clear-btn')?.addEventListener('click', async () => {
+        if (confirm('Clear the entire queue?')) queuePost('/queue/clear');
+    });
+
+    document.querySelector('.queue-clear-watched-btn')?.addEventListener('click', async () => {
+        queuePost('/queue/clear-watched');
+    });
+
+    document.querySelectorAll('.queue-move-top-btn').forEach(btn => {
+        btn.addEventListener('click', () => queuePost(`/queue/move-top/${btn.getAttribute('data-index')}`));
+    });
+
+    document.querySelectorAll('.queue-page-list .delete-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const index = btn.getAttribute('data-index');
+            try {
+                const res = await fetch(`/delete_from_queue/${index}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (data.status === 'success') location.reload();
+                else alert('Failed to delete: ' + data.message);
+            } catch (err) {
+                alert('Error deleting: ' + err.message);
+            }
+        });
+    });
+
+    setupQueueDrag('queue-page-list');
+</script>
+{% endblock %}

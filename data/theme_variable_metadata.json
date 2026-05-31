@@ -1,0 +1,275 @@
+[
+  {
+    "key": "accent",
+    "css_var": "--theme-accent",
+    "css_name": "theme-accent",
+    "label": "Primary Accent",
+    "group": "Core colors"
+  },
+  {
+    "key": "accent_2",
+    "css_var": "--theme-accent-2",
+    "css_name": "theme-accent-2",
+    "label": "Secondary Accent",
+    "group": "Core colors"
+  },
+  {
+    "key": "panel",
+    "css_var": "--theme-panel",
+    "css_name": "theme-panel",
+    "label": "Panel Surface",
+    "group": "Surfaces"
+  },
+  {
+    "key": "panel_strong",
+    "css_var": "--theme-panel-strong",
+    "css_name": "theme-panel-strong",
+    "label": "Strong Panel Surface",
+    "group": "Surfaces"
+  },
+  {
+    "key": "border",
+    "css_var": "--theme-border",
+    "css_name": "theme-border",
+    "label": "Borders",
+    "group": "Surfaces"
+  },
+  {
+    "key": "heading",
+    "css_var": "--theme-heading",
+    "css_name": "theme-heading",
+    "label": "Headings",
+    "group": "Text colors"
+  },
+  {
+    "key": "text",
+    "css_var": "--theme-text",
+    "css_name": "theme-text",
+    "label": "Main Text",
+    "group": "Text colors"
+  },
+  {
+    "key": "body",
+    "css_var": "--theme-body",
+    "css_name": "theme-body",
+    "label": "Body Text",
+    "group": "Text colors"
+  },
+  {
+    "key": "muted",
+    "css_var": "--theme-muted",
+    "css_name": "theme-muted",
+    "label": "Muted Text",
+    "group": "Text colors"
+  },
+  {
+    "key": "subtle",
+    "css_var": "--theme-subtle",
+    "css_name": "theme-subtle",
+    "label": "Subtle Text",
+    "group": "Text colors"
+  },
+  {
+    "key": "meta",
+    "css_var": "--theme-meta",
+    "css_name": "theme-meta",
+    "label": "Meta Text",
+    "group": "Text colors"
+  },
+  {
+    "key": "link",
+    "css_var": "--theme-link",
+    "css_name": "theme-link",
+    "label": "Links",
+    "group": "Text colors"
+  },
+  {
+    "key": "nav_text",
+    "css_var": "--theme-nav-text",
+    "css_name": "theme-nav-text",
+    "label": "Navigation Text",
+    "group": "Text colors"
+  },
+  {
+    "key": "button_text",
+    "css_var": "--theme-button-text",
+    "css_name": "theme-button-text",
+    "label": "Primary Button Text",
+    "group": "Buttons"
+  },
+  {
+    "key": "on_accent",
+    "css_var": "--theme-on-accent",
+    "css_name": "theme-on-accent",
+    "label": "Text On Accent",
+    "group": "Buttons"
+  },
+  {
+    "key": "secondary_button_text",
+    "css_var": "--theme-secondary-button-text",
+    "css_name": "theme-secondary-button-text",
+    "label": "Secondary Button Text",
+    "group": "Buttons"
+  },
+  {
+    "key": "danger_button_text",
+    "css_var": "--theme-danger-button-text",
+    "css_name": "theme-danger-button-text",
+    "label": "Danger Button Text",
+    "group": "Buttons"
+  },
+  {
+    "key": "input_text",
+    "css_var": "--theme-input-text",
+    "css_name": "theme-input-text",
+    "label": "Input Text",
+    "group": "Forms"
+  },
+  {
+    "key": "placeholder",
+    "css_var": "--theme-placeholder",
+    "css_name": "theme-placeholder",
+    "label": "Placeholder Text",
+    "group": "Forms"
+  },
+  {
+    "key": "card_text",
+    "css_var": "--theme-card-text",
+    "css_name": "theme-card-text",
+    "label": "Card Text",
+    "group": "Cards / overlays"
+  },
+  {
+    "key": "overlay_text",
+    "css_var": "--theme-overlay-text",
+    "css_name": "theme-overlay-text",
+    "label": "Overlay Text",
+    "group": "Cards / overlays"
+  },
+  {
+    "key": "badge_text",
+    "css_var": "--theme-badge-text",
+    "css_name": "theme-badge-text",
+    "label": "Badge Text",
+    "group": "Badges / chips"
+  },
+  {
+    "key": "chip_text",
+    "css_var": "--theme-chip-text",
+    "css_name": "theme-chip-text",
+    "label": "Chip Text",
+    "group": "Badges / chips"
+  },
+  {
+    "key": "success_text",
+    "css_var": "--theme-success-text",
+    "css_name": "theme-success-text",
+    "label": "Success Text",
+    "group": "State colors"
+  },
+  {
+    "key": "danger_text",
+    "css_var": "--theme-danger-text",
+    "css_name": "theme-danger-text",
+    "label": "Danger Text",
+    "group": "State colors"
+  },
+  {
+    "key": "warning_text",
+    "css_var": "--theme-warning-text",
+    "css_name": "theme-warning-text",
+    "label": "Warning Text",
+    "group": "State colors"
+  },
+  {
+    "key": "pagination_panel",
+    "css_var": "--theme-pagination-panel",
+    "css_name": "theme-pagination-panel",
+    "label": "Pagination Panel",
+    "group": "Pagination"
+  },
+  {
+    "key": "pagination_button_bg",
+    "css_var": "--theme-pagination-button-bg",
+    "css_name": "theme-pagination-button-bg",
+    "label": "Pagination Button Background",
+    "group": "Pagination"
+  },
+  {
+    "key": "pagination_button_text",
+    "css_var": "--theme-pagination-button-text",
+    "css_name": "theme-pagination-button-text",
+    "label": "Pagination Button Text",
+    "group": "Pagination"
+  },
+  {
+    "key": "pagination_active_bg",
+    "css_var": "--theme-pagination-active-bg",
+    "css_name": "theme-pagination-active-bg",
+    "label": "Pagination Active Background",
+    "group": "Pagination"
+  },
+  {
+    "key": "pagination_active_text",
+    "css_var": "--theme-pagination-active-text",
+    "css_name": "theme-pagination-active-text",
+    "label": "Pagination Active Text",
+    "group": "Pagination"
+  },
+  {
+    "key": "pagination_info_text",
+    "css_var": "--theme-pagination-info-text",
+    "css_name": "theme-pagination-info-text",
+    "label": "Pagination Info Text",
+    "group": "Pagination"
+  },
+  {
+    "key": "button_bg",
+    "css_var": "--theme-button-bg",
+    "css_name": "theme-button-bg",
+    "label": "Primary Button Background",
+    "group": "Buttons"
+  },
+  {
+    "key": "secondary_button_bg",
+    "css_var": "--theme-secondary-button-bg",
+    "css_name": "theme-secondary-button-bg",
+    "label": "Secondary Button Background",
+    "group": "Buttons"
+  },
+  {
+    "key": "card_bg",
+    "css_var": "--theme-card-bg",
+    "css_name": "theme-card-bg",
+    "label": "Card Background",
+    "group": "Cards / overlays"
+  },
+  {
+    "key": "input_bg",
+    "css_var": "--theme-input-bg",
+    "css_name": "theme-input-bg",
+    "label": "Input Background",
+    "group": "Forms"
+  },
+  {
+    "key": "danger_bg",
+    "css_var": "--theme-danger-bg",
+    "css_name": "theme-danger-bg",
+    "label": "Danger Background",
+    "group": "State colors"
+  },
+  {
+    "key": "success_bg",
+    "css_var": "--theme-success-bg",
+    "css_name": "theme-success-bg",
+    "label": "Success Background",
+    "group": "State colors"
+  },
+  {
+    "key": "warning_bg",
+    "css_var": "--theme-warning-bg",
+    "css_name": "theme-warning-bg",
+    "label": "Warning Background",
+    "group": "State colors"
+  }
+]
