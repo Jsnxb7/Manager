@@ -16111,73 +16111,73 @@
             {
                 "number": 1,
                 "title": "Episode 1",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Houkago Saikoro Club/S1/1.mp4"
             },
             {
                 "number": 2,
                 "title": "Episode 2",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Houkago Saikoro Club/S1/2.mp4"
             },
             {
                 "number": 3,
                 "title": "Episode 3",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Houkago Saikoro Club/S1/3.mp4"
             },
             {
                 "number": 4,
                 "title": "Episode 4",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Houkago Saikoro Club/S1/4.mp4"
             },
             {
                 "number": 5,
                 "title": "Episode 5",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Houkago Saikoro Club/S1/5.mp4"
             },
             {
                 "number": 6,
                 "title": "Episode 6",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Houkago Saikoro Club/S1/6.mp4"
             },
             {
                 "number": 7,
                 "title": "Episode 7",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Houkago Saikoro Club/S1/7.mp4"
             },
             {
                 "number": 8,
                 "title": "Episode 8",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Houkago Saikoro Club/S1/8.mp4"
             },
             {
                 "number": 9,
                 "title": "Episode 9",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Houkago Saikoro Club/S1/9.mp4"
             },
             {
                 "number": 10,
                 "title": "Episode 10",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Houkago Saikoro Club/S1/10.mp4"
             },
             {
                 "number": 11,
                 "title": "Episode 11",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Houkago Saikoro Club/S1/11.mp4"
             },
             {
                 "number": 12,
                 "title": "Episode 12",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Houkago Saikoro Club/S1/12.mp4"
             }
         ],
@@ -44773,12 +44773,6 @@
                 "title": "Episode 12",
                 "watched": false,
                 "file_path": "C:/Users/shour/Documents/Anime/Shuumatsu Touring/S1/12.mp4"
-            },
-            {
-                "number": 13,
-                "title": "Episode 13",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Shuumatsu Touring/S1/13.mp4"
             }
         ],
         "bookmarked": false,

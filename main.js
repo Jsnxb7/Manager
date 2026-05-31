@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
 const { spawn, exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -66,6 +66,141 @@ function loadConfig() {
     }
     return {};
 }
+
+
+
+ipcMain.handle('open-in-explorer', async (_event, targetPath) => {
+    try {
+        if (!targetPath || typeof targetPath !== 'string') {
+            return { success: false, message: 'No file path was provided.' };
+        }
+
+        const normalizedPath = path.normalize(targetPath);
+
+        if (fs.existsSync(normalizedPath)) {
+            const stats = fs.statSync(normalizedPath);
+            if (stats.isDirectory()) {
+                const errorMessage = await shell.openPath(normalizedPath);
+                return errorMessage
+                    ? { success: false, message: errorMessage }
+                    : { success: true };
+            }
+
+            shell.showItemInFolder(normalizedPath);
+            return { success: true };
+        }
+
+        const parentPath = path.dirname(normalizedPath);
+        if (parentPath && parentPath !== normalizedPath && fs.existsSync(parentPath)) {
+            const errorMessage = await shell.openPath(parentPath);
+            return errorMessage
+                ? { success: false, message: errorMessage }
+                : { success: true, message: 'Original path was missing, opened the parent folder instead.' };
+        }
+
+        return { success: false, message: `Path does not exist: ${normalizedPath}` };
+    } catch (error) {
+        return { success: false, message: error.message || 'Failed to open path in Explorer.' };
+    }
+});
+
+
+const VIDEO_EXTENSIONS = new Set(['.mp4', '.mkv', '.avi', '.mov', '.webm', '.m4v']);
+
+function getEpisodeNumberFromFilename(filename) {
+    const parsed = path.parse(path.basename(String(filename || '')));
+    const ext = parsed.ext.toLowerCase();
+
+    if (!VIDEO_EXTENSIONS.has(ext)) return null;
+
+    const stem = parsed.name;
+    if (/^\d+$/.test(stem)) return Number.parseInt(stem, 10);
+
+    const match = stem.match(/(?:EP\.|episode-|_-_)(\d{1,3})(?!\d)/i);
+    if (match) return Number.parseInt(match[1].replace(/^0+/, '') || '0', 10);
+
+    return null;
+}
+
+function findEpisodeVideoFile(directory, episodeNumber) {
+    if (!directory || !fs.existsSync(directory)) return null;
+
+    let stat;
+    try {
+        stat = fs.statSync(directory);
+    } catch (_error) {
+        return null;
+    }
+    if (!stat.isDirectory()) return null;
+
+    const matches = [];
+    for (const filename of fs.readdirSync(directory)) {
+        const filepath = path.join(directory, filename);
+        let fileStat;
+        try {
+            fileStat = fs.statSync(filepath);
+        } catch (_error) {
+            continue;
+        }
+        if (!fileStat.isFile()) continue;
+        if (getEpisodeNumberFromFilename(filename) === Number(episodeNumber)) {
+            matches.push(filepath);
+        }
+    }
+
+    if (!matches.length) return null;
+
+    return matches.sort((a, b) => {
+        const aName = path.basename(a).toLowerCase();
+        const bName = path.basename(b).toLowerCase();
+        const aParsed = path.parse(aName);
+        const bParsed = path.parse(bName);
+        const aRank = [aParsed.name === String(episodeNumber) ? 0 : 1, aParsed.ext === '.mp4' ? 0 : 1, aName];
+        const bRank = [bParsed.name === String(episodeNumber) ? 0 : 1, bParsed.ext === '.mp4' ? 0 : 1, bName];
+        return aRank[0] - bRank[0] || aRank[1] - bRank[1] || aRank[2].localeCompare(bRank[2]);
+    })[0];
+}
+
+function checkEpisodeAvailability(episode, animeDirectory) {
+    const directPath = episode.file_path ? path.normalize(episode.file_path) : '';
+    if (directPath && fs.existsSync(directPath)) {
+        const stat = fs.statSync(directPath);
+        if (stat.isFile()) {
+            return { ...episode, exists: true, resolved_path: directPath, match_type: 'direct' };
+        }
+    }
+
+    const searchDirectory = episode.directory || animeDirectory || (directPath ? path.dirname(directPath) : '');
+    const matchedPath = findEpisodeVideoFile(path.normalize(searchDirectory || ''), episode.number);
+    if (matchedPath) {
+        return { ...episode, exists: true, resolved_path: matchedPath, match_type: 'episode-number' };
+    }
+
+    return { ...episode, exists: false, resolved_path: null, match_type: 'missing' };
+}
+
+ipcMain.handle('check-anime-episode-files', async (_event, payload) => {
+    try {
+        const animeDirectory = payload && payload.directory ? path.normalize(payload.directory) : '';
+        const episodes = Array.isArray(payload?.episodes) ? payload.episodes : [];
+        const checkedEpisodes = episodes.map((episode) => checkEpisodeAvailability(episode, animeDirectory));
+        const foundCount = checkedEpisodes.filter((episode) => episode.exists).length;
+
+        return {
+            success: true,
+            anime: {
+                exists: foundCount > 0,
+                complete: episodes.length > 0 && foundCount === episodes.length,
+                found_count: foundCount,
+                total_count: episodes.length,
+                directory_exists: Boolean(animeDirectory && fs.existsSync(animeDirectory))
+            },
+            episodes: checkedEpisodes
+        };
+    } catch (error) {
+        return { success: false, message: error.message || 'Failed to check episode files.' };
+    }
+});
 
 function saveConfig(config) {
     try {
@@ -192,7 +327,11 @@ app.whenReady().then(async () => {
     mainWindow = new BrowserWindow({
         width: 1200,
         height: 800,
-        webPreferences: { nodeIntegration: true }
+        webPreferences: {
+            preload: path.join(__dirname, 'preload.js'),
+            contextIsolation: true,
+            nodeIntegration: false
+        }
     });
 
     console.log("🌐 Loading URL:", serverURL);

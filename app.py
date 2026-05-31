@@ -2333,6 +2333,64 @@ def add_to_queue():
 
     return jsonify({'status': 'success'})
 
+
+
+def get_anime_explorer_path(anime):
+    """Return the best local filesystem path for opening an anime in Explorer."""
+    if not anime:
+        return None
+
+    directory = (anime.get("directory") or anime.get("folder_path") or anime.get("path") or "").strip()
+    if directory:
+        return directory
+
+    for episode in anime.get("episodes", []):
+        file_path = (episode or {}).get("file_path")
+        if file_path:
+            return os.path.dirname(file_path) or file_path
+
+    return None
+
+
+
+def build_anime_episode_file_check_payload(anime):
+    """Build a renderer-safe payload for Electron to verify local episode files.
+
+    Electron does the actual filesystem check so this also works when the
+    browser side cannot access local paths directly. The payload keeps the
+    same episode-number matching idea used by the player: direct path first,
+    then match files in the anime directory by stripped episode number.
+    """
+    directory = (
+        anime.get("directory")
+        or anime.get("folder_path")
+        or anime.get("path")
+        or get_anime_explorer_path(anime)
+        or ""
+    )
+
+    episodes = []
+    for episode in sorted(anime.get("episodes", []), key=lambda item: item.get("number", 0)):
+        file_path = (episode or {}).get("file_path") or ""
+        episode_number = episode.get("number")
+        if not directory and file_path:
+            directory = os.path.dirname(file_path)
+
+        episodes.append({
+            "number": episode_number,
+            "title": episode.get("title") or f"Episode {episode_number}",
+            "file_path": file_path,
+            "filename": os.path.basename(file_path.replace("\\", "/")) if file_path else "",
+            "directory": directory
+        })
+
+    return {
+        "anime_id": anime.get("id"),
+        "title": anime.get("title"),
+        "directory": directory,
+        "episodes": episodes
+    }
+
 def load_queue():
     if not os.path.exists(QUEUE_FILE):
         return {"queue": []}
@@ -2341,6 +2399,39 @@ def load_queue():
 
 def save_queue(data):
     write_json_file_atomic(QUEUE_FILE, data, indent=2)
+
+
+
+@app.route('/api/anime/<int:anime_id>/episode-file-targets')
+def anime_episode_file_targets(anime_id):
+    anime_data = load_anime_data()
+    anime = next((item for item in anime_data if item.get('id') == anime_id), None)
+
+    if not anime:
+        return jsonify({'status': 'error', 'message': 'Anime not found'}), 404
+
+    return jsonify({
+        'status': 'success',
+        'payload': build_anime_episode_file_check_payload(anime)
+    })
+
+@app.route('/api/anime/<int:anime_id>/explorer-path')
+def anime_explorer_path(anime_id):
+    anime_data = load_anime_data()
+    anime = next((item for item in anime_data if item.get('id') == anime_id), None)
+
+    if not anime:
+        return jsonify({'status': 'error', 'message': 'Anime not found'}), 404
+
+    explorer_path = get_anime_explorer_path(anime)
+    if not explorer_path:
+        return jsonify({'status': 'error', 'message': 'No local file path is saved for this anime'}), 404
+
+    return jsonify({
+        'status': 'success',
+        'path': explorer_path,
+        'exists': os.path.exists(explorer_path)
+    })
 
 @app.route('/anime/<int:anime_id>')
 def anime_detail(anime_id):

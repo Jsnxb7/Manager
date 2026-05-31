@@ -14,6 +14,11 @@
                 <span class="detail-kicker">Anime Details</span>
                 <h1>🎬 {{ anime.title }}</h1>
 
+                <div class="local-availability-line" id="anime-file-availability" title="Checking local episode files through Electron">
+                    <span id="anime-file-dot" class="file-status-dot checking" aria-hidden="true"></span>
+                    <span id="anime-file-status-text">Checking local files...</span>
+                </div>
+
                 <div class="detail-stat-grid">
                     <div><strong>{{ anime.season }}</strong><span>Season</span></div>
                     <div><strong>{{ anime.episodes|length }}</strong><span>Total Episodes</span></div>
@@ -76,7 +81,9 @@
                     <button onclick="toggleAnimeWatched('{{ anime.id }}', this)" class="watched-button {% if anime.watched %}watched{% endif %}">
                         {% if anime.watched %}✔ Anime Watched{% else %}Mark Anime as Watched{% endif %}
                     </button>
+                    <button type="button" id="open-anime-folder" class="watched-button secondary">📁 Open in Explorer</button>
                 </div>
+                <p id="open-explorer-status" class="detail-explorer-status" aria-live="polite"></p>
             </div>
         </div>
     </section>
@@ -119,7 +126,10 @@
                             <span class="episode-state-badge fresh">Unwatched</span>
                         {% endif %}
                     </div>
-                    <span class="episode-title">{{ episode.title }}</span>
+                    <span class="episode-title-line">
+                        <span class="file-status-dot checking episode-file-dot episode-title-file-dot" id="episode-file-dot-{{ episode.number }}" aria-label="Checking local file availability" title="Checking local file availability"></span>
+                        <span class="episode-title">{{ episode.title }}</span>
+                    </span>
 
                     <div class="episode-card-progress">
                         <div class="episode-card-progress-track">
@@ -170,6 +180,106 @@
             });
     }
 
+
+    async function openAnimeInExplorer() {
+        const status = document.getElementById("open-explorer-status");
+        const button = document.getElementById("open-anime-folder");
+
+        if (status) status.textContent = "Opening saved anime folder...";
+        if (button) button.disabled = true;
+
+        try {
+            const response = await fetch(`/api/anime/${ANIME_ID}/explorer-path`);
+            const data = await response.json();
+
+            if (!response.ok || data.status !== "success") {
+                throw new Error(data.message || "Could not get the saved anime path");
+            }
+
+            if (!window.electronAPI || typeof window.electronAPI.openInExplorer !== "function") {
+                if (status) status.textContent = `Electron bridge not available. Saved path: ${data.path}`;
+                return;
+            }
+
+            const result = await window.electronAPI.openInExplorer(data.path);
+            if (!result || !result.success) {
+                throw new Error((result && result.message) || "Electron could not open this path");
+            }
+
+            if (status) status.textContent = data.exists ? "Opened in Explorer." : "Path sent to Explorer, but Flask could not verify it exists.";
+        } catch (error) {
+            console.error("Open in Explorer failed:", error);
+            if (status) status.textContent = error.message || "Failed to open the anime folder.";
+        } finally {
+            if (button) button.disabled = false;
+        }
+    }
+
+
+    function setAvailabilityDot(dot, label, exists, text) {
+        if (!dot) return;
+        dot.classList.remove("checking", "available", "missing");
+        dot.classList.add(exists ? "available" : "missing");
+        dot.setAttribute("aria-label", text || (exists ? "Available" : "Missing"));
+        dot.title = text || (exists ? "Available" : "Missing");
+        if (label) label.textContent = text || (exists ? "Available" : "Missing");
+    }
+
+    async function checkLocalEpisodeFiles() {
+        const animeDot = document.getElementById("anime-file-dot");
+        const animeText = document.getElementById("anime-file-status-text");
+
+        try {
+            const response = await fetch(`/api/anime/${ANIME_ID}/episode-file-targets`);
+            const data = await response.json();
+
+            if (!response.ok || data.status !== "success") {
+                throw new Error(data.message || "Could not load episode file targets");
+            }
+
+            if (!window.electronAPI || typeof window.electronAPI.checkAnimeEpisodeFiles !== "function") {
+                setAvailabilityDot(animeDot, animeText, false, "Electron file check unavailable");
+                document.querySelectorAll(".episode-file-dot").forEach((dot) => {
+                    const episodeNumber = dot.id.replace("episode-file-dot-", "");
+                    setAvailabilityDot(dot, document.getElementById(`episode-file-status-${episodeNumber}`), false, "Unavailable");
+                });
+                return;
+            }
+
+            const result = await window.electronAPI.checkAnimeEpisodeFiles(data.payload);
+            if (!result || !result.success) {
+                throw new Error((result && result.message) || "Electron could not check episode files");
+            }
+
+            const found = result.anime?.found_count || 0;
+            const total = result.anime?.total_count || 0;
+            setAvailabilityDot(
+                animeDot,
+                animeText,
+                found > 0,
+                found > 0 ? `${found}/${total} local episode files found` : "No local episode files found"
+            );
+
+            (result.episodes || []).forEach((episode) => {
+                const number = episode.number;
+                const dot = document.getElementById(`episode-file-dot-${number}`);
+                const label = document.getElementById(`episode-file-status-${number}`);
+                setAvailabilityDot(
+                    dot,
+                    label,
+                    Boolean(episode.exists),
+                    episode.exists ? "Available" : "Missing"
+                );
+                if (dot && episode.resolved_path) {
+                    dot.title = episode.resolved_path;
+                }
+            });
+        } catch (error) {
+            console.error("Local episode file check failed:", error);
+            setAvailabilityDot(animeDot, animeText, false, error.message || "File check failed");
+        }
+    }
+
     async function fetchAnimeData() {
         try {
             const response = await fetch('/api/anime');
@@ -188,7 +298,13 @@
         animeThumbnail.src = currentAnime?.thumbnail_url || '/static/placeholder.jpeg';
     }
 
-    document.addEventListener('DOMContentLoaded', loadAnimeThumbnail);
+    document.addEventListener('DOMContentLoaded', () => {
+        loadAnimeThumbnail();
+        checkLocalEpisodeFiles();
+    });
+
+    document.getElementById("open-anime-folder")?.addEventListener("click", openAnimeInExplorer);
+
 
     document.getElementById("watch-status-select").addEventListener("change", async (event) => {
         const select = event.target;

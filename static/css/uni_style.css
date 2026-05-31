@@ -304,7 +304,7 @@ select option {
 .episode-number,
 .dir-preview {
     font-size: 0.92rem !important;
-    color: rgb(55 50 49 / 78%) !important;
+    color: rgba(225, 223, 223, 0.78) !important;
 }
 
 .anime-status,
@@ -6249,4 +6249,87 @@ body[class*="theme-"] .delete-btn { color: var(--theme-danger-text, #ffd0dc) !im
     .preview-size-desktop .theme-live-frame { transform: scale(.30) !important; }
     .preview-size-tablet .theme-live-frame { transform: scale(.42) !important; }
     .preview-size-mobile .theme-live-frame { transform: scale(.78) !important; }
+}
+
+/* Local file availability indicators for Electron desktop builds */
+.local-availability-line,
+.episode-file-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    border-radius: 999px;
+    color: var(--theme-muted, rgba(255,255,255,.76));
+}
+
+.local-availability-line {
+    padding: 8px 12px;
+    background: rgba(0,0,0,.24);
+    border: 1px solid rgba(255,255,255,.13);
+    margin: -8px 0 10px;
+    font-size: .86rem;
+}
+
+.episode-file-status {
+    padding: 5px 8px;
+    background: rgba(0,0,0,.22);
+    border: 1px solid rgba(255,255,255,.11);
+    font-size: .68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    flex-shrink: 0;
+}
+
+
+/* Tiny episode file status dots */
+.episode-title-line {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+}
+
+.episode-title-file-dot {
+    width: 10px !important;
+    height: 10px !important;
+    flex: 0 0 10px !important;
+    pointer-events: none !important;
+}
+
+.file-status-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    display: inline-block;
+    flex: 0 0 11px;
+    background: rgba(255,255,255,.45);
+    box-shadow: 0 0 0 3px rgba(255,255,255,.08), 0 0 14px rgba(255,255,255,.18);
+}
+
+.file-status-dot.available {
+    background: #41e87c;
+    box-shadow: 0 0 0 3px rgba(65,232,124,.16), 0 0 16px rgba(65,232,124,.72);
+}
+
+.file-status-dot.missing {
+    background: #ff4d66;
+    box-shadow: 0 0 0 3px rgba(255,77,102,.16), 0 0 16px rgba(255,77,102,.72);
+}
+
+.file-status-dot.checking {
+    background: rgba(255,255,255,.58);
+    animation: fileStatusPulse 1.15s ease-in-out infinite;
+}
+
+@keyframes fileStatusPulse {
+    0%, 100% { opacity: .45; transform: scale(.9); }
+    50% { opacity: 1; transform: scale(1.08); }
+}
+
+@media (max-width: 720px) {
+    .episode-title-row {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
 }
