@@ -470,55 +470,6 @@ Supported video types include:
 | `Down Arrow` | Volume down |
 | `F` | Toggle fullscreen |
 | `M` | Toggle mute |
-
-## GitHub Safety
-
-Before publishing this project, avoid committing private or generated data.
-
-Recommended files and folders to ignore:
-
-```gitignore
-# Python
-__pycache__/
-*.pyc
-.venv/
-venv/
-
-# Local/private app data
-data/anime_data.json
-data/anime_tracking.json
-data/manga_data.json
-data/queue.json
-data/theme_settings.json
-data/*_data.json
-data/*.backup.json
-
-# Personal media and uploads
-static/anime_images/
-static/manga_images/
-static/theme_uploads/
-static/*_images/
-*.mp4
-*.mkv
-*.avi
-*.mov
-*.webm
-*.m4v
-
-# Build/runtime files
-dist/
-build/
-*.log
-```
-
-You can keep safe sample files in the repository by naming them clearly, for example:
-
-```text
-data/anime_data.example.json
-data/theme_settings.example.json
-data/queue.example.json
-```
-
 ## Development Notes
 
 - The app is designed as a local personal manager, so JSON files may contain private paths, links, watch history, queue history, and theme-upload paths.
