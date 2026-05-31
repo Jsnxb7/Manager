@@ -15,8 +15,8 @@
         "settings": "minimal_dark"
     },
     "background": {
-        "mode": "default_video",
-        "url": "/static/images/stars.mp4",
+        "mode": "uploaded_video",
+        "url": "/static/theme_uploads/bg_20260531105422_the-silent-valley-moewalls-com.mp4",
         "type": "video"
     },
     "theme_profiles": {
@@ -598,5 +598,5 @@
         "sections": {},
         "settings": {}
     },
-    "updated_at": "2026-05-31T10:41:41.384263+00:00"
+    "updated_at": "2026-05-31T10:54:23.879091+00:00"
 }
