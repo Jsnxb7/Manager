@@ -27,7 +27,6 @@
             <a href="{{ url_for('queue_player', index=0) if queue_items else url_for('index') }}" class="queue-page-action {% if not queue_items %}is-disabled{% endif %}">Start</a>
             <button type="button" class="queue-page-action queue-clear-watched-btn" {% if not queue_items %}disabled{% endif %}>Clear Watched</button>
             <button type="button" class="queue-page-action danger queue-clear-btn" {% if not queue_items %}disabled{% endif %}>Clear</button>
-            <a href="{{ url_for('settings_page') }}" class="queue-page-action subtle">Themes</a>
             <a href="{{ url_for('index') }}" class="queue-page-action subtle">Library</a>
         </div>
     </div>

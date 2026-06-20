@@ -243,15 +243,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function setCssVarEverywhere(cssVar, value) {
-        document.body.style.setProperty(cssVar, value);
-        const frameDoc = getFrameDocument();
-        if (frameDoc?.body) frameDoc.body.style.setProperty(cssVar, value);
-    }
-
     function applyVariableToPreview(key, value) {
-        const cssVar = cssMap[key] || `--theme-custom-${key.replaceAll("_", "-")}`;
-        setCssVarEverywhere(cssVar, value);
+        /* Styling is intentionally controlled only by static CSS files.
+           The editor stores selections and refreshes the preview after save. */
     }
 
     const elementThemeMap = [
@@ -322,7 +316,6 @@ document.addEventListener("DOMContentLoaded", () => {
             let value = profile[item.key] || "#ffffff";
             if (globalOverrides[item.key]) value = globalOverrides[item.key];
             if (pageOverrides[page]?.[item.key]) value = pageOverrides[page][item.key];
-            setCssVarEverywhere(item.css_var, value);
         });
         document.body.className = document.body.className.replace(/\btheme-[a-z0-9_]+\b/g, "").replace(/\bsection-[a-z0-9_]+\b/g, "").trim();
         document.body.classList.add(`theme-${theme}`, `section-${page}`);
@@ -371,7 +364,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const btn = document.createElement("button");
             btn.type = "button";
             btn.title = `${labelMap[key] || key}: ${value}`;
-            btn.style.background = value;
+            btn.dataset.colorValue = value;
+            btn.textContent = value;
             btn.addEventListener("click", () => updateSelectedColor(value));
             paletteGrid.appendChild(btn);
         });
@@ -393,7 +387,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 const row = document.createElement("button");
                 row.type = "button";
                 row.className = `variable-row ${selectedVar === item.key ? "is-active" : ""}`;
-                row.innerHTML = `<i style="background:${value}"></i><span>${item.label}</span><em>${value}</em>`;
+                const swatch = document.createElement("i");
+                swatch.dataset.colorValue = value;
+                const label = document.createElement("span");
+                label.textContent = item.label;
+                const valueText = document.createElement("em");
+                valueText.textContent = value;
+                row.append(swatch, label, valueText);
                 row.addEventListener("click", () => selectVariable(item.key, item.label));
                 groupBox.appendChild(row);
             });

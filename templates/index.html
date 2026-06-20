@@ -45,15 +45,13 @@
 </div>
 
 <div class="floating-filter-rack" aria-label="Anime quick actions">
-    <button type="button" class="floating-add-anime floating-filter-trigger" aria-label="Open anime filters" title="Anime Filters">
-        ⚙️
-    </button>
+    <button type="button" class="floating-add-anime floating-filter-trigger" aria-label="Open anime filters" title="Anime Filters">☰</button>
     <div class="floating-filter-menu" aria-label="Anime filters and add action">
-        <button type="button" class="rack-action" id="rack-reset-filter" onclick="resetFilters()" title="Reset filters">↺ <span>Reset</span></button>
-        <button type="button" class="rack-action" id="rack-unwatched-filter" onclick="toggleQuickFilter('unwatched')" title="Show unwatched anime">◌ <span>Unwatched</span></button>
-        <button type="button" class="rack-action" id="rack-ongoing-filter" onclick="toggleQuickFilter('ongoing')" title="Show ongoing anime">▶ <span>Ongoing</span></button>
-        <button type="button" class="rack-action" id="rack-bookmark-filter" onclick="toggleQuickFilter('bookmarked')" title="Show bookmarked anime">⭐ <span>Bookmarks</span></button>
-        <a href="{{ url_for('add_anime') }}" class="rack-action rack-add-action" title="Add Anime">＋ <span>Add</span></a>
+        <button type="button" class="rack-action" id="rack-reset-filter" onclick="resetFilters()" title="Reset filters">↺</button>
+        <button type="button" class="rack-action" id="rack-unwatched-filter" onclick="toggleQuickFilter('unwatched')" title="Show unwatched anime">◌</button>
+        <button type="button" class="rack-action" id="rack-ongoing-filter" onclick="toggleQuickFilter('ongoing')" title="Show ongoing anime">▶</button>
+        <button type="button" class="rack-action" id="rack-bookmark-filter" onclick="toggleQuickFilter('bookmarked')" title="Show bookmarked anime">⭐</button>
+        <a href="{{ url_for('add_anime') }}" class="rack-action rack-add-action" title="Add Anime">＋ </a>
     </div>
 </div>
 
@@ -289,13 +287,14 @@ function renderContinueWatching(items) {
 
         const progressBar = document.createElement('span');
         progressBar.className = 'continue-progress-bar';
-        progressBar.style.width = `${Math.min(100, Math.max(0, Number(item.progress_percentage) || 0))}%`;
+        progressBar.dataset.progressWidth = Math.min(100, Math.max(0, Number(item.progress_percentage) || 0));
 
         progressTrack.appendChild(progressBar);
         info.append(meta, progressTrack);
         card.append(identity, overlay, info);
         row.appendChild(card);
     });
+    if (window.applyRuntimeStyles) window.applyRuntimeStyles(row);
 }
 
 function getAnimeValues(anime, group) {
@@ -336,6 +335,11 @@ function buildMetadataHover(groups) {
 
     wrap.append(trigger, panel);
     return wrap;
+}
+
+function statusClassName(status) {
+    const normalized = String(status || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return normalized ? `status-${normalized}` : 'status-ongoing';
 }
 
 function animeMatchesSelectedTags(anime) {
@@ -521,7 +525,7 @@ function renderAnimePage() {
         animeSeason.textContent = `Season: ${anime.season || 'N/A'}`;
 
         const animeStatus = document.createElement('div');
-        animeStatus.className = 'anime-status';
+        animeStatus.className = `anime-status ${statusClassName(anime.status || 'Ongoing')}`;
         animeStatus.textContent = anime.status || 'Ongoing';
 
         const metadataHover = buildMetadataHover([
@@ -545,7 +549,7 @@ function renderAnimePage() {
         markWatchedButton.onclick = () => toggleAnimeWatched(anime.id, markWatchedButton);
 
         const bookmarkButton = document.createElement('button');
-        bookmarkButton.className = 'mark-watched-button';
+        bookmarkButton.className = `mark-watched-button bookmark-button ${anime.bookmarked ? 'is-bookmarked' : ''}`;
         bookmarkButton.textContent = anime.bookmarked ? 'Bookmarked ⭐' : 'Bookmark 🔖';
         bookmarkButton.onclick = () => toggleBookmark(anime.id, bookmarkButton);
 
@@ -672,6 +676,7 @@ async function toggleBookmark(animeId, button) {
         if (data.status === 'success') {
             syncAnimeItem(animeId, { bookmarked: data.bookmarked });
             button.textContent = data.bookmarked ? 'Bookmarked ⭐' : 'Bookmark 🔖';
+            button.classList.toggle('is-bookmarked', data.bookmarked);
             applyAnimeFilters(currentPage);
         }
     } catch (error) {

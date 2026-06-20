@@ -1,9 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<video class="video-background" autoplay loop muted playsinline>
-    <source src="{{ url_for('static', filename='images/stars.mp4') }}" type="video/mp4">
-</video>
 
 <div class="anime-detail-container detail-polish-shell">
     <section class="anime-detail detail-hero-card">
@@ -32,7 +29,7 @@
                         <strong>{{ progress_summary.completed_episodes }} / {{ progress_summary.total_episodes }}</strong>
                     </div>
                     <div class="anime-detail-progress-track">
-                        <span style="width: {{ progress_summary.completion_percentage }}%;"></span>
+                        <progress class="anime-progress-fill" value="{{ progress_summary.completion_percentage }}" max="100" aria-label="Anime completion"></progress>
                     </div>
                     {% if tracking_entry.last_watched_episode %}
                         <p>Last watched: Episode {{ tracking_entry.last_watched_episode }}{% if tracking_entry.last_watched_at %} • {{ tracking_entry.last_watched_at[:10] }}{% endif %}</p>
@@ -41,15 +38,15 @@
                     {% endif %}
                 </div>
 
-                <div class="watch-status-panel">
-                    <label for="watch-status-select">Watch Status</label>
+                <div class="watch-status-panel anime-release-status-panel">
+                    <label for="anime-status-select">Anime Status</label>
                     <div class="watch-status-control">
-                        <select id="watch-status-select" data-anime-id="{{ anime.id }}">
-                            {% for status in watch_status_options %}
-                                <option value="{{ status }}" {% if active_watch_status == status %}selected{% endif %}>{{ status }}</option>
+                        <select id="anime-status-select" data-anime-id="{{ anime.id }}">
+                            {% for status in anime_status_options %}
+                                <option value="{{ status }}" {% if active_anime_status == status %}selected{% endif %}>{{ anime_status_label(status) }}</option>
                             {% endfor %}
                         </select>
-                        <span id="watch-status-pill" class="watch-status-pill status-{{ active_watch_status|lower|replace(' ', '-') }}">{{ active_watch_status }}</span>
+                        <span id="anime-status-pill" class="watch-status-pill anime-status status-{{ active_anime_status|lower|replace('_', '-')|replace(' ', '-') }}">{{ anime_status_label(active_anime_status) }}</span>
                     </div>
                 </div>
 
@@ -133,7 +130,7 @@
 
                     <div class="episode-card-progress">
                         <div class="episode-card-progress-track">
-                            <span style="width: {% if episode.watched %}100{% else %}{{ episode.progress_percentage }}{% endif %}%;"></span>
+                            <progress class="episode-progress-fill" value="{% if episode.watched %}100{% else %}{{ episode.progress_percentage }}{% endif %}" max="100" aria-label="Episode progress"></progress>
                         </div>
                         <small>
                             {% if episode.watched %}
@@ -306,7 +303,7 @@
     document.getElementById("open-anime-folder")?.addEventListener("click", openAnimeInExplorer);
 
 
-    document.getElementById("watch-status-select").addEventListener("change", async (event) => {
+    document.getElementById("anime-status-select")?.addEventListener("change", async (event) => {
         const select = event.target;
         const newStatus = select.value;
         const response = await fetch(`/update_anime_status/${ANIME_ID}`, {
@@ -316,11 +313,12 @@
         });
         const data = await response.json();
         if (data.status === 'success') {
-            const pill = document.getElementById('watch-status-pill');
-            pill.textContent = data.new_status;
-            pill.className = `watch-status-pill status-${data.new_status.toLowerCase().replaceAll(' ', '-')}`;
+            const pill = document.getElementById('anime-status-pill');
+            const label = data.new_status_label || data.new_status;
+            pill.textContent = label;
+            pill.className = `watch-status-pill anime-status status-${String(data.new_status || '').toLowerCase().replaceAll('_', '-').replaceAll(' ', '-')}`;
         } else {
-            alert(data.message || 'Failed to update status');
+            alert(data.message || 'Failed to update anime status');
         }
     });
 

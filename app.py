@@ -23,6 +23,8 @@ TEMPLATES_FOLDER = os.path.join(BASE_PATH, 'templates')
 DATA_FILE = os.path.join(BASE_PATH, 'data', 'anime_data.json')
 TRACKING_FILE = os.path.join(BASE_PATH, 'data', 'anime_tracking.json')
 THEME_SETTINGS_FILE = os.path.join(BASE_PATH, 'data', 'theme_settings.json')
+ELEMENT_THEME_FILE = os.path.join(BASE_PATH, 'data', 'element_theme.json')
+ELEMENT_THEME_CSS_FILE = os.path.join(BASE_PATH, 'static', 'css', 'element_theme.css')
 THEME_UPLOAD_FOLDER = os.path.join(BASE_PATH, 'static', 'theme_uploads')
 IMAGE_FOLDER = os.path.join(BASE_PATH, "static", "anime_images")
 DEFAULT_IMAGE = "/static/placeholder.jpeg"
@@ -33,6 +35,8 @@ DATA_FILE_SEC = os.path.join(BASE_PATH, 'data', 'sections.json')
 DATA_FOLDER = os.path.join(BASE_PATH, 'data')
 ANIME_TAGS_FILE = os.path.join(BASE_PATH, 'data', 'unique_anime_tags.json')
 ANIME_FILTER_STATE_FILE = os.path.join(BASE_PATH, 'data', 'anime_filter_state.json')
+MANGA_FILTER_STATE_FILE = os.path.join(BASE_PATH, 'data', 'manga_filter_state.json')
+SECTION_FILTER_STATE_FILE = os.path.join(BASE_PATH, 'data', 'section_filter_state.json')
 MANGA_HEADERS_FILE = os.path.join(BASE_PATH, 'data', 'unique_manga_headers.json')
 ALLOWED_IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "avif", "webp", "gif"}
 IMAGE_EXTENSION_ORDER = ["jpg", "png", "jpeg", "avif", "webp", "gif"]
@@ -916,29 +920,25 @@ def load_anime_data():
 def save_anime_data(data):
     write_json_file_atomic(DATA_FILE, data, indent=4)
 
-def empty_anime_filter_state():
+FILTER_PAGE_SIZE_OPTIONS = {8, 12, 16, 24}
+FILTER_QUICK_KEYS = ("unread", "unwatched", "ongoing", "bookmarked")
+FILTER_GROUP_KEYS = ("tags", "genres", "themes", "demographics")
+
+
+def empty_filter_state():
     return {
         "schema_version": 1,
         "updated_at": None,
         "search": "",
-        "quick_filters": {
-            "unwatched": False,
-            "ongoing": False,
-            "bookmarked": False
-        },
-        "tag_filters": {
-            "tags": [],
-            "genres": [],
-            "themes": [],
-            "demographics": []
-        },
+        "quick_filters": {key: False for key in FILTER_QUICK_KEYS},
+        "tag_filters": {key: [] for key in FILTER_GROUP_KEYS},
         "page": 1,
         "items_per_page": 12
     }
 
 
-def normalize_anime_filter_state(raw_state):
-    state = empty_anime_filter_state()
+def normalize_filter_state(raw_state):
+    state = empty_filter_state()
     if not isinstance(raw_state, dict):
         return state
 
@@ -963,26 +963,34 @@ def normalize_anime_filter_state(raw_state):
         state["items_per_page"] = int(raw_state.get("items_per_page", 12))
     except (TypeError, ValueError):
         state["items_per_page"] = 12
-    if state["items_per_page"] not in {8, 12, 16, 24}:
+    if state["items_per_page"] not in FILTER_PAGE_SIZE_OPTIONS:
         state["items_per_page"] = 12
 
     return state
 
 
-def load_anime_filter_state():
-    if not os.path.exists(ANIME_FILTER_STATE_FILE):
-        return empty_anime_filter_state()
+def load_filter_state(file_path):
+    if not os.path.exists(file_path):
+        return empty_filter_state()
     try:
-        return normalize_anime_filter_state(read_json_file(ANIME_FILTER_STATE_FILE))
+        return normalize_filter_state(read_json_file(file_path))
     except (json.JSONDecodeError, OSError):
-        return empty_anime_filter_state()
+        return empty_filter_state()
+
+
+def save_filter_state(file_path, state):
+    normalized = normalize_filter_state(state)
+    normalized["updated_at"] = utc_now_iso()
+    write_json_file_atomic(file_path, normalized, indent=4)
+    return normalized
+
+
+def load_anime_filter_state():
+    return load_filter_state(ANIME_FILTER_STATE_FILE)
 
 
 def save_anime_filter_state(state):
-    normalized = normalize_anime_filter_state(state)
-    normalized["updated_at"] = utc_now_iso()
-    write_json_file_atomic(ANIME_FILTER_STATE_FILE, normalized, indent=4)
-    return normalized
+    return save_filter_state(ANIME_FILTER_STATE_FILE, state)
 
 def parse_anime_metadata_form():
     return parse_metadata_form(["tags", "genres", "themes", "demographics"])
@@ -1306,12 +1314,56 @@ def build_continue_watching_items():
     anime_data = load_anime_data()
     anime_lookup = {anime.get("id"): anime for anime in anime_data}
     items = []
+    seen_keys = set()
+
+    def add_continue_item(anime, anime_entry, progress_episode, force_start_over=False):
+        anime_id = anime.get("id") or anime_entry.get("anime_id")
+        if anime_id is None:
+            return
+
+        episodes_from_data = prepare_anime_episodes_for_player(anime)
+        episode_number = progress_episode.get("episode_number")
+        source_episode = next((episode for episode in episodes_from_data if episode.get("number") == episode_number), None)
+        if not source_episode:
+            return
+
+        item_key = (anime_id, episode_number)
+        if item_key in seen_keys:
+            return
+        seen_keys.add(item_key)
+
+        adjacent = get_adjacent_episode_context(anime, source_episode)
+        player_url = url_for("player", anime_id=anime_id, episode_number=episode_number)
+        continue_query = "?start_over=1" if force_start_over else "?resume=1"
+
+        items.append({
+            "anime_id": anime_id,
+            "anime_title": anime.get("title") or anime_entry.get("anime_title"),
+            "anime_thumbnail": get_anime_image(anime.get("title", "")),
+            "watch_status": anime_entry.get("watch_status", "Watching"),
+            "episode_number": episode_number,
+            "episode_title": source_episode.get("title") or progress_episode.get("episode_title"),
+            "episode_video_url": source_episode.get("video_url"),
+            "previous_episode_number": (adjacent.get("previous_episode") or {}).get("number"),
+            "previous_episode_title": (adjacent.get("previous_episode") or {}).get("title"),
+            "previous_episode_video_url": adjacent.get("previous_episode_video_url"),
+            "next_episode_number": (adjacent.get("next_episode") or {}).get("number"),
+            "next_episode_title": (adjacent.get("next_episode") or {}).get("title"),
+            "next_episode_video_url": adjacent.get("next_episode_video_url"),
+            "current_time": 0 if force_start_over else progress_episode.get("current_time", 0),
+            "total_duration": progress_episode.get("total_duration", 0),
+            "progress_percentage": 100 if source_episode.get("watched") else progress_episode.get("progress_percentage", 0),
+            "last_watched_at": progress_episode.get("last_watched_at"),
+            "continue_url": player_url + continue_query,
+            "start_over_url": player_url + "?start_over=1"
+        })
+
     for anime_entry in tracking.get("anime", {}).values():
         anime_id = anime_entry.get("anime_id")
         anime = anime_lookup.get(anime_id)
         if not anime:
             continue
-        episodes_from_data = prepare_anime_episodes_for_player(anime)
+
         episodes = [
             episode
             for episode in anime_entry.get("episodes", {}).values()
@@ -1319,39 +1371,36 @@ def build_continue_watching_items():
         ]
         if not episodes:
             continue
+
         latest_episode = max(episodes, key=lambda episode: episode.get("last_watched_at") or "")
-        episode_number = latest_episode.get("episode_number")
-        source_episode = next((episode for episode in episodes_from_data if episode.get("number") == episode_number), None)
-        adjacent = get_adjacent_episode_context(anime, source_episode) if source_episode else {}
-        items.append({
-            "anime_id": anime_id,
-            "anime_title": anime.get("title") or anime_entry.get("anime_title"),
-            "anime_thumbnail": get_anime_image(anime.get("title", "")),
-            "watch_status": anime_entry.get("watch_status", "Watching"),
-            "episode_number": episode_number,
-            "episode_title": (source_episode or {}).get("title") or latest_episode.get("episode_title"),
-            "episode_video_url": (source_episode or {}).get("video_url"),
-            "previous_episode_number": (adjacent.get("previous_episode") or {}).get("number"),
-            "previous_episode_title": (adjacent.get("previous_episode") or {}).get("title"),
-            "previous_episode_video_url": adjacent.get("previous_episode_video_url"),
-            "next_episode_number": (adjacent.get("next_episode") or {}).get("number"),
-            "next_episode_title": (adjacent.get("next_episode") or {}).get("title"),
-            "next_episode_video_url": adjacent.get("next_episode_video_url"),
-            "current_time": latest_episode.get("current_time", 0),
-            "total_duration": latest_episode.get("total_duration", 0),
-            "progress_percentage": latest_episode.get("progress_percentage", 0),
-            "last_watched_at": latest_episode.get("last_watched_at"),
-            "continue_url": url_for(
-                "player",
-                anime_id=anime_id,
-                episode_number=episode_number
-            ) + "?resume=1",
-            "start_over_url": url_for(
-                "player",
-                anime_id=anime_id,
-                episode_number=episode_number
-            ) + "?start_over=1"
-        })
+        add_continue_item(anime, anime_entry, latest_episode)
+
+    # Fallback: completed or manually watched anime are pruned from active progress,
+    # but last_use still knows the most recent episode. Keep it visible so users
+    # can rewatch/continue from the home page even after an anime is already watched.
+    last_use = tracking.get("last_use", {}) if isinstance(tracking.get("last_use"), dict) else {}
+    last_anime_id = last_use.get("anime_id")
+    last_episode_number = last_use.get("episode_number")
+    fallback_anime = anime_lookup.get(last_anime_id)
+    if fallback_anime and last_episode_number is not None:
+        add_continue_item(
+            fallback_anime,
+            {
+                "anime_id": last_anime_id,
+                "anime_title": fallback_anime.get("title"),
+                "watch_status": "Completed" if fallback_anime.get("watched") else "Watching"
+            },
+            {
+                "episode_number": last_episode_number,
+                "episode_title": last_use.get("episode_title"),
+                "current_time": last_use.get("current_time", 0),
+                "total_duration": last_use.get("total_duration", 0),
+                "progress_percentage": last_use.get("progress_percentage", 0),
+                "last_watched_at": last_use.get("last_watched_at")
+            },
+            force_start_over=True
+        )
+
     return sorted(items, key=lambda item: item.get("last_watched_at") or "", reverse=True)
 
 def get_episode_tracking_progress(anime_id, episode_number):
@@ -1817,16 +1866,14 @@ def build_css_variable_string(variable_values):
     return " ".join(pairs)
 
 def get_active_theme_variables(settings, section_key=None):
-    section_key = section_key or get_current_section_key()
-    active_theme = settings["theme"] if settings.get("same_theme_everywhere") else settings.get("section_themes", {}).get(section_key, settings["theme"])
+    active_theme = settings.get("theme", "soft_pink_glass")
     profile = normalize_theme_variables(settings.get("theme_profiles", {}).get(active_theme), THEME_STYLE_PROFILES.get(active_theme, {}))
     variables = dict(profile)
     variables.update(normalize_override_variables(settings.get("global_overrides", {})))
-    variables.update(normalize_override_variables(settings.get("page_overrides", {}).get(section_key, {})))
     return variables
 
 SECTION_THEME_KEYS = [
-    "home", "anime", "manga", "queue", "player", "details", "add", "sections", "settings"
+    "home", "anime", "manga", "queue", "player", "details", "add", "sections"
 ]
 
 ALLOWED_BACKGROUND_EXTENSIONS = {"mp4", "webm", "jpg", "jpeg", "png", "webp", "gif"}
@@ -1840,6 +1887,33 @@ WATCH_STATUS_OPTIONS = [
     "Rewatching",
     "Completed"
 ]
+
+ANIME_RELEASE_STATUS_OPTIONS = [
+    "Ongoing",
+    "Completed",
+    "Not_Aired"
+]
+
+def normalize_anime_release_status(value, fallback="Ongoing"):
+    if value is None and fallback is None:
+        return None
+    normalized = str(value or fallback or "").strip()
+    aliases = {
+        "not aired": "Not_Aired",
+        "not_aired": "Not_Aired",
+        "not-yet-aired": "Not_Aired",
+        "not yet aired": "Not_Aired",
+        "unaired": "Not_Aired",
+        "airing": "Ongoing",
+        "ongoing": "Ongoing",
+        "completed": "Completed",
+        "complete": "Completed",
+        "finished": "Completed"
+    }
+    return aliases.get(normalized.lower(), normalized if normalized in ANIME_RELEASE_STATUS_OPTIONS else fallback)
+
+def anime_release_status_label(status):
+    return "Not Aired" if status == "Not_Aired" else status
 
 
 def normalize_watch_status(value, fallback="Not Started"):
@@ -1899,13 +1973,8 @@ def normalize_theme_settings(data):
 
     base["theme"] = normalize_theme_name(data.get("theme"))
     base["dark_mode"] = bool(data.get("dark_mode", False))
-    base["same_theme_everywhere"] = bool(data.get("same_theme_everywhere", True))
-
-    section_themes = data.get("section_themes") if isinstance(data.get("section_themes"), dict) else {}
-    base["section_themes"] = {
-        key: normalize_theme_name(section_themes.get(key, base["theme"]))
-        for key in SECTION_THEME_KEYS
-    }
+    base["same_theme_everywhere"] = True
+    base["section_themes"] = {key: base["theme"] for key in SECTION_THEME_KEYS}
 
     background = data.get("background") if isinstance(data.get("background"), dict) else {}
     mode = background.get("mode", base["background"]["mode"])
@@ -1929,11 +1998,7 @@ def normalize_theme_settings(data):
         base["theme_profiles"][theme_key] = profile
 
     base["global_overrides"] = normalize_override_variables(data.get("global_overrides"))
-    saved_page_overrides = data.get("page_overrides") if isinstance(data.get("page_overrides"), dict) else {}
-    base["page_overrides"] = {
-        key: normalize_override_variables(saved_page_overrides.get(key, {}))
-        for key in SECTION_THEME_KEYS
-    }
+    base["page_overrides"] = {key: {} for key in SECTION_THEME_KEYS}
 
     base["updated_at"] = data.get("updated_at")
     return base
@@ -1974,8 +2039,6 @@ def get_current_section_key():
         return "anime"
     if endpoint == "section_index" or endpoint == "section_detail":
         return "sections"
-    if endpoint == "settings_page":
-        return "settings"
     return "anime"
 
 
@@ -1983,11 +2046,281 @@ def allowed_background_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_BACKGROUND_EXTENSIONS
 
 
+
+
+# ---------------- Per-element color editor ----------------
+def safe_element_selector(selector):
+    selector = str(selector or '').strip()
+    if not selector or len(selector) > 900:
+        return ''
+    if any(token in selector for token in ['{', '}', ';', '@', '\n', '\r']):
+        return ''
+    if not re.fullmatch(r'[A-Za-z0-9_\-:.# >+~*\[\]=\"\'(),]+', selector):
+        return ''
+    return selector
+
+
+def normalize_hex_color(value, fallback='#ffffff'):
+    value = str(value or '').strip()
+    if re.fullmatch(r'#[0-9a-fA-F]{6}', value):
+        return value.lower()
+    if re.fullmatch(r'#[0-9a-fA-F]{3}', value):
+        return '#' + ''.join(ch * 2 for ch in value[1:]).lower()
+    return fallback
+
+
+def normalize_alpha(value, fallback=1):
+    try:
+        alpha = float(value)
+    except (TypeError, ValueError):
+        alpha = fallback
+    return max(0, min(1, alpha))
+
+
+def normalize_pixel_value(value, fallback=0, minimum=0, maximum=120):
+    try:
+        number = float(str(value).replace('px', '').strip())
+    except (TypeError, ValueError):
+        number = fallback
+    return max(minimum, min(maximum, number))
+
+
+def safe_css_token(value, fallback='', max_len=180):
+    value = str(value or '').strip()
+    if not value:
+        return fallback
+    blocked = [';', '{', '}', '@', '<', '>', '`', '\\', 'url(', 'expression(', 'javascript:', 'data:']
+    lowered = value.lower().replace(' ', '')
+    if any(token in lowered for token in blocked):
+        return fallback
+    if len(value) > max_len:
+        return fallback
+    if not re.fullmatch(r'[A-Za-z0-9_#.,%() /+\-:\'"!]+', value):
+        return fallback
+    return value
+
+
+def safe_css_color(value, fallback='#ffffff'):
+    value = str(value or '').strip()
+    if not value:
+        return fallback
+    if re.fullmatch(r'#[0-9a-fA-F]{3,8}', value):
+        return value.lower()
+    if re.fullmatch(r'(rgb|rgba|hsl|hsla)\([A-Za-z0-9.,% /+-]+\)', value, flags=re.I):
+        return safe_css_token(value, fallback, 90)
+    if re.fullmatch(r'var\(--[A-Za-z0-9_-]+\)', value):
+        return value
+    if re.fullmatch(r'[A-Za-z]+', value):
+        return value.lower()
+    return fallback
+
+
+def safe_css_length(value, fallback='', max_len=80):
+    value = safe_css_token(value, fallback, max_len)
+    if not value:
+        return fallback
+    return value
+
+
+def hex_to_rgba(hex_color, alpha):
+    hex_color = normalize_hex_color(hex_color)
+    red = int(hex_color[1:3], 16)
+    green = int(hex_color[3:5], 16)
+    blue = int(hex_color[5:7], 16)
+    return f'rgba({red}, {green}, {blue}, {alpha:.3f})'
+
+
+def css_color_with_alpha(color, alpha, fallback='#ffffff'):
+    color = safe_css_color(color, fallback)
+    alpha = normalize_alpha(alpha, 1)
+    if re.fullmatch(r'#[0-9a-fA-F]{6}', color):
+        red = int(color[1:3], 16)
+        green = int(color[3:5], 16)
+        blue = int(color[5:7], 16)
+        return f'rgba({red}, {green}, {blue}, {alpha:.3f})'
+    if re.fullmatch(r'#[0-9a-fA-F]{3}', color):
+        expanded = '#' + ''.join(ch * 2 for ch in color[1:])
+        return css_color_with_alpha(expanded, alpha, fallback)
+    if color.lower().startswith('rgb('):
+        return re.sub(r'^rgb\((.*)\)$', rf'rgba(\1, {alpha:.3f})', color, flags=re.I)
+    return color
+
+
+def safe_background_css(values):
+    mode = safe_css_token(values.get('background_mode', 'solid'), 'solid', 32)
+    if mode == 'custom':
+        custom = safe_css_token(values.get('background_custom'), '', 260)
+        if custom and ('gradient(' in custom.lower() or custom.lower().startswith(('rgba(', 'rgb(', 'hsl(', 'hsla(', '#', 'var(')) or re.fullmatch(r'[A-Za-z]+', custom)):
+            return custom
+        return css_color_with_alpha(values.get('background_color', '#101018'), values.get('background_alpha', 0.7), '#101018')
+    if mode == 'linear-gradient':
+        angle = safe_css_token(values.get('gradient_angle', '135deg'), '135deg', 40)
+        start = css_color_with_alpha(values.get('gradient_start_color', '#101018'), values.get('gradient_start_alpha', 0.9), '#101018')
+        end = css_color_with_alpha(values.get('gradient_end_color', '#ffd4e6'), values.get('gradient_end_alpha', 0.15), '#ffd4e6')
+        return f'linear-gradient({angle}, {start}, {end})'
+    if mode == 'radial-gradient':
+        position = safe_css_token(values.get('gradient_angle', 'circle at center'), 'circle at center', 60)
+        start = css_color_with_alpha(values.get('gradient_start_color', '#101018'), values.get('gradient_start_alpha', 0.9), '#101018')
+        end = css_color_with_alpha(values.get('gradient_end_color', '#ffd4e6'), values.get('gradient_end_alpha', 0.15), '#ffd4e6')
+        return f'radial-gradient({position}, {start}, {end})'
+    return css_color_with_alpha(values.get('background_color', '#101018'), values.get('background_alpha', 0.7), '#101018')
+
+
+def load_element_theme():
+    if not os.path.exists(ELEMENT_THEME_FILE):
+        return {"rules": {}}
+    try:
+        data = read_json_file(ELEMENT_THEME_FILE)
+    except (json.JSONDecodeError, OSError):
+        return {"rules": {}}
+    if not isinstance(data, dict):
+        return {"rules": {}}
+    rules = data.get("rules") if isinstance(data.get("rules"), dict) else {}
+    return {"rules": rules}
+
+
+def normalize_element_values(payload):
+    return {
+        "background_mode": safe_css_token(payload.get("background_mode"), "solid", 32),
+        "background_color": safe_css_color(payload.get("background_color"), "#101018"),
+        "background_alpha": normalize_alpha(payload.get("background_alpha"), 0.7),
+        "gradient_angle": safe_css_token(payload.get("gradient_angle"), "135deg", 60),
+        "gradient_start_color": safe_css_color(payload.get("gradient_start_color"), "#101018"),
+        "gradient_start_alpha": normalize_alpha(payload.get("gradient_start_alpha"), 0.9),
+        "gradient_end_color": safe_css_color(payload.get("gradient_end_color"), "#ffd4e6"),
+        "gradient_end_alpha": normalize_alpha(payload.get("gradient_end_alpha"), 0.15),
+        "background_custom": safe_css_token(payload.get("background_custom"), "", 260),
+        "text_color": safe_css_color(payload.get("text_color"), "#ffffff"),
+        "text_alpha": normalize_alpha(payload.get("text_alpha"), 1),
+        "border_color": safe_css_color(payload.get("border_color"), "#ffffff"),
+        "border_alpha": normalize_alpha(payload.get("border_alpha"), 0.25),
+        "border_width": safe_css_length(payload.get("border_width"), "1px"),
+        "border_style": safe_css_token(payload.get("border_style"), "solid", 24),
+        "border_radius": safe_css_length(payload.get("border_radius"), "12px"),
+        "shadow_color": safe_css_color(payload.get("shadow_color"), "#000000"),
+        "shadow_alpha": normalize_alpha(payload.get("shadow_alpha"), 0.35),
+        "shadow_x": safe_css_length(payload.get("shadow_x"), "0px"),
+        "shadow_y": safe_css_length(payload.get("shadow_y"), "14px"),
+        "shadow_blur": safe_css_length(payload.get("shadow_blur"), "24px"),
+        "shadow_spread": safe_css_length(payload.get("shadow_spread"), "0px"),
+        "font_size": safe_css_length(payload.get("font_size"), "16px"),
+        "font_weight": safe_css_token(payload.get("font_weight"), "inherit", 40),
+        "line_height": safe_css_token(payload.get("line_height"), "normal", 40),
+        "opacity": str(normalize_alpha(payload.get("opacity"), 1)),
+        "backdrop_blur": safe_css_length(payload.get("backdrop_blur"), "0px"),
+        "padding": safe_css_length(payload.get("padding"), "", 80),
+        "margin": safe_css_length(payload.get("margin"), "", 80)
+    }
+
+
+def write_element_theme_css(data=None):
+    data = data or load_element_theme()
+    lines = [
+        "/* Generated by the in-app element visual editor. Do not hand-edit while the app is running. */",
+        "/* All per-element overrides are stored in data/element_theme.json. */",
+        ""
+    ]
+    for selector, values in sorted((data.get("rules") or {}).items()):
+        safe_selector = safe_element_selector(selector)
+        if not safe_selector or not isinstance(values, dict):
+            continue
+        values = normalize_element_values(values)
+        background = safe_background_css(values)
+        text = css_color_with_alpha(values.get("text_color"), values.get("text_alpha"), "#ffffff")
+        border = css_color_with_alpha(values.get("border_color"), values.get("border_alpha"), "#ffffff")
+        shadow = css_color_with_alpha(values.get("shadow_color"), values.get("shadow_alpha"), "#000000")
+        lines.append(f"{safe_selector} {{")
+        lines.append(f"    background: {background} !important;")
+        lines.append(f"    color: {text} !important;")
+        lines.append(f"    border-color: {border} !important;")
+        lines.append(f"    border-width: {values['border_width']} !important;")
+        lines.append(f"    border-style: {values['border_style']} !important;")
+        lines.append(f"    border-radius: {values['border_radius']} !important;")
+        lines.append(f"    box-shadow: {values['shadow_x']} {values['shadow_y']} {values['shadow_blur']} {values['shadow_spread']} {shadow} !important;")
+        lines.append(f"    font-size: {values['font_size']} !important;")
+        lines.append(f"    font-weight: {values['font_weight']} !important;")
+        lines.append(f"    line-height: {values['line_height']} !important;")
+        lines.append(f"    opacity: {values['opacity']} !important;")
+        lines.append(f"    backdrop-filter: blur({values['backdrop_blur']}) !important;")
+        if values.get('padding'):
+            lines.append(f"    padding: {values['padding']} !important;")
+        if values.get('margin'):
+            lines.append(f"    margin: {values['margin']} !important;")
+        lines.append("}")
+        lines.append("")
+    lines.extend([
+        "",
+        "/* Keep page media backgrounds detached from page scrolling. */",
+        "/* Fixed media can scroll with the page in Chromium/Electron when body has backdrop-filter/filter/transform. */",
+        "body.section-details,",
+        "body.section-add {",
+        "    background: transparent !important;",
+        "    box-shadow: none !important;",
+        "    backdrop-filter: none !important;",
+        "    -webkit-backdrop-filter: none !important;",
+        "    filter: none !important;",
+        "    transform: none !important;",
+        "    perspective: none !important;",
+        "    contain: none !important;",
+        "    overflow: hidden !important;",
+        "}",
+        "",
+        "body.section-details main,",
+        "body.section-add main {",
+        "    height: 100vh !important;",
+        "    min-height: 100vh !important;",
+        "    overflow-x: hidden !important;",
+        "    overflow-y: auto !important;",
+        "    position: relative !important;",
+        "    z-index: 1 !important;",
+        "    -webkit-overflow-scrolling: touch;",
+        "}",
+        "",
+        "body.section-details .theme-background-video,",
+        "body.section-details .theme-background-image,",
+        "body.section-details .video-background,",
+        "body.section-add .theme-background-video,",
+        "body.section-add .theme-background-image,",
+        "body.section-add .video-background {",
+        "    position: fixed !important;",
+        "    top: 0 !important;",
+        "    right: 0 !important;",
+        "    bottom: 0 !important;",
+        "    left: 0 !important;",
+        "    width: 100vw !important;",
+        "    height: 100vh !important;",
+        "    min-width: 100vw !important;",
+        "    min-height: 100vh !important;",
+        "    object-fit: cover !important;",
+        "    transform: none !important;",
+        "    pointer-events: none !important;",
+        "    z-index: -3 !important;",
+        "}",
+        "",
+        "body.section-details::after,",
+        "body.section-add::after {",
+        "    position: fixed !important;",
+        "    inset: 0 !important;",
+        "    pointer-events: none !important;",
+        "    z-index: -2 !important;",
+        "}",
+    ])
+    os.makedirs(os.path.dirname(ELEMENT_THEME_CSS_FILE), exist_ok=True)
+    with open(ELEMENT_THEME_CSS_FILE, "w", encoding="utf-8") as file:
+        file.write("\n".join(lines).rstrip() + "\n")
+
+
+def save_element_theme(data):
+    normalized = {"rules": data.get("rules", {}) if isinstance(data, dict) else {}}
+    write_json_file_atomic(ELEMENT_THEME_FILE, normalized, indent=4)
+    write_element_theme_css(normalized)
+    return normalized
+
 @app.context_processor
 def inject_theme_settings():
     settings = load_theme_settings()
     section_key = get_current_section_key()
-    active_theme = settings["theme"] if settings.get("same_theme_everywhere") else settings.get("section_themes", {}).get(section_key, settings["theme"])
+    active_theme = settings.get("theme", "soft_pink_glass")
     return {
         "theme_settings": settings,
         "theme_presets": THEME_PRESETS,
@@ -1996,136 +2329,42 @@ def inject_theme_settings():
         "theme_css_overrides": build_css_variable_string(get_active_theme_variables(settings, section_key)),
         "section_theme_keys": SECTION_THEME_KEYS,
         "active_theme": active_theme,
-        "active_section_key": section_key
+        "active_section_key": section_key,
+        "element_theme_version": int(os.path.getmtime(ELEMENT_THEME_CSS_FILE)) if os.path.exists(ELEMENT_THEME_CSS_FILE) else 0
     }
 
 
 
-def build_theme_preview_urls():
-    preview = {
-        "home": url_for("hub") + "?theme_preview=1",
-        "anime": url_for("index") + "?theme_preview=1",
-        "manga": url_for("manga_index") + "?theme_preview=1",
-        "queue": url_for("queue_page") + "?theme_preview=1",
-        "settings": url_for("theme_settings_preview_page") + "?theme_preview=1"
-    }
-    preview["add"] = url_for("add_anime") + "?theme_preview=1"
-    preview["sections"] = url_for("hub") + "?theme_preview=1"
-
-    try:
-        anime_data = load_anime_data()
-        first_anime = anime_data[0] if anime_data else None
-        if first_anime:
-            preview["details"] = url_for("anime_detail", anime_id=first_anime.get("id")) + "?theme_preview=1"
-            episodes = first_anime.get("episodes", [])
-            first_episode = episodes[0] if episodes else None
-            if first_episode:
-                preview["player"] = url_for("player", anime_id=first_anime.get("id"), episode_number=first_episode.get("number", 1)) + "?theme_preview=1"
-            else:
-                preview["player"] = preview["details"]
-        else:
-            preview["details"] = preview["anime"]
-            preview["player"] = preview["anime"]
-    except Exception:
-        preview["details"] = preview["anime"]
-        preview["player"] = preview["anime"]
-
-    return preview
 
 
-@app.route('/theme-preview/settings')
-def theme_settings_preview_page():
-    return render_template("settings_preview.html")
-
-@app.route('/settings')
-def settings_page():
-    return render_template("settings.html", theme_preview_urls=build_theme_preview_urls())
+@app.route('/api/element-theme', methods=['GET'])
+def api_get_element_theme():
+    write_element_theme_css()
+    return jsonify(load_element_theme())
 
 
-@app.route('/api/theme', methods=['GET', 'POST'])
-def api_theme_settings():
-    if request.method == 'GET':
-        return jsonify(load_theme_settings())
-
+@app.route('/api/element-theme', methods=['POST'])
+def api_save_element_theme():
     payload = request.get_json(silent=True) or {}
-    current = load_theme_settings()
-    current["theme"] = normalize_theme_name(payload.get("theme", current["theme"]))
-    current["dark_mode"] = bool(payload.get("dark_mode", current["dark_mode"]))
-    current["same_theme_everywhere"] = bool(payload.get("same_theme_everywhere", current["same_theme_everywhere"]))
-
-    if isinstance(payload.get("section_themes"), dict):
-        current["section_themes"].update({
-            key: normalize_theme_name(value)
-            for key, value in payload["section_themes"].items()
-            if key in SECTION_THEME_KEYS
-        })
-
-    if isinstance(payload.get("background"), dict):
-        background = payload["background"]
-        current["background"].update({
-            key: background[key]
-            for key in ["mode", "url", "type"]
-            if key in background
-        })
-        mode = current["background"].get("mode")
-        if mode == "default_video":
-            current["background"] = {"mode": "default_video", "url": "/static/images/stars.mp4", "type": "video"}
-        elif mode == "solid":
-            current["background"]["type"] = "none"
-        elif mode == "none":
-            current["background"]["type"] = "none"
-
-    if isinstance(payload.get("theme_profiles"), dict):
-        for theme_key, profile in payload["theme_profiles"].items():
-            if theme_key in THEME_STYLE_PROFILES and isinstance(profile, dict):
-                current.setdefault("theme_profiles", {}).setdefault(theme_key, THEME_STYLE_PROFILES[theme_key].copy())
-                current["theme_profiles"][theme_key].update({
-                    key: str(value)
-                    for key, value in profile.items()
-                    if key in THEME_STYLE_PROFILES[theme_key] or key in THEME_VARIABLE_KEYS
-                })
-
-    if isinstance(payload.get("global_overrides"), dict):
-        current["global_overrides"] = normalize_override_variables(payload.get("global_overrides"))
-
-    if isinstance(payload.get("page_overrides"), dict):
-        current.setdefault("page_overrides", {key: {} for key in SECTION_THEME_KEYS})
-        for section_key, overrides in payload["page_overrides"].items():
-            if section_key in SECTION_THEME_KEYS:
-                current["page_overrides"][section_key] = normalize_override_variables(overrides)
-
-    saved = save_theme_settings(current)
-    return jsonify({"status": "success", "settings": saved})
+    selector = safe_element_selector(payload.get('selector'))
+    if not selector:
+        return jsonify({"status": "error", "message": "Invalid selector"}), 400
+    data = load_element_theme()
+    data.setdefault("rules", {})[selector] = normalize_element_values(payload)
+    save_element_theme(data)
+    return jsonify({"status": "success", "selector": selector})
 
 
-@app.route('/api/theme/background', methods=['POST'])
-def api_upload_theme_background():
-    file_storage = request.files.get("background")
-    if not file_storage or not file_storage.filename:
-        return jsonify({"status": "error", "message": "No background file selected"}), 400
-    if not allowed_background_file(file_storage.filename):
-        return jsonify({"status": "error", "message": "Unsupported background file type"}), 400
-
-    os.makedirs(THEME_UPLOAD_FOLDER, exist_ok=True)
-    original = secure_filename(file_storage.filename)
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
-    filename = f"bg_{stamp}_{original}"
-    file_path = os.path.join(THEME_UPLOAD_FOLDER, filename)
-    file_storage.save(file_path)
-
-    extension = filename.rsplit(".", 1)[1].lower()
-    media_type = "video" if extension in {"mp4", "webm"} else "image"
-    url = f"/static/theme_uploads/{filename}"
-
-    settings = load_theme_settings()
-    settings["background"] = {
-        "mode": "uploaded_video" if media_type == "video" else "uploaded_image",
-        "url": url,
-        "type": media_type
-    }
-    save_theme_settings(settings)
-
-    return jsonify({"status": "success", "url": url, "type": media_type, "settings": settings})
+@app.route('/api/element-theme/reset', methods=['POST'])
+def api_reset_element_theme():
+    payload = request.get_json(silent=True) or {}
+    selector = safe_element_selector(payload.get('selector'))
+    if not selector:
+        return jsonify({"status": "error", "message": "Invalid selector"}), 400
+    data = load_element_theme()
+    data.setdefault("rules", {}).pop(selector, None)
+    save_element_theme(data)
+    return jsonify({"status": "success", "selector": selector})
 
 @app.route('/')
 def hub():
@@ -2161,6 +2400,44 @@ def api_get_anime_filter_state():
 def api_save_anime_filter_state():
     payload = request.get_json(silent=True) or {}
     return jsonify(save_anime_filter_state(payload))
+
+
+@app.route('/api/manga-filter-state', methods=['GET'])
+def api_get_manga_filter_state():
+    return jsonify(load_filter_state(MANGA_FILTER_STATE_FILE))
+
+
+@app.route('/api/manga-filter-state', methods=['POST'])
+def api_save_manga_filter_state():
+    payload = request.get_json(silent=True) or {}
+    return jsonify(save_filter_state(MANGA_FILTER_STATE_FILE, payload))
+
+
+@app.route('/api/section-filter-state/<section>', methods=['GET'])
+def api_get_section_filter_state(section):
+    try:
+        section_states = read_json_file(SECTION_FILTER_STATE_FILE) if os.path.exists(SECTION_FILTER_STATE_FILE) else {}
+    except (json.JSONDecodeError, OSError):
+        section_states = {}
+    if isinstance(section_states, dict) and isinstance(section_states.get(section), dict):
+        return jsonify(normalize_filter_state(section_states.get(section)))
+    return jsonify(empty_filter_state())
+
+
+@app.route('/api/section-filter-state/<section>', methods=['POST'])
+def api_save_section_filter_state(section):
+    payload = request.get_json(silent=True) or {}
+    try:
+        section_states = read_json_file(SECTION_FILTER_STATE_FILE) if os.path.exists(SECTION_FILTER_STATE_FILE) else {}
+    except (json.JSONDecodeError, OSError):
+        section_states = {}
+    if not isinstance(section_states, dict):
+        section_states = {}
+    normalized = normalize_filter_state(payload)
+    normalized["updated_at"] = utc_now_iso()
+    section_states[section] = normalized
+    write_json_file_atomic(SECTION_FILTER_STATE_FILE, section_states, indent=4)
+    return jsonify(normalized)
 
 @app.route('/api/anime-tags')
 def api_anime_tags():
@@ -2521,15 +2798,16 @@ def anime_detail(anime_id):
         prepare_anime_episodes_for_player(anime)
         tracking, tracking_entry, progress_summary = get_anime_tracking_context(anime)
         enrich_episode_progress(anime, tracking_entry)
-        active_watch_status = (tracking_entry or {}).get("watch_status") or anime.get("watch_status") or anime.get("status") or "Not Started"
-        active_watch_status = normalize_watch_status(active_watch_status, "Not Started")
+        active_release_status = normalize_anime_release_status(anime.get("status"), "Ongoing")
+        anime["status"] = active_release_status
         return render_template(
             'anime_detail.html',
             anime=anime,
             tracking_entry=tracking_entry or {},
             progress_summary=progress_summary,
-            watch_status_options=WATCH_STATUS_OPTIONS,
-            active_watch_status=active_watch_status
+            anime_status_options=ANIME_RELEASE_STATUS_OPTIONS,
+            active_anime_status=active_release_status,
+            anime_status_label=anime_release_status_label
         )
     else:
         return "Anime not found", 404
@@ -2772,10 +3050,10 @@ def update_anime_status(anime_id):
     try:
         anime_id = int(anime_id)
         updated_data = request.get_json(silent=True) or {}
-        new_status = normalize_watch_status(updated_data.get('status'), None)
+        new_status = normalize_anime_release_status(updated_data.get('status'), None)
 
         if not new_status:
-            return jsonify({'status': 'error', 'message': 'Invalid or missing status'}), 400
+            return jsonify({'status': 'error', 'message': 'Invalid or missing anime status'}), 400
 
         anime_list = load_anime_data()
         anime = next((item for item in anime_list if item.get('id') == anime_id), None)
@@ -2783,24 +3061,16 @@ def update_anime_status(anime_id):
         if not anime:
             return jsonify({'status': 'error', 'message': 'Anime not found'}), 404
 
-        anime['watch_status'] = new_status
-        if new_status == "Completed":
-            anime['watched'] = True
-        elif new_status in {"Watching", "On Hold", "Dropped", "Rewatching", "Plan to Watch", "Not Started"}:
-            anime['watched'] = False
+        # This updates the anime release/airing status only.
+        # Watched/unwatched progress remains controlled by the existing watched toggle.
+        anime['status'] = new_status
         save_anime_data(anime_list)
 
-        tracking = load_tracking_data()
-        entry = get_tracking_anime_entry(tracking, anime, create=True)
-        entry['watch_status'] = new_status
-        entry['last_watched_at'] = entry.get('last_watched_at') or utc_now_iso()
-        if new_status == "Completed":
-            for episode in anime.get('episodes', []):
-                episode['watched'] = True
-            entry['episodes'] = {}
-        save_tracking_data(tracking)
-
-        return jsonify({'status': 'success', 'new_status': new_status})
+        return jsonify({
+            'status': 'success',
+            'new_status': new_status,
+            'new_status_label': anime_release_status_label(new_status)
+        })
 
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500

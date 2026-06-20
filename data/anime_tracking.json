@@ -1,42 +1,19 @@
 {
     "schema_version": 1,
-    "updated_at": "2026-06-20T13:04:41.811748+00:00",
+    "updated_at": "2026-06-20T17:59:33.676502+00:00",
     "last_use": {
         "anime_id": 486,
         "anime_title": "Food for the Soul",
-        "episode_number": 1,
-        "episode_title": "Episode 1",
-        "current_time": 488.64,
-        "total_duration": 1439.99,
-        "progress_percentage": 33.93,
-        "last_watched_at": "2026-06-20T13:01:04.814369+00:00"
+        "episode_number": 8,
+        "episode_title": "Episode 8",
+        "current_time": 1.94,
+        "total_duration": 1440.08,
+        "progress_percentage": 0.13,
+        "last_watched_at": "2026-06-20T17:59:33.658004+00:00"
     },
     "queue": {
         "updated_at": "2026-06-13T11:38:03.764928+00:00",
         "order": []
     },
-    "anime": {
-        "486": {
-            "anime_id": 486,
-            "anime_title": "Food for the Soul",
-            "anime_thumbnail": "/static/anime_images/Food for the Soul.jpg",
-            "watch_status": "Rewatching",
-            "last_watched_episode": 1,
-            "last_watched_at": "2026-06-20T13:01:04.814369+00:00",
-            "completion_percentage": 16.67,
-            "episodes": {
-                "1": {
-                    "episode_number": 1,
-                    "episode_title": "Episode 1",
-                    "episode_video_path": "C:/Users/shour/Documents/Anime/Food for the Soul/S1/1.mp4",
-                    "current_time": 488.64,
-                    "total_duration": 1439.99,
-                    "progress_percentage": 33.93,
-                    "completed": false,
-                    "active_continue": true,
-                    "last_watched_at": "2026-06-20T13:01:04.814369+00:00"
-                }
-            }
-        }
-    }
+    "anime": {}
 }
