@@ -9295,13 +9295,13 @@
             {
                 "number": 11,
                 "title": "Episode 11",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Food for the Soul/S1/11.mp4"
             },
             {
                 "number": 12,
                 "title": "Episode 12",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Food for the Soul/S1/12.mp4"
             }
         ],
@@ -13061,107 +13061,6 @@
         "demographics": [],
         "tag_source": "jikan",
         "tag_source_id": 38830,
-        "tag_match_status": "matched"
-    },
-    {
-        "id": 524,
-        "title": "Haibara-kun no Tsuyokute Seishun New Game",
-        "season": "S1",
-        "status": "Ongoing",
-        "download_link": "https://myanimelist.net/anime/61943",
-        "directory": "C:\\Users\\shour\\Documents\\Anime\\Haibara-kun no Tsuyokute Seishun New Game\\S1",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Haibara-kun no Tsuyokute Seishun New Game/S1/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Haibara-kun no Tsuyokute Seishun New Game/S1/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Haibara-kun no Tsuyokute Seishun New Game/S1/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Haibara-kun no Tsuyokute Seishun New Game/S1/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Haibara-kun no Tsuyokute Seishun New Game/S1/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Haibara-kun no Tsuyokute Seishun New Game/S1/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Haibara-kun no Tsuyokute Seishun New Game/S1/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Haibara-kun no Tsuyokute Seishun New Game/S1/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Haibara-kun no Tsuyokute Seishun New Game/S1/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Haibara-kun no Tsuyokute Seishun New Game/S1/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Haibara-kun no Tsuyokute Seishun New Game/S1/11.mp4"
-            },
-            {
-                "number": 12,
-                "title": "Episode 12",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Haibara-kun no Tsuyokute Seishun New Game/S1/12.mp4"
-            }
-        ],
-        "bookmarked": false,
-        "tags": [
-            "Comedy",
-            "Romance",
-            "School",
-            "Time Travel"
-        ],
-        "genres": [
-            "Comedy",
-            "Romance"
-        ],
-        "themes": [
-            "School",
-            "Time Travel"
-        ],
-        "demographics": [],
-        "tag_source": "jikan",
-        "tag_source_id": 61943,
         "tag_match_status": "matched"
     },
     {
@@ -19356,7 +19255,7 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Jishou Akuyaku Reijou na Konyakusha no Kansatsu Kiroku/S1/12.mp4"
             }
         ],
-        "bookmarked": false,
+        "bookmarked": true,
         "tags": [
             "Comedy",
             "Romance",
@@ -19372,7 +19271,8 @@
         "demographics": [],
         "tag_source": "jikan",
         "tag_source_id": 61687,
-        "tag_match_status": "matched"
+        "tag_match_status": "matched",
+        "watched": true
     },
     {
         "id": 246,
@@ -24484,103 +24384,6 @@
         ],
         "tag_source": "jikan",
         "tag_source_id": 61782,
-        "tag_match_status": "matched"
-    },
-    {
-        "id": 374,
-        "title": "Kirio Fanclub",
-        "season": "S1",
-        "status": "Ongoing",
-        "download_link": "https://myanimelist.net/anime/59835",
-        "directory": "C:\\Users\\shour\\Documents\\Anime\\Kirio Fanclub\\S1",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kirio Fanclub/S1/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kirio Fanclub/S1/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kirio Fanclub/S1/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kirio Fanclub/S1/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kirio Fanclub/S1/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kirio Fanclub/S1/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kirio Fanclub/S1/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kirio Fanclub/S1/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kirio Fanclub/S1/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kirio Fanclub/S1/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kirio Fanclub/S1/11.mp4"
-            },
-            {
-                "number": 12,
-                "title": "Episode 12",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kirio Fanclub/S1/12.mp4"
-            }
-        ],
-        "bookmarked": false,
-        "tags": [
-            "Comedy",
-            "School"
-        ],
-        "genres": [
-            "Comedy"
-        ],
-        "themes": [
-            "School"
-        ],
-        "demographics": [],
-        "tag_source": "jikan",
-        "tag_source_id": 59835,
         "tag_match_status": "matched"
     },
     {
@@ -30173,7 +29976,8 @@
         "demographics": [],
         "tag_source": "jikan",
         "tag_source_id": 62342,
-        "tag_match_status": "matched"
+        "tag_match_status": "matched",
+        "watched": true
     },
     {
         "id": 315,
@@ -31166,80 +30970,6 @@
         ],
         "tag_source": "jikan",
         "tag_source_id": 40397,
-        "tag_match_status": "matched"
-    },
-    {
-        "id": 561,
-        "title": "Marika-chan no Koukando wa Bukkowareteiru",
-        "season": "S1",
-        "status": "Ongoing",
-        "download_link": "https://myanimelist.net/anime/62983",
-        "directory": "C:\\Users\\shour\\Documents\\Anime\\Marika-chan no Koukando wa Bukkowareteiru\\S1",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Marika-chan no Koukando wa Bukkowareteiru/S1/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Marika-chan no Koukando wa Bukkowareteiru/S1/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Marika-chan no Koukando wa Bukkowareteiru/S1/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Marika-chan no Koukando wa Bukkowareteiru/S1/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Marika-chan no Koukando wa Bukkowareteiru/S1/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Marika-chan no Koukando wa Bukkowareteiru/S1/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Marika-chan no Koukando wa Bukkowareteiru/S1/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Marika-chan no Koukando wa Bukkowareteiru/S1/8.mp4"
-            }
-        ],
-        "bookmarked": false,
-        "tags": [
-            "Comedy",
-            "Romance",
-            "Ecchi"
-        ],
-        "genres": [
-            "Comedy",
-            "Romance",
-            "Ecchi"
-        ],
-        "themes": [],
-        "demographics": [],
-        "tag_source": "jikan",
-        "tag_source_id": 62983,
         "tag_match_status": "matched"
     },
     {
@@ -35014,7 +34744,8 @@
         "tag_source": "jikan",
         "tag_source_id": 62893,
         "tag_match_status": "matched",
-        "bookmarked": false
+        "bookmarked": false,
+        "watched": true
     },
     {
         "id": 33,
@@ -38636,7 +38367,8 @@
         "demographics": [],
         "tag_source": "jikan",
         "tag_source_id": 50739,
-        "tag_match_status": "matched"
+        "tag_match_status": "matched",
+        "watched": true
     },
     {
         "id": 89,
@@ -40394,7 +40126,8 @@
         "demographics": [],
         "tag_source": "jikan",
         "tag_source_id": 62825,
-        "tag_match_status": "matched"
+        "tag_match_status": "matched",
+        "watched": true
     },
     {
         "id": 96,

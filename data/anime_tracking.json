@@ -1,47 +1,40 @@
 {
     "schema_version": 1,
-    "updated_at": "2026-05-31T16:56:32.643090+00:00",
+    "updated_at": "2026-06-20T13:04:41.811748+00:00",
     "last_use": {
-        "anime_id": 83,
-        "anime_title": "Shuumatsu Touring",
+        "anime_id": 486,
+        "anime_title": "Food for the Soul",
         "episode_number": 1,
         "episode_title": "Episode 1",
-        "current_time": 7.82,
-        "total_duration": 1420.11,
-        "progress_percentage": 0.55,
-        "last_watched_at": "2026-05-31T16:56:32.625892+00:00"
+        "current_time": 488.64,
+        "total_duration": 1439.99,
+        "progress_percentage": 33.93,
+        "last_watched_at": "2026-06-20T13:01:04.814369+00:00"
     },
     "queue": {
-        "updated_at": "2026-05-31T08:15:34.810563+00:00",
-        "order": [
-            {
-                "position": 1,
-                "anime_id": 83,
-                "anime_title": "Shuumatsu Touring",
-                "episode_number": 1
-            }
-        ]
+        "updated_at": "2026-06-13T11:38:03.764928+00:00",
+        "order": []
     },
     "anime": {
-        "83": {
-            "anime_id": 83,
-            "anime_title": "Shuumatsu Touring",
-            "anime_thumbnail": "/static/placeholder.jpeg",
-            "watch_status": "Watching",
+        "486": {
+            "anime_id": 486,
+            "anime_title": "Food for the Soul",
+            "anime_thumbnail": "/static/anime_images/Food for the Soul.jpg",
+            "watch_status": "Rewatching",
             "last_watched_episode": 1,
-            "last_watched_at": "2026-05-31T16:56:32.625892+00:00",
-            "completion_percentage": 0.0,
+            "last_watched_at": "2026-06-20T13:01:04.814369+00:00",
+            "completion_percentage": 16.67,
             "episodes": {
                 "1": {
                     "episode_number": 1,
                     "episode_title": "Episode 1",
-                    "episode_video_path": "C:/Users/shour/Documents/Anime/Shuumatsu Touring/S1/1.mp4",
-                    "current_time": 7.82,
-                    "total_duration": 1420.11,
-                    "progress_percentage": 0.55,
+                    "episode_video_path": "C:/Users/shour/Documents/Anime/Food for the Soul/S1/1.mp4",
+                    "current_time": 488.64,
+                    "total_duration": 1439.99,
+                    "progress_percentage": 33.93,
                     "completed": false,
                     "active_continue": true,
-                    "last_watched_at": "2026-05-31T16:56:32.625892+00:00"
+                    "last_watched_at": "2026-06-20T13:01:04.814369+00:00"
                 }
             }
         }

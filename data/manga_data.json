@@ -1707,6 +1707,36 @@
         "demographics": []
     },
     {
+        "id": 138,
+        "title": "Haimiya Senpai wa Kowakute Kawaii",
+        "status": "Ongoing",
+        "link": "https://myanimelist.net/manga/188409/Haimiya-senpai_wa_Kowakute_Kawaii?q=Haimiya%20Senpai%20wa%20Kowakute%20Kawaii&cat=manga",
+        "read": false,
+        "bookmarked": false,
+        "tags": [
+            "Romance",
+            "Comedy",
+            "School",
+            "Shoujo",
+            "Seinen"
+        ],
+        "genres": [
+            "Romance",
+            "Comedy"
+        ],
+        "themes": [
+            "school",
+            "Romance",
+            "Comedy"
+        ],
+        "demographics": [
+            "Seinen",
+            "Shoujo"
+        ],
+        "tag_source": "manual",
+        "tag_match_status": "manual"
+    },
+    {
         "id": 218,
         "title": "Hajimete Koibito ga Dekimashita.",
         "status": "Completed",
@@ -7832,34 +7862,5 @@
             "Reincarnation"
         ],
         "demographics": []
-    },
-    {
-        "id": 138,
-        "title": "Haimiya Senpai wa Kowakute Kawaii",
-        "status": "Ongoing",
-        "link": "https://myanimelist.net/manga/188409/Haimiya-senpai_wa_Kowakute_Kawaii?q=Haimiya%20Senpai%20wa%20Kowakute%20Kawaii&cat=manga",
-        "read": false,
-        "bookmarked": false,
-        "tags": [
-            "Romance",
-            "Comedy",
-            "School",
-            "Shoujo",
-            "Seinen"
-        ],
-        "genres": [
-            "Romance",
-            "Comedy"
-        ],
-        "themes": [
-            "school",
-            "Romance",
-            "Comedy"
-        ],
-        "demographics": [
-            "Seinen"
-        ],
-        "tag_source": "manual",
-        "tag_match_status": "manual"
     }
 ]

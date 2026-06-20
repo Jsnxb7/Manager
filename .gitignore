@@ -132,7 +132,6 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 package-lock.json
-package.json
 
 # =========================================================
 # Archives / shared patches

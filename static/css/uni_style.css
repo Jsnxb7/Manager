@@ -6333,3 +6333,93 @@ body[class*="theme-"] .delete-btn { color: var(--theme-danger-text, #ffd0dc) !im
         justify-content: flex-start;
     }
 }
+
+/* Floating anime filter rack */
+.floating-filter-rack {
+    position: fixed !important;
+    bottom: 20px !important;
+    left: 20px !important;
+    z-index: 1200 !important;
+    display: flex !important;
+    flex-direction: column-reverse !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+}
+
+.floating-filter-rack .floating-add-anime {
+    position: static !important;
+    left: auto !important;
+    bottom: auto !important;
+    width: 54px !important;
+    height: 54px !important;
+    min-width: 54px !important;
+    min-height: 54px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    font-size: 1.18rem !important;
+}
+
+.floating-filter-trigger {
+    background: linear-gradient(135deg, rgba(74, 92, 255, 0.96), rgba(29, 78, 216, 0.92)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.28) !important;
+}
+
+.floating-filter-menu {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    padding: 10px !important;
+    border-radius: 24px !important;
+    background: rgba(20, 18, 28, 0.76) !important;
+    border: 1px solid rgba(255, 238, 248, 0.20) !important;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.36) !important;
+    backdrop-filter: blur(16px) saturate(1.08) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(1.08) !important;
+    opacity: 0 !important;
+    transform: translateY(10px) scale(0.96) !important;
+    pointer-events: none !important;
+    transition: opacity 0.18s ease, transform 0.18s ease !important;
+}
+
+.floating-filter-rack:hover .floating-filter-menu,
+.floating-filter-rack:focus-within .floating-filter-menu {
+    opacity: 1 !important;
+    transform: translateY(0) scale(1) !important;
+    pointer-events: auto !important;
+}
+
+.rack-action {
+    width: 148px !important;
+    min-height: 38px !important;
+    justify-content: flex-start !important;
+    gap: 9px !important;
+    padding: 9px 12px !important;
+    border-radius: 16px !important;
+    font-size: 0.82rem !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+}
+
+.rack-action.active {
+    border-color: rgba(255, 222, 115, 0.82) !important;
+    background: linear-gradient(135deg, rgba(255, 238, 157, 0.82), rgba(255, 201, 90, 0.62)) !important;
+    color: #2a2114 !important;
+    box-shadow: 0 10px 26px rgba(255, 193, 7, 0.20), inset 0 1px 0 rgba(255,255,255,0.36) !important;
+}
+
+.rack-add-action {
+    background: linear-gradient(135deg, rgba(188, 245, 213, 0.82), rgba(103, 232, 168, 0.52)) !important;
+    color: #102318 !important;
+}
+
+@media (max-width: 680px) {
+    .floating-filter-rack {
+        bottom: 14px !important;
+        left: 14px !important;
+    }
+
+    .rack-action {
+        width: 132px !important;
+        font-size: 0.78rem !important;
+    }
+}

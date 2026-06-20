@@ -32,6 +32,7 @@ DEFAULT_MANGA_IMAGE = "/static/placeholder.jpeg"
 DATA_FILE_SEC = os.path.join(BASE_PATH, 'data', 'sections.json')
 DATA_FOLDER = os.path.join(BASE_PATH, 'data')
 ANIME_TAGS_FILE = os.path.join(BASE_PATH, 'data', 'unique_anime_tags.json')
+ANIME_FILTER_STATE_FILE = os.path.join(BASE_PATH, 'data', 'anime_filter_state.json')
 MANGA_HEADERS_FILE = os.path.join(BASE_PATH, 'data', 'unique_manga_headers.json')
 ALLOWED_IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "avif", "webp", "gif"}
 IMAGE_EXTENSION_ORDER = ["jpg", "png", "jpeg", "avif", "webp", "gif"]
@@ -914,6 +915,74 @@ def load_anime_data():
 # Save anime data
 def save_anime_data(data):
     write_json_file_atomic(DATA_FILE, data, indent=4)
+
+def empty_anime_filter_state():
+    return {
+        "schema_version": 1,
+        "updated_at": None,
+        "search": "",
+        "quick_filters": {
+            "unwatched": False,
+            "ongoing": False,
+            "bookmarked": False
+        },
+        "tag_filters": {
+            "tags": [],
+            "genres": [],
+            "themes": [],
+            "demographics": []
+        },
+        "page": 1,
+        "items_per_page": 12
+    }
+
+
+def normalize_anime_filter_state(raw_state):
+    state = empty_anime_filter_state()
+    if not isinstance(raw_state, dict):
+        return state
+
+    state["search"] = str(raw_state.get("search") or "")
+
+    quick_filters = raw_state.get("quick_filters") if isinstance(raw_state.get("quick_filters"), dict) else {}
+    for key in state["quick_filters"]:
+        state["quick_filters"][key] = bool(quick_filters.get(key))
+
+    tag_filters = raw_state.get("tag_filters") if isinstance(raw_state.get("tag_filters"), dict) else {}
+    for key in state["tag_filters"]:
+        values = tag_filters.get(key, [])
+        if isinstance(values, list):
+            state["tag_filters"][key] = [str(value) for value in values if str(value).strip()]
+
+    try:
+        state["page"] = max(1, int(raw_state.get("page", 1)))
+    except (TypeError, ValueError):
+        state["page"] = 1
+
+    try:
+        state["items_per_page"] = int(raw_state.get("items_per_page", 12))
+    except (TypeError, ValueError):
+        state["items_per_page"] = 12
+    if state["items_per_page"] not in {8, 12, 16, 24}:
+        state["items_per_page"] = 12
+
+    return state
+
+
+def load_anime_filter_state():
+    if not os.path.exists(ANIME_FILTER_STATE_FILE):
+        return empty_anime_filter_state()
+    try:
+        return normalize_anime_filter_state(read_json_file(ANIME_FILTER_STATE_FILE))
+    except (json.JSONDecodeError, OSError):
+        return empty_anime_filter_state()
+
+
+def save_anime_filter_state(state):
+    normalized = normalize_anime_filter_state(state)
+    normalized["updated_at"] = utc_now_iso()
+    write_json_file_atomic(ANIME_FILTER_STATE_FILE, normalized, indent=4)
+    return normalized
 
 def parse_anime_metadata_form():
     return parse_metadata_form(["tags", "genres", "themes", "demographics"])
@@ -2081,6 +2150,17 @@ def api_anime():
     for anime in anime_data:
         anime["thumbnail_url"] = get_anime_image(anime["title"])
     return jsonify(anime_data)
+
+
+@app.route('/api/anime-filter-state', methods=['GET'])
+def api_get_anime_filter_state():
+    return jsonify(load_anime_filter_state())
+
+
+@app.route('/api/anime-filter-state', methods=['POST'])
+def api_save_anime_filter_state():
+    payload = request.get_json(silent=True) or {}
+    return jsonify(save_anime_filter_state(payload))
 
 @app.route('/api/anime-tags')
 def api_anime_tags():

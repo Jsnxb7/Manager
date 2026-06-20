@@ -17,18 +17,8 @@
     <input type="text" id="search-bar" class="search-bar" placeholder="Search anime..." onkeyup="filterAnime()">
 
     <details class="filter-accordion">
-        <summary>Filters</summary>
+        <summary>Tag Filters</summary>
         <div class="filter-accordion-body">
-            <details class="filter-section" open>
-                <summary>Quick Filters</summary>
-                <div class="filter-actions">
-                    <button class="add-anime-button" onclick="resetFilters()">Reset Filters</button>
-                    <button class="add-anime-button" onclick="filterUnwatchedAnime()">Unwatched Anime</button>
-                    <button class="add-anime-button" onclick="filterOngoingAnime()">Ongoing Anime</button>
-                    <button class="add-anime-button" onclick="sortBookmarkedFirst()">Sort Bookmarked First</button>
-                </div>
-            </details>
-
             <div id="anime-tag-filters" class="tag-filter-groups"></div>
         </div>
     </details>
@@ -54,9 +44,18 @@
     </div>
 </div>
 
-<a href="{{ url_for('add_anime') }}" class="floating-add-anime" aria-label="Add new anime" title="Add New Anime">
-    +
-</a>
+<div class="floating-filter-rack" aria-label="Anime quick actions">
+    <button type="button" class="floating-add-anime floating-filter-trigger" aria-label="Open anime filters" title="Anime Filters">
+        ⚙️
+    </button>
+    <div class="floating-filter-menu" aria-label="Anime filters and add action">
+        <button type="button" class="rack-action" id="rack-reset-filter" onclick="resetFilters()" title="Reset filters">↺ <span>Reset</span></button>
+        <button type="button" class="rack-action" id="rack-unwatched-filter" onclick="toggleQuickFilter('unwatched')" title="Show unwatched anime">◌ <span>Unwatched</span></button>
+        <button type="button" class="rack-action" id="rack-ongoing-filter" onclick="toggleQuickFilter('ongoing')" title="Show ongoing anime">▶ <span>Ongoing</span></button>
+        <button type="button" class="rack-action" id="rack-bookmark-filter" onclick="toggleQuickFilter('bookmarked')" title="Show bookmarked anime">⭐ <span>Bookmarks</span></button>
+        <a href="{{ url_for('add_anime') }}" class="rack-action rack-add-action" title="Add Anime">＋ <span>Add</span></a>
+    </div>
+</div>
 
 <script>
 let allAnimeData = [];
@@ -70,6 +69,12 @@ const activeTagFilters = {
     themes: new Set(),
     demographics: new Set()
 };
+const activeQuickFilters = {
+    unwatched: false,
+    ongoing: false,
+    bookmarked: false
+};
+let isRestoringFilterState = false;
 
 async function fetchAnimeData() {
     try {
@@ -90,6 +95,31 @@ async function fetchAnimeTagCatalog() {
     } catch (error) {
         console.error('Error fetching anime tag filters:', error);
         return {};
+    }
+}
+
+async function fetchAnimeFilterState() {
+    try {
+        const response = await fetch('/api/anime-filter-state');
+        if (!response.ok) throw new Error('Failed to fetch anime filter state');
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching anime filter state:', error);
+        return null;
+    }
+}
+
+async function saveAnimeFilterState() {
+    if (isRestoringFilterState) return;
+    const payload = getAnimeFilterStatePayload();
+    try {
+        await fetch('/api/anime-filter-state', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+    } catch (error) {
+        console.error('Error saving anime filter state:', error);
     }
 }
 
@@ -316,6 +346,39 @@ function animeMatchesSelectedTags(anime) {
     });
 }
 
+function animeMatchesQuickFilters(anime) {
+    if (activeQuickFilters.unwatched && anime.watched === true) return false;
+    if (activeQuickFilters.ongoing && String(anime.status || '').toLowerCase() !== 'ongoing') return false;
+    if (activeQuickFilters.bookmarked && anime.bookmarked !== true) return false;
+    return true;
+}
+
+function updateQuickFilterButtons() {
+    const buttonMap = {
+        unwatched: document.getElementById('rack-unwatched-filter'),
+        ongoing: document.getElementById('rack-ongoing-filter'),
+        bookmarked: document.getElementById('rack-bookmark-filter')
+    };
+
+    Object.entries(buttonMap).forEach(([key, button]) => {
+        if (!button) return;
+        button.classList.toggle('active', activeQuickFilters[key]);
+        button.setAttribute('aria-pressed', activeQuickFilters[key] ? 'true' : 'false');
+    });
+}
+
+function getAnimeFilterStatePayload() {
+    return {
+        search: document.getElementById('search-bar')?.value || '',
+        quick_filters: { ...activeQuickFilters },
+        tag_filters: Object.fromEntries(
+            Object.entries(activeTagFilters).map(([group, selected]) => [group, [...selected]])
+        ),
+        page: currentPage,
+        items_per_page: itemsPerPage
+    };
+}
+
 function animeMatchesSearch(anime, query) {
     if (!query) return true;
 
@@ -334,11 +397,17 @@ function animeMatchesSearch(anime, query) {
 
 function getFilteredAnimeData() {
     const query = document.getElementById('search-bar').value.toLowerCase().trim();
-    return allAnimeData.filter(anime => animeMatchesSearch(anime, query) && animeMatchesSelectedTags(anime));
+    return allAnimeData.filter(anime =>
+        animeMatchesSearch(anime, query) &&
+        animeMatchesSelectedTags(anime) &&
+        animeMatchesQuickFilters(anime)
+    );
 }
 
 function applyAnimeFilters(page = 1) {
     setAnimeData(getFilteredAnimeData(), page);
+    updateQuickFilterButtons();
+    saveAnimeFilterState();
 }
 
 function renderAnimeTagFilters() {
@@ -537,6 +606,7 @@ function renderPagination() {
 function goToPage(page) {
     currentPage = Math.min(Math.max(page, 1), getTotalPages());
     renderAnimePage();
+    saveAnimeFilterState();
     document.querySelector('.anime-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -564,30 +634,33 @@ function filterAnime() {
 
 function resetFilters() {
     document.getElementById('search-bar').value = '';
+    Object.keys(activeQuickFilters).forEach(key => activeQuickFilters[key] = false);
     Object.values(activeTagFilters).forEach(selected => selected.clear());
     document.querySelectorAll('#anime-tag-filters input[type="checkbox"]').forEach(checkbox => {
         checkbox.checked = false;
     });
-    setAnimeData(allAnimeData, 1);
+    applyAnimeFilters(1);
+}
+
+function toggleQuickFilter(filterName) {
+    if (!(filterName in activeQuickFilters)) return;
+    activeQuickFilters[filterName] = !activeQuickFilters[filterName];
+    applyAnimeFilters(1);
 }
 
 function filterOngoingAnime() {
-    const sorted = [...getFilteredAnimeData()].sort((a, b) => {
-        const aOngoing = (a.status || '').toLowerCase() === 'ongoing';
-        const bOngoing = (b.status || '').toLowerCase() === 'ongoing';
-        return bOngoing - aOngoing;
-    });
-    setAnimeData(sorted, 1);
+    activeQuickFilters.ongoing = true;
+    applyAnimeFilters(1);
 }
 
 function filterUnwatchedAnime() {
-    const sorted = [...getFilteredAnimeData()].sort((a, b) => (a.watched === true) - (b.watched === true));
-    setAnimeData(sorted, 1);
+    activeQuickFilters.unwatched = true;
+    applyAnimeFilters(1);
 }
 
 function sortBookmarkedFirst() {
-    const sorted = [...getFilteredAnimeData()].sort((a, b) => (b.bookmarked === true) - (a.bookmarked === true));
-    setAnimeData(sorted, 1);
+    activeQuickFilters.bookmarked = true;
+    applyAnimeFilters(1);
 }
 
 async function toggleBookmark(animeId, button) {
@@ -599,6 +672,7 @@ async function toggleBookmark(animeId, button) {
         if (data.status === 'success') {
             syncAnimeItem(animeId, { bookmarked: data.bookmarked });
             button.textContent = data.bookmarked ? 'Bookmarked ⭐' : 'Bookmark 🔖';
+            applyAnimeFilters(currentPage);
         }
     } catch (error) {
         console.error('Error toggling bookmark:', error);
@@ -615,6 +689,7 @@ async function toggleAnimeWatched(animeId, button) {
             const watched = button.textContent === 'Mark as Watched';
             syncAnimeItem(animeId, { watched });
             button.textContent = watched ? 'Watched ✅' : 'Mark as Watched';
+            applyAnimeFilters(currentPage);
         }
     } catch (error) {
         console.error('Error toggling watched status:', error);
@@ -653,17 +728,55 @@ async function deleteAnime(animeId) {
     }
 }
 
+function restoreAnimeFilterState(state) {
+    if (!state || typeof state !== 'object') return 1;
+    isRestoringFilterState = true;
+
+    const searchBar = document.getElementById('search-bar');
+    if (searchBar) searchBar.value = state.search || '';
+
+    const quickFilters = state.quick_filters || {};
+    Object.keys(activeQuickFilters).forEach(key => {
+        activeQuickFilters[key] = Boolean(quickFilters[key]);
+    });
+
+    const tagFilters = state.tag_filters || {};
+    Object.entries(activeTagFilters).forEach(([group, selected]) => {
+        selected.clear();
+        if (Array.isArray(tagFilters[group])) {
+            tagFilters[group].forEach(value => selected.add(String(value)));
+        }
+    });
+
+    document.querySelectorAll('#anime-tag-filters input[type="checkbox"]').forEach(checkbox => {
+        const selected = activeTagFilters[checkbox.dataset.group];
+        checkbox.checked = Boolean(selected && selected.has(checkbox.value));
+    });
+
+    const savedPageSize = parseInt(state.items_per_page, 10);
+    itemsPerPage = [8, 12, 16, 24].includes(savedPageSize) ? savedPageSize : 12;
+    const pageSizeSelect = document.getElementById('anime-page-size');
+    if (pageSizeSelect) pageSizeSelect.value = String(itemsPerPage);
+
+    updateQuickFilterButtons();
+    isRestoringFilterState = false;
+    return Math.max(1, parseInt(state.page, 10) || 1);
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
-    const [animeItems, tagCatalog, continueItems] = await Promise.all([
+    const [animeItems, tagCatalog, continueItems, filterState] = await Promise.all([
         fetchAnimeData(),
         fetchAnimeTagCatalog(),
-        fetchContinueWatching()
+        fetchContinueWatching(),
+        fetchAnimeFilterState()
     ]);
     allAnimeData = animeItems;
     animeTagCatalog = tagCatalog;
     renderContinueWatching(continueItems);
     renderAnimeTagFilters();
-    setAnimeData(allAnimeData, 1);
+    const restoredPage = restoreAnimeFilterState(filterState);
+    setAnimeData(getFilteredAnimeData(), restoredPage);
+    updateQuickFilterButtons();
 });
 </script>
 {% endblock %}

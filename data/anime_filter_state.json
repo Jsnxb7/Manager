@@ -1,0 +1,18 @@
+{
+    "schema_version": 1,
+    "updated_at": "2026-06-20T14:46:50.464298+00:00",
+    "search": "",
+    "quick_filters": {
+        "unwatched": false,
+        "ongoing": false,
+        "bookmarked": false
+    },
+    "tag_filters": {
+        "tags": [],
+        "genres": [],
+        "themes": [],
+        "demographics": []
+    },
+    "page": 1,
+    "items_per_page": 12
+}
