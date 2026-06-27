@@ -16,8 +16,6 @@ display: flex;
     margin-left: 59px;
 
 }
-
-/* ── Header ───────────────────────────────────────────────────── */
 .cp-header {
     display: flex;
     align-items: center;
@@ -415,6 +413,35 @@ display: flex;
     gap: 8px;
 }
 
+/* ── Drag and drop ────────────────────────────────────────────── */
+.cp-playlist-drag-handle {
+    cursor: grab;
+    color: var(--theme-muted, #888);
+    font-size: 0.85rem;
+    padding: 0 4px 0 0;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.15s;
+    user-select: none;
+    line-height: 1;
+}
+
+.cp-playlist-item:hover .cp-playlist-drag-handle {
+    opacity: 1;
+}
+
+.cp-playlist-drag-handle:active {
+    cursor: grabbing;
+}
+
+li.cp-dragging {
+    opacity: 0.4;
+}
+
+li.cp-drag-over {
+    border-top: 2px solid var(--theme-accent, #ffd4e6);
+}
+
 /* ── Buttons ──────────────────────────────────────────────────── */
 .cp-btn {
     display: inline-flex;
@@ -624,10 +651,11 @@ display: flex;
                 {% if playlist %}
                     <ul class="cp-playlist-list" id="cp-playlist-list">
                         {% for m in playlist %}
-                            <li>
+                            <li draggable="true" data-index="{{ loop.index0 }}">
                                 <a href="{{ url_for('custom_player.custom_player_play', index=loop.index0) }}"
                                    class="cp-playlist-item {% if current_index == loop.index0 %}is-active{% endif %}"
                                    data-index="{{ loop.index0 }}">
+                                    <span class="cp-playlist-drag-handle" title="Drag to reorder">⠿</span>
                                     <span class="cp-playlist-num">
                                         {% if current_index == loop.index0 %}▶{% else %}{{ loop.index }}{% endif %}
                                     </span>
@@ -758,10 +786,11 @@ function refreshPlaylistUI(playlist) {
     const currentIndex    = currentIndexRaw !== '' ? parseInt(currentIndexRaw, 10) : null;
 
     list.innerHTML = playlist.map((m, i) => `
-        <li>
+        <li draggable="true" data-index="${i}">
             <a href="/custom_player/${i}"
                class="cp-playlist-item ${currentIndex === i ? 'is-active' : ''}"
                data-index="${i}">
+                <span class="cp-playlist-drag-handle" title="Drag to reorder">⠿</span>
                 <span class="cp-playlist-num">${currentIndex === i ? '▶' : i + 1}</span>
                 <span class="cp-playlist-item-info">
                     <span class="cp-playlist-item-name">${escapeHtml(m.name)}</span>
@@ -769,11 +798,71 @@ function refreshPlaylistUI(playlist) {
                 </span>
             </a>
         </li>`).join('');
+    setupPlaylistDrag();
 }
 
 function escapeHtml(str) {
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+
+/* ── Playlist drag-and-drop ─────────────────────────────────── */
+function setupPlaylistDrag() {
+    const list = document.getElementById('cp-playlist-list');
+    if (!list) return;
+
+    let draggedLi = null;
+
+    list.querySelectorAll('li[draggable="true"]').forEach(li => {
+        li.addEventListener('dragstart', e => {
+            draggedLi = li;
+            li.classList.add('cp-dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        });
+
+        li.addEventListener('dragend', async () => {
+            li.classList.remove('cp-dragging');
+            list.querySelectorAll('li').forEach(el => el.classList.remove('cp-drag-over'));
+
+            // Build new order from current DOM positions
+            const order = [...list.querySelectorAll('li[data-index]')]
+                .map(el => parseInt(el.dataset.index, 10));
+
+            draggedLi = null;
+
+            try {
+                const res = await fetch('/api/custom_player/reorder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ order })
+                });
+                if (!res.ok) throw new Error('Reorder failed');
+                const data = await res.json();
+                // Re-render with updated indices so links stay correct
+                const currentIndexRaw = document.getElementById('player-nav-rails').dataset.currentIndex;
+                const currentIndex = currentIndexRaw !== '' ? parseInt(currentIndexRaw, 10) : null;
+                refreshPlaylistUI(data.playlist, currentIndex);
+            } catch (err) {
+                console.error('Reorder error:', err);
+                location.reload();
+            }
+        });
+
+        li.addEventListener('dragover', e => {
+            e.preventDefault();
+            if (!draggedLi || draggedLi === li) return;
+            list.querySelectorAll('li').forEach(el => el.classList.remove('cp-drag-over'));
+            const rect = li.getBoundingClientRect();
+            const after = e.clientY > rect.top + rect.height / 2;
+            list.insertBefore(draggedLi, after ? li.nextSibling : li);
+            li.classList.add('cp-drag-over');
+        });
+
+        li.addEventListener('dragleave', () => li.classList.remove('cp-drag-over'));
+    });
+}
+
+// Init on page load if playlist already rendered server-side
+document.addEventListener('DOMContentLoaded', setupPlaylistDrag);
 
 /* ── Clear playlist ──────────────────────────────────────────── */
 async function clearPlaylist() {

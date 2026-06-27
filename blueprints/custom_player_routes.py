@@ -167,3 +167,23 @@ def custom_player_progress():
         data.get("completed"),
     )
     return jsonify({"status": "ok"})
+
+@custom_player_bp.route("/api/custom_player/reorder", methods=["POST"])
+def custom_player_reorder():
+    data = request.get_json(silent=True) or {}
+    order = data.get("order")
+    playlist = load_playlist()
+
+    if not isinstance(order, list) or len(order) != len(playlist):
+        return jsonify({"error": "Invalid order"}), 400
+
+    try:
+        indices = [int(i) for i in order]
+    except (TypeError, ValueError):
+        return jsonify({"error": "Order must be numeric indices"}), 400
+
+    if sorted(indices) != list(range(len(playlist))):
+        return jsonify({"error": "Order indices mismatch"}), 400
+
+    save_playlist([playlist[i] for i in indices])
+    return jsonify({"status": "ok", "playlist": load_playlist()})
