@@ -8,19 +8,19 @@
     "tags": [
         {
             "name": "Comedy",
-            "count": 248
+            "count": 238
         },
         {
             "name": "Romance",
-            "count": 195
+            "count": 192
         },
         {
             "name": "School",
-            "count": 183
+            "count": 180
         },
         {
             "name": "Fantasy",
-            "count": 179
+            "count": 175
         },
         {
             "name": "Shounen",
@@ -36,23 +36,23 @@
         },
         {
             "name": "Slice of Life",
-            "count": 86
-        },
-        {
-            "name": "Isekai",
             "count": 85
         },
         {
-            "name": "Adventure",
-            "count": 79
+            "name": "Isekai",
+            "count": 81
         },
         {
-            "name": "Seinen",
-            "count": 70
+            "name": "Adventure",
+            "count": 74
         },
         {
             "name": "CGDCT",
             "count": 68
+        },
+        {
+            "name": "Seinen",
+            "count": 66
         },
         {
             "name": "Supernatural",
@@ -60,7 +60,7 @@
         },
         {
             "name": "Adult Cast",
-            "count": 53
+            "count": 51
         },
         {
             "name": "Reincarnation",
@@ -83,11 +83,11 @@
             "count": 27
         },
         {
-            "name": "Otaku Culture",
-            "count": 26
+            "name": "Award Winning",
+            "count": 25
         },
         {
-            "name": "Award Winning",
+            "name": "Otaku Culture",
             "count": 25
         },
         {
@@ -103,10 +103,6 @@
             "count": 20
         },
         {
-            "name": "Sci-Fi",
-            "count": 18
-        },
-        {
             "name": "Gourmet",
             "count": 18
         },
@@ -115,15 +111,15 @@
             "count": 17
         },
         {
-            "name": "Ecchi",
+            "name": "Sci-Fi",
             "count": 17
         },
         {
-            "name": "Gag Humor",
+            "name": "Childcare",
             "count": 16
         },
         {
-            "name": "Childcare",
+            "name": "Ecchi",
             "count": 16
         },
         {
@@ -135,23 +131,27 @@
             "count": 15
         },
         {
+            "name": "Gag Humor",
+            "count": 14
+        },
+        {
             "name": "Urban Fantasy",
             "count": 14
-        },
-        {
-            "name": "Parody",
-            "count": 14
-        },
-        {
-            "name": "Super Power",
-            "count": 13
         },
         {
             "name": "Sports",
             "count": 13
         },
         {
+            "name": "Super Power",
+            "count": 13
+        },
+        {
             "name": "Anthropomorphic",
+            "count": 10
+        },
+        {
+            "name": "Parody",
             "count": 10
         },
         {
@@ -163,19 +163,7 @@
             "count": 9
         },
         {
-            "name": "Medical",
-            "count": 8
-        },
-        {
             "name": "Gore",
-            "count": 8
-        },
-        {
-            "name": "Suspense",
-            "count": 8
-        },
-        {
-            "name": "Survival",
             "count": 8
         },
         {
@@ -183,7 +171,19 @@
             "count": 8
         },
         {
-            "name": "Video Game",
+            "name": "Medical",
+            "count": 8
+        },
+        {
+            "name": "Survival",
+            "count": 8
+        },
+        {
+            "name": "Suspense",
+            "count": 8
+        },
+        {
+            "name": "Girls Love",
             "count": 7
         },
         {
@@ -191,7 +191,7 @@
             "count": 7
         },
         {
-            "name": "Girls Love",
+            "name": "Video Game",
             "count": 7
         },
         {
@@ -199,7 +199,7 @@
             "count": 6
         },
         {
-            "name": "Villainess",
+            "name": "Military",
             "count": 5
         },
         {
@@ -211,16 +211,8 @@
             "count": 5
         },
         {
-            "name": "Military",
+            "name": "Villainess",
             "count": 5
-        },
-        {
-            "name": "Time Travel",
-            "count": 4
-        },
-        {
-            "name": "Strategy Game",
-            "count": 4
         },
         {
             "name": "Mecha",
@@ -228,6 +220,10 @@
         },
         {
             "name": "Space",
+            "count": 4
+        },
+        {
+            "name": "Strategy Game",
             "count": 4
         },
         {
@@ -243,8 +239,8 @@
             "count": 3
         },
         {
-            "name": "Psychological",
-            "count": 2
+            "name": "Time Travel",
+            "count": 3
         },
         {
             "name": "Educational",
@@ -255,23 +251,15 @@
             "count": 2
         },
         {
+            "name": "Psychological",
+            "count": 2
+        },
+        {
             "name": "Racing",
             "count": 2
         },
         {
-            "name": "Reverse Harem",
-            "count": 1
-        },
-        {
-            "name": "High Stakes Game",
-            "count": 1
-        },
-        {
-            "name": "Erotica",
-            "count": 1
-        },
-        {
-            "name": "Samurai",
+            "name": "Boys Love",
             "count": 1
         },
         {
@@ -279,26 +267,38 @@
             "count": 1
         },
         {
-            "name": "Boys Love",
+            "name": "Erotica",
+            "count": 1
+        },
+        {
+            "name": "High Stakes Game",
             "count": 1
         },
         {
             "name": "Kids",
+            "count": 1
+        },
+        {
+            "name": "Reverse Harem",
+            "count": 1
+        },
+        {
+            "name": "Samurai",
             "count": 1
         }
     ],
     "genres": [
         {
             "name": "Comedy",
-            "count": 248
+            "count": 238
         },
         {
             "name": "Romance",
-            "count": 195
+            "count": 192
         },
         {
             "name": "Fantasy",
-            "count": 179
+            "count": 175
         },
         {
             "name": "Action",
@@ -310,11 +310,11 @@
         },
         {
             "name": "Slice of Life",
-            "count": 86
+            "count": 85
         },
         {
             "name": "Adventure",
-            "count": 79
+            "count": 74
         },
         {
             "name": "Supernatural",
@@ -329,16 +329,16 @@
             "count": 22
         },
         {
-            "name": "Sci-Fi",
-            "count": 18
-        },
-        {
             "name": "Gourmet",
             "count": 18
         },
         {
-            "name": "Ecchi",
+            "name": "Sci-Fi",
             "count": 17
+        },
+        {
+            "name": "Ecchi",
+            "count": 16
         },
         {
             "name": "Sports",
@@ -361,22 +361,22 @@
             "count": 3
         },
         {
-            "name": "Erotica",
+            "name": "Boys Love",
             "count": 1
         },
         {
-            "name": "Boys Love",
+            "name": "Erotica",
             "count": 1
         }
     ],
     "themes": [
         {
             "name": "School",
-            "count": 183
+            "count": 180
         },
         {
             "name": "Isekai",
-            "count": 85
+            "count": 82
         },
         {
             "name": "CGDCT",
@@ -384,7 +384,7 @@
         },
         {
             "name": "Adult Cast",
-            "count": 53
+            "count": 51
         },
         {
             "name": "Reincarnation",
@@ -404,7 +404,7 @@
         },
         {
             "name": "Otaku Culture",
-            "count": 26
+            "count": 25
         },
         {
             "name": "Harem",
@@ -419,10 +419,6 @@
             "count": 17
         },
         {
-            "name": "Gag Humor",
-            "count": 16
-        },
-        {
             "name": "Childcare",
             "count": 16
         },
@@ -435,11 +431,11 @@
             "count": 15
         },
         {
-            "name": "Urban Fantasy",
+            "name": "Gag Humor",
             "count": 14
         },
         {
-            "name": "Parody",
+            "name": "Urban Fantasy",
             "count": 14
         },
         {
@@ -451,15 +447,19 @@
             "count": 10
         },
         {
+            "name": "Parody",
+            "count": 10
+        },
+        {
             "name": "Visual Arts",
             "count": 9
         },
         {
-            "name": "Medical",
+            "name": "Gore",
             "count": 8
         },
         {
-            "name": "Gore",
+            "name": "Medical",
             "count": 8
         },
         {
@@ -467,11 +467,11 @@
             "count": 8
         },
         {
-            "name": "Video Game",
+            "name": "Love Polygon",
             "count": 7
         },
         {
-            "name": "Love Polygon",
+            "name": "Video Game",
             "count": 7
         },
         {
@@ -479,7 +479,7 @@
             "count": 6
         },
         {
-            "name": "Villainess",
+            "name": "Military",
             "count": 5
         },
         {
@@ -491,16 +491,8 @@
             "count": 5
         },
         {
-            "name": "Military",
+            "name": "Villainess",
             "count": 5
-        },
-        {
-            "name": "Time Travel",
-            "count": 4
-        },
-        {
-            "name": "Strategy Game",
-            "count": 4
         },
         {
             "name": "Mecha",
@@ -508,6 +500,10 @@
         },
         {
             "name": "Space",
+            "count": 4
+        },
+        {
+            "name": "Strategy Game",
             "count": 4
         },
         {
@@ -519,8 +515,8 @@
             "count": 3
         },
         {
-            "name": "Psychological",
-            "count": 2
+            "name": "Time Travel",
+            "count": 3
         },
         {
             "name": "Educational",
@@ -531,11 +527,15 @@
             "count": 2
         },
         {
+            "name": "Psychological",
+            "count": 2
+        },
+        {
             "name": "Racing",
             "count": 2
         },
         {
-            "name": "Reverse Harem",
+            "name": "Detective",
             "count": 1
         },
         {
@@ -543,11 +543,11 @@
             "count": 1
         },
         {
-            "name": "Samurai",
+            "name": "Reverse Harem",
             "count": 1
         },
         {
-            "name": "Detective",
+            "name": "Samurai",
             "count": 1
         }
     ],
@@ -558,11 +558,11 @@
         },
         {
             "name": "Seinen",
-            "count": 70
+            "count": 66
         },
         {
             "name": "Shoujo",
-            "count": 30
+            "count": 31
         },
         {
             "name": "Josei",

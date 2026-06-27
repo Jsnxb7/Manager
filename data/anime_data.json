@@ -1303,7 +1303,7 @@
         "id": 546,
         "title": "Akane-banashi",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/62164",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Akane-banashi\\S1",
         "episodes": [
@@ -4010,7 +4010,7 @@
         "id": 562,
         "title": "Awajima Hyakkei",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/58820",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Awajima Hyakkei\\S1",
         "episodes": [
@@ -7555,7 +7555,7 @@
         "id": 555,
         "title": "Class de 2-banme ni Kawaii Onnanoko to Tomodachi ni Natta",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/56734",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Class de 2-banme ni Kawaii Onnanoko to Tomodachi ni Natta\\S1",
         "episodes": [
@@ -7646,7 +7646,8 @@
         "demographics": [],
         "tag_source": "jikan",
         "tag_source_id": 56734,
-        "tag_match_status": "matched"
+        "tag_match_status": "matched",
+        "watched": true
     },
     {
         "id": 318,
@@ -12657,210 +12658,6 @@
         "tag_match_status": "matched"
     },
     {
-        "id": 511,
-        "title": "Grand Blue",
-        "season": "S1",
-        "status": "Completed",
-        "download_link": "https://animepahe.si/anime/83a7f7d3-1d19-c25f-7ce1-bb3bd90d2410",
-        "directory": "C:/Users/shour/Documents/Anime\\Grand Blue\\S1",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S1/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S1/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S1/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S1/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S1/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S1/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S1/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S1/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S1/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S1/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S1/11.mp4"
-            },
-            {
-                "number": 12,
-                "title": "Episode 12",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S1/12.mp4"
-            }
-        ],
-        "bookmarked": false,
-        "tags": [
-            "Comedy",
-            "Adult Cast",
-            "Gag Humor",
-            "Seinen"
-        ],
-        "genres": [
-            "Comedy"
-        ],
-        "themes": [
-            "Adult Cast",
-            "Gag Humor"
-        ],
-        "demographics": [
-            "Seinen"
-        ],
-        "tag_source": "jikan",
-        "tag_source_id": 37105,
-        "tag_match_status": "matched"
-    },
-    {
-        "id": 513,
-        "title": "Grand Blue",
-        "season": "S2",
-        "status": "Completed",
-        "download_link": "https://animepahe.si/anime/785d08ac-4a7a-6c64-ae6d-f2bce029d355",
-        "directory": "C:/Users/shour/Documents/Anime\\Grand Blue\\S2",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S2/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S2/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S2/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S2/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S2/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S2/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S2/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S2/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S2/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S2/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S2/11.mp4"
-            },
-            {
-                "number": 12,
-                "title": "Episode 12",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Grand Blue/S2/12.mp4"
-            }
-        ],
-        "bookmarked": false,
-        "tags": [
-            "Comedy",
-            "Adult Cast",
-            "Gag Humor",
-            "Seinen"
-        ],
-        "genres": [
-            "Comedy"
-        ],
-        "themes": [
-            "Adult Cast",
-            "Gag Humor"
-        ],
-        "demographics": [
-            "Seinen"
-        ],
-        "tag_source": "jikan",
-        "tag_source_id": 37105,
-        "tag_match_status": "matched"
-    },
-    {
         "id": 29,
         "title": "Guild no Uketsukejou desu",
         "season": "S1",
@@ -14222,6 +14019,93 @@
         "tag_match_status": "matched"
     },
     {
+        "id": 83,
+        "title": "Heroine, Seijo, Iie, All Works Maid desu",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://myanimelist.net/anime/61686",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Heroine, Seijo, Iie, All Works Maid desu\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Heroine, Seijo, Iie, All Works Maid desu/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Heroine, Seijo, Iie, All Works Maid desu/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Heroine, Seijo, Iie, All Works Maid desu/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Heroine, Seijo, Iie, All Works Maid desu/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Heroine, Seijo, Iie, All Works Maid desu/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Heroine, Seijo, Iie, All Works Maid desu/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Heroine, Seijo, Iie, All Works Maid desu/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Heroine, Seijo, Iie, All Works Maid desu/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Heroine, Seijo, Iie, All Works Maid desu/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Heroine, Seijo, Iie, All Works Maid desu/S1/10.mp4"
+            }
+        ],
+        "tags": [
+            "Comedy",
+            "Fantasy"
+        ],
+        "genres": [
+            "Comedy",
+            "Fantasy"
+        ],
+        "themes": [
+            "Isekai"
+        ],
+        "demographics": [
+            "Shoujo"
+        ],
+        "tag_source": "manual",
+        "tag_match_status": "manual",
+        "bookmarked": false
+    },
+    {
         "id": 556,
         "title": "Hidarikiki no Eren",
         "season": "S1",
@@ -14531,7 +14415,7 @@
         "id": 554,
         "title": "Himekishi wa Barbaroi no Yome",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/60028",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Himekishi wa Barbaroi no Yome\\S1",
         "episodes": [
@@ -14544,67 +14428,67 @@
             {
                 "number": 2,
                 "title": "Episode 2",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Himekishi wa Barbaroi no Yome/S1/2.mp4"
             },
             {
                 "number": 3,
                 "title": "Episode 3",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Himekishi wa Barbaroi no Yome/S1/3.mp4"
             },
             {
                 "number": 4,
                 "title": "Episode 4",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Himekishi wa Barbaroi no Yome/S1/4.mp4"
             },
             {
                 "number": 5,
                 "title": "Episode 5",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Himekishi wa Barbaroi no Yome/S1/5.mp4"
             },
             {
                 "number": 6,
                 "title": "Episode 6",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Himekishi wa Barbaroi no Yome/S1/6.mp4"
             },
             {
                 "number": 7,
                 "title": "Episode 7",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Himekishi wa Barbaroi no Yome/S1/7.mp4"
             },
             {
                 "number": 8,
                 "title": "Episode 8",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Himekishi wa Barbaroi no Yome/S1/8.mp4"
             },
             {
                 "number": 9,
                 "title": "Episode 9",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Himekishi wa Barbaroi no Yome/S1/9.mp4"
             },
             {
                 "number": 10,
                 "title": "Episode 10",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Himekishi wa Barbaroi no Yome/S1/10.mp4"
             },
             {
                 "number": 11,
                 "title": "Episode 11",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Himekishi wa Barbaroi no Yome/S1/11.mp4"
             },
             {
                 "number": 12,
                 "title": "Episode 12",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Himekishi wa Barbaroi no Yome/S1/12.mp4"
             }
         ],
@@ -14626,7 +14510,8 @@
         ],
         "tag_source": "jikan",
         "tag_source_id": 60028,
-        "tag_match_status": "matched"
+        "tag_match_status": "matched",
+        "watched": true
     },
     {
         "id": 80,
@@ -16375,7 +16260,7 @@
         "id": 564,
         "title": "Ichijouma Mankitsugurashi",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/62018",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Ichijouma Mankitsugurashi\\S1",
         "episodes": [
@@ -16462,7 +16347,8 @@
         "demographics": [],
         "tag_source": "jikan",
         "tag_source_id": 62018,
-        "tag_match_status": "matched"
+        "tag_match_status": "matched",
+        "watched": true
     },
     {
         "id": 215,
@@ -17436,7 +17322,7 @@
         "id": 549,
         "title": "Isekai Nonbiri Nouka",
         "season": "S2",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/62146",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Isekai Nonbiri Nouka\\S2",
         "episodes": [
@@ -17529,7 +17415,8 @@
         "demographics": [],
         "tag_source": "jikan",
         "tag_source_id": 51462,
-        "tag_match_status": "matched"
+        "tag_match_status": "matched",
+        "watched": true
     },
     {
         "id": 184,
@@ -19178,7 +19065,7 @@
         "id": 530,
         "title": "Jishou Akuyaku Reijou na Konyakusha no Kansatsu Kiroku",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/61687",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Jishou Akuyaku Reijou na Konyakusha no Kansatsu Kiroku\\S1",
         "episodes": [
@@ -20678,7 +20565,7 @@
         "id": 548,
         "title": "Kami no Niwatsuki Kusunoki-tei",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/62050",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Kami no Niwatsuki Kusunoki-tei\\S1",
         "episodes": [
@@ -20755,7 +20642,7 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kami no Niwatsuki Kusunoki-tei/S1/12.mp4"
             }
         ],
-        "bookmarked": false,
+        "bookmarked": true,
         "tags": [
             "Slice of Life",
             "Supernatural",
@@ -20775,7 +20662,8 @@
         "demographics": [],
         "tag_source": "jikan",
         "tag_source_id": 62050,
-        "tag_match_status": "matched"
+        "tag_match_status": "matched",
+        "watched": true
     },
     {
         "id": 406,
@@ -20989,7 +20877,7 @@
         "id": 563,
         "title": "Kamiina Botan, Yoeru Sugata wa Yuri no Hana",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/61186",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Kamiina Botan, Yoeru Sugata wa Yuri no Hana\\S1",
         "episodes": [
@@ -21503,7 +21391,7 @@
         "id": 547,
         "title": "Kanan-sama wa Akumade Choroi",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/61501",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Kanan-sama wa Akumade Choroi\\S1",
         "episodes": [
@@ -26172,419 +26060,6 @@
         "tag_match_status": "matched"
     },
     {
-        "id": 194,
-        "title": "KonoSuba",
-        "season": "S1",
-        "status": "Completed",
-        "download_link": "https://animepahe.si/anime/a7a0437f-2ed7-47a8-578c-306361799717",
-        "directory": "C:/Users/shour/Documents/Anime\\KonoSuba\\S1",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S1/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S1/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S1/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S1/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S1/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S1/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S1/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S1/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S1/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S1/10.mp4"
-            }
-        ],
-        "bookmarked": false,
-        "tags": [
-            "Adventure",
-            "Comedy",
-            "Fantasy",
-            "Isekai",
-            "Parody"
-        ],
-        "genres": [
-            "Adventure",
-            "Comedy",
-            "Fantasy"
-        ],
-        "themes": [
-            "Isekai",
-            "Parody"
-        ],
-        "demographics": [],
-        "tag_source": "jikan",
-        "tag_source_id": 30831,
-        "tag_match_status": "matched"
-    },
-    {
-        "id": 195,
-        "title": "KonoSuba",
-        "season": "S2",
-        "status": "Completed",
-        "download_link": "https://animepahe.si/anime/05e6f13c-9e10-974a-bfe1-e609c75f7ade",
-        "directory": "C:/Users/shour/Documents/Anime\\KonoSuba\\S2",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S2/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S2/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S2/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S2/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S2/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S2/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S2/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S2/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S2/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S2/10.mp4"
-            }
-        ],
-        "bookmarked": false,
-        "watched": false,
-        "tags": [
-            "Adventure",
-            "Comedy",
-            "Fantasy",
-            "Isekai",
-            "Parody"
-        ],
-        "genres": [
-            "Adventure",
-            "Comedy",
-            "Fantasy"
-        ],
-        "themes": [
-            "Isekai",
-            "Parody"
-        ],
-        "demographics": [],
-        "tag_source": "jikan",
-        "tag_source_id": 30831,
-        "tag_match_status": "matched"
-    },
-    {
-        "id": 197,
-        "title": "KonoSuba",
-        "season": "S3",
-        "status": "Completed",
-        "download_link": "https://animepahe.si/anime/1e90771d-5b6e-f727-a813-1fd4488455f9",
-        "directory": "C:/Users/shour/Documents/Anime\\KonoSuba\\S3",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S3/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S3/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S3/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S3/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S3/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S3/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S3/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S3/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S3/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S3/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/S3/11.mp4"
-            }
-        ],
-        "bookmarked": false,
-        "tags": [
-            "Adventure",
-            "Comedy",
-            "Fantasy",
-            "Isekai",
-            "Parody"
-        ],
-        "genres": [
-            "Adventure",
-            "Comedy",
-            "Fantasy"
-        ],
-        "themes": [
-            "Isekai",
-            "Parody"
-        ],
-        "demographics": [],
-        "tag_source": "jikan",
-        "tag_source_id": 30831,
-        "tag_match_status": "matched"
-    },
-    {
-        "id": 198,
-        "title": "KonoSuba",
-        "season": "Movie",
-        "status": "Completed",
-        "download_link": "https://animepahe.si/anime/89850e73-38a8-3718-bcd7-77414c8da221",
-        "directory": "C:/Users/shour/Documents/Anime\\KonoSuba\\Movie",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba/Movie/1.mp4"
-            }
-        ],
-        "bookmarked": false,
-        "tags": [
-            "Adventure",
-            "Comedy",
-            "Fantasy",
-            "Isekai",
-            "Parody"
-        ],
-        "genres": [
-            "Adventure",
-            "Comedy",
-            "Fantasy"
-        ],
-        "themes": [
-            "Isekai",
-            "Parody"
-        ],
-        "demographics": [],
-        "tag_source": "jikan",
-        "tag_source_id": 30831,
-        "tag_match_status": "matched"
-    },
-    {
-        "id": 196,
-        "title": "KonoSuba-Explosion",
-        "season": "S2_2",
-        "status": "Completed",
-        "download_link": "https://animepahe.si/anime/907d4375-13b5-6072-2c16-dd112854df35",
-        "directory": "C:/Users/shour/Documents/Anime\\KonoSuba-Explosion\\S2_2",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba-Explosion/S2_2/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba-Explosion/S2_2/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba-Explosion/S2_2/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba-Explosion/S2_2/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba-Explosion/S2_2/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba-Explosion/S2_2/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba-Explosion/S2_2/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba-Explosion/S2_2/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba-Explosion/S2_2/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba-Explosion/S2_2/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba-Explosion/S2_2/11.mp4"
-            },
-            {
-                "number": 12,
-                "title": "Episode 12",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/KonoSuba-Explosion/S2_2/12.mp4"
-            }
-        ],
-        "bookmarked": false,
-        "tags": [
-            "Comedy",
-            "Fantasy"
-        ],
-        "genres": [
-            "Comedy",
-            "Fantasy"
-        ],
-        "themes": [],
-        "demographics": [],
-        "tag_source": "jikan",
-        "tag_source_id": 51958,
-        "tag_match_status": "matched"
-    },
-    {
         "id": 107,
         "title": "Konyaku Haki",
         "season": "S1",
@@ -27291,7 +26766,7 @@
         "id": 553,
         "title": "Kujima Utaeba Ie Hororo",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/58832",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Kujima Utaeba Ie Hororo\\S1",
         "episodes": [
@@ -29886,7 +29361,7 @@
         "id": 95,
         "title": "Maid-san wa Taberu dake",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/62342",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Maid-san wa Taberu dake\\S1",
         "episodes": [
@@ -31051,6 +30526,12 @@
                 "title": "Episode 12",
                 "watched": false,
                 "file_path": "C:/Users/shour/Documents/Anime/Marriagetoxin/S1/12.mp4"
+            },
+            {
+                "number": 13,
+                "title": "Episode 13",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Marriagetoxin/S1/13.mp4"
             }
         ],
         "bookmarked": false,
@@ -31296,7 +30777,7 @@
         "id": 488,
         "title": "Mata Korosarete Shimatta no desu ne, Tantei-sama",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/62964",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Mata Korosarete Shimatta no desu ne, Tantei-sama\\S1",
         "episodes": [
@@ -34654,7 +34135,7 @@
         "id": 568,
         "title": "Nigashita Sakana wa Ookikatta ga Tsuriageta Sakana ga Ookisugita Ken",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/62893",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Nigashita Sakana wa Ookikatta ga Tsuriageta Sakana ga Ookisugita Ken\\S1",
         "episodes": [
@@ -37966,110 +37447,6 @@
         "tag_match_status": "matched"
     },
     {
-        "id": 552,
-        "title": "Otaku ni Yasashii Gal wa Inai",
-        "season": "S1",
-        "status": "Ongoing",
-        "download_link": "https://myanimelist.net/anime/62604",
-        "directory": "C:\\Users\\shour\\Documents\\Anime\\Otaku ni Yasashii Gal wa Inai\\S1",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otaku ni Yasashii Gal wa Inai/S1/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otaku ni Yasashii Gal wa Inai/S1/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otaku ni Yasashii Gal wa Inai/S1/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otaku ni Yasashii Gal wa Inai/S1/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otaku ni Yasashii Gal wa Inai/S1/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otaku ni Yasashii Gal wa Inai/S1/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otaku ni Yasashii Gal wa Inai/S1/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otaku ni Yasashii Gal wa Inai/S1/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otaku ni Yasashii Gal wa Inai/S1/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otaku ni Yasashii Gal wa Inai/S1/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otaku ni Yasashii Gal wa Inai/S1/11.mp4"
-            },
-            {
-                "number": 12,
-                "title": "Episode 12",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Otaku ni Yasashii Gal wa Inai/S1/12.mp4"
-            }
-        ],
-        "bookmarked": false,
-        "tags": [
-            "Comedy",
-            "Romance",
-            "Otaku Culture",
-            "School",
-            "Seinen"
-        ],
-        "genres": [
-            "Comedy",
-            "Romance"
-        ],
-        "themes": [
-            "Otaku Culture",
-            "School"
-        ],
-        "demographics": [
-            "Seinen"
-        ],
-        "tag_source": "jikan",
-        "tag_source_id": 62604,
-        "tag_match_status": "matched"
-    },
-    {
         "id": 180,
         "title": "Otonari ni Ginga",
         "season": "S1",
@@ -38276,7 +37653,7 @@
         "id": 534,
         "title": "Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken",
         "season": "S2",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/56876",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken\\S2",
         "episodes": [
@@ -38483,7 +37860,7 @@
         "id": 551,
         "title": "Ponkotsu Fuuki Iin to Skirt-take ga Futekisetsu na JK no Hanashi",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/61425",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Ponkotsu Fuuki Iin to Skirt-take ga Futekisetsu na JK no Hanashi\\S1",
         "episodes": [
@@ -38579,7 +37956,8 @@
         ],
         "tag_source": "jikan",
         "tag_source_id": 61425,
-        "tag_match_status": "matched"
+        "tag_match_status": "matched",
+        "watched": true
     },
     {
         "id": 258,
@@ -40031,7 +39409,7 @@
         "id": 171,
         "title": "Saikyou no Shokugyou wa Yuusha demo Kenja demo Naku Kanteishi (Kari) Rashii desu yo",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/62825",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Saikyou no Shokugyou wa Yuusha demo Kenja demo Naku Kanteishi (Kari) Rashii desu yo\\S1",
         "episodes": [
@@ -40425,105 +39803,6 @@
         ],
         "watched": true,
         "bookmarked": false,
-        "tags": [
-            "Action",
-            "Comedy",
-            "Adult Cast",
-            "Organized Crime",
-            "Shounen"
-        ],
-        "genres": [
-            "Action",
-            "Comedy"
-        ],
-        "themes": [
-            "Adult Cast",
-            "Organized Crime"
-        ],
-        "demographics": [
-            "Shounen"
-        ],
-        "tag_source": "jikan",
-        "tag_source_id": 58939,
-        "tag_match_status": "matched"
-    },
-    {
-        "id": 519,
-        "title": "Sakamoto Days",
-        "season": "S2",
-        "status": "Completed",
-        "download_link": "https://animepahe.si/anime/a86c0265-d763-fdb8-ccc6-b5555b241cd6",
-        "directory": "C:/Users/shour/Documents/Anime\\Sakamoto Days\\S2",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Sakamoto Days/S2/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Sakamoto Days/S2/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Sakamoto Days/S2/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Sakamoto Days/S2/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Sakamoto Days/S2/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Sakamoto Days/S2/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Sakamoto Days/S2/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Sakamoto Days/S2/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Sakamoto Days/S2/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Sakamoto Days/S2/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Sakamoto Days/S2/11.mp4"
-            }
-        ],
-        "bookmarked": false,
-        "watched": false,
         "tags": [
             "Action",
             "Comedy",
@@ -41303,7 +40582,7 @@
         "id": 535,
         "title": "Seihantai na Kimi to Boku",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://animepahe.si/anime/76b6affb-cb5e-d7ae-7b97-aa761e9719b1",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Seihantai na Kimi to Boku\\S1",
         "episodes": [
@@ -44425,107 +43704,6 @@
         "demographics": [],
         "tag_source": "jikan",
         "tag_source_id": 61443,
-        "tag_match_status": "matched"
-    },
-    {
-        "id": 83,
-        "title": "Shuumatsu Touring",
-        "season": "S1",
-        "status": "Completed",
-        "download_link": "https://animepahe.si/anime/e13c73bb-d0f3-f6b8-0e18-df67419d093c",
-        "directory": "C:/Users/shour/Documents/Anime\\Shuumatsu Touring\\S1",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Shuumatsu Touring/S1/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Shuumatsu Touring/S1/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Shuumatsu Touring/S1/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Shuumatsu Touring/S1/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Shuumatsu Touring/S1/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Shuumatsu Touring/S1/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Shuumatsu Touring/S1/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Shuumatsu Touring/S1/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Shuumatsu Touring/S1/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Shuumatsu Touring/S1/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Shuumatsu Touring/S1/11.mp4"
-            },
-            {
-                "number": 12,
-                "title": "Episode 12",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Shuumatsu Touring/S1/12.mp4"
-            }
-        ],
-        "bookmarked": false,
-        "tags": [
-            "Adventure",
-            "Sci-Fi",
-            "Slice of Life",
-            "Seinen"
-        ],
-        "genres": [
-            "Adventure",
-            "Sci-Fi",
-            "Slice of Life"
-        ],
-        "themes": [],
-        "demographics": [
-            "Seinen"
-        ],
-        "tag_source": "jikan",
-        "tag_source_id": 61072,
         "tag_match_status": "matched"
     },
     {
@@ -49877,7 +49055,7 @@
         "id": 62,
         "title": "The Beginning After the End",
         "season": "S2",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/61831",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\The Beginning After the End\\S2",
         "episodes": [
@@ -49970,7 +49148,8 @@
         "demographics": [],
         "tag_source": "jikan",
         "tag_source_id": 60146,
-        "tag_match_status": "matched"
+        "tag_match_status": "matched",
+        "watched": true
     },
     {
         "id": 490,
@@ -50693,7 +49872,7 @@
         "id": 550,
         "title": "Tongari Boushi no Atelier",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/51553",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Tongari Boushi no Atelier\\S1",
         "episodes": [
@@ -52722,7 +51901,7 @@
         "id": 529,
         "title": "Uruwashi no Yoi no Tsuki",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://animepahe.si/anime/4eeec3f8-42c2-85dd-11ce-18e687207b80",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Uruwashi no Yoi no Tsuki\\S1",
         "episodes": [
@@ -53719,7 +52898,8 @@
         ],
         "tag_source": "jikan",
         "tag_source_id": 59623,
-        "tag_match_status": "matched"
+        "tag_match_status": "matched",
+        "watched": true
     },
     {
         "id": 260,

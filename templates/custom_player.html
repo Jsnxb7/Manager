@@ -1,0 +1,870 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+/* ── Shell ────────────────────────────────────────────────────── */
+.cp-shell {
+display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 60px);
+    padding: 20px 24px 32px;
+    gap: 20px;
+    max-width: 1600px;
+    margin: 0 auto;
+    margin-right: 101px;
+    margin-left: 59px;
+
+}
+
+/* ── Header ───────────────────────────────────────────────────── */
+.cp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.cp-title {
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    font-weight: 700;
+    color: var(--theme-heading, #fff);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60%;
+}
+
+.cp-header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* ── Main layout ──────────────────────────────────────────────── */
+.cp-body {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 20px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .cp-body { grid-template-columns: 1fr; }
+}
+
+/* ── Video stage ──────────────────────────────────────────────── */
+.cp-stage {
+    background: rgba(0,0,0,0.55);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--theme-border, rgba(255,255,255,0.12));
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    position: relative;
+}
+
+.cp-stage video,
+.cp-stage .video-js {
+    width: 100% !important;
+    aspect-ratio: 16/9;
+    display: block;
+    border-radius: 16px 16px 0 0;
+}
+
+.cp-empty-state {
+    aspect-ratio: 16/9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--theme-muted, #888);
+    font-size: 1rem;
+    background: rgba(0,0,0,0.3);
+    border-radius: 16px 16px 0 0;
+}
+
+.cp-empty-state .cp-empty-icon {
+    font-size: 3rem;
+    opacity: 0.4;
+}
+
+.cp-empty-state p {
+    margin: 0;
+    opacity: 0.6;
+}
+
+/* ── Now-playing bar under video ──────────────────────────────── */
+.cp-now-playing-bar {
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-top: 1px solid var(--theme-border, rgba(255,255,255,0.08));
+    background: rgba(0,0,0,0.25);
+    border-radius: 0 0 16px 16px;
+}
+
+.cp-now-playing-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--theme-accent, #ffd4e6);
+    flex-shrink: 0;
+}
+
+.cp-now-playing-name {
+    font-size: 0.92rem;
+    color: var(--theme-body, #eee);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Nav rail (prev / next) ───────────────────────────────────── */
+.cp-nav-rails {
+    display: flex;
+    gap: 10px;
+    padding: 0;
+}
+
+.cp-nav-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--theme-panel, rgba(255,255,255,0.06));
+    border: 1px solid var(--theme-border, rgba(255,255,255,0.1));
+    border-radius: 12px;
+    color: var(--theme-body, #eee);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: background 0.2s, border-color 0.2s;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.cp-nav-btn:hover {
+    background: var(--theme-panel-strong, rgba(255,255,255,0.1));
+    border-color: var(--theme-accent, rgba(255,255,255,0.25));
+}
+
+.cp-nav-btn.is-disabled {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.cp-nav-btn .cp-nav-arrow {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    color: var(--theme-accent, #ffd4e6);
+}
+
+.cp-nav-btn .cp-nav-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.cp-nav-kicker {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--theme-muted, #aaa);
+}
+
+.cp-nav-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--theme-body, #eee);
+}
+
+/* ── Sidebar ──────────────────────────────────────────────────── */
+.cp-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ── Import zone ──────────────────────────────────────────────── */
+.cp-import-zone {
+    border: 2px dashed var(--theme-border, rgba(255,255,255,0.18));
+    border-radius: 14px;
+    padding: 20px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    background: var(--theme-panel, rgba(255,255,255,0.04));
+    position: relative;
+}
+
+.cp-import-zone:hover,
+.cp-import-zone.is-dragover {
+    border-color: var(--theme-accent, #ffd4e6);
+    background: color-mix(in srgb, var(--theme-accent, #ffd4e6) 8%, transparent);
+}
+
+.cp-import-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+
+.cp-import-icon {
+    font-size: 2rem;
+    margin-bottom: 6px;
+}
+
+.cp-import-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--theme-body, #eee);
+    margin: 0 0 4px;
+}
+
+.cp-import-hint {
+    font-size: 0.75rem;
+    color: var(--theme-muted, #888);
+    margin: 0;
+}
+
+.cp-import-progress {
+    margin-top: 10px;
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cp-import-progress.is-active {
+    display: flex;
+}
+
+.cp-import-progress-bar-wrap {
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.cp-import-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--theme-accent, #ffd4e6), var(--theme-accent-2, #fff1cf));
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.cp-import-progress-label {
+    font-size: 0.72rem;
+    color: var(--theme-muted, #aaa);
+    text-align: left;
+}
+
+/* ── Playlist panel ───────────────────────────────────────────── */
+.cp-playlist-panel {
+    background: var(--theme-panel, rgba(255,255,255,0.05));
+    border: 1px solid var(--theme-border, rgba(255,255,255,0.1));
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.cp-playlist-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--theme-border, rgba(255,255,255,0.08));
+}
+
+.cp-playlist-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--theme-muted, #aaa);
+    margin: 0;
+}
+
+.cp-playlist-count {
+    font-size: 0.75rem;
+    color: var(--theme-muted, #888);
+    background: rgba(255,255,255,0.07);
+    padding: 2px 8px;
+    border-radius: 99px;
+}
+
+.cp-playlist-empty {
+    padding: 28px 16px;
+    text-align: center;
+    color: var(--theme-muted, #888);
+    font-size: 0.85rem;
+}
+
+.cp-playlist-list {
+    list-style: none;
+    margin: 0;
+    padding: 8px;
+    max-height: 420px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cp-playlist-list::-webkit-scrollbar { width: 4px; }
+.cp-playlist-list::-webkit-scrollbar-track { background: transparent; }
+.cp-playlist-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 99px; }
+
+.cp-playlist-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border: 1px solid transparent;
+    text-decoration: none;
+    color: var(--theme-body, #eee);
+}
+
+.cp-playlist-item:hover {
+    background: color-mix(in srgb, var(--theme-accent, #ffd4e6) 10%, transparent);
+    border-color: var(--theme-border, rgba(255,255,255,0.08));
+}
+
+.cp-playlist-item.is-active {
+    background: color-mix(in srgb, var(--theme-accent, #ffd4e6) 15%, transparent);
+    border-color: color-mix(in srgb, var(--theme-accent, #ffd4e6) 35%, transparent);
+}
+
+.cp-playlist-item.is-active .cp-playlist-item-name {
+    color: var(--theme-heading, #fff);
+    font-weight: 600;
+}
+
+.cp-playlist-num {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--theme-muted, #888);
+    min-width: 20px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.cp-playlist-item.is-active .cp-playlist-num {
+    color: var(--theme-accent, #ffd4e6);
+}
+
+.cp-playlist-item-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.cp-playlist-item-name {
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--theme-body, #eee);
+}
+
+.cp-playing-indicator {
+    font-size: 0.7rem;
+    color: var(--theme-accent, #ffd4e6);
+}
+
+.cp-playlist-item-remove {
+    background: none;
+    border: none;
+    color: var(--theme-muted, #888);
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+
+.cp-playlist-item:hover .cp-playlist-item-remove {
+    opacity: 1;
+}
+
+.cp-playlist-item-remove:hover {
+    color: #ff6b6b;
+}
+
+.cp-playlist-footer {
+    padding: 10px 16px;
+    border-top: 1px solid var(--theme-border, rgba(255,255,255,0.08));
+    display: flex;
+    gap: 8px;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────── */
+.cp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--theme-border, rgba(255,255,255,0.15));
+    background: var(--theme-panel, rgba(255,255,255,0.07));
+    color: var(--theme-body, #eee);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s;
+    white-space: nowrap;
+}
+
+.cp-btn:hover {
+    background: var(--theme-panel-strong, rgba(255,255,255,0.12));
+    border-color: var(--theme-accent, rgba(255,255,255,0.3));
+}
+
+.cp-btn-danger {
+    border-color: rgba(255,80,112,0.3);
+    color: #ffb3c0;
+}
+
+.cp-btn-danger:hover {
+    background: rgba(255,80,112,0.12);
+    border-color: rgba(255,80,112,0.5);
+}
+
+.cp-btn-sm {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+}
+
+/* ── Select ───────────────────────────────────────────────────── */
+.cp-select-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cp-select-wrap label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--theme-muted, #aaa);
+}
+
+.cp-select {
+    width: 100%;
+    padding: 9px 12px;
+    background: var(--theme-panel, rgba(0,0,0,0.3));
+    border: 1px solid var(--theme-border, rgba(255,255,255,0.15));
+    border-radius: 10px;
+    color: var(--theme-body, #eee);
+    font-size: 0.88rem;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+}
+
+.cp-select:focus {
+    outline: none;
+    border-color: var(--theme-accent, #ffd4e6);
+}
+</style>
+
+<div class="cp-shell">
+
+    <!-- Header -->
+    <div class="cp-header">
+        <h1 class="cp-title" id="cp-page-title">
+            {% if current_item %}{{ current_item.name | truncate(52, True, '…') }}{% else %}Custom Player{% endif %}
+        </h1>
+        <div class="cp-header-actions">
+            <a href="{{ url_for('custom_player.custom_player_home') }}" class="cp-btn cp-btn-sm">↺ New Session</a>
+        </div>
+    </div>
+
+    <div class="cp-body"
+         id="player-nav-rails"
+         data-current-index="{{ current_index if current_index is not none else '' }}"
+         data-media-id="{{ current_item.id if current_item else '' }}"
+         data-next-url="{{ url_for('custom_player.custom_player_play', index=current_index + 1) if current_index is not none and playlist and current_index + 1 < playlist|length else '' }}">
+
+        <!-- Left: video + nav -->
+        <div style="display:flex;flex-direction:column;gap:14px;">
+
+            <!-- Video stage -->
+            <div class="cp-stage">
+                {% if current_item %}
+                    <video id="video-player"
+                           class="video-js vjs-default-skin vjs-big-play-centered"
+                           controls autoplay preload="auto"
+                           data-media-id="{{ current_item.id }}"
+                           data-resume-time="{{ saved_progress.current_time | default(0) }}"
+                           data-setup='{}'>
+                        <source src="{{ current_item.path }}" type="video/mp4">
+                    </video>
+                {% else %}
+                    <div class="cp-empty-state">
+                        <div class="cp-empty-icon">🎬</div>
+                        <p>Import media files to get started</p>
+                    </div>
+                {% endif %}
+
+                <div class="cp-now-playing-bar">
+                    <span class="cp-now-playing-label">Now Playing</span>
+                    <span class="cp-now-playing-name" id="cp-now-playing-name">
+                        {{ current_item.name if current_item else 'Nothing selected' }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Prev / Next nav -->
+            <div class="cp-nav-rails">
+                {% if current_index is not none and current_index > 0 %}
+                    {% set prev = playlist[current_index - 1] %}
+                    <a href="{{ url_for('custom_player.custom_player_play', index=current_index - 1) }}" class="cp-nav-btn">
+                        <span class="cp-nav-arrow">←</span>
+                        <span class="cp-nav-info">
+                            <span class="cp-nav-kicker">Previous</span>
+                            <span class="cp-nav-name">{{ prev.name | truncate(30, True, '…') }}</span>
+                        </span>
+                    </a>
+                {% else %}
+                    <div class="cp-nav-btn is-disabled">
+                        <span class="cp-nav-arrow">←</span>
+                        <span class="cp-nav-info">
+                            <span class="cp-nav-kicker">Previous</span>
+                            <span class="cp-nav-name">Nothing before this</span>
+                        </span>
+                    </div>
+                {% endif %}
+
+                {% if current_index is not none and playlist and current_index + 1 < playlist|length %}
+                    {% set nxt = playlist[current_index + 1] %}
+                    <a href="{{ url_for('custom_player.custom_player_play', index=current_index + 1) }}" class="cp-nav-btn" style="text-align:right;flex-direction:row-reverse;">
+                        <span class="cp-nav-arrow">→</span>
+                        <span class="cp-nav-info" style="align-items:flex-end;">
+                            <span class="cp-nav-kicker">Next</span>
+                            <span class="cp-nav-name">{{ nxt.name | truncate(30, True, '…') }}</span>
+                        </span>
+                    </a>
+                {% else %}
+                    <div class="cp-nav-btn is-disabled" style="flex-direction:row-reverse;">
+                        <span class="cp-nav-arrow">→</span>
+                        <span class="cp-nav-info" style="align-items:flex-end;">
+                            <span class="cp-nav-kicker">Next</span>
+                            <span class="cp-nav-name">End of queue</span>
+                        </span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Switch media select -->
+            {% if playlist %}
+            <div class="cp-select-wrap">
+                <label for="media-select">Jump to</label>
+                <select id="media-select" class="cp-select" onchange="jumpToIndex(this.value)">
+                    <option value="" disabled {% if current_index is none %}selected{% endif %}>Select media…</option>
+                    {% for m in playlist %}
+                        <option value="{{ loop.index0 }}" {% if current_index == loop.index0 %}selected{% endif %}>
+                            {{ loop.index }}. {{ m.name | truncate(55, True, '…') }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <!-- Right: sidebar -->
+        <div class="cp-sidebar">
+
+            <!-- Import zone -->
+            <div class="cp-import-zone" id="cp-import-zone">
+                <input type="file" id="cp-file-input" multiple
+                       accept="video/mp4,video/webm,video/ogg,video/quicktime,.mkv,.mp4,.webm,.ogg,.mov">
+                <div class="cp-import-icon">📂</div>
+                <p class="cp-import-label">Drop files here or click to browse</p>
+                <p class="cp-import-hint">MP4 · WebM · OGG · MOV · MKV</p>
+                <div class="cp-import-progress" id="cp-import-progress">
+                    <div class="cp-import-progress-bar-wrap">
+                        <div class="cp-import-progress-bar" id="cp-import-bar"></div>
+                    </div>
+                    <span class="cp-import-progress-label" id="cp-import-status">Uploading…</span>
+                </div>
+            </div>
+
+            <!-- Playlist -->
+            <div class="cp-playlist-panel">
+                <div class="cp-playlist-header">
+                    <span class="cp-playlist-title">Queue</span>
+                    <span class="cp-playlist-count" id="cp-playlist-count">{{ playlist | length }} file{{ 's' if playlist | length != 1 else '' }}</span>
+                </div>
+
+                {% if playlist %}
+                    <ul class="cp-playlist-list" id="cp-playlist-list">
+                        {% for m in playlist %}
+                            <li>
+                                <a href="{{ url_for('custom_player.custom_player_play', index=loop.index0) }}"
+                                   class="cp-playlist-item {% if current_index == loop.index0 %}is-active{% endif %}"
+                                   data-index="{{ loop.index0 }}">
+                                    <span class="cp-playlist-num">
+                                        {% if current_index == loop.index0 %}▶{% else %}{{ loop.index }}{% endif %}
+                                    </span>
+                                    <span class="cp-playlist-item-info">
+                                        <span class="cp-playlist-item-name">{{ m.name }}</span>
+                                        {% if current_index == loop.index0 %}
+                                            <span class="cp-playing-indicator">Now playing</span>
+                                        {% endif %}
+                                    </span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="cp-playlist-footer">
+                        <button class="cp-btn cp-btn-sm cp-btn-danger" onclick="clearPlaylist()">🗑 Clear all</button>
+                    </div>
+                {% else %}
+                    <div class="cp-playlist-empty" id="cp-playlist-empty">
+                        Import files above to build your queue
+                    </div>
+                    <ul class="cp-playlist-list" id="cp-playlist-list" style="display:none;"></ul>
+                    <div class="cp-playlist-footer" id="cp-playlist-footer" style="display:none;">
+                        <button class="cp-btn cp-btn-sm cp-btn-danger" onclick="clearPlaylist()">🗑 Clear all</button>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+/* ── Routing helpers ─────────────────────────────────────────── */
+function jumpToIndex(index) {
+    if (index === '' || index === null) return;
+    window.location.href = `/custom_player/${index}`;
+}
+
+/* ── File import ─────────────────────────────────────────────── */
+const importZone   = document.getElementById('cp-import-zone');
+const fileInput    = document.getElementById('cp-file-input');
+const progressWrap = document.getElementById('cp-import-progress');
+const progressBar  = document.getElementById('cp-import-bar');
+const statusLabel  = document.getElementById('cp-import-status');
+
+function setProgress(pct, label) {
+    progressWrap.classList.add('is-active');
+    progressBar.style.width = pct + '%';
+    statusLabel.textContent = label;
+}
+
+function clearProgress() {
+    setTimeout(() => {
+        progressWrap.classList.remove('is-active');
+        progressBar.style.width = '0%';
+    }, 1200);
+}
+
+async function uploadFiles(files) {
+    if (!files || files.length === 0) return;
+    const fd = new FormData();
+    for (const f of files) fd.append('media_files', f);
+
+    setProgress(20, `Uploading ${files.length} file${files.length > 1 ? 's' : ''}…`);
+
+    try {
+        const res = await fetch('/api/custom_player/import', { method: 'POST', body: fd });
+        if (!res.ok) { alert('Upload failed'); clearProgress(); return; }
+
+        setProgress(90, 'Processing…');
+        const data = await res.json();
+        const playlist = data.playlist || [];
+
+        setProgress(100, `Added ${files.length} file${files.length > 1 ? 's' : ''}`);
+        clearProgress();
+
+        refreshPlaylistUI(playlist);
+
+        // Auto-play first imported file if nothing is playing
+        const currentIndex = document.getElementById('player-nav-rails').dataset.currentIndex;
+        if (currentIndex === '' && playlist.length > 0) {
+            window.location.href = '/custom_player/0';
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Upload error: ' + err.message);
+        clearProgress();
+    }
+}
+
+fileInput.addEventListener('change', () => uploadFiles(fileInput.files));
+
+importZone.addEventListener('dragover', e => {
+    e.preventDefault();
+    importZone.classList.add('is-dragover');
+});
+importZone.addEventListener('dragleave', () => importZone.classList.remove('is-dragover'));
+importZone.addEventListener('drop', e => {
+    e.preventDefault();
+    importZone.classList.remove('is-dragover');
+    uploadFiles(e.dataTransfer.files);
+});
+
+/* ── Refresh playlist in DOM after import ───────────────────── */
+function refreshPlaylistUI(playlist) {
+    const list    = document.getElementById('cp-playlist-list');
+    const empty   = document.getElementById('cp-playlist-empty');
+    const footer  = document.getElementById('cp-playlist-footer');
+    const counter = document.getElementById('cp-playlist-count');
+
+    if (!list) return;
+
+    if (counter) counter.textContent = `${playlist.length} file${playlist.length !== 1 ? 's' : ''}`;
+
+    if (playlist.length === 0) {
+        list.innerHTML = '';
+        list.style.display = 'none';
+        if (empty)  { empty.style.display = ''; }
+        if (footer) { footer.style.display = 'none'; }
+        return;
+    }
+
+    if (empty)  { empty.style.display  = 'none'; }
+    if (footer) { footer.style.display = ''; }
+    list.style.display = '';
+
+    const currentIndexRaw = document.getElementById('player-nav-rails').dataset.currentIndex;
+    const currentIndex    = currentIndexRaw !== '' ? parseInt(currentIndexRaw, 10) : null;
+
+    list.innerHTML = playlist.map((m, i) => `
+        <li>
+            <a href="/custom_player/${i}"
+               class="cp-playlist-item ${currentIndex === i ? 'is-active' : ''}"
+               data-index="${i}">
+                <span class="cp-playlist-num">${currentIndex === i ? '▶' : i + 1}</span>
+                <span class="cp-playlist-item-info">
+                    <span class="cp-playlist-item-name">${escapeHtml(m.name)}</span>
+                    ${currentIndex === i ? '<span class="cp-playing-indicator">Now playing</span>' : ''}
+                </span>
+            </a>
+        </li>`).join('');
+}
+
+function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── Clear playlist ──────────────────────────────────────────── */
+async function clearPlaylist() {
+    if (!confirm('Clear the entire queue?')) return;
+    await fetch('/api/custom_player/clear', { method: 'POST' });
+    window.location.href = '/custom_player';
+}
+
+/* ── Video.js setup ──────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+    const videoEl = document.getElementById('video-player');
+    if (!videoEl) return;
+
+    const player = videojs('video-player', {
+        controls: true,
+        autoplay: true,
+        preload: 'auto',
+        playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 2],
+        controlBar: {
+            children: [
+                'playToggle','volumePanel','currentTimeDisplay','timeDivider',
+                'durationDisplay','progressControl','remainingTimeDisplay',
+                'playbackRateMenuButton','fullscreenToggle'
+            ]
+        }
+    });
+
+    const mediaId = parseInt(videoEl.dataset.mediaId || '0', 10);
+    let saveTimer = null, lastSavedAt = 0;
+
+    function buildPayload(completed = false) {
+        return {
+            media_id: mediaId,
+            current_time: Number(player.currentTime() || 0),
+            total_duration: Number(player.duration() || 0),
+            completed
+        };
+    }
+
+    async function saveProgress(completed = false, beacon = false) {
+        const p = buildPayload(completed);
+        if (!p.total_duration && !p.current_time && !completed) return;
+        const url = '/api/custom_player/progress';
+        if (beacon && navigator.sendBeacon) {
+            navigator.sendBeacon(url, new Blob([JSON.stringify(p)], { type: 'application/json' }));
+            return;
+        }
+        fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p), keepalive: true })
+            .catch(e => console.warn('progress save failed', e));
+    }
+
+    function scheduleSave() {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+            const now = Date.now();
+            if (now - lastSavedAt < 8000) return;
+            lastSavedAt = now;
+            saveProgress();
+        }, 600);
+    }
+
+    player.ready(() => {
+        const resumeTime = Number(videoEl.dataset.resumeTime || 0);
+        const shouldResume = new URLSearchParams(window.location.search).get('resume') === '1';
+        if (shouldResume && resumeTime > 1) player.currentTime(resumeTime);
+    });
+
+    player.on('timeupdate', scheduleSave);
+    player.on('pause', () => saveProgress());
+    window.addEventListener('beforeunload', () => saveProgress(false, true));
+
+    player.on('ended', async () => {
+        await saveProgress(true);
+        const nextUrl = document.getElementById('player-nav-rails')?.dataset.nextUrl;
+        if (nextUrl) window.location.href = nextUrl;
+    });
+
+    /* Keyboard shortcuts */
+    document.addEventListener('keydown', e => {
+        if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+        switch (e.key) {
+            case ' ': e.preventDefault(); player.paused() ? player.play() : player.pause(); break;
+            case 'ArrowLeft':  player.currentTime(player.currentTime() - 10); break;
+            case 'ArrowRight': player.currentTime(player.currentTime() + 10); break;
+            case 'ArrowUp':    player.volume(Math.min(player.volume() + 0.1, 1)); break;
+            case 'ArrowDown':  player.volume(Math.max(player.volume() - 0.1, 0)); break;
+            case 'f': player.isFullscreen() ? player.exitFullscreen() : player.requestFullscreen(); break;
+            case 'm': player.muted(!player.muted()); break;
+        }
+    });
+});
+</script>
+
+{% endblock %}

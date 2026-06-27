@@ -20,7 +20,11 @@
     {% endif %}
 {% endif %}
 
-    
+<button onclick="window.location.href=this.dataset.url"
+        data-url="{{ url_for('custom_player.custom_player_home') }}"
+        class="custom-player-btn">
+    🎬
+</button>
 <!-- Queue Toggle Button -->
 <button id="toggle-queue-btn"
         class="fixed bottom-4 right-4 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg z-50">

@@ -850,8 +850,8 @@ button:hover {
     -webkit-backdrop-filter: blur(8px) saturate(1.06) !important;
     top: auto !important;
     left: auto !important;
-    width: 52px !important;
-    height: 52px !important;
+    width: 79px !important;
+    height: 67px !important;
     min-width: 52px !important;
     min-height: 52px !important;
     position: fixed;
@@ -9086,7 +9086,134 @@ body[class*="theme-"] .status-danger {
     background: var(--theme-filter-trigger-bg, linear-gradient(135deg, #ffd4e6, #fff1cf)) !important;
     border-color: var(--theme-border, rgba(255, 214, 233, 0.36)) !important;
 }
+/* =========================================================================
+   NEW CSS ONLY — these classes/selectors do not exist in the original
+   player.html stylesheet. Everything else in custom_player.html reuses
+   existing classes: player-page-shell, player-title-bar, player-watch-row,
+   player-side-panel, player-side-prev/next, player-side-bg, player-side-video,
+   player-side-fade, player-side-content, player-side-text, player-side-kicker,
+   player-side-title, is-disabled, player-main-stack, player-stage,
+   player-core, player-info-panel, player-now-playing, back-link.
+   ========================================================================= */
 
+/* Truncated page heading showing the current file name */
+.player-title-truncate {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Shown in the player-core when nothing has been imported yet */
+.player-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 240px;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    gap: 0.35rem;
+}
+
+/* Row that holds the "switch media" dropdown + import/clear controls */
+.media-controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0.75rem 0;
+}
+
+.media-jump {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.media-jump select {
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.media-import-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Real <input type="file"> is visually hidden; its <label> is the
+   clickable "Import Media" button */
+.media-import-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+}
+
+.media-import-btn,
+.media-clear-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.06);
+    color: inherit;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+.custom-player-btn {
+    top: auto !important;
+    left: auto !important;
+    width: 57px !important;
+    height: 66px !important;
+    min-width: 9px !important;
+    min-height: 52px !important;
+    position: fixed;
+    bottom: 100px;
+    right: 22px;
+    background: linear-gradient(135deg, rgba(255, 252, 246, 0.62), rgba(249, 231, 207, 0.42)) !important;
+    backdrop-filter: blur(8px) saturate(1.06) !important;
+    -webkit-backdrop-filter: blur(8px) saturate(1.06) !important;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    z-index: 1000;
+}
+
+body[class*="theme-"] .custom-player-btn {
+    background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2)) !important;
+    border: 1px solid color-mix(in srgb, var(--theme-accent) 48%, transparent) !important;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, .30), 0 0 18px color-mix(in srgb, var(--theme-accent) 18%, transparent) !important;
+    color: var(--theme-on-accent) !important;
+    text-shadow: none !important;
+}
+.media-import-btn:hover,
+.media-clear-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.media-clear-btn {
+    background: rgba(255, 80, 80, 0.08);
+    border-color: rgba(255, 80, 80, 0.25);
+}
+
+.media-clear-btn:hover {
+    background: rgba(255, 80, 80, 0.18);
+    border-color: rgba(255, 80, 80, 0.4);
+}
 .rack-action {
     width: auto !important;
     min-height: 38px !important;

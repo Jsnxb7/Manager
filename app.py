@@ -56,6 +56,12 @@ if not os.path.exists(STATIC_FOLDER) or not os.path.exists(TEMPLATES_FOLDER):
 
 app = Flask(__name__, static_folder=STATIC_FOLDER, template_folder=TEMPLATES_FOLDER)
 
+# --- Blueprint registration ------------------------------------------------
+app.instance_path = os.path.join(BASE_PATH, 'instance')
+os.makedirs(app.instance_path, exist_ok=True)
+
+from blueprints.custom_player_routes import custom_player_bp
+app.register_blueprint(custom_player_bp)
 
 def allowed_image_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
