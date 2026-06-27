@@ -548,7 +548,7 @@ li.cp-drag-over {
                            data-media-id="{{ current_item.id }}"
                            data-resume-time="{{ saved_progress.current_time | default(0) }}"
                            data-setup='{}'>
-                        <source src="{{ current_item.path }}" type="video/mp4">
+                        <source src="{{ current_item.path }}" type="{{ current_item.mime_type | default('video/mp4') }}">
                     </video>
                 {% else %}
                     <div class="cp-empty-state">

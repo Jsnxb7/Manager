@@ -19,7 +19,9 @@ Behavior notes (matching the requirements):
 
 import json
 import os
+import shutil
 import uuid
+from urllib.parse import urlparse
 
 from flask import (
     Blueprint, render_template, request, jsonify,
@@ -54,6 +56,75 @@ def save_playlist(playlist):
         json.dump(playlist, fp, indent=2)
 
 
+def _detect_media_mime_type(path_or_url):
+    if not path_or_url:
+        return "video/mp4"
+
+    source = str(path_or_url).strip()
+    if source.startswith(("http://", "https://")):
+        source = urlparse(source).path
+
+    extension = os.path.splitext(source)[1].lower()
+    return {
+        ".mp4": "video/mp4",
+        ".m4v": "video/x-m4v",
+        ".mov": "video/quicktime",
+        ".webm": "video/webm",
+        ".ogg": "video/ogg",
+        ".mkv": "video/x-matroska",
+        ".avi": "video/x-msvideo",
+    }.get(extension, "video/mp4")
+
+
+def _build_playlist_item_from_source(source, *, name=None, source_type="path"):
+    if not source:
+        return None
+
+    source = str(source).strip()
+    if not source:
+        return None
+
+    if source.startswith(("http://", "https://")):
+        safe_name = name or os.path.basename(urlparse(source).path) or "Remote video"
+        return {
+            "id": str(uuid.uuid4()),
+            "name": safe_name,
+            "path": source,
+            "mime_type": _detect_media_mime_type(source),
+            "source_type": "url",
+            "source_path": source,
+        }
+
+    if os.path.isfile(source):
+        upload_dir = os.path.join(current_app.static_folder, "custom_media")
+        os.makedirs(upload_dir, exist_ok=True)
+
+        original_name = os.path.basename(source)
+        safe_name = secure_filename(original_name) or "video"
+        unique_name = f"{uuid.uuid4().hex[:8]}_{safe_name}"
+        destination = os.path.join(upload_dir, unique_name)
+        shutil.copy2(source, destination)
+
+        return {
+            "id": str(uuid.uuid4()),
+            "name": name or original_name,
+            "path": url_for("static", filename=f"custom_media/{unique_name}"),
+            "mime_type": _detect_media_mime_type(unique_name),
+            "source_type": source_type,
+            "source_path": source,
+        }
+
+    safe_name = name or os.path.basename(source) or "Video"
+    return {
+        "id": str(uuid.uuid4()),
+        "name": safe_name,
+        "path": source,
+        "mime_type": _detect_media_mime_type(source),
+        "source_type": source_type,
+        "source_path": source,
+    }
+
+
 def reset_playlist():
     # Wipe all files in the custom_media upload folder on each new session
     try:
@@ -76,7 +147,14 @@ def reset_playlist():
 
 @custom_player_bp.route("/custom_player")
 def custom_player_home():
-    # Fresh visit -> clear whatever was queued before.
+    launch_path = request.args.get("launch_path") or request.args.get("video_url") or request.args.get("path")
+
+    if launch_path:
+        playlist_item = _build_playlist_item_from_source(launch_path)
+        if playlist_item:
+            save_playlist([playlist_item])
+            return redirect(url_for("custom_player.custom_player_play", index=0))
+
     reset_playlist()
     return render_template(
         "custom_player.html",
@@ -134,6 +212,9 @@ def custom_player_import():
             "id": str(uuid.uuid4()),
             "name": filename,
             "path": url_for("static", filename=f"custom_media/{unique_name}"),
+            "mime_type": _detect_media_mime_type(unique_name),
+            "source_type": "upload",
+            "source_path": os.path.join(upload_dir, unique_name),
         })
 
     save_playlist(playlist)

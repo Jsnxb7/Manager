@@ -6,9 +6,31 @@ const http = require('http');
 
 const CONFIG_FILE = path.join(app.getPath('userData'), 'config.json');
 const LOG_FILE = path.join(app.getPath('userData'), 'flask_logs.json');
+const VIDEO_EXTENSIONS = new Set(['.mp4', '.mkv', '.avi', '.mov', '.webm', '.m4v', '.ogg']);
 
 let mainWindow;
 let flaskProcess;
+
+function getLaunchFilePath() {
+    const candidates = (process.argv || []).slice(1).filter(Boolean);
+
+    for (const candidate of candidates) {
+        if (!candidate || candidate === app.getPath('exe') || candidate === process.execPath) continue;
+
+        const normalized = path.normalize(candidate);
+        const extension = path.extname(normalized).toLowerCase();
+
+        if (fs.existsSync(normalized) && fs.statSync(normalized).isFile()) {
+            return extension && VIDEO_EXTENSIONS.has(extension) ? normalized : null;
+        }
+
+        if (extension && VIDEO_EXTENSIONS.has(extension)) {
+            return normalized;
+        }
+    }
+
+    return null;
+}
 
 // 🧹 Clear previous logs
 fs.writeFileSync(LOG_FILE, '[]');
@@ -104,8 +126,6 @@ ipcMain.handle('open-in-explorer', async (_event, targetPath) => {
     }
 });
 
-
-const VIDEO_EXTENSIONS = new Set(['.mp4', '.mkv', '.avi', '.mov', '.webm', '.m4v']);
 
 function getEpisodeNumberFromFilename(filename) {
     const parsed = path.parse(path.basename(String(filename || '')));
@@ -248,17 +268,23 @@ async function getPaths() {
 }
 
 app.whenReady().then(async () => {
-    const { response } = await dialog.showMessageBox({
-        type: 'question',
-        buttons: ['Compiled Flask App (.exe)', 'Local Flask Server'],
-        defaultId: 0,
-        cancelId: 1,
-        title: 'Select Flask Run Mode',
-        message: 'How do you want to run the Flask backend?',
-        detail: 'Choose whether to use the compiled Flask app.exe or connect to a locally running Flask development server.'
-    });
+    const launchFilePath = getLaunchFilePath();
+    let useLocalServer = !launchFilePath;
 
-    let useLocalServer = (response === 1);
+    if (useLocalServer) {
+        const { response } = await dialog.showMessageBox({
+            type: 'question',
+            buttons: ['Compiled Flask App (.exe)', 'Local Flask Server'],
+            defaultId: 0,
+            cancelId: 1,
+            title: 'Select Flask Run Mode',
+            message: 'How do you want to run the Flask backend?',
+            detail: 'Choose whether to use the compiled Flask app.exe or connect to a locally running Flask development server.'
+        });
+
+        useLocalServer = (response === 1);
+    }
+
     let serverURL = 'http://127.0.0.1:5000';
     let config = {};
 
@@ -334,8 +360,13 @@ app.whenReady().then(async () => {
         }
     });
 
-    console.log("🌐 Loading URL:", serverURL);
-    mainWindow.loadURL(serverURL);
+    const launchTarget = launchFilePath
+        ? `/custom_player?launch_path=${encodeURIComponent(launchFilePath)}`
+        : '/';
+
+    const finalURL = `${serverURL}${launchTarget}`;
+    console.log("🌐 Loading URL:", finalURL);
+    mainWindow.loadURL(finalURL);
 
     mainWindow.on('closed', () => {
         if (!useLocalServer) closeFlaskProcess();
