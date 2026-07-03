@@ -1,15 +1,15 @@
 {
     "schema_version": 1,
-    "updated_at": "2026-06-27T11:34:42.904752+00:00",
+    "updated_at": "2026-06-29T20:14:18.309080+00:00",
     "last_use": {
-        "anime_id": null,
-        "anime_title": null,
-        "episode_number": null,
-        "episode_title": null,
-        "current_time": 0,
-        "total_duration": 0,
-        "progress_percentage": 0,
-        "last_watched_at": null
+        "anime_id": 196,
+        "anime_title": "Kamiina Botan Yoeru Sugata wa Yuri no Hana",
+        "episode_number": 1,
+        "episode_title": "Episode 1",
+        "current_time": 62.34,
+        "total_duration": 1420.11,
+        "progress_percentage": 4.39,
+        "last_watched_at": "2026-06-29T20:14:18.308024+00:00"
     },
     "queue": {
         "updated_at": "2026-06-13T11:38:03.764928+00:00",

@@ -1,3 +1,39 @@
+function showToast(message, type = "success", duration = 3500) {
+    const container = document.getElementById("toast-container");
+    if (!container || !message) return;
+
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    container.appendChild(toast);
+
+    // Force layout so the transition below actually animates in.
+    requestAnimationFrame(() => toast.classList.add("is-visible"));
+
+    window.setTimeout(() => {
+        toast.classList.remove("is-visible");
+        toast.addEventListener("transitionend", () => toast.remove(), { once: true });
+        // Fallback removal in case transitionend doesn't fire.
+        window.setTimeout(() => toast.remove(), 500);
+    }, duration);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    let pendingToast = null;
+    try {
+        pendingToast = sessionStorage.getItem("pendingAddToast");
+        if (pendingToast) {
+            sessionStorage.removeItem("pendingAddToast");
+        }
+    } catch (error) {
+        console.error("Could not read pending toast message:", error);
+    }
+
+    if (pendingToast) {
+        showToast(pendingToast, "success");
+    }
+});
+
 function toggleWatched(animeId, episodeNumber, button) {
     fetch(`/mark_watched/${animeId}/${episodeNumber}`, {
         method: 'POST',
@@ -173,6 +209,35 @@ function setupValidatedAddForm(form) {
     form.addEventListener("submit", (event) => {
         if (submitButton.disabled) {
             event.preventDefault();
+            return;
+        }
+
+        // Some forms (e.g. add-anime/add-manga) run their own submit
+        // listeners that may still cancel submission (missing metadata,
+        // user declined confirm dialog, etc). Only queue the toast if the
+        // submission is actually going through.
+        if (event.defaultPrevented) {
+            return;
+        }
+
+        const title = titleInput?.value.trim();
+        const entryType = form.dataset.entryType;
+        const section = form.dataset.section;
+
+        let label = "Item";
+        if (section) {
+            label = section;
+        } else if (entryType === "anime") {
+            label = "Anime";
+        } else if (entryType === "manga") {
+            label = "Manga";
+        }
+
+        const message = title ? `"${title}" added to ${label}!` : `${label} added successfully!`;
+        try {
+            sessionStorage.setItem("pendingAddToast", message);
+        } catch (error) {
+            console.error("Could not queue toast message:", error);
         }
     });
 

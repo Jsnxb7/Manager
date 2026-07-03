@@ -109,6 +109,39 @@
 </div>
 
 <script>
+function suppressPlayerPageOverlays() {
+    const selectors = [
+        "#element-editor-toggle",
+        "#element-editor-panel",
+        "button.custom-player-btn"
+    ];
+
+    selectors.forEach((selector) => {
+        document.querySelectorAll(selector).forEach((element) => {
+            element.remove();
+        });
+    });
+
+    if (!document.getElementById("player-page-forced-hide")) {
+        const style = document.createElement("style");
+        style.id = "player-page-forced-hide";
+        style.textContent = `
+            #element-editor-toggle,
+            #element-editor-panel,
+            button.custom-player-btn {
+                display: none !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+suppressPlayerPageOverlays();
+
+document.addEventListener("DOMContentLoaded", suppressPlayerPageOverlays);
+
 function jumpToEpisode(select) {
     const episodeNumber = select.value;
     const animeId = "{{ anime.id }}";

@@ -403,7 +403,7 @@ button {
     line-height: 1.1 !important;
     text-decoration: none !important;
     -webkit-backdrop-filter: blur(7px) saturate(1.02) !important;
-    padding: 20px 40px;
+    padding: 8px 28px;
     font-size: 16px;
     border-radius: 14px;
     border: none;
@@ -797,15 +797,15 @@ button:hover {
 }
 
 .home-button {
-    z-index: 1000 !important;
+z-index: 1000 !important;
     padding: 0 !important;
     -webkit-backdrop-filter: blur(8px) saturate(1.06) !important;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 50px;
-    width: 50px;
-    border-radius: 10px;
+    height: 55px;
+    width: 55px;
+    border-radius: 23px;
     text-decoration: none;
     font-weight: bold;
     font-size: 1rem;
@@ -817,11 +817,11 @@ button:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     position: absolute;
     top: 20px;
-    right: 20px;
+    right: 25px;
 }
 
 .back-button {
-    z-index: 1000 !important;
+z-index: 1000 !important;
     padding: 0 !important;
     -webkit-backdrop-filter: blur(8px) saturate(1.06) !important;
     display: flex;
@@ -829,7 +829,7 @@ button:hover {
     justify-content: center;
     height: 50px;
     width: 50px;
-    border-radius: 10px;
+    border-radius: 23px;
     text-decoration: none;
     font-weight: bold;
     font-size: 1rem;
@@ -841,33 +841,32 @@ button:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     position: absolute;
     top: 20px;
-    left: 20px;
+    left: 13px;
 }
 
 #toggle-queue-btn {
-    background: linear-gradient(135deg, rgba(255, 252, 246, 0.62), rgba(249, 231, 207, 0.42)) !important;
+   background: linear-gradient(135deg, rgba(255, 252, 246, 0.62), rgba(249, 231, 207, 0.42)) !important;
     backdrop-filter: blur(8px) saturate(1.06) !important;
     -webkit-backdrop-filter: blur(8px) saturate(1.06) !important;
     top: auto !important;
     left: auto !important;
-    width: 79px !important;
-    height: 67px !important;
+    width: 61px !important;
+    height: 56px !important;
     min-width: 52px !important;
     min-height: 52px !important;
     position: fixed;
     bottom: 20px;
-    right: 20px;
+    right: 23px;
     background-color: #2563eb;
     color: white;
     border: none;
     padding: 12px;
     border-radius: 50%;
-    font-size: 20px;
+    font-size: 22px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     cursor: pointer;
     z-index: 1000;
 }
-
 #global-queue {
     overflow: auto !important;
     top: auto !important;
@@ -4685,9 +4684,10 @@ body[class*="theme-"] .theme-choice-card:hover {
 }
 
 body[class*="theme-"] button {
-    text-shadow: none !important;
-    color: var(--theme-button-text, #181016) !important;
-    background: linear-gradient(135deg, var(--theme-button-bg, #ffffff), rgb(197 196 199 / 72%)) !important;
+box-shadow: 0 24px 64px rgba(0, 0, 0, 0.38), 0 0 34px 
+color-mix(in srgb, var(--theme-accent) 14%, transparent) !important;
+    color: var(--theme-body, #f8edf4) !important;
+    background: linear-gradient(135deg, var(--theme-panel-strong, rgba(255, 244, 250, 0.22)), var(--theme-panel, rgba(255, 232, 243, 0.15))) !important;
     border-color: var(--theme-border, rgba(255, 214, 233, 0.36)) !important;
 }
 
@@ -4707,12 +4707,11 @@ body[class*="theme-"] .add-anime-button {
 }
 
 body[class*="theme-"] .back-button {
-    border-color: color-mix(in srgb, var(--theme-accent) 46%, transparent) !important;
-    background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2)) !important;
-    border: 1px solid color-mix(in srgb, var(--theme-accent) 48%, transparent) !important;
-    box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 18px color-mix(in srgb, var(--theme-accent) 18%, transparent) !important;
-    color: var(--theme-on-accent) !important;
-    text-shadow: none !important;
+box-shadow: 0 24px 64px rgba(0, 0, 0, 0.38), 0 0 34px 
+color-mix(in srgb, var(--theme-accent) 14%, transparent) !important;
+    color: var(--theme-body, #f8edf4) !important;
+    background: linear-gradient(135deg, var(--theme-panel-strong, rgba(255, 244, 250, 0.22)), var(--theme-panel, rgba(255, 232, 243, 0.15))) !important;
+    border-color: var(--theme-border, rgba(255, 214, 233, 0.36)) !important;
 }
 
 body[class*="theme-"] .submit-btn {
@@ -6865,19 +6864,19 @@ body[class*="theme-"] main {
 }
 
 body[class*="theme-"] #toggle-queue-btn {
-    background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2)) !important;
-    border: 1px solid color-mix(in srgb, var(--theme-accent) 48%, transparent) !important;
-    box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 18px color-mix(in srgb, var(--theme-accent) 18%, transparent) !important;
-    color: var(--theme-on-accent) !important;
-    text-shadow: none !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.38), 0 0 34px 
+color-mix(in srgb, var(--theme-accent) 14%, transparent) !important;
+    color: var(--theme-body, #f8edf4) !important;
+    background: linear-gradient(135deg, rgb(24 25 30 / 16%), rgb(14 15 18 / 84%)) !important;
+    border-color: var(--theme-border, rgba(255, 214, 233, 0.36)) !important;
 }
 
 body[class*="theme-"] .home-button {
-    background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2)) !important;
-    border: 1px solid color-mix(in srgb, var(--theme-accent) 48%, transparent) !important;
-    box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 18px color-mix(in srgb, var(--theme-accent) 18%, transparent) !important;
-    color: var(--theme-on-accent) !important;
-    text-shadow: none !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.38), 0 0 34px 
+color-mix(in srgb, var(--theme-accent) 14%, transparent) !important;
+    color: var(--theme-body, #f8edf4) !important;
+    background: linear-gradient(135deg, rgb(24 25 30 / 16%), rgb(14 15 18 / 84%)) !important;
+    border-color: var(--theme-border, rgba(255, 214, 233, 0.36)) !important;
 }
 
 body[class*="theme-"] .set-directory-button {
@@ -9173,31 +9172,31 @@ body[class*="theme-"] .status-danger {
 .custom-player-btn {
     top: auto !important;
     left: auto !important;
-    width: 57px !important;
-    height: 66px !important;
-    min-width: 9px !important;
-    min-height: 52px !important;
+    width: 36px !important;
+    height: 52px !important;
+    min-width: 10px !important;
+    min-height: 10px !important;
     position: fixed;
-    bottom: 100px;
-    right: 22px;
+    bottom: 86px;
+    right: 24px;
     background: linear-gradient(135deg, rgba(255, 252, 246, 0.62), rgba(249, 231, 207, 0.42)) !important;
     backdrop-filter: blur(8px) saturate(1.06) !important;
     -webkit-backdrop-filter: blur(8px) saturate(1.06) !important;
     color: white;
     border: none;
     border-radius: 50%;
-    font-size: 20px;
+    font-size: 19px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     cursor: pointer;
-    z-index: 1000;
+    z-index: 7;
 }
 
 body[class*="theme-"] .custom-player-btn {
-    background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2)) !important;
-    border: 1px solid color-mix(in srgb, var(--theme-accent) 48%, transparent) !important;
-    box-shadow: 0 10px 26px rgba(0, 0, 0, .30), 0 0 18px color-mix(in srgb, var(--theme-accent) 18%, transparent) !important;
-    color: var(--theme-on-accent) !important;
-    text-shadow: none !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.38), 0 0 34px 
+color-mix(in srgb, var(--theme-accent) 14%, transparent) !important;
+    color: var(--theme-body, #f8edf4) !important;
+    background: linear-gradient(135deg, rgb(24 25 30 / 16%), rgb(14 15 18 / 84%)) !important;
+    border-color: var(--theme-border, rgba(255, 214, 233, 0.36)) !important;
 }
 .media-import-btn:hover,
 .media-clear-btn:hover {
@@ -9426,7 +9425,7 @@ body[class*="theme-"] input[type="file"] {
 .floating-filter-rack {
     position: fixed !important;
     bottom: 20px !important;
-    left: 20px !important;
+    left: 15px !important;
     z-index: 1400 !important;
     display: block !important;
     flex-direction: column-reverse !important;
@@ -11319,10 +11318,10 @@ body.section-player .player-title-bar {
 }
 
 .element-editor-toggle {
-    position: fixed;
-    right: 18px;
-    top: 84px;
-    z-index: 9998;
+   position: fixed;
+    right: 27px;
+    bottom: 146px;
+    z-index: 99;
     display: inline-flex;
     align-items: center;
     justify-content: center;

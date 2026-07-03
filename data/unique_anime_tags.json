@@ -8,11 +8,11 @@
     "tags": [
         {
             "name": "Comedy",
-            "count": 238
+            "count": 240
         },
         {
             "name": "Romance",
-            "count": 192
+            "count": 194
         },
         {
             "name": "School",
@@ -20,11 +20,11 @@
         },
         {
             "name": "Fantasy",
-            "count": 175
+            "count": 179
         },
         {
             "name": "Shounen",
-            "count": 107
+            "count": 104
         },
         {
             "name": "Action",
@@ -32,11 +32,11 @@
         },
         {
             "name": "Drama",
-            "count": 87
+            "count": 86
         },
         {
             "name": "Slice of Life",
-            "count": 85
+            "count": 86
         },
         {
             "name": "Isekai",
@@ -44,11 +44,11 @@
         },
         {
             "name": "Adventure",
-            "count": 74
+            "count": 75
         },
         {
             "name": "CGDCT",
-            "count": 68
+            "count": 67
         },
         {
             "name": "Seinen",
@@ -56,11 +56,11 @@
         },
         {
             "name": "Supernatural",
-            "count": 56
+            "count": 57
         },
         {
             "name": "Adult Cast",
-            "count": 51
+            "count": 49
         },
         {
             "name": "Reincarnation",
@@ -104,7 +104,7 @@
         },
         {
             "name": "Gourmet",
-            "count": 18
+            "count": 17
         },
         {
             "name": "Music",
@@ -127,11 +127,11 @@
             "count": 16
         },
         {
-            "name": "Performing Arts",
-            "count": 15
+            "name": "Gag Humor",
+            "count": 14
         },
         {
-            "name": "Gag Humor",
+            "name": "Performing Arts",
             "count": 14
         },
         {
@@ -203,10 +203,6 @@
             "count": 5
         },
         {
-            "name": "Organized Crime",
-            "count": 5
-        },
-        {
             "name": "Vampire",
             "count": 5
         },
@@ -216,6 +212,10 @@
         },
         {
             "name": "Mecha",
+            "count": 4
+        },
+        {
+            "name": "Organized Crime",
             "count": 4
         },
         {
@@ -290,15 +290,15 @@
     "genres": [
         {
             "name": "Comedy",
-            "count": 238
+            "count": 240
         },
         {
             "name": "Romance",
-            "count": 192
+            "count": 194
         },
         {
             "name": "Fantasy",
-            "count": 175
+            "count": 179
         },
         {
             "name": "Action",
@@ -306,19 +306,19 @@
         },
         {
             "name": "Drama",
-            "count": 87
+            "count": 86
         },
         {
             "name": "Slice of Life",
-            "count": 85
+            "count": 86
         },
         {
             "name": "Adventure",
-            "count": 74
+            "count": 75
         },
         {
             "name": "Supernatural",
-            "count": 56
+            "count": 57
         },
         {
             "name": "Award Winning",
@@ -330,7 +330,7 @@
         },
         {
             "name": "Gourmet",
-            "count": 18
+            "count": 17
         },
         {
             "name": "Sci-Fi",
@@ -376,7 +376,7 @@
         },
         {
             "name": "Isekai",
-            "count": 82
+            "count": 83
         },
         {
             "name": "CGDCT",
@@ -384,11 +384,11 @@
         },
         {
             "name": "Adult Cast",
-            "count": 51
+            "count": 50
         },
         {
             "name": "Reincarnation",
-            "count": 49
+            "count": 50
         },
         {
             "name": "Iyashikei",
@@ -415,23 +415,23 @@
             "count": 20
         },
         {
+            "name": "Childcare",
+            "count": 17
+        },
+        {
             "name": "Music",
             "count": 17
         },
         {
-            "name": "Childcare",
-            "count": 16
-        },
-        {
             "name": "Mythology",
-            "count": 16
-        },
-        {
-            "name": "Performing Arts",
-            "count": 15
+            "count": 17
         },
         {
             "name": "Gag Humor",
+            "count": 14
+        },
+        {
+            "name": "Performing Arts",
             "count": 14
         },
         {
@@ -444,7 +444,7 @@
         },
         {
             "name": "Anthropomorphic",
-            "count": 10
+            "count": 11
         },
         {
             "name": "Parody",
@@ -483,10 +483,6 @@
             "count": 5
         },
         {
-            "name": "Organized Crime",
-            "count": 5
-        },
-        {
             "name": "Vampire",
             "count": 5
         },
@@ -496,6 +492,10 @@
         },
         {
             "name": "Mecha",
+            "count": 4
+        },
+        {
+            "name": "Organized Crime",
             "count": 4
         },
         {
@@ -554,15 +554,15 @@
     "demographics": [
         {
             "name": "Shounen",
-            "count": 107
+            "count": 106
         },
         {
             "name": "Seinen",
-            "count": 66
+            "count": 69
         },
         {
             "name": "Shoujo",
-            "count": 31
+            "count": 33
         },
         {
             "name": "Josei",

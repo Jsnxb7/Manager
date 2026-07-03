@@ -8,8 +8,53 @@
     <link href="https://vjs.zencdn.net/7.15.4/video-js.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/element_theme.css') }}?v={{ element_theme_version }}">
+    <style>
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        #toast-container .toast {
+            pointer-events: auto;
+            min-width: 220px;
+            max-width: 90vw;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #fff;
+            background: #2f9e44;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            opacity: 0;
+            transform: translateY(-12px);
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            text-align: center;
+        }
+
+        #toast-container .toast.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #toast-container .toast.toast-error {
+            background: #e03131;
+        }
+
+        #toast-container .toast.toast-warn {
+            background: #f08c00;
+        }
+    </style>
 </head>
 <body class="theme-{{ active_theme }}{% if theme_settings.dark_mode %} theme-dark{% endif %} section-{{ active_section_key }} theme-media-{{ theme_settings.background.mode }}">
+<div id="toast-container" aria-live="polite" aria-atomic="true"></div>
 {% if theme_settings.background.mode not in ["none", "solid"] %}
     {% if theme_settings.background.type == "image" %}
         <img class="theme-background-image" src="{{ theme_settings.background.url }}" alt="" aria-hidden="true">

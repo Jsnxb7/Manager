@@ -1300,106 +1300,6 @@
         "tag_match_status": "matched"
     },
     {
-        "id": 546,
-        "title": "Akane-banashi",
-        "season": "S1",
-        "status": "Completed",
-        "download_link": "https://myanimelist.net/anime/62164",
-        "directory": "C:\\Users\\shour\\Documents\\Anime\\Akane-banashi\\S1",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Akane-banashi/S1/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Akane-banashi/S1/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Akane-banashi/S1/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Akane-banashi/S1/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Akane-banashi/S1/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Akane-banashi/S1/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Akane-banashi/S1/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Akane-banashi/S1/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Akane-banashi/S1/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Akane-banashi/S1/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Akane-banashi/S1/11.mp4"
-            },
-            {
-                "number": 12,
-                "title": "Episode 12",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Akane-banashi/S1/12.mp4"
-            }
-        ],
-        "bookmarked": false,
-        "tags": [
-            "Drama",
-            "Performing Arts",
-            "Shounen"
-        ],
-        "genres": [
-            "Drama"
-        ],
-        "themes": [
-            "Performing Arts"
-        ],
-        "demographics": [
-            "Shounen"
-        ],
-        "tag_source": "jikan",
-        "tag_source_id": 62164,
-        "tag_match_status": "matched"
-    },
-    {
         "id": 450,
         "title": "Akatsuki no Yona",
         "season": "S1",
@@ -14109,7 +14009,7 @@
         "id": 556,
         "title": "Hidarikiki no Eren",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/53732",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Hidarikiki no Eren\\S1",
         "episodes": [
@@ -20874,107 +20774,107 @@
         "tag_match_status": "matched"
     },
     {
-        "id": 563,
-        "title": "Kamiina Botan, Yoeru Sugata wa Yuri no Hana",
+        "id": 196,
+        "title": "Kamiina Botan Yoeru Sugata wa Yuri no Hana",
         "season": "S1",
         "status": "Completed",
         "download_link": "https://myanimelist.net/anime/61186",
-        "directory": "C:\\Users\\shour\\Documents\\Anime\\Kamiina Botan, Yoeru Sugata wa Yuri no Hana\\S1",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Kamiina Botan Yoeru Sugata wa Yuri no Hana\\S1",
         "episodes": [
             {
                 "number": 1,
                 "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/1.mp4"
+                "watched": true,
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan Yoeru Sugata wa Yuri no Hana/S1/1.mp4"
             },
             {
                 "number": 2,
                 "title": "Episode 2",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/2.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan Yoeru Sugata wa Yuri no Hana/S1/2.mp4"
             },
             {
                 "number": 3,
                 "title": "Episode 3",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/3.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan Yoeru Sugata wa Yuri no Hana/S1/3.mp4"
             },
             {
                 "number": 4,
                 "title": "Episode 4",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/4.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan Yoeru Sugata wa Yuri no Hana/S1/4.mp4"
             },
             {
                 "number": 5,
                 "title": "Episode 5",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/5.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan Yoeru Sugata wa Yuri no Hana/S1/5.mp4"
             },
             {
                 "number": 6,
                 "title": "Episode 6",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/6.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan Yoeru Sugata wa Yuri no Hana/S1/6.mp4"
             },
             {
                 "number": 7,
                 "title": "Episode 7",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/7.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan Yoeru Sugata wa Yuri no Hana/S1/7.mp4"
             },
             {
                 "number": 8,
                 "title": "Episode 8",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/8.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan Yoeru Sugata wa Yuri no Hana/S1/8.mp4"
             },
             {
                 "number": 9,
                 "title": "Episode 9",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/9.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan Yoeru Sugata wa Yuri no Hana/S1/9.mp4"
             },
             {
                 "number": 10,
                 "title": "Episode 10",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/10.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan Yoeru Sugata wa Yuri no Hana/S1/10.mp4"
             },
             {
                 "number": 11,
                 "title": "Episode 11",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/11.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan Yoeru Sugata wa Yuri no Hana/S1/11.mp4"
             },
             {
                 "number": 12,
                 "title": "Episode 12",
                 "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan, Yoeru Sugata wa Yuri no Hana/S1/12.mp4"
+                "file_path": "C:/Users/shour/Documents/Anime/Kamiina Botan Yoeru Sugata wa Yuri no Hana/S1/12.mp4"
             }
         ],
-        "bookmarked": false,
         "tags": [
-            "Girls Love",
-            "Gourmet",
+            "Romance",
+            "Comedy",
             "Slice of Life",
-            "Adult Cast",
-            "CGDCT"
+            "Girls Love"
         ],
         "genres": [
-            "Girls Love",
-            "Gourmet",
-            "Slice of Life"
+            "Romance",
+            "Comedy",
+            "Slice of Life",
+            "Girls Love"
         ],
         "themes": [
-            "Adult Cast",
             "CGDCT"
         ],
-        "demographics": [],
-        "tag_source": "jikan",
-        "tag_source_id": 61186,
-        "tag_match_status": "matched"
+        "demographics": [
+            "Shoujo"
+        ],
+        "tag_source": "manual",
+        "tag_match_status": "manual",
+        "bookmarked": false
     },
     {
         "id": 156,
@@ -21385,110 +21285,6 @@
         "demographics": [],
         "tag_source": "jikan",
         "tag_source_id": 10568,
-        "tag_match_status": "matched"
-    },
-    {
-        "id": 547,
-        "title": "Kanan-sama wa Akumade Choroi",
-        "season": "S1",
-        "status": "Completed",
-        "download_link": "https://myanimelist.net/anime/61501",
-        "directory": "C:\\Users\\shour\\Documents\\Anime\\Kanan-sama wa Akumade Choroi\\S1",
-        "episodes": [
-            {
-                "number": 1,
-                "title": "Episode 1",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kanan-sama wa Akumade Choroi/S1/1.mp4"
-            },
-            {
-                "number": 2,
-                "title": "Episode 2",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kanan-sama wa Akumade Choroi/S1/2.mp4"
-            },
-            {
-                "number": 3,
-                "title": "Episode 3",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kanan-sama wa Akumade Choroi/S1/3.mp4"
-            },
-            {
-                "number": 4,
-                "title": "Episode 4",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kanan-sama wa Akumade Choroi/S1/4.mp4"
-            },
-            {
-                "number": 5,
-                "title": "Episode 5",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kanan-sama wa Akumade Choroi/S1/5.mp4"
-            },
-            {
-                "number": 6,
-                "title": "Episode 6",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kanan-sama wa Akumade Choroi/S1/6.mp4"
-            },
-            {
-                "number": 7,
-                "title": "Episode 7",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kanan-sama wa Akumade Choroi/S1/7.mp4"
-            },
-            {
-                "number": 8,
-                "title": "Episode 8",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kanan-sama wa Akumade Choroi/S1/8.mp4"
-            },
-            {
-                "number": 9,
-                "title": "Episode 9",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kanan-sama wa Akumade Choroi/S1/9.mp4"
-            },
-            {
-                "number": 10,
-                "title": "Episode 10",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kanan-sama wa Akumade Choroi/S1/10.mp4"
-            },
-            {
-                "number": 11,
-                "title": "Episode 11",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kanan-sama wa Akumade Choroi/S1/11.mp4"
-            },
-            {
-                "number": 12,
-                "title": "Episode 12",
-                "watched": false,
-                "file_path": "C:/Users/shour/Documents/Anime/Kanan-sama wa Akumade Choroi/S1/12.mp4"
-            }
-        ],
-        "bookmarked": false,
-        "tags": [
-            "Comedy",
-            "Romance",
-            "Supernatural",
-            "School",
-            "Shounen"
-        ],
-        "genres": [
-            "Comedy",
-            "Romance",
-            "Supernatural"
-        ],
-        "themes": [
-            "School"
-        ],
-        "demographics": [
-            "Shounen"
-        ],
-        "tag_source": "jikan",
-        "tag_source_id": 61501,
         "tag_match_status": "matched"
     },
     {
@@ -26773,73 +26569,73 @@
             {
                 "number": 1,
                 "title": "Episode 1",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Kujima Utaeba Ie Hororo/S1/1.mp4"
             },
             {
                 "number": 2,
                 "title": "Episode 2",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Kujima Utaeba Ie Hororo/S1/2.mp4"
             },
             {
                 "number": 3,
                 "title": "Episode 3",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Kujima Utaeba Ie Hororo/S1/3.mp4"
             },
             {
                 "number": 4,
                 "title": "Episode 4",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Kujima Utaeba Ie Hororo/S1/4.mp4"
             },
             {
                 "number": 5,
                 "title": "Episode 5",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Kujima Utaeba Ie Hororo/S1/5.mp4"
             },
             {
                 "number": 6,
                 "title": "Episode 6",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Kujima Utaeba Ie Hororo/S1/6.mp4"
             },
             {
                 "number": 7,
                 "title": "Episode 7",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Kujima Utaeba Ie Hororo/S1/7.mp4"
             },
             {
                 "number": 8,
                 "title": "Episode 8",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Kujima Utaeba Ie Hororo/S1/8.mp4"
             },
             {
                 "number": 9,
                 "title": "Episode 9",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Kujima Utaeba Ie Hororo/S1/9.mp4"
             },
             {
                 "number": 10,
                 "title": "Episode 10",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Kujima Utaeba Ie Hororo/S1/10.mp4"
             },
             {
                 "number": 11,
                 "title": "Episode 11",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Kujima Utaeba Ie Hororo/S1/11.mp4"
             },
             {
                 "number": 12,
                 "title": "Episode 12",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Kujima Utaeba Ie Hororo/S1/12.mp4"
             }
         ],
@@ -26862,7 +26658,8 @@
         ],
         "tag_source": "jikan",
         "tag_source_id": 58832,
-        "tag_match_status": "matched"
+        "tag_match_status": "matched",
+        "watched": true
     },
     {
         "id": 187,
@@ -32642,6 +32439,105 @@
         "tag_match_status": "matched"
     },
     {
+        "id": 197,
+        "title": "Mujikaku Seijo wa Kyou mo Muishiki ni Chikara wo Tare Nagasu",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://myanimelist.net/anime/62080",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Mujikaku Seijo wa Kyou mo Muishiki ni Chikara wo Tare Nagasu\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mujikaku Seijo wa Kyou mo Muishiki ni Chikara wo Tare Nagasu/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mujikaku Seijo wa Kyou mo Muishiki ni Chikara wo Tare Nagasu/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mujikaku Seijo wa Kyou mo Muishiki ni Chikara wo Tare Nagasu/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mujikaku Seijo wa Kyou mo Muishiki ni Chikara wo Tare Nagasu/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mujikaku Seijo wa Kyou mo Muishiki ni Chikara wo Tare Nagasu/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mujikaku Seijo wa Kyou mo Muishiki ni Chikara wo Tare Nagasu/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mujikaku Seijo wa Kyou mo Muishiki ni Chikara wo Tare Nagasu/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mujikaku Seijo wa Kyou mo Muishiki ni Chikara wo Tare Nagasu/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mujikaku Seijo wa Kyou mo Muishiki ni Chikara wo Tare Nagasu/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mujikaku Seijo wa Kyou mo Muishiki ni Chikara wo Tare Nagasu/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mujikaku Seijo wa Kyou mo Muishiki ni Chikara wo Tare Nagasu/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Mujikaku Seijo wa Kyou mo Muishiki ni Chikara wo Tare Nagasu/S1/12.mp4"
+            }
+        ],
+        "tags": [
+            "Fantasy",
+            "Romance"
+        ],
+        "genres": [
+            "Romance",
+            "Fantasy"
+        ],
+        "themes": [
+            "Isekai"
+        ],
+        "demographics": [
+            "Shoujo"
+        ],
+        "tag_source": "manual",
+        "tag_match_status": "manual",
+        "bookmarked": false
+    },
+    {
         "id": 204,
         "title": "Mushikaburi-hime",
         "season": "S1",
@@ -33627,6 +33523,101 @@
         "tag_source": "jikan",
         "tag_source_id": 59425,
         "tag_match_status": "matched"
+    },
+    {
+        "id": 194,
+        "title": "Neko to Ryuu",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://myanimelist.net/anime/61048",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Neko to Ryuu\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Neko to Ryuu/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Neko to Ryuu/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Neko to Ryuu/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Neko to Ryuu/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Neko to Ryuu/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Neko to Ryuu/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Neko to Ryuu/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Neko to Ryuu/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Neko to Ryuu/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Neko to Ryuu/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Neko to Ryuu/S1/11.mp4"
+            }
+        ],
+        "tags": [
+            "Fantasy",
+            "Comedy",
+            "Slice of Life"
+        ],
+        "genres": [
+            "Comedy",
+            "Fantasy",
+            "Slice of Life"
+        ],
+        "themes": [
+            "Childcare"
+        ],
+        "demographics": [
+            "Shounen"
+        ],
+        "tag_source": "manual",
+        "tag_match_status": "manual",
+        "bookmarked": false
     },
     {
         "id": 274,
@@ -37447,6 +37438,106 @@
         "tag_match_status": "matched"
     },
     {
+        "id": 374,
+        "title": "Otome Kaijuu Caram\u00e9liser",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://myanimelist.net/anime/63150",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Otome Kaijuu Caram\u00e9liser\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Kaijuu Caram\u00e9liser/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Kaijuu Caram\u00e9liser/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Kaijuu Caram\u00e9liser/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Kaijuu Caram\u00e9liser/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Kaijuu Caram\u00e9liser/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Kaijuu Caram\u00e9liser/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Kaijuu Caram\u00e9liser/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Kaijuu Caram\u00e9liser/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Kaijuu Caram\u00e9liser/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Kaijuu Caram\u00e9liser/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Kaijuu Caram\u00e9liser/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Kaijuu Caram\u00e9liser/S1/12.mp4"
+            }
+        ],
+        "tags": [
+            "Romance",
+            "School",
+            "Supernatural"
+        ],
+        "genres": [
+            "Romance",
+            "Supernatural"
+        ],
+        "themes": [
+            "School"
+        ],
+        "demographics": [
+            "Seinen"
+        ],
+        "tag_source": "manual",
+        "tag_match_status": "manual",
+        "bookmarked": false
+    },
+    {
         "id": 180,
         "title": "Otonari ni Ginga",
         "season": "S1",
@@ -38057,6 +38148,107 @@
         "tag_match_status": "matched"
     },
     {
+        "id": 195,
+        "title": "Rakudai Kenja no Gakuin Musou- Nidome no Tensei, S-Rank Cheat Majutsushi Boukenroku",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://myanimelist.net/anime/63508",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Rakudai Kenja no Gakuin Musou- Nidome no Tensei, S-Rank Cheat Majutsushi Boukenroku\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rakudai Kenja no Gakuin Musou- Nidome no Tensei, S-Rank Cheat Majutsushi Boukenroku/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rakudai Kenja no Gakuin Musou- Nidome no Tensei, S-Rank Cheat Majutsushi Boukenroku/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rakudai Kenja no Gakuin Musou- Nidome no Tensei, S-Rank Cheat Majutsushi Boukenroku/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rakudai Kenja no Gakuin Musou- Nidome no Tensei, S-Rank Cheat Majutsushi Boukenroku/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rakudai Kenja no Gakuin Musou- Nidome no Tensei, S-Rank Cheat Majutsushi Boukenroku/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rakudai Kenja no Gakuin Musou- Nidome no Tensei, S-Rank Cheat Majutsushi Boukenroku/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rakudai Kenja no Gakuin Musou- Nidome no Tensei, S-Rank Cheat Majutsushi Boukenroku/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rakudai Kenja no Gakuin Musou- Nidome no Tensei, S-Rank Cheat Majutsushi Boukenroku/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rakudai Kenja no Gakuin Musou- Nidome no Tensei, S-Rank Cheat Majutsushi Boukenroku/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rakudai Kenja no Gakuin Musou- Nidome no Tensei, S-Rank Cheat Majutsushi Boukenroku/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rakudai Kenja no Gakuin Musou- Nidome no Tensei, S-Rank Cheat Majutsushi Boukenroku/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Rakudai Kenja no Gakuin Musou- Nidome no Tensei, S-Rank Cheat Majutsushi Boukenroku/S1/12.mp4"
+            }
+        ],
+        "tags": [
+            "Fantasy",
+            "Action",
+            "Adventure"
+        ],
+        "genres": [
+            "Fantasy",
+            "Action",
+            "Adventure"
+        ],
+        "themes": [
+            "Reincarnation"
+        ],
+        "demographics": [
+            "Shounen"
+        ],
+        "tag_source": "manual",
+        "tag_match_status": "manual",
+        "bookmarked": false
+    },
+    {
         "id": 468,
         "title": "Rakudai Kishi no Cavalry",
         "season": "S1",
@@ -38373,6 +38565,111 @@
         "tag_source": "jikan",
         "tag_source_id": 56690,
         "tag_match_status": "matched"
+    },
+    {
+        "id": 511,
+        "title": "Reiwa no Dara-san",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://myanimelist.net/anime/63082",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Reiwa no Dara-san\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Reiwa no Dara-san/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Reiwa no Dara-san/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Reiwa no Dara-san/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Reiwa no Dara-san/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Reiwa no Dara-san/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Reiwa no Dara-san/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Reiwa no Dara-san/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Reiwa no Dara-san/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Reiwa no Dara-san/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Reiwa no Dara-san/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Reiwa no Dara-san/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Reiwa no Dara-san/S1/12.mp4"
+            },
+            {
+                "number": 13,
+                "title": "Episode 13",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Reiwa no Dara-san/S1/13.mp4"
+            }
+        ],
+        "tags": [
+            "Comedy",
+            "Supernatural"
+        ],
+        "genres": [
+            "Comedy",
+            "Supernatural"
+        ],
+        "themes": [
+            "Mythology"
+        ],
+        "demographics": [
+            "Seinen"
+        ],
+        "tag_source": "manual",
+        "tag_match_status": "manual",
+        "bookmarked": false
     },
     {
         "id": 159,
@@ -40607,55 +40904,55 @@
             {
                 "number": 4,
                 "title": "Episode 4",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Seihantai na Kimi to Boku/S1/4.mp4"
             },
             {
                 "number": 5,
                 "title": "Episode 5",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Seihantai na Kimi to Boku/S1/5.mp4"
             },
             {
                 "number": 6,
                 "title": "Episode 6",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Seihantai na Kimi to Boku/S1/6.mp4"
             },
             {
                 "number": 7,
                 "title": "Episode 7",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Seihantai na Kimi to Boku/S1/7.mp4"
             },
             {
                 "number": 8,
                 "title": "Episode 8",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Seihantai na Kimi to Boku/S1/8.mp4"
             },
             {
                 "number": 9,
                 "title": "Episode 9",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Seihantai na Kimi to Boku/S1/9.mp4"
             },
             {
                 "number": 10,
                 "title": "Episode 10",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Seihantai na Kimi to Boku/S1/10.mp4"
             },
             {
                 "number": 11,
                 "title": "Episode 11",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Seihantai na Kimi to Boku/S1/11.mp4"
             },
             {
                 "number": 12,
                 "title": "Episode 12",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Seihantai na Kimi to Boku/S1/12.mp4"
             }
         ],
@@ -43597,7 +43894,7 @@
         "id": 172,
         "title": "Shunkashuutou Daikousha-Haru no Mai",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/61443",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Shunkashuutou Daikousha-Haru no Mai\\S1",
         "episodes": [
@@ -50482,73 +50779,73 @@
             {
                 "number": 1,
                 "title": "Episode 1",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Toumei Otoko to Ningen Onna-Sonouchi Fuufu ni Naru Futari/S1/1.mp4"
             },
             {
                 "number": 2,
                 "title": "Episode 2",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Toumei Otoko to Ningen Onna-Sonouchi Fuufu ni Naru Futari/S1/2.mp4"
             },
             {
                 "number": 3,
                 "title": "Episode 3",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Toumei Otoko to Ningen Onna-Sonouchi Fuufu ni Naru Futari/S1/3.mp4"
             },
             {
                 "number": 4,
                 "title": "Episode 4",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Toumei Otoko to Ningen Onna-Sonouchi Fuufu ni Naru Futari/S1/4.mp4"
             },
             {
                 "number": 5,
                 "title": "Episode 5",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Toumei Otoko to Ningen Onna-Sonouchi Fuufu ni Naru Futari/S1/5.mp4"
             },
             {
                 "number": 6,
                 "title": "Episode 6",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Toumei Otoko to Ningen Onna-Sonouchi Fuufu ni Naru Futari/S1/6.mp4"
             },
             {
                 "number": 7,
                 "title": "Episode 7",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Toumei Otoko to Ningen Onna-Sonouchi Fuufu ni Naru Futari/S1/7.mp4"
             },
             {
                 "number": 8,
                 "title": "Episode 8",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Toumei Otoko to Ningen Onna-Sonouchi Fuufu ni Naru Futari/S1/8.mp4"
             },
             {
                 "number": 9,
                 "title": "Episode 9",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Toumei Otoko to Ningen Onna-Sonouchi Fuufu ni Naru Futari/S1/9.mp4"
             },
             {
                 "number": 10,
                 "title": "Episode 10",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Toumei Otoko to Ningen Onna-Sonouchi Fuufu ni Naru Futari/S1/10.mp4"
             },
             {
                 "number": 11,
                 "title": "Episode 11",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Toumei Otoko to Ningen Onna-Sonouchi Fuufu ni Naru Futari/S1/11.mp4"
             },
             {
                 "number": 12,
                 "title": "Episode 12",
-                "watched": false,
+                "watched": true,
                 "file_path": "C:/Users/shour/Documents/Anime/Toumei Otoko to Ningen Onna-Sonouchi Fuufu ni Naru Futari/S1/12.mp4"
             }
         ],
@@ -50572,7 +50869,8 @@
         "demographics": [],
         "tag_source": "jikan",
         "tag_source_id": 60395,
-        "tag_match_status": "matched"
+        "tag_match_status": "matched",
+        "watched": true
     },
     {
         "id": 565,
@@ -50680,7 +50978,7 @@
         "id": 566,
         "title": "Tsue to Tsurugi no Wistoria",
         "season": "S2",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/59983",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Tsue to Tsurugi no Wistoria\\S2",
         "episodes": [
@@ -55230,6 +55528,106 @@
         "tag_match_status": "matched"
     },
     {
+        "id": 198,
+        "title": "Yani Neko",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://myanimelist.net/anime/63403",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Yani Neko\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yani Neko/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yani Neko/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yani Neko/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yani Neko/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yani Neko/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yani Neko/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yani Neko/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yani Neko/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yani Neko/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yani Neko/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yani Neko/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Yani Neko/S1/12.mp4"
+            }
+        ],
+        "tags": [
+            "Comedy",
+            "Fantasy"
+        ],
+        "genres": [
+            "Comedy",
+            "Fantasy"
+        ],
+        "themes": [
+            "Anthropomorphic",
+            "Adult Cast"
+        ],
+        "demographics": [
+            "Seinen"
+        ],
+        "tag_source": "manual",
+        "tag_match_status": "manual",
+        "bookmarked": false
+    },
+    {
         "id": 523,
         "title": "Yasei no Last Boss ga Arawareta",
         "season": "S1",
@@ -55540,7 +55938,7 @@
         "id": 559,
         "title": "Yowayowa Sensei",
         "season": "S1",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/60444",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Yowayowa Sensei\\S1",
         "episodes": [
@@ -55836,7 +56234,7 @@
         "id": 558,
         "title": "Yozakura-san Chi no Daisakusen",
         "season": "S2",
-        "status": "Ongoing",
+        "status": "Completed",
         "download_link": "https://myanimelist.net/anime/60055",
         "directory": "C:\\Users\\shour\\Documents\\Anime\\Yozakura-san Chi no Daisakusen\\S2",
         "episodes": [
