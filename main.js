@@ -131,15 +131,41 @@ function getEpisodeNumberFromFilename(filename) {
     const parsed = path.parse(path.basename(String(filename || '')));
     const ext = parsed.ext.toLowerCase();
 
-    if (!VIDEO_EXTENSIONS.has(ext)) return null;
+    if (!VIDEO_EXTENSIONS.has(ext))
+        return null;
 
     const stem = parsed.name;
-    if (/^\d+$/.test(stem)) return Number.parseInt(stem, 10);
 
-    const match = stem.match(/(?:EP\.|episode-|_-_)(\d{1,3})(?!\d)/i);
-    if (match) return Number.parseInt(match[1].replace(/^0+/, '') || '0', 10);
+    // Pure numeric filenames: 1.mkv, 001.mp4
+    if (/^\d+$/.test(stem))
+        return Number.parseInt(stem, 10);
+
+    // Episode keywords
+    const match = stem.match(
+        /(?:^|[\s._-])(?:s\d{1,2}e|episode|episodes|ep|eps|e)?[\s._-]*(\d{1,4})(?:v\d+)?(?:[\s._-]*(?:end|final))?(?=[\s._-]|$)/i
+    );
+
+    if (match)
+        return Number.parseInt(match[1].replace(/^0+/, '') || '0', 10);
 
     return null;
+}
+function listVideoFiles(directory) {
+    const files = [];
+    for (const filename of fs.readdirSync(directory)) {
+        const filepath = path.join(directory, filename);
+        let fileStat;
+        try {
+            fileStat = fs.statSync(filepath);
+        } catch (_error) {
+            continue;
+        }
+        const ext = path.extname(filename).toLowerCase();
+        if (fileStat.isFile() && VIDEO_EXTENSIONS.has(ext)) {
+            files.push(filepath);
+        }
+    }
+    return files;
 }
 
 function findEpisodeVideoFile(directory, episodeNumber) {
@@ -153,32 +179,44 @@ function findEpisodeVideoFile(directory, episodeNumber) {
     }
     if (!stat.isDirectory()) return null;
 
-    const matches = [];
-    for (const filename of fs.readdirSync(directory)) {
-        const filepath = path.join(directory, filename);
-        let fileStat;
-        try {
-            fileStat = fs.statSync(filepath);
-        } catch (_error) {
-            continue;
-        }
-        if (!fileStat.isFile()) continue;
-        if (getEpisodeNumberFromFilename(filename) === Number(episodeNumber)) {
-            matches.push(filepath);
-        }
+    const targetNumber = Number(episodeNumber);
+    const videoFiles = listVideoFiles(directory);
+
+    const matches = videoFiles.filter(
+        (filepath) => getEpisodeNumberFromFilename(path.basename(filepath)) === targetNumber
+    );
+
+    if (matches.length) {
+        return matches.sort((a, b) => {
+            const aName = path.basename(a).toLowerCase();
+            const bName = path.basename(b).toLowerCase();
+            const aParsed = path.parse(aName);
+            const bParsed = path.parse(bName);
+            const aRank = [aParsed.name === String(targetNumber) ? 0 : 1, aParsed.ext === '.mp4' ? 0 : 1, aName];
+            const bRank = [bParsed.name === String(targetNumber) ? 0 : 1, bParsed.ext === '.mp4' ? 0 : 1, bName];
+            return aRank[0] - bRank[0] || aRank[1] - bRank[1] || aRank[2].localeCompare(bRank[2]);
+        })[0];
     }
 
-    if (!matches.length) return null;
+    // Fallback: some season folders keep the show's absolute numbering
+    // (e.g. season 2 starts at "14.mkv") instead of restarting at 1, so a
+    // direct number match never hits. Fall back to positional order:
+    // treat episodeNumber as this file's position within the folder once
+    // sorted by whatever numbering scheme it actually uses.
+    const ordered = videoFiles.slice().sort((a, b) => {
+        const aNum = getEpisodeNumberFromFilename(path.basename(a));
+        const bNum = getEpisodeNumberFromFilename(path.basename(b));
+        if (aNum !== null && bNum !== null) return aNum - bNum;
+        if (aNum !== null) return -1;
+        if (bNum !== null) return 1;
+        return path.basename(a).toLowerCase().localeCompare(path.basename(b).toLowerCase());
+    });
 
-    return matches.sort((a, b) => {
-        const aName = path.basename(a).toLowerCase();
-        const bName = path.basename(b).toLowerCase();
-        const aParsed = path.parse(aName);
-        const bParsed = path.parse(bName);
-        const aRank = [aParsed.name === String(episodeNumber) ? 0 : 1, aParsed.ext === '.mp4' ? 0 : 1, aName];
-        const bRank = [bParsed.name === String(episodeNumber) ? 0 : 1, bParsed.ext === '.mp4' ? 0 : 1, bName];
-        return aRank[0] - bRank[0] || aRank[1] - bRank[1] || aRank[2].localeCompare(bRank[2]);
-    })[0];
+    if (targetNumber >= 1 && targetNumber <= ordered.length) {
+        return ordered[targetNumber - 1];
+    }
+
+    return null;
 }
 
 function checkEpisodeAvailability(episode, animeDirectory) {
@@ -285,7 +323,7 @@ app.whenReady().then(async () => {
         useLocalServer = (response === 1);
     }
 
-    let serverURL = 'http://127.0.0.1:5000';
+    let serverURL = 'http://127.0.0.1:7777';
     let config = {};
 
     if (!useLocalServer) {

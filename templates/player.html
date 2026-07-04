@@ -179,12 +179,46 @@ document.addEventListener("DOMContentLoaded", function () {
         autoplay: true,
         preload: 'auto',
         playbackRates: [0.5, 1, 1.5, 2],
+        // Force video.js to read audio/text tracks straight from the browser's
+        // native <video> element rather than its own emulated track handling.
+        // This is what lets embedded MKV/MP4 audio & subtitle tracks show up.
+        html5: {
+            nativeAudioTracks: true,
+            nativeTextTracks: true,
+            nativeVideoTracks: true
+        },
         controlBar: {
             children: [
                 'playToggle', 'volumePanel', 'currentTimeDisplay', 'timeDivider',
                 'durationDisplay', 'progressControl', 'remainingTimeDisplay',
+                'subsCapsButton', 'audioTrackButton',
                 'playbackRateMenuButton', 'fullscreenToggle'
             ]
+        }
+    });
+
+    // subsCapsButton / audioTrackButton auto-hide themselves when there's
+    // nothing to choose from (video.js handles that natively). We just log
+    // what got detected so track-support issues are easy to diagnose per browser.
+    player.ready(() => {
+        const audioTracks = player.audioTracks ? player.audioTracks() : null;
+        const textTracks = player.textTracks ? player.textTracks() : null;
+        console.log(`🎧 Audio tracks detected: ${audioTracks ? audioTracks.length : 0}`);
+        console.log(`💬 Text/subtitle tracks detected: ${textTracks ? textTracks.length : 0}`);
+        if (audioTracks) {
+            for (let i = 0; i < audioTracks.length; i++) {
+                const t = audioTracks[i];
+                console.log(`  audio[${i}]: label="${t.label}" language="${t.language}" enabled=${t.enabled}`);
+            }
+        }
+        if (textTracks) {
+            for (let i = 0; i < textTracks.length; i++) {
+                const t = textTracks[i];
+                console.log(`  text[${i}]: label="${t.label}" kind="${t.kind}" language="${t.language}"`);
+            }
+        }
+        if ((!audioTracks || audioTracks.length < 2) && (!textTracks || textTracks.length === 0)) {
+            console.warn('No selectable audio or subtitle tracks were exposed by the browser for this file. This is expected if the current browser/container combo doesn\'t support inband track parsing (e.g. ASS/SRT-in-MKV subtitles, or audio-track switching outside Chrome/Edge).');
         }
     });
 

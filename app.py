@@ -299,7 +299,7 @@ def get_episode_number_from_filename(filename):
     if stem.isdigit():
         return int(stem)
 
-    episode_pattern = re.compile(r'(?:EP\.|episode-|_-_)(\d{1,3})(?!\d)', re.IGNORECASE)
+    episode_pattern = re.compile( r'(?:^|[\s._-])(?:s\d{1,2}e|episodes?|eps?|ep|e)?[\s._-]*(\d{1,4})(?:v\d+)?(?:[\s._-]*(?:end|final))?(?=[\s._-]|$)', re.IGNORECASE)
     match = episode_pattern.search(stem)
 
     if match:
@@ -307,29 +307,50 @@ def get_episode_number_from_filename(filename):
 
     return None
 
+def _list_video_files(directory):
+    files = []
+    for filename in os.listdir(directory):
+        filepath = os.path.join(directory, filename)
+        if os.path.isfile(filepath) and os.path.splitext(filename)[1].lower() in VIDEO_EXTENSIONS:
+            files.append(filepath)
+    return files
+
 def find_episode_video_file(directory, episode_number):
     if not directory or not os.path.isdir(directory):
         return None
 
-    matches = []
-    for filename in os.listdir(directory):
-        filepath = os.path.join(directory, filename)
-        if not os.path.isfile(filepath):
-            continue
-        if get_episode_number_from_filename(filename) == episode_number:
-            matches.append(filepath)
+    video_files = _list_video_files(directory)
 
-    if not matches:
-        return None
+    matches = [
+        filepath for filepath in video_files
+        if get_episode_number_from_filename(os.path.basename(filepath)) == episode_number
+    ]
 
-    def match_rank(filepath):
-        filename = os.path.basename(filepath).lower()
-        stem, ext = os.path.splitext(filename)
-        exact_rank = 0 if stem == str(episode_number) else 1
-        ext_rank = 0 if ext == ".mp4" else 1
-        return (exact_rank, ext_rank, filename)
+    if matches:
+        def match_rank(filepath):
+            filename = os.path.basename(filepath).lower()
+            stem, ext = os.path.splitext(filename)
+            exact_rank = 0 if stem == str(episode_number) else 1
+            ext_rank = 0 if ext == ".mp4" else 1
+            return (exact_rank, ext_rank, filename)
 
-    return sorted(matches, key=match_rank)[0]
+        return sorted(matches, key=match_rank)[0]
+
+    # Fallback: some season folders keep the show's absolute numbering
+    # (e.g. season 2 starts at "14.mkv") instead of restarting at 1, so a
+    # direct number match will never hit. In that case, fall back to
+    # positional order: treat episode_number as this file's position
+    # within the folder once sorted by whatever numbering scheme it uses.
+    def sort_key(filepath):
+        filename = os.path.basename(filepath)
+        number = get_episode_number_from_filename(filename)
+        return (0, number) if number is not None else (1, filename.lower())
+
+    ordered = sorted(video_files, key=sort_key)
+    if 1 <= episode_number <= len(ordered):
+        return ordered[episode_number - 1]
+
+    return None
 
 def resolve_episode_video_file(anime, filename):
     directory = anime.get("directory")
@@ -3159,4 +3180,4 @@ def reorder_queue():
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    app.run(port=5000, debug=False)  # Runs Flask on port 5000
+    app.run(port=7777, debug=False)  # Runs Flask on port 7777
