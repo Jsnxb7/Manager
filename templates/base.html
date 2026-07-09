@@ -52,33 +52,78 @@
         }
     </style>
 </head>
-<body>
-<video class="video-background" autoplay loop muted playsinline>
-    <source src="{{ url_for('static', filename='images/universal-video-bg.mp4') }}" type="video/mp4">
-</video>
+<body class="{% block body_class %}{% endblock %}">
+<div class="electron-titlebar" id="electron-titlebar" aria-hidden="true">
+    <div class="electron-titlebar-drag-region">
+        <div class="electron-window-brand">
+            <span class="electron-window-mark">AM</span>
+            <span class="electron-window-title">Anime Manager</span>
+        </div>
+    </div>
+
+    <div class="electron-titlebar-actions">
+        <button class="electron-titlebar-btn electron-options-toggle" id="electron-options-toggle" type="button" aria-expanded="false">Options</button>
+        <div class="electron-options-menu" id="electron-options-menu" role="menu">
+            <div class="electron-options-section">
+                <strong>Paths</strong>
+                <button type="button" data-electron-option="selectFlaskExe">Change Flask app.exe</button>
+                <button type="button" data-electron-option="selectFlaskDataFolder">Change Flask data folder</button>
+                <button type="button" data-electron-option="openFlaskDataFolder">Open data folder</button>
+                <button type="button" data-electron-option="openConfigFolder">Open config folder</button>
+                <button type="button" data-electron-option="openFlaskLogs">Open Flask logs</button>
+            </div>
+            <div class="electron-options-section">
+                <strong>Window</strong>
+                <button type="button" data-electron-action="reload">Reload UI</button>
+                <button type="button" data-electron-action="fullscreen">Toggle fullscreen</button>
+                <button type="button" data-electron-action="always-on-top">Always on top</button>
+                <button type="button" data-electron-action="devtools">DevTools</button>
+                <button type="button" data-electron-action="restart">Restart app</button>
+            </div>
+            <button class="electron-options-danger" type="button" data-electron-option="resetPaths">Reset saved paths</button>
+            <p class="electron-options-status" id="electron-options-status">Electron options ready.</p>
+        </div>
+        <button class="electron-window-btn" type="button" data-electron-action="minimize" aria-label="Minimize">−</button>
+        <button class="electron-window-btn" type="button" data-electron-action="maximize" aria-label="Maximize or restore">□</button>
+        <button class="electron-window-btn electron-window-close" type="button" data-electron-action="close" aria-label="Close">×</button>
+    </div>
+</div>
+
+<div class="app-bg" aria-hidden="true">
+    <video class="video-background" autoplay loop muted playsinline poster="{{ url_for('static', filename='placeholder.jpeg') }}">
+        <source src="{{ url_for('static', filename='images/universal-video-bg.mp4') }}" type="video/mp4">
+        <source src="{{ url_for('static', filename='images/stars.webm') }}" type="video/webm">
+    </video>
+    <div class="video-bg-overlay"></div>
+</div>
 
 <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
 
 <button onclick="window.location.href=this.dataset.url"
         data-url="{{ url_for('custom_player.custom_player_home') }}"
-        class="custom-player-btn">
+        class="custom-player-btn"
+        type="button"
+        aria-label="Open custom player">
     🎬
 </button>
 <!-- Queue Toggle Button -->
 <button id="toggle-queue-btn"
-        class="fixed bottom-4 right-4 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg z-50">
+        class="global-queue-toggle"
+        type="button"
+        aria-label="Toggle queue"
+        aria-expanded="false">
     📺
 </button>
 
 <!-- Queue Panel -->
 <div id="global-queue"
-     class="fixed bottom-16 right-4 bg-gray-900 text-white p-4 rounded-lg shadow-lg max-h-64 overflow-auto w-64 z-40 hidden">
+     class="global-queue-panel">
     <div class="queue-panel-header">
-        <strong class="text-lg font-bold mb-2">Queue</strong>
+        <strong class="queue-panel-title">Queue</strong>
         <a href="{{ url_for('queue.queue_page') }}" class="queue-expand-link">Expand</a>
     </div>
     {% if global_queue %}
-    <ul class="space-y-2 queue-card-list" id="global-queue-list">
+    <ul class="queue-card-list" id="global-queue-list">
         {% for item in global_queue %}
           <li class="queue-card-mini {% if item.is_now_playing %}is-now-playing{% endif %}" draggable="true" data-index="{{ item.index }}">
             <span class="queue-drag-handle" aria-label="Drag handle">::</span>
@@ -94,14 +139,14 @@
               <span>Episode {{ item.episode_number }} - {{ item.episode_title }}</span>
               <span>Duration: {{ item.duration_label }}</span>
               <a href="{{ item.player_url }}" class="queue-play-link">Queue Player</a>
-              <a href="{{ url_for('player.player', index=loop.index0) }}?from_queue=true" class="text-blue-400 underline ml-2">▶️</a>
+              <a href="{{ url_for('player.player', index=loop.index0) }}?from_queue=true" class="queue-mini-direct-play">▶️</a>
             </div>
-            <button class="text-red-400 ml-2 delete-btn" data-index="{{ loop.index0 }}">🗑️</button>
+            <button class="delete-btn" data-index="{{ loop.index0 }}">🗑️</button>
           </li>
         {% endfor %}
       </ul>      
     {% else %}
-        <p class="text-sm text-gray-400">Queue is empty</p>
+        <p class="queue-empty-text">Queue is empty</p>
     {% endif %}
 </div>
 <script>
@@ -176,16 +221,19 @@
     const toggleBtn = document.getElementById("toggle-queue-btn");
     const queueBox = document.getElementById("global-queue");
 
-    toggleBtn.addEventListener("click", () => {
-        queueBox.classList.toggle("is-open");
-    });
+    if (toggleBtn && queueBox) {
+        toggleBtn.addEventListener("click", () => {
+            const isOpen = queueBox.classList.toggle("is-open");
+            toggleBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+    }
 </script>
     
 <a href="{{ url_for('core.hub') }}" class="home-button home-button-icon-link">
     <img src="{{ url_for('static', filename='home.webp') }}" alt="Home" class="home-button-icon-img">
   </a>
 
-  <button onclick="history.back()" class="back-button">←</button>
+  <button onclick="history.back()" class="back-button" type="button" aria-label="Go back">←</button>
 
 
   
@@ -203,6 +251,88 @@
                 mobileControlHub.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
             });
         }
+    </script>
+
+    <script>
+        (function setupElectronChrome() {
+            const electron = window.electronAPI;
+            const titlebar = document.getElementById('electron-titlebar');
+            if (!electron || !electron.isElectron || !titlebar) return;
+
+            document.body.classList.add('electron-shell');
+            titlebar.setAttribute('aria-hidden', 'false');
+
+            const menu = document.getElementById('electron-options-menu');
+            const toggle = document.getElementById('electron-options-toggle');
+            const status = document.getElementById('electron-options-status');
+
+            const setStatus = (message, isError = false) => {
+                if (!status) return;
+                status.textContent = message;
+                status.classList.toggle('is-error', Boolean(isError));
+            };
+
+            async function refreshStatus() {
+                if (!electron.getStatus) return;
+                try {
+                    const info = await electron.getStatus();
+                    const dataFolder = info.flaskDataPath ? info.flaskDataPath.split(/[\\/]/).pop() : 'not set';
+                    setStatus(`Data: ${dataFolder} · v${info.appVersion || '1.0.0'}`);
+                } catch (error) {
+                    setStatus(error.message || 'Could not read Electron status.', true);
+                }
+            }
+
+            if (toggle && menu) {
+                toggle.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    const open = menu.classList.toggle('is-open');
+                    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                    if (open) refreshStatus();
+                });
+
+                document.addEventListener('click', (event) => {
+                    if (!menu.classList.contains('is-open')) return;
+                    if (menu.contains(event.target) || toggle.contains(event.target)) return;
+                    menu.classList.remove('is-open');
+                    toggle.setAttribute('aria-expanded', 'false');
+                });
+            }
+
+            document.querySelectorAll('[data-electron-action]').forEach((button) => {
+                button.addEventListener('click', async () => {
+                    const action = button.dataset.electronAction;
+                    if (!electron.windowControl) return;
+                    try {
+                        const result = await electron.windowControl(action);
+                        if (result && result.success === false) setStatus(result.message || 'Action failed.', true);
+                    } catch (error) {
+                        setStatus(error.message || 'Action failed.', true);
+                    }
+                });
+            });
+
+            document.querySelectorAll('[data-electron-option]').forEach((button) => {
+                button.addEventListener('click', async () => {
+                    const option = button.dataset.electronOption;
+                    if (!electron[option]) return;
+                    try {
+                        const result = await electron[option]();
+                        if (result && result.success === false && !result.cancelled) {
+                            setStatus(result.message || 'Option failed.', true);
+                        } else if (result && result.cancelled) {
+                            setStatus('No change made.');
+                        } else {
+                            setStatus('Updated successfully. Restart if the backend path changed.');
+                        }
+                    } catch (error) {
+                        setStatus(error.message || 'Option failed.', true);
+                    }
+                });
+            });
+
+            refreshStatus();
+        })();
     </script>
     <!-- Video.js Script -->
     <script src="https://vjs.zencdn.net/7.15.4/video.min.js"></script>

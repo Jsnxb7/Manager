@@ -1,15 +1,15 @@
 {
     "schema_version": 1,
-    "updated_at": "2026-07-09T18:58:50.994293+00:00",
+    "updated_at": "2026-07-09T20:21:43.327016+00:00",
     "last_use": {
         "anime_id": 50,
         "anime_title": "Working",
-        "episode_number": 3,
-        "episode_title": "Episode 3",
-        "current_time": 15.92,
-        "total_duration": 1436.06,
-        "progress_percentage": 1.11,
-        "last_watched_at": "2026-07-09T18:58:50.993271+00:00"
+        "episode_number": 4,
+        "episode_title": "Episode 4",
+        "current_time": 1.15,
+        "total_duration": 1434.98,
+        "progress_percentage": 0.08,
+        "last_watched_at": "2026-07-09T20:21:43.324030+00:00"
     },
     "queue": {
         "updated_at": "2026-07-04T18:04:07.695145+00:00",

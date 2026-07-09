@@ -50,13 +50,21 @@
                     </div>
                 </div>
 
-                <p class="detail-download-row"><strong>Download Anime:</strong>
-                    <a href="{{ anime.download_link }}" target="_blank" class="download-link" id="anime-download-link">{{ anime.download_link }}</a>
-                </p>
-                <form class="inline-edit-form" id="anime-link-form">
-                    <input type="url" id="anime-link-input" value="{{ anime.download_link }}" required>
-                    <button type="submit" class="watched-button">Save Link</button>
-                </form>
+                <div class="detail-management-panel">
+                    <div class="detail-management-heading">
+                        <span class="detail-kicker">Management</span>
+                        <strong>Links & local files</strong>
+                    </div>
+                    <p class="detail-download-row"><strong>Download:</strong>
+                        <a href="{{ anime.download_link }}" target="_blank" class="download-link" id="anime-download-link">{{ anime.download_link }}</a>
+                    </p>
+                    <form class="inline-edit-form" id="anime-link-form">
+                        <input type="url" id="anime-link-input" value="{{ anime.download_link }}" required>
+                        <button type="submit" class="watched-button">Save Link</button>
+                    </form>
+                    <button type="button" id="open-anime-folder" class="watched-button secondary">📁 Open in Explorer</button>
+                    <p id="open-explorer-status" class="detail-explorer-status" aria-live="polite"></p>
+                </div>
 
                 <div class="anime-tag-details">
                     {% set tag_groups = [("Genres", anime.genres), ("Themes", anime.themes), ("Demographics", anime.demographics), ("Tags", anime.tags)] %}
@@ -78,26 +86,21 @@
                     <button onclick="toggleAnimeWatched('{{ anime.id }}', this)" class="watched-button {% if anime.watched %}watched{% endif %}">
                         {% if anime.watched %}✔ Anime Watched{% else %}Mark Anime as Watched{% endif %}
                     </button>
-                    <button type="button" id="open-anime-folder" class="watched-button secondary">📁 Open in Explorer</button>
                 </div>
-                <p id="open-explorer-status" class="detail-explorer-status" aria-live="polite"></p>
             </div>
         </div>
     </section>
-
-    <div class="episode-manager detail-episode-manager">
-        <form id="add-episode-form" class="inline-edit-form">
-            <input type="text" id="new-episode-title" placeholder="Episode title (optional)">
-            <button type="submit" class="watched-button">Add Episode</button>
-        </form>
-    </div>
 
     <section class="episode-section-header">
         <div>
             <span class="detail-kicker">Episode Progress</span>
             <h2>Episodes</h2>
+            <p>Resume unfinished episodes, restart from zero, or mark episodes as watched.</p>
         </div>
-        <p>Resume unfinished episodes, restart from zero, or mark episodes as watched.</p>
+        <form id="add-episode-form" class="inline-edit-form episode-add-form">
+            <input type="text" id="new-episode-title" placeholder="Episode title (optional)">
+            <button type="submit" class="watched-button">Add Episode</button>
+        </form>
     </section>
 
     <div class="episode-cards episode-progress-grid">

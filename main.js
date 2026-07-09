@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, shell, Menu } = require('electron');
 const { spawn, exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -258,6 +258,139 @@ async function selectFolder(title) {
     return result.filePaths.length > 0 ? result.filePaths[0] : null;
 }
 
+async function selectFile(title, filters = []) {
+    const result = await dialog.showOpenDialog(mainWindow || undefined, {
+        title,
+        properties: ['openFile'],
+        filters
+    });
+    return result.canceled || result.filePaths.length === 0 ? null : result.filePaths[0];
+}
+
+function getElectronStatus() {
+    const config = loadConfig();
+    return {
+        success: true,
+        isPackaged: app.isPackaged,
+        appVersion: app.getVersion(),
+        userDataPath: app.getPath('userData'),
+        configFile: CONFIG_FILE,
+        logFile: LOG_FILE,
+        flaskExePath: config.flaskExePath || '',
+        flaskDataPath: config.flaskDataPath || '',
+        serverURL: config.serverURL || 'http://127.0.0.1:7777'
+    };
+}
+
+function createAppMenu() {
+    const template = [
+        {
+            label: 'App',
+            submenu: [
+                { label: 'Reload Window', accelerator: 'CmdOrCtrl+R', click: () => mainWindow && mainWindow.reload() },
+                { label: 'Toggle Full Screen', accelerator: 'F11', click: () => mainWindow && mainWindow.setFullScreen(!mainWindow.isFullScreen()) },
+                { label: 'Toggle DevTools', accelerator: 'CmdOrCtrl+Shift+I', click: () => mainWindow && mainWindow.webContents.toggleDevTools() },
+                { type: 'separator' },
+                { label: 'Restart App', click: () => { app.relaunch(); app.exit(0); } },
+                { label: 'Quit', accelerator: 'Alt+F4', click: () => app.quit() }
+            ]
+        },
+        {
+            label: 'Paths',
+            submenu: [
+                { label: 'Change Flask app.exe Path', click: async () => { const selected = await selectFile('Select compiled Flask app.exe', [{ name: 'Executable', extensions: ['exe'] }]); if (selected) { const config = loadConfig(); config.flaskExePath = selected; saveConfig(config); } } },
+                { label: 'Change Flask Data Folder', click: async () => { const selected = await selectFolder('Select Flask project/data folder'); if (selected) { const config = loadConfig(); config.flaskDataPath = selected; saveConfig(config); } } },
+                { type: 'separator' },
+                { label: 'Open Flask Data Folder', click: () => { const config = loadConfig(); if (config.flaskDataPath) shell.openPath(config.flaskDataPath); } },
+                { label: 'Open Config Folder', click: () => shell.openPath(app.getPath('userData')) },
+                { label: 'Open Flask Logs', click: () => fs.existsSync(LOG_FILE) ? shell.openPath(LOG_FILE) : shell.openPath(app.getPath('userData')) }
+            ]
+        },
+        {
+            label: 'Window',
+            submenu: [
+                { label: 'Minimize', accelerator: 'CmdOrCtrl+M', click: () => mainWindow && mainWindow.minimize() },
+                { label: 'Maximize / Restore', click: () => mainWindow && (mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize()) },
+                { label: 'Always on Top', type: 'checkbox', click: (item) => mainWindow && mainWindow.setAlwaysOnTop(item.checked) }
+            ]
+        }
+    ];
+    Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+}
+
+ipcMain.handle('electron-window-control', async (_event, action) => {
+    if (!mainWindow) return { success: false, message: 'Window is not ready.' };
+    switch (action) {
+        case 'minimize': mainWindow.minimize(); return { success: true };
+        case 'maximize':
+            mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize();
+            return { success: true, maximized: mainWindow.isMaximized() };
+        case 'close': mainWindow.close(); return { success: true };
+        case 'reload': mainWindow.reload(); return { success: true };
+        case 'fullscreen': mainWindow.setFullScreen(!mainWindow.isFullScreen()); return { success: true, fullscreen: mainWindow.isFullScreen() };
+        case 'devtools': mainWindow.webContents.toggleDevTools(); return { success: true };
+        case 'always-on-top': mainWindow.setAlwaysOnTop(!mainWindow.isAlwaysOnTop()); return { success: true, alwaysOnTop: mainWindow.isAlwaysOnTop() };
+        case 'restart': app.relaunch(); app.exit(0); return { success: true };
+        default: return { success: false, message: `Unknown window action: ${action}` };
+    }
+});
+
+ipcMain.handle('electron-get-status', async () => getElectronStatus());
+
+ipcMain.handle('electron-select-flask-exe', async () => {
+    const selected = await selectFile('Select compiled Flask app.exe', [{ name: 'Executable', extensions: ['exe'] }]);
+    if (!selected) return { success: false, cancelled: true };
+    const config = loadConfig();
+    config.flaskExePath = selected;
+    saveConfig(config);
+    return getElectronStatus();
+});
+
+ipcMain.handle('electron-select-flask-data-folder', async () => {
+    const selected = await selectFolder('Select Flask project/data folder containing static, templates, and data');
+    if (!selected) return { success: false, cancelled: true };
+    const config = loadConfig();
+    config.flaskDataPath = selected;
+    saveConfig(config);
+    return getElectronStatus();
+});
+
+ipcMain.handle('electron-open-config-folder', async () => {
+    const message = await shell.openPath(app.getPath('userData'));
+    return message ? { success: false, message } : { success: true };
+});
+
+ipcMain.handle('electron-open-flask-data-folder', async () => {
+    const config = loadConfig();
+    if (!config.flaskDataPath) return { success: false, message: 'Flask data folder has not been set yet.' };
+    const message = await shell.openPath(config.flaskDataPath);
+    return message ? { success: false, message } : { success: true };
+});
+
+ipcMain.handle('electron-open-flask-logs', async () => {
+    const target = fs.existsSync(LOG_FILE) ? LOG_FILE : app.getPath('userData');
+    const message = await shell.openPath(target);
+    return message ? { success: false, message } : { success: true };
+});
+
+ipcMain.handle('electron-reset-paths', async () => {
+    const { response } = await dialog.showMessageBox(mainWindow || undefined, {
+        type: 'warning',
+        buttons: ['Reset Saved Paths', 'Cancel'],
+        defaultId: 1,
+        cancelId: 1,
+        title: 'Reset Saved Paths',
+        message: 'Reset the saved Flask executable and data folder paths?',
+        detail: 'You will be asked to select them again the next time the compiled backend mode is used.'
+    });
+    if (response !== 0) return { success: false, cancelled: true };
+    const config = loadConfig();
+    delete config.flaskExePath;
+    delete config.flaskDataPath;
+    saveConfig(config);
+    return getElectronStatus();
+});
+
 // Get paths
 async function getPaths() {
     let config = loadConfig();
@@ -368,10 +501,19 @@ app.whenReady().then(async () => {
         console.log("🔗 Using local Flask development server...");
     }
 
+    createAppMenu();
+
     // ✅ Create main window
     mainWindow = new BrowserWindow({
-        width: 1200,
-        height: 800,
+        width: 1320,
+        height: 860,
+        minWidth: 980,
+        minHeight: 680,
+        backgroundColor: '#050506',
+        title: 'Anime Manager',
+        frame: false,
+        titleBarStyle: 'hidden',
+        autoHideMenuBar: true,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
@@ -386,6 +528,9 @@ app.whenReady().then(async () => {
     const finalURL = `${serverURL}${launchTarget}`;
     console.log("🌐 Loading URL:", finalURL);
     mainWindow.loadURL(finalURL);
+
+
+    mainWindow.setMenuBarVisibility(false);
 
     mainWindow.on('closed', () => {
         if (!useLocalServer) closeFlaskProcess();

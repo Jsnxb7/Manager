@@ -1,35 +1,68 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Content Hub</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
-</head>
-<body class="hub-page">
-<div class="container">
-    {% for section in sections %}
-        <a href="/{{ section|lower|replace(' ', '_') }}">
-            <button>{{ section }}</button>
-        </a>
-    {% endfor %}
+{% extends "base.html" %}
+{% block body_class %}hub-page{% endblock %}
 
-    <!-- Add button -->
-    <button class="add-btn" onclick="addNew()">+</button>
+{% block content %}
+<section class="hub-dashboard">
+    <div class="hub-hero-copy">
+        <h1>Content Hub</h1>
+    </div>
+
+    <div class="hub-grid" aria-label="Available content libraries">
+        {% for section in sections %}
+            {% set slug = section|lower|replace(' ', '_') %}
+            <a href="/{{ slug }}" class="hub-card hub-card-{{ slug }}">
+                <strong>{{ section }}</strong>
+            </a>
+        {% endfor %}
+
+        <button class="hub-card hub-add-card" type="button" id="open-section-modal">
+            <strong>Add Section</strong>
+        </button>
+    </div>
+</section>
+
+<div class="section-modal" id="section-modal" hidden>
+    <div class="section-modal-backdrop" data-close-section-modal></div>
+    <form id="addForm" method="POST" action="/add-section" class="section-modal-card" autocomplete="off">
+        <div class="section-modal-header">
+            <div>
+                <span class="page-eyebrow">New Library</span>
+                <h2>Add content section</h2>
+            </div>
+            <button type="button" class="section-modal-close" data-close-section-modal aria-label="Close add section dialog">×</button>
+        </div>
+        <label for="sectionName">Section name</label>
+        <input type="text" name="name" id="sectionName" placeholder="Example: Movies" required>
+        <p class="form-helper-text">This will create a new section card and a matching library page.</p>
+        <div class="section-modal-actions">
+            <button type="button" class="watched-button secondary" data-close-section-modal>Cancel</button>
+            <button type="submit" class="submit-btn">Create Section</button>
+        </div>
+    </form>
 </div>
 
-<form id="addForm" method="POST" action="/add-section" class="hidden-form">
-    <input type="hidden" name="name" id="sectionName">
-</form>
-
 <script>
-    function addNew() {
-        const name = prompt("Enter new section name:");
-        if (!name) return;
+document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById("section-modal");
+    const openBtn = document.getElementById("open-section-modal");
+    const input = document.getElementById("sectionName");
 
-        document.getElementById("sectionName").value = name;
-        document.getElementById("addForm").submit();
+    function openModal() {
+        modal.hidden = false;
+        document.body.classList.add("modal-open");
+        setTimeout(() => input?.focus(), 30);
     }
-</script>
 
-</body>
-</html>
+    function closeModal() {
+        modal.hidden = true;
+        document.body.classList.remove("modal-open");
+    }
+
+    openBtn?.addEventListener("click", openModal);
+    document.querySelectorAll("[data-close-section-modal]").forEach(el => el.addEventListener("click", closeModal));
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && !modal.hidden) closeModal();
+    });
+});
+</script>
+{% endblock %}
