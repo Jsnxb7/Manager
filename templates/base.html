@@ -7,7 +7,6 @@
     <!-- Video.js CSS -->
     <link href="https://vjs.zencdn.net/7.15.4/video-js.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/element_theme.css') }}?v={{ element_theme_version }}">
     <style>
         #toast-container {
             position: fixed;
@@ -53,17 +52,12 @@
         }
     </style>
 </head>
-<body class="theme-{{ active_theme }}{% if theme_settings.dark_mode %} theme-dark{% endif %} section-{{ active_section_key }} theme-media-{{ theme_settings.background.mode }}">
+<body>
+<video class="video-background" autoplay loop muted playsinline>
+    <source src="{{ url_for('static', filename='images/universal-video-bg.mp4') }}" type="video/mp4">
+</video>
+
 <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
-{% if theme_settings.background.mode not in ["none", "solid"] %}
-    {% if theme_settings.background.type == "image" %}
-        <img class="theme-background-image" src="{{ theme_settings.background.url }}" alt="" aria-hidden="true">
-    {% elif theme_settings.background.type == "video" %}
-        <video class="theme-background-video" autoplay loop muted playsinline>
-            <source src="{{ theme_settings.background.url }}" type="video/{{ 'webm' if theme_settings.background.url.endswith('.webm') else 'mp4' }}">
-        </video>
-    {% endif %}
-{% endif %}
 
 <button onclick="window.location.href=this.dataset.url"
         data-url="{{ url_for('custom_player.custom_player_home') }}"
@@ -81,7 +75,7 @@
      class="fixed bottom-16 right-4 bg-gray-900 text-white p-4 rounded-lg shadow-lg max-h-64 overflow-auto w-64 z-40 hidden">
     <div class="queue-panel-header">
         <strong class="text-lg font-bold mb-2">Queue</strong>
-        <a href="{{ url_for('queue_page') }}" class="queue-expand-link">Expand</a>
+        <a href="{{ url_for('queue.queue_page') }}" class="queue-expand-link">Expand</a>
     </div>
     {% if global_queue %}
     <ul class="space-y-2 queue-card-list" id="global-queue-list">
@@ -100,7 +94,7 @@
               <span>Episode {{ item.episode_number }} - {{ item.episode_title }}</span>
               <span>Duration: {{ item.duration_label }}</span>
               <a href="{{ item.player_url }}" class="queue-play-link">Queue Player</a>
-              <a href="{{ url_for('player', index=loop.index0) }}?from_queue=true" class="text-blue-400 underline ml-2">▶️</a>
+              <a href="{{ url_for('player.player', index=loop.index0) }}?from_queue=true" class="text-blue-400 underline ml-2">▶️</a>
             </div>
             <button class="text-red-400 ml-2 delete-btn" data-index="{{ loop.index0 }}">🗑️</button>
           </li>
@@ -187,142 +181,29 @@
     });
 </script>
     
-<a href="{{ url_for('hub') }}" class="home-button home-button-icon-link">
+<a href="{{ url_for('core.hub') }}" class="home-button home-button-icon-link">
     <img src="{{ url_for('static', filename='home.webp') }}" alt="Home" class="home-button-icon-img">
   </a>
 
   <button onclick="history.back()" class="back-button">←</button>
 
-<button type="button" id="element-editor-toggle" class="element-editor-toggle" aria-pressed="false" aria-label="Toggle element color editor" title="Edit colors">🎨</button>
-
-<aside id="element-editor-panel" class="element-editor-panel" aria-hidden="true">
-    <div class="element-editor-header">
-        <div>
-            <strong>Element Visual Editor</strong>
-            <small id="element-editor-target">Select an element on the page</small>
-        </div>
-        <button type="button" id="element-editor-close" class="element-editor-close" aria-label="Close editor">×</button>
-    </div>
-
-    <div class="element-editor-preview-wrap">
-        <span>Live preview</span>
-        <div id="element-editor-preview" class="element-editor-preview">Preview Text</div>
-    </div>
-
-    <div class="element-editor-section">
-        <h4>Background</h4>
-        <label for="element-bg-mode">Background mode</label>
-        <select id="element-bg-mode">
-            <option value="solid">Solid color</option>
-            <option value="linear-gradient">Linear gradient</option>
-            <option value="radial-gradient">Radial gradient</option>
-            <option value="custom">Custom CSS background</option>
-        </select>
-        <label for="element-bg-color">Solid color</label>
-        <div class="element-editor-control-row">
-            <input type="color" id="element-bg-color" value="#101018">
-            <input type="text" id="element-bg-color-text" value="#101018" spellcheck="false">
-        </div>
-        <label for="element-bg-alpha">Background opacity</label>
-        <input type="text" id="element-bg-alpha" value="0.70" spellcheck="false">
-        <label for="element-gradient-angle">Gradient angle / position</label>
-        <input type="text" id="element-gradient-angle" value="135deg" spellcheck="false">
-        <label for="element-gradient-start-color">Gradient start</label>
-        <div class="element-editor-control-row">
-            <input type="color" id="element-gradient-start-color" value="#101018">
-            <input type="text" id="element-gradient-start-color-text" value="#101018" spellcheck="false">
-        </div>
-        <label for="element-gradient-start-alpha">Start opacity</label>
-        <input type="text" id="element-gradient-start-alpha" value="0.90" spellcheck="false">
-        <label for="element-gradient-end-color">Gradient end</label>
-        <div class="element-editor-control-row">
-            <input type="color" id="element-gradient-end-color" value="#ffd4e6">
-            <input type="text" id="element-gradient-end-color-text" value="#ffd4e6" spellcheck="false">
-        </div>
-        <label for="element-gradient-end-alpha">End opacity</label>
-        <input type="text" id="element-gradient-end-alpha" value="0.15" spellcheck="false">
-        <label for="element-bg-custom">Custom background</label>
-        <input type="text" id="element-bg-custom" value="" placeholder="linear-gradient(135deg, #111, #ffd4e6)" spellcheck="false">
-    </div>
-
-    <div class="element-editor-section">
-        <h4>Text</h4>
-        <label for="element-text-color">Text color</label>
-        <div class="element-editor-control-row">
-            <input type="color" id="element-text-color" value="#ffffff">
-            <input type="text" id="element-text-color-text" value="#ffffff" spellcheck="false">
-        </div>
-        <label for="element-text-alpha">Text opacity</label>
-        <input type="text" id="element-text-alpha" value="1" spellcheck="false">
-        <label for="element-font-size">Text size</label>
-        <input type="text" id="element-font-size" value="16px" spellcheck="false">
-        <label for="element-font-weight">Text weight</label>
-        <input type="text" id="element-font-weight" value="inherit" spellcheck="false">
-        <label for="element-line-height">Line height</label>
-        <input type="text" id="element-line-height" value="normal" spellcheck="false">
-    </div>
-
-    <div class="element-editor-section">
-        <h4>Border</h4>
-        <label for="element-border-color">Border color</label>
-        <div class="element-editor-control-row">
-            <input type="color" id="element-border-color" value="#ffffff">
-            <input type="text" id="element-border-color-text" value="#ffffff" spellcheck="false">
-        </div>
-        <label for="element-border-alpha">Border opacity</label>
-        <input type="text" id="element-border-alpha" value="0.25" spellcheck="false">
-        <label for="element-border-width">Border width</label>
-        <input type="text" id="element-border-width" value="1px" spellcheck="false">
-        <label for="element-border-style">Border style</label>
-        <input type="text" id="element-border-style" value="solid" spellcheck="false">
-        <label for="element-radius">Corner radius</label>
-        <input type="text" id="element-radius" value="12px" spellcheck="false">
-    </div>
-
-    <div class="element-editor-section">
-        <h4>Shadow & effects</h4>
-        <label for="element-shadow-color">Shadow color</label>
-        <div class="element-editor-control-row">
-            <input type="color" id="element-shadow-color" value="#000000">
-            <input type="text" id="element-shadow-color-text" value="#000000" spellcheck="false">
-        </div>
-        <label for="element-shadow-alpha">Shadow opacity</label>
-        <input type="text" id="element-shadow-alpha" value="0.35" spellcheck="false">
-        <label for="element-shadow-x">Shadow X</label>
-        <input type="text" id="element-shadow-x" value="0px" spellcheck="false">
-        <label for="element-shadow-y">Shadow Y</label>
-        <input type="text" id="element-shadow-y" value="14px" spellcheck="false">
-        <label for="element-shadow-blur">Shadow blur</label>
-        <input type="text" id="element-shadow-blur" value="24px" spellcheck="false">
-        <label for="element-shadow-spread">Shadow spread</label>
-        <input type="text" id="element-shadow-spread" value="0px" spellcheck="false">
-        <label for="element-opacity">Whole element opacity</label>
-        <input type="text" id="element-opacity" value="1" spellcheck="false">
-        <label for="element-backdrop-blur">Backdrop blur</label>
-        <input type="text" id="element-backdrop-blur" value="0px" spellcheck="false">
-    </div>
-
-    <div class="element-editor-section">
-        <h4>Spacing</h4>
-        <label for="element-padding">Padding</label>
-        <input type="text" id="element-padding" value="" placeholder="12px 18px" spellcheck="false">
-        <label for="element-margin">Margin</label>
-        <input type="text" id="element-margin" value="" placeholder="0 auto 16px" spellcheck="false">
-    </div>
-
-    <div class="element-editor-actions">
-        <button type="button" id="element-editor-save" class="element-editor-save" disabled>Save</button>
-        <button type="button" id="element-editor-reset" class="element-editor-reset" disabled>Reset</button>
-    </div>
-    <p class="element-editor-note">Edit mode blocks normal page clicks while active. Saved changes are written into <code>static/css/element_theme.css</code>.</p>
-</aside>
 
   
+    <button type="button" class="mobile-control-hub" id="mobile-control-hub" aria-expanded="false" aria-label="Toggle page controls">Menu</button>
+
     <main>
         {% block content %}{% endblock %}
     </main>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/element_editor.js') }}"></script>
+    <script>
+        const mobileControlHub = document.getElementById('mobile-control-hub');
+        if (mobileControlHub) {
+            mobileControlHub.addEventListener('click', () => {
+                const isOpen = document.body.classList.toggle('control-hub-open');
+                mobileControlHub.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+        }
+    </script>
     <!-- Video.js Script -->
     <script src="https://vjs.zencdn.net/7.15.4/video.min.js"></script>
 </body>

@@ -107,7 +107,7 @@
                     <video class="preview-video" muted loop preload="metadata">
                         <source src="{{ episode.video_url }}" type="video/mp4">
                     </video>
-                    <div class="play-overlay" onclick="window.location.href=`{{ url_for('player', anime_id=anime.id, episode_number=episode.number) }}{% if episode.has_resume %}?resume=1{% endif %}`">
+                    <div class="play-overlay" onclick="window.location.href=`{{ url_for('player.player', anime_id=anime.id, episode_number=episode.number) }}{% if episode.has_resume %}?resume=1{% endif %}`">
                         {% if episode.has_resume %}▶ Continue{% elif episode.watched %}↺ Rewatch{% else %}▶ Play{% endif %}
                     </div>
                 </div>
@@ -146,12 +146,12 @@
 
                 <div class="episode-actions episode-progress-actions">
                     {% if episode.has_resume %}
-                        <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number) }}?resume=1" class="watched-button episode-action-link">Continue</a>
-                        <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number) }}?start_over=1" class="watched-button episode-action-link secondary">Start Over</a>
+                        <a href="{{ url_for('player.player', anime_id=anime.id, episode_number=episode.number) }}?resume=1" class="watched-button episode-action-link">Continue</a>
+                        <a href="{{ url_for('player.player', anime_id=anime.id, episode_number=episode.number) }}?start_over=1" class="watched-button episode-action-link secondary">Start Over</a>
                     {% elif episode.watched %}
-                        <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number) }}?start_over=1" class="watched-button episode-action-link secondary">Rewatch</a>
+                        <a href="{{ url_for('player.player', anime_id=anime.id, episode_number=episode.number) }}?start_over=1" class="watched-button episode-action-link secondary">Rewatch</a>
                     {% else %}
-                        <a href="{{ url_for('player', anime_id=anime.id, episode_number=episode.number) }}" class="watched-button episode-action-link">Start Episode</a>
+                        <a href="{{ url_for('player.player', anime_id=anime.id, episode_number=episode.number) }}" class="watched-button episode-action-link">Start Episode</a>
                     {% endif %}
                     <button onclick="toggleWatched('{{ anime.id }}', '{{ episode.number }}', this)" class="watched-button {% if episode.watched %}watched{% endif %}">
                         {% if episode.watched %}✔ Watched{% else %}Mark Watched{% endif %}

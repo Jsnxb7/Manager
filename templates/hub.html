@@ -5,16 +5,7 @@
     <title>Content Hub</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
 </head>
-<body class="hub-page theme-{{ active_theme }}{% if theme_settings.dark_mode %} theme-dark{% endif %} section-{{ active_section_key }} theme-media-{{ theme_settings.background.mode }}">
-{% if theme_settings.background.mode not in ["none", "solid"] %}
-    {% if theme_settings.background.type == "image" %}
-        <img class="theme-background-image" src="{{ theme_settings.background.url }}" alt="" aria-hidden="true">
-    {% elif theme_settings.background.type == "video" %}
-        <video class="theme-background-video video-background" autoplay loop muted playsinline>
-            <source src="{{ theme_settings.background.url }}" type="video/{{ 'webm' if theme_settings.background.url.endswith('.webm') else 'mp4' }}">
-        </video>
-    {% endif %}
-{% endif %}
+<body class="hub-page">
 <div class="container">
     {% for section in sections %}
         <a href="/{{ section|lower|replace(' ', '_') }}">

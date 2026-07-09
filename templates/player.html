@@ -71,7 +71,7 @@
                     </select>
                 </div>
 
-                <a href="{{ url_for('anime_detail', anime_id=anime.id) }}" class="back-link">⬅️ Back to Anime Details</a>
+                <a href="{{ url_for('anime.anime_detail', anime_id=anime.id) }}" class="back-link">⬅️ Back to Anime Details</a>
             </section>
         </section>
 
@@ -111,8 +111,6 @@
 <script>
 function suppressPlayerPageOverlays() {
     const selectors = [
-        "#element-editor-toggle",
-        "#element-editor-panel",
         "button.custom-player-btn"
     ];
 
@@ -126,8 +124,6 @@ function suppressPlayerPageOverlays() {
         const style = document.createElement("style");
         style.id = "player-page-forced-hide";
         style.textContent = `
-            #element-editor-toggle,
-            #element-editor-panel,
             button.custom-player-btn {
                 display: none !important;
                 visibility: hidden !important;

@@ -1,21 +1,26 @@
 {% extends "base.html" %}
 
 {% block content %}
-<video class="video-background" autoplay loop muted playsinline>
-    <source src="{{ url_for('static', filename='images/stars.mp4') }}" type="video/mp4">
-</video>
 
+<div class="anime-list" id="section-library">
 
-<div class="anime-list">
+    <div class="library-control-strip">
+        <div class="library-toolbar-row">
+            <input
+                type="text"
+                id="search-bar"
+                class="search-bar"
+                placeholder="Search {{ section }}..."
+                onkeyup="filterItems()"
+            >
+            <div class="library-utility-actions">
+                <button type="button" class="library-mode-toggle" id="section-density-toggle" onclick="toggleLibraryDensity()" aria-pressed="false">Compact</button>
+                <button type="button" class="library-top-button" onclick="scrollToLibraryTop()">Top</button>
+            </div>
+        </div>
 
-    <!-- Search -->
-    <input
-        type="text"
-        id="search-bar"
-        class="search-bar"
-        placeholder="Search {{ section }}..."
-        onkeyup="filterItems()"
-    >
+        <div class="active-filter-chips" id="section-active-filters" aria-live="polite"></div>
+    </div>
 
     <!-- GRID -->
     <div class="anime-grid" id="grid"></div>
@@ -64,6 +69,71 @@ const activeSectionQuickFilters = {
     bookmarked: false
 };
 let isRestoringSectionFilterState = false;
+
+function renderLoadingSkeleton(gridId, count = itemsPerPage) {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    grid.innerHTML = Array.from({ length: count }, () => '<div class="anime-card skeleton-card" aria-hidden="true"><div></div><div></div><div></div></div>').join('');
+}
+
+function scrollToLibraryTop() {
+    document.querySelector(".anime-list")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function applyLibraryDensity(enabled) {
+    const library = document.getElementById('section-library');
+    const toggle = document.getElementById('section-density-toggle');
+    if (!library || !toggle) return;
+    library.classList.toggle('is-compact-library', enabled);
+    toggle.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+    toggle.textContent = enabled ? 'Comfort' : 'Compact';
+    localStorage.setItem(`sectionCompactMode:${SECTION}`, enabled ? '1' : '0');
+}
+
+function initLibraryDensity() {
+    applyLibraryDensity(localStorage.getItem(`sectionCompactMode:${SECTION}`) === '1');
+}
+
+function toggleLibraryDensity() {
+    const library = document.getElementById('section-library');
+    applyLibraryDensity(!library?.classList.contains('is-compact-library'));
+}
+
+function updateActiveFilterChips() {
+    const container = document.getElementById('section-active-filters');
+    if (!container) return;
+
+    const chips = [];
+    const searchValue = document.getElementById('search-bar')?.value.trim();
+    if (searchValue) chips.push({ label: `Search: ${searchValue}`, type: 'search' });
+    Object.entries(activeSectionQuickFilters).forEach(([key, active]) => {
+        if (active) chips.push({ label: key, type: 'quick', key });
+    });
+
+    container.innerHTML = '';
+    chips.forEach(chip => {
+        const el = document.createElement('span');
+        el.className = 'active-filter-chip';
+        el.textContent = chip.label;
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = 'x';
+        button.setAttribute('aria-label', `Remove ${chip.label}`);
+        button.onclick = () => removeSectionFilterChip(chip.type, chip.key);
+        el.appendChild(button);
+        container.appendChild(el);
+    });
+}
+
+function removeSectionFilterChip(type, key) {
+    if (type === 'search') {
+        document.getElementById('search-bar').value = '';
+    } else if (type === 'quick' && key in activeSectionQuickFilters) {
+        activeSectionQuickFilters[key] = false;
+    }
+    applySectionFilters(1);
+}
 
 // -----------------------------
 // FETCH DATA
@@ -147,6 +217,7 @@ function updateSectionQuickFilterButtons() {
 function applySectionFilters(page = 1) {
     setSectionData(getFilteredSectionData(), page);
     updateSectionQuickFilterButtons();
+    updateActiveFilterChips();
     saveSectionFilterState();
 }
 
@@ -183,6 +254,10 @@ function renderPage() {
         card.className = "anime-card";
         card.id = `${SECTION}-${item.id}`;
         card.dataset.title = item.title.toLowerCase();
+        if (item.read) {
+            card.classList.add('is-complete');
+            card.dataset.completionLabel = 'Read';
+        }
 
         const img = document.createElement("img");
         img.className = "anime-thumbnail";
@@ -427,6 +502,7 @@ function restoreSectionFilterState(state) {
     if (pageSizeSelect) pageSizeSelect.value = String(itemsPerPage);
 
     updateSectionQuickFilterButtons();
+    updateActiveFilterChips();
     isRestoringSectionFilterState = false;
     return Math.max(1, parseInt(state.page, 10) || 1);
 }
@@ -435,6 +511,8 @@ function restoreSectionFilterState(state) {
 // LOAD
 // -----------------------------
 document.addEventListener("DOMContentLoaded", async () => {
+    initLibraryDensity();
+    renderLoadingSkeleton('grid', itemsPerPage);
     const [sectionItems, filterState] = await Promise.all([
         fetchData(),
         fetchSectionFilterState()
@@ -443,6 +521,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const restoredPage = restoreSectionFilterState(filterState);
     setSectionData(getFilteredSectionData(), restoredPage);
     updateSectionQuickFilterButtons();
+    updateActiveFilterChips();
 });
 </script>
 {% endblock %}

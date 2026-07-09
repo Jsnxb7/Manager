@@ -1,10 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<video class="video-background" autoplay loop muted playsinline>
-    <source src="{{ url_for('static', filename='images/stars.mp4') }}" type="video/mp4">
-    Your browser does not support the video tag.
-</video>
 
 <div class="queue-player-rails">
     {% if previous_item %}
@@ -45,7 +41,7 @@
                 <small>Episode {{ episode.number }} — {{ episode.title }}</small>
             </div>
             <div class="queue-player-actions">
-                <a href="{{ url_for('queue_page') }}" class="queue-page-action subtle">Queue</a>
+                <a href="{{ url_for('queue.queue_page') }}" class="queue-page-action subtle">Queue</a>
                 <button type="button" class="queue-sidebar-toggle" id="queue-sidebar-toggle">Collapse</button>
             </div>
         </div>

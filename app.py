@@ -1,4 +1,4 @@
-from flask import Flask, send_file, render_template, jsonify, request, redirect, url_for
+from flask import Flask, Blueprint, send_file, render_template, jsonify, request, redirect, url_for
 import json
 import os
 import sys
@@ -22,10 +22,6 @@ QUEUE_FILE = os.path.join(BASE_PATH, 'data','queue.json' )
 TEMPLATES_FOLDER = os.path.join(BASE_PATH, 'templates')
 DATA_FILE = os.path.join(BASE_PATH, 'data', 'anime_data.json')
 TRACKING_FILE = os.path.join(BASE_PATH, 'data', 'anime_tracking.json')
-THEME_SETTINGS_FILE = os.path.join(BASE_PATH, 'data', 'theme_settings.json')
-ELEMENT_THEME_FILE = os.path.join(BASE_PATH, 'data', 'element_theme.json')
-ELEMENT_THEME_CSS_FILE = os.path.join(BASE_PATH, 'static', 'css', 'element_theme.css')
-THEME_UPLOAD_FOLDER = os.path.join(BASE_PATH, 'static', 'theme_uploads')
 IMAGE_FOLDER = os.path.join(BASE_PATH, "static", "anime_images")
 DEFAULT_IMAGE = "/static/placeholder.jpeg"
 MANGA_DATA_FILE = os.path.join(BASE_PATH, 'data', 'manga_data.json')
@@ -55,6 +51,15 @@ if not os.path.exists(STATIC_FOLDER) or not os.path.exists(TEMPLATES_FOLDER):
     sys.exit(1)
 
 app = Flask(__name__, static_folder=STATIC_FOLDER, template_folder=TEMPLATES_FOLDER)
+
+core_bp = Blueprint("core", __name__)
+validation_bp = Blueprint("validation", __name__)
+sections_bp = Blueprint("sections", __name__)
+manga_bp = Blueprint("manga", __name__)
+anime_bp = Blueprint("anime", __name__)
+tracking_bp = Blueprint("tracking", __name__)
+player_bp = Blueprint("player", __name__)
+queue_bp = Blueprint("queue", __name__)
 
 # --- Blueprint registration ------------------------------------------------
 app.instance_path = os.path.join(BASE_PATH, 'instance')
@@ -211,7 +216,7 @@ def build_validation_payload(data, fields):
     }
 
 
-@app.route("/api/validate-entry")
+@validation_bp.route("/api/validate-entry")
 def validate_entry():
     entry_type = request.args.get("type", "")
     title = request.args.get("title", "")
@@ -378,8 +383,8 @@ def get_adjacent_episode_context(anime, episode):
     return {
         "previous_episode": previous_episode,
         "next_episode": next_episode,
-        "previous_episode_url": url_for("player", anime_id=anime["id"], episode_number=previous_episode["number"]) if previous_episode else None,
-        "next_episode_url": url_for("player", anime_id=anime["id"], episode_number=next_episode["number"]) if next_episode else None,
+        "previous_episode_url": url_for("player.player", anime_id=anime["id"], episode_number=previous_episode["number"]) if previous_episode else None,
+        "next_episode_url": url_for("player.player", anime_id=anime["id"], episode_number=next_episode["number"]) if next_episode else None,
         "previous_episode_video_url": previous_episode.get("video_url") if previous_episode else None,
         "next_episode_video_url": next_episode.get("video_url") if next_episode else None
     }
@@ -396,7 +401,7 @@ def get_section_image(section, title):
 
     return DEFAULT_IMAGE
 
-@app.route("/api/<section>")
+@sections_bp.route("/api/<section>")
 def api_section(section):
     if section == "anime-tags":
         return api_anime_tags()
@@ -408,7 +413,7 @@ def api_section(section):
 
     return jsonify(data)
 
-@app.route("/<section>/<int:item_id>")
+@sections_bp.route("/<section>/<int:item_id>")
 def section_detail(section, item_id):
     data = load_section_data(section)
     item = next((i for i in data if i["id"] == item_id), None)
@@ -418,7 +423,7 @@ def section_detail(section, item_id):
 
     return render_template(f"{section}_detail.html", item=item)
 
-@app.route("/update_link/<section>/<int:item_id>", methods=["POST"])
+@sections_bp.route("/update_link/<section>/<int:item_id>", methods=["POST"])
 def update_section_link(section, item_id):
     data = load_section_data(section)
     item = find_by_id(data, item_id)
@@ -437,7 +442,7 @@ def update_section_link(section, item_id):
 
     return jsonify({"status": "success", "link": link})
 
-@app.route("/<section>/add", methods=["GET", "POST"])
+@sections_bp.route("/<section>/add", methods=["GET", "POST"])
 def add_section_item(section):
     section = normalize_section(section)
 
@@ -447,11 +452,11 @@ def add_section_item(section):
         link = request.form.get("link")
 
         if not title or not secure_path_title(title):
-            return redirect(url_for("add_section_item", section=section))
+            return redirect(url_for("sections.add_section_item", section=section))
 
         data = load_section_data(section)
         if find_duplicate(data, {"title": title, "status": status, "link": link}):
-            return redirect(url_for("add_section_item", section=section, duplicate=1))
+            return redirect(url_for("sections.add_section_item", section=section, duplicate=1))
 
         existing_ids = {i["id"] for i in data}
         new_id = 1
@@ -470,7 +475,7 @@ def add_section_item(section):
         save_uploaded_thumbnail(request.files.get("thumbnail"), title, get_section_paths(section)["IMAGE_FOLDER"])
         save_section_data(section, data)
 
-        return redirect(url_for("section_index", section=section))
+        return redirect(url_for("sections.section_index", section=section))
 
     return render_template(
         "add_section_item.html",
@@ -479,7 +484,7 @@ def add_section_item(section):
     )
 
 
-@app.route("/mark_read/<section>/<int:item_id>", methods=["POST"])
+@sections_bp.route("/mark_read/<section>/<int:item_id>", methods=["POST"])
 def toggle_read(section, item_id):
     data = load_section_data(section)
     item = next((i for i in data if i["id"] == item_id), None)
@@ -492,7 +497,7 @@ def toggle_read(section, item_id):
 
     return jsonify({"read": item["read"]})
 
-@app.route("/bookmark/<section>/<int:item_id>", methods=["POST"])
+@sections_bp.route("/bookmark/<section>/<int:item_id>", methods=["POST"])
 def toggle_bookmark_1(section, item_id):
     data = load_section_data(section)
     item = next((i for i in data if i["id"] == item_id), None)
@@ -505,7 +510,7 @@ def toggle_bookmark_1(section, item_id):
 
     return jsonify({"bookmarked": item["bookmarked"]})
 
-@app.route("/toggle_status/<section>/<int:item_id>", methods=["POST"])
+@sections_bp.route("/toggle_status/<section>/<int:item_id>", methods=["POST"])
 def toggle_status_1(section, item_id):
     data = load_section_data(section)
     item = next((i for i in data if i["id"] == item_id), None)
@@ -519,7 +524,7 @@ def toggle_status_1(section, item_id):
     save_section_data(section, data)
     return jsonify({"status": item["status"]})
 
-@app.route("/delete/<section>/<int:item_id>", methods=["DELETE"])
+@sections_bp.route("/delete/<section>/<int:item_id>", methods=["DELETE"])
 def delete_item_1(section, item_id):
     data = load_section_data(section)
     index = next((i for i, x in enumerate(data) if x["id"] == item_id), None)
@@ -543,7 +548,7 @@ def delete_item_1(section, item_id):
     return jsonify({"status": "success"})
 
 
-@app.route("/<section>")
+@sections_bp.route("/<section>")
 def section_index(section):
     return render_template(
         "section_index.html",
@@ -570,12 +575,12 @@ def create_section(section):
         with open(paths["DATA_FILE"], "w") as f:
             json.dump([], f, indent=2)
 
-@app.route("/add-section", methods=["POST"])
+@sections_bp.route("/add-section", methods=["POST"])
 def add_section():
     name = request.form.get("name")
 
     if not name:
-        return redirect(url_for("hub"))
+        return redirect(url_for("core.hub"))
 
     display_name = name.strip()
     slug = normalize_section(display_name)
@@ -590,7 +595,7 @@ def add_section():
         save_section(sections)
         create_section(slug)               # 👈 USE SLUG FOR FILES
 
-    return redirect(url_for("hub"))
+    return redirect(url_for("core.hub"))
 
 
 def extract_manga_items(raw_data):
@@ -759,12 +764,12 @@ def rebuild_unique_manga_headers(manga_data):
 
     return payload
 
-@app.route('/api/manga')
+@manga_bp.route('/api/manga')
 def api_manga():
     manga_data = load_manga_data()
     return jsonify([build_manga_api_item(manga) for manga in manga_data])
 
-@app.route('/api/manga-headers')
+@manga_bp.route('/api/manga-headers')
 def api_manga_headers():
     if os.path.exists(MANGA_HEADERS_FILE):
         with open(MANGA_HEADERS_FILE, 'r', encoding='utf-8') as file:
@@ -774,11 +779,11 @@ def api_manga_headers():
 
     return jsonify(rebuild_unique_manga_headers(load_manga_data()))
 
-@app.route('/manga')
+@manga_bp.route('/manga')
 def manga_index():
     return render_template("manga_index.html")
 
-@app.route('/manga/<int:manga_id>')
+@manga_bp.route('/manga/<int:manga_id>')
 def manga_detail(manga_id):
     manga_data = load_manga_data()
     manga = next((m for m in manga_data if m["id"] == manga_id), None)
@@ -788,7 +793,7 @@ def manga_detail(manga_id):
 
     return "Manga not found", 404
 
-@app.route('/add_manga', methods=['GET', 'POST'])
+@manga_bp.route('/add_manga', methods=['GET', 'POST'])
 def add_manga():
     if request.method == 'POST':
         title = request.form.get('title', '').strip()
@@ -798,14 +803,14 @@ def add_manga():
         missing_metadata = missing_manga_metadata_groups(metadata)
 
         if not title or not secure_path_title(title):
-            return redirect(url_for('add_manga'))
+            return redirect(url_for('manga.add_manga'))
 
         if missing_metadata:
-            return redirect(url_for('add_manga', missing_metadata=",".join(missing_metadata)))
+            return redirect(url_for('manga.add_manga', missing_metadata=",".join(missing_metadata)))
 
         manga_data = load_manga_data()
         if find_duplicate(manga_data, {"title": title}):
-            return redirect(url_for('add_manga', duplicate=1))
+            return redirect(url_for('manga.add_manga', duplicate=1))
         existing_ids = {m["id"] for m in manga_data}
         new_id = 1
         while new_id in existing_ids:
@@ -831,11 +836,11 @@ def add_manga():
         save_manga_data(manga_data)
         rebuild_unique_manga_headers(manga_data)
 
-        return redirect(url_for('manga_index'))
+        return redirect(url_for('manga.manga_index'))
 
     return render_template("add_manga.html")
 
-@app.route('/mark_manga_read/<int:manga_id>', methods=['POST'])
+@manga_bp.route('/mark_manga_read/<int:manga_id>', methods=['POST'])
 def mark_manga_read(manga_id):
     manga_data = load_manga_data()
     manga = next((m for m in manga_data if m["id"] == manga_id), None)
@@ -847,7 +852,7 @@ def mark_manga_read(manga_id):
 
     return jsonify({"status": "error"}), 404
 
-@app.route('/manga_bookmark/<int:manga_id>', methods=['POST'])
+@manga_bp.route('/manga_bookmark/<int:manga_id>', methods=['POST'])
 def manga_bookmark(manga_id):
     manga_data = load_manga_data()
     manga = next((m for m in manga_data if m["id"] == manga_id), None)
@@ -859,7 +864,7 @@ def manga_bookmark(manga_id):
 
     return jsonify({"status": "error"}), 404
 
-@app.route('/update_manga_link/<int:manga_id>', methods=['POST'])
+@manga_bp.route('/update_manga_link/<int:manga_id>', methods=['POST'])
 def update_manga_link(manga_id):
     manga_data = load_manga_data()
     manga = find_by_id(manga_data, manga_id)
@@ -878,7 +883,7 @@ def update_manga_link(manga_id):
 
     return jsonify({"status": "success", "link": link})
 
-@app.route('/toggle_manga_status/<int:manga_id>', methods=['POST'])
+@manga_bp.route('/toggle_manga_status/<int:manga_id>', methods=['POST'])
 def toggle_manga_status(manga_id):
     manga_data = load_manga_data()   # same pattern as anime
     manga = next((m for m in manga_data if m['id'] == manga_id), None)
@@ -896,7 +901,7 @@ def toggle_manga_status(manga_id):
         'status': manga['status']
     })
 
-@app.route('/delete_manga/<int:manga_id>', methods=['DELETE'])
+@manga_bp.route('/delete_manga/<int:manga_id>', methods=['DELETE'])
 def delete_manga(manga_id):
     manga_data = load_manga_data()
     index = next((i for i, m in enumerate(manga_data) if m["id"] == manga_id), None)
@@ -1313,8 +1318,8 @@ def build_enriched_queue():
             "duration": duration,
             "duration_label": format_duration_label(duration),
             "video_url": (episode or {}).get("video_url"),
-            "player_url": url_for("queue_player", index=index),
-            "legacy_player_url": url_for("player", index=index) + "?from_queue=true",
+            "player_url": url_for("queue.queue_player", index=index),
+            "legacy_player_url": url_for("player.player", index=index) + "?from_queue=true",
             "is_now_playing": (
                 last_use.get("anime_id") == anime_id
                 and last_use.get("episode_number") == episode_number
@@ -1347,7 +1352,7 @@ def build_continue_watching_items():
         seen_keys.add(item_key)
 
         adjacent = get_adjacent_episode_context(anime, source_episode)
-        player_url = url_for("player", anime_id=anime_id, episode_number=episode_number)
+        player_url = url_for("player.player", anime_id=anime_id, episode_number=episode_number)
         continue_query = "?start_over=1" if force_start_over else "?resume=1"
 
         items.append({
@@ -1460,448 +1465,6 @@ def get_queue_player_context(index):
         "saved_progress": {} if request.args.get("start_over") == "1" else get_episode_tracking_progress(anime["id"], episode["number"])
     }
 
-
-THEME_PRESETS = {
-    "soft_pink_glass": "Soft Pink Glass",
-    "dark_neon": "Dark Neon",
-    "purple_space": "Purple Space",
-    "minimal_dark": "Minimal Dark",
-    "cream_glass": "Cream Glass",
-    "ocean_mist": "Ocean Mist",
-    "ember_noir": "Ember Noir",
-    "forest_glass": "Forest Glass",
-    "sakura_night": "Sakura Night",
-    "arctic_blue": "Arctic Blue"
-}
-
-THEME_TEXT_COLORS = {"heading_text": "#ffffff", "body_text": "#f8f2f8", "text_color": "#fff8fb", "muted_text": "#d8c5d0", "subtle_text": "#bda7b5", "meta_text": "#bda7b5", "link_text": "#ffe7f1", "nav_text": "#fff8fb", "button_text": "#151018", "accent_button_text": "#151018", "secondary_button_text": "#f8f2f8", "danger_button_text": "#ffffff", "input_text": "#fff8fb", "placeholder_text": "#bda7b5", "card_text": "#f8f2f8", "overlay_text": "#ffffff", "badge_text": "#151018", "chip_text": "#fff8fb", "success_text": "#c9ffd8", "danger_text": "#ffd0dc", "warning_text": "#fff1b8"}
-
-THEME_STYLE_PROFILES = {
-    "soft_pink_glass": {
-        "panel_style": "Blush glass panels",
-        "card_style": "Soft rounded anime cards",
-        "button_style": "Cream gradient actions",
-        "badge_style": "Pink glow status chips",
-        "progress_style": "Rose to cream progress",
-        "surface_style": "Light translucent overlays",
-        "heading_text": "#ffffff",
-        "body_text": "#f8edf4",
-        "text_color": "#fff8fb",
-        "muted_text": "#e7ccd9",
-        "subtle_text": "#cfaebf",
-        "meta_text": "#cfaebf",
-        "link_text": "#fff1c7",
-        "nav_text": "#fff8fb",
-        "button_text": "#181016",
-        "accent_button_text": "#181016",
-        "secondary_button_text": "#f8edf4",
-        "danger_button_text": "#ffffff",
-        "input_text": "#fff8fb",
-        "placeholder_text": "#cfb7c4",
-        "card_text": "#f8edf4",
-        "overlay_text": "#ffffff",
-        "badge_text": "#181016",
-        "chip_text": "#fff7fb",
-        "success_text": "#c9ffd8",
-        "danger_text": "#ffd0dc",
-        "warning_text": "#fff1b8"
-    },
-    "dark_neon": {
-        "panel_style": "Deep neon glass panels",
-        "card_style": "High contrast media cards",
-        "button_style": "Cyan magenta actions",
-        "badge_style": "Electric outline chips",
-        "progress_style": "Cyan to pink progress",
-        "surface_style": "Dark saturated overlays",
-        "heading_text": "#f9feff",
-        "body_text": "#e6f7ff",
-        "text_color": "#f2fbff",
-        "muted_text": "#b7d5df",
-        "subtle_text": "#8fb3bf",
-        "meta_text": "#8fb3bf",
-        "link_text": "#7df9ff",
-        "nav_text": "#f2fbff",
-        "button_text": "#071018",
-        "accent_button_text": "#071018",
-        "secondary_button_text": "#e6f7ff",
-        "danger_button_text": "#ffffff",
-        "input_text": "#f2fbff",
-        "placeholder_text": "#9dbac5",
-        "card_text": "#e6f7ff",
-        "overlay_text": "#ffffff",
-        "badge_text": "#071018",
-        "chip_text": "#eaffff",
-        "success_text": "#9fffdc",
-        "danger_text": "#ffb4cf",
-        "warning_text": "#fff0a6"
-    },
-    "purple_space": {
-        "panel_style": "Violet depth panels",
-        "card_style": "Space-tinted preview cards",
-        "button_style": "Lavender pink actions",
-        "badge_style": "Purple glow chips",
-        "progress_style": "Lavender to rose progress",
-        "surface_style": "Dim cosmic overlays",
-        "heading_text": "#ffffff",
-        "body_text": "#f1e9ff",
-        "text_color": "#fbf7ff",
-        "muted_text": "#d0bee8",
-        "subtle_text": "#ad98ca",
-        "meta_text": "#ad98ca",
-        "link_text": "#e3d4ff",
-        "nav_text": "#fbf7ff",
-        "button_text": "#160d22",
-        "accent_button_text": "#160d22",
-        "secondary_button_text": "#f1e9ff",
-        "danger_button_text": "#ffffff",
-        "input_text": "#fbf7ff",
-        "placeholder_text": "#bda9d9",
-        "card_text": "#f1e9ff",
-        "overlay_text": "#ffffff",
-        "badge_text": "#160d22",
-        "chip_text": "#fbf7ff",
-        "success_text": "#c5ffd9",
-        "danger_text": "#ffc6dc",
-        "warning_text": "#fff0b0"
-    },
-    "minimal_dark": {
-        "panel_style": "Clean charcoal panels",
-        "card_style": "Low-glow dark cards",
-        "button_style": "Monochrome actions",
-        "badge_style": "Muted status chips",
-        "progress_style": "Silver progress",
-        "surface_style": "Quiet dark overlays",
-        "heading_text": "#ffffff",
-        "body_text": "#e8e8ea",
-        "text_color": "#f5f5f5",
-        "muted_text": "#b9bcc3",
-        "subtle_text": "#969aa4",
-        "meta_text": "#969aa4",
-        "link_text": "#ffffff",
-        "nav_text": "#f5f5f5",
-        "button_text": "#101114",
-        "accent_button_text": "#101114",
-        "secondary_button_text": "#e8e8ea",
-        "danger_button_text": "#ffffff",
-        "input_text": "#f5f5f5",
-        "placeholder_text": "#989ca5",
-        "card_text": "#e8e8ea",
-        "overlay_text": "#ffffff",
-        "badge_text": "#101114",
-        "chip_text": "#f5f5f5",
-        "success_text": "#bfffd2",
-        "danger_text": "#ffc4d2",
-        "warning_text": "#fff1ad"
-    },
-    "cream_glass": {
-        "panel_style": "Warm cream glass panels",
-        "card_style": "Soft warm preview cards",
-        "button_style": "Cream pink actions",
-        "badge_style": "Warm pastel chips",
-        "progress_style": "Cream to pink progress",
-        "surface_style": "Warm translucent overlays",
-        "heading_text": "#ffffff",
-        "body_text": "#f8edd7",
-        "text_color": "#fffaf0",
-        "muted_text": "#e5d0b0",
-        "subtle_text": "#c6a982",
-        "meta_text": "#c6a982",
-        "link_text": "#fff0b8",
-        "nav_text": "#fffaf0",
-        "button_text": "#21150d",
-        "accent_button_text": "#21150d",
-        "secondary_button_text": "#f8edd7",
-        "danger_button_text": "#ffffff",
-        "input_text": "#fffaf0",
-        "placeholder_text": "#c9ad8b",
-        "card_text": "#f8edd7",
-        "overlay_text": "#ffffff",
-        "badge_text": "#21150d",
-        "chip_text": "#fffaf0",
-        "success_text": "#d8ffca",
-        "danger_text": "#ffd0d0",
-        "warning_text": "#fff3a8"
-    },
-    "ocean_mist": {
-        "panel_style": "Sea-glass blue panels",
-        "card_style": "Cool mist media cards",
-        "button_style": "Aqua coral actions",
-        "badge_style": "Foam status chips",
-        "progress_style": "Aqua to coral progress",
-        "surface_style": "Soft coastal overlays",
-        "heading_text": "#f8ffff",
-        "body_text": "#dff8f7",
-        "text_color": "#efffff",
-        "muted_text": "#afd4d3",
-        "subtle_text": "#88b6b5",
-        "meta_text": "#88b6b5",
-        "link_text": "#9ffcf5",
-        "nav_text": "#efffff",
-        "button_text": "#061917",
-        "accent_button_text": "#061917",
-        "secondary_button_text": "#dff8f7",
-        "danger_button_text": "#ffffff",
-        "input_text": "#efffff",
-        "placeholder_text": "#9bbfc0",
-        "card_text": "#dff8f7",
-        "overlay_text": "#ffffff",
-        "badge_text": "#061917",
-        "chip_text": "#efffff",
-        "success_text": "#b9ffd7",
-        "danger_text": "#ffc7c9",
-        "warning_text": "#fff0aa"
-    },
-    "ember_noir": {
-        "panel_style": "Smoked ember panels",
-        "card_style": "Charcoal warm cards",
-        "button_style": "Amber crimson actions",
-        "badge_style": "Ember status chips",
-        "progress_style": "Gold to red progress",
-        "surface_style": "Warm dark overlays",
-        "heading_text": "#fffaf5",
-        "body_text": "#f6dfcf",
-        "text_color": "#fff2e8",
-        "muted_text": "#d7b39d",
-        "subtle_text": "#b98e75",
-        "meta_text": "#b98e75",
-        "link_text": "#ffd39a",
-        "nav_text": "#fff2e8",
-        "button_text": "#1f0d06",
-        "accent_button_text": "#1f0d06",
-        "secondary_button_text": "#f6dfcf",
-        "danger_button_text": "#ffffff",
-        "input_text": "#fff2e8",
-        "placeholder_text": "#bf9984",
-        "card_text": "#f6dfcf",
-        "overlay_text": "#ffffff",
-        "badge_text": "#1f0d06",
-        "chip_text": "#fff2e8",
-        "success_text": "#d5ffbd",
-        "danger_text": "#ffd0c7",
-        "warning_text": "#fff0a6"
-    },
-    "forest_glass": {
-        "panel_style": "Moss glass panels",
-        "card_style": "Deep green media cards",
-        "button_style": "Mint fern actions",
-        "badge_style": "Leaf status chips",
-        "progress_style": "Mint to gold progress",
-        "surface_style": "Shaded green overlays",
-        "heading_text": "#f8fff9",
-        "body_text": "#e0f5e4",
-        "text_color": "#effff2",
-        "muted_text": "#bad8c1",
-        "subtle_text": "#93b49b",
-        "meta_text": "#93b49b",
-        "link_text": "#b7ffc6",
-        "nav_text": "#effff2",
-        "button_text": "#07170b",
-        "accent_button_text": "#07170b",
-        "secondary_button_text": "#e0f5e4",
-        "danger_button_text": "#ffffff",
-        "input_text": "#effff2",
-        "placeholder_text": "#9abb9f",
-        "card_text": "#e0f5e4",
-        "overlay_text": "#ffffff",
-        "badge_text": "#07170b",
-        "chip_text": "#effff2",
-        "success_text": "#c5ffd6",
-        "danger_text": "#ffc8d0",
-        "warning_text": "#fff0ad"
-    },
-    "sakura_night": {
-        "panel_style": "Ink sakura panels",
-        "card_style": "Night blossom cards",
-        "button_style": "Petal moon actions",
-        "badge_style": "Sakura status chips",
-        "progress_style": "Petal to moon progress",
-        "surface_style": "Soft night overlays",
-        "heading_text": "#fff8fc",
-        "body_text": "#f7dfea",
-        "text_color": "#fff0f7",
-        "muted_text": "#d8b2c6",
-        "subtle_text": "#b98ba5",
-        "meta_text": "#b98ba5",
-        "link_text": "#ffd7e8",
-        "nav_text": "#fff0f7",
-        "button_text": "#1d0a15",
-        "accent_button_text": "#1d0a15",
-        "secondary_button_text": "#f7dfea",
-        "danger_button_text": "#ffffff",
-        "input_text": "#fff0f7",
-        "placeholder_text": "#c49aad",
-        "card_text": "#f7dfea",
-        "overlay_text": "#ffffff",
-        "badge_text": "#1d0a15",
-        "chip_text": "#fff0f7",
-        "success_text": "#d1ffd6",
-        "danger_text": "#ffcbd7",
-        "warning_text": "#fff0ad"
-    },
-    "arctic_blue": {
-        "panel_style": "Frosted slate panels",
-        "card_style": "Ice edged media cards",
-        "button_style": "Glacier lilac actions",
-        "badge_style": "Frost status chips",
-        "progress_style": "Ice to lilac progress",
-        "surface_style": "Crisp cold overlays",
-        "heading_text": "#f8fcff",
-        "body_text": "#e5f1ff",
-        "text_color": "#eff8ff",
-        "muted_text": "#b9cde1",
-        "subtle_text": "#96abc0",
-        "meta_text": "#96abc0",
-        "link_text": "#c9e9ff",
-        "nav_text": "#eff8ff",
-        "button_text": "#081420",
-        "accent_button_text": "#081420",
-        "secondary_button_text": "#e5f1ff",
-        "danger_button_text": "#ffffff",
-        "input_text": "#eff8ff",
-        "placeholder_text": "#9aafc4",
-        "card_text": "#e5f1ff",
-        "overlay_text": "#ffffff",
-        "badge_text": "#081420",
-        "chip_text": "#eff8ff",
-        "success_text": "#c9ffdb",
-        "danger_text": "#ffc9d8",
-        "warning_text": "#fff0ad"
-    }
-}
-
-
-# ---------------- Advanced Theme Studio: live element/page color editing ----------------
-THEME_VARIABLE_METADATA = [{'key': 'accent', 'css_var': '--theme-accent', 'css_name': 'theme-accent', 'label': 'Primary Accent', 'group': 'Core colors'}, {'key': 'accent_2', 'css_var': '--theme-accent-2', 'css_name': 'theme-accent-2', 'label': 'Secondary Accent', 'group': 'Core colors'}, {'key': 'panel', 'css_var': '--theme-panel', 'css_name': 'theme-panel', 'label': 'Panel Surface', 'group': 'Surfaces'}, {'key': 'panel_strong', 'css_var': '--theme-panel-strong', 'css_name': 'theme-panel-strong', 'label': 'Strong Panel Surface', 'group': 'Surfaces'}, {'key': 'border', 'css_var': '--theme-border', 'css_name': 'theme-border', 'label': 'Borders', 'group': 'Surfaces'}, {'key': 'heading', 'css_var': '--theme-heading', 'css_name': 'theme-heading', 'label': 'Headings', 'group': 'Text colors'}, {'key': 'text', 'css_var': '--theme-text', 'css_name': 'theme-text', 'label': 'Main Text', 'group': 'Text colors'}, {'key': 'body', 'css_var': '--theme-body', 'css_name': 'theme-body', 'label': 'Body Text', 'group': 'Text colors'}, {'key': 'muted', 'css_var': '--theme-muted', 'css_name': 'theme-muted', 'label': 'Muted Text', 'group': 'Text colors'}, {'key': 'subtle', 'css_var': '--theme-subtle', 'css_name': 'theme-subtle', 'label': 'Subtle Text', 'group': 'Text colors'}, {'key': 'meta', 'css_var': '--theme-meta', 'css_name': 'theme-meta', 'label': 'Meta Text', 'group': 'Text colors'}, {'key': 'link', 'css_var': '--theme-link', 'css_name': 'theme-link', 'label': 'Links', 'group': 'Text colors'}, {'key': 'nav_text', 'css_var': '--theme-nav-text', 'css_name': 'theme-nav-text', 'label': 'Navigation Text', 'group': 'Text colors'}, {'key': 'button_text', 'css_var': '--theme-button-text', 'css_name': 'theme-button-text', 'label': 'Primary Button Text', 'group': 'Buttons'}, {'key': 'on_accent', 'css_var': '--theme-on-accent', 'css_name': 'theme-on-accent', 'label': 'Text On Accent', 'group': 'Buttons'}, {'key': 'secondary_button_text', 'css_var': '--theme-secondary-button-text', 'css_name': 'theme-secondary-button-text', 'label': 'Secondary Button Text', 'group': 'Buttons'}, {'key': 'danger_button_text', 'css_var': '--theme-danger-button-text', 'css_name': 'theme-danger-button-text', 'label': 'Danger Button Text', 'group': 'Buttons'}, {'key': 'input_text', 'css_var': '--theme-input-text', 'css_name': 'theme-input-text', 'label': 'Input Text', 'group': 'Forms'}, {'key': 'placeholder', 'css_var': '--theme-placeholder', 'css_name': 'theme-placeholder', 'label': 'Placeholder Text', 'group': 'Forms'}, {'key': 'card_text', 'css_var': '--theme-card-text', 'css_name': 'theme-card-text', 'label': 'Card Text', 'group': 'Cards / overlays'}, {'key': 'overlay_text', 'css_var': '--theme-overlay-text', 'css_name': 'theme-overlay-text', 'label': 'Overlay Text', 'group': 'Cards / overlays'}, {'key': 'badge_text', 'css_var': '--theme-badge-text', 'css_name': 'theme-badge-text', 'label': 'Badge Text', 'group': 'Badges / chips'}, {'key': 'chip_text', 'css_var': '--theme-chip-text', 'css_name': 'theme-chip-text', 'label': 'Chip Text', 'group': 'Badges / chips'}, {'key': 'success_text', 'css_var': '--theme-success-text', 'css_name': 'theme-success-text', 'label': 'Success Text', 'group': 'State colors'}, {'key': 'danger_text', 'css_var': '--theme-danger-text', 'css_name': 'theme-danger-text', 'label': 'Danger Text', 'group': 'State colors'}, {'key': 'warning_text', 'css_var': '--theme-warning-text', 'css_name': 'theme-warning-text', 'label': 'Warning Text', 'group': 'State colors'}]
-THEME_VARIABLE_DEFAULTS = {'soft_pink_glass': {'accent': '#ffd4e6', 'accent_2': '#fff1cf', 'panel': 'rgba(255, 232, 243, 0.15)', 'panel_strong': 'rgba(255, 244, 250, 0.22)', 'border': 'rgba(255, 214, 233, 0.36)', 'heading': '#ffffff', 'text': '#fff8fb', 'body': '#f8edf4', 'muted': '#e7ccd9', 'subtle': '#cfaebf', 'meta': '#cfaebf', 'link': '#fff1c7', 'nav_text': '#fff8fb', 'button_text': '#181016', 'on_accent': '#181016', 'secondary_button_text': '#f8edf4', 'danger_button_text': '#ffffff', 'input_text': '#fff8fb', 'placeholder': '#cfb7c4', 'card_text': '#f8edf4', 'overlay_text': '#ffffff', 'badge_text': '#181016', 'chip_text': '#fff7fb', 'success_text': '#c9ffd8', 'danger_text': '#ffd0dc', 'warning_text': '#fff1b8'}, 'dark_neon': {'accent': '#7df9ff', 'accent_2': '#ff7af5', 'panel': 'rgba(8, 20, 34, 0.58)', 'panel_strong': 'rgba(18, 33, 56, 0.72)', 'border': 'rgba(125, 249, 255, 0.28)', 'heading': '#f9feff', 'text': '#f2fbff', 'body': '#e6f7ff', 'muted': '#b7d5df', 'subtle': '#8fb3bf', 'meta': '#8fb3bf', 'link': '#7df9ff', 'nav_text': '#f2fbff', 'button_text': '#071018', 'on_accent': '#071018', 'secondary_button_text': '#e6f7ff', 'danger_button_text': '#ffffff', 'input_text': '#f2fbff', 'placeholder': '#9dbac5', 'card_text': '#e6f7ff', 'overlay_text': '#ffffff', 'badge_text': '#071018', 'chip_text': '#eaffff', 'success_text': '#9fffdc', 'danger_text': '#ffb4cf', 'warning_text': '#fff0a6'}, 'purple_space': {'accent': '#c7a4ff', 'accent_2': '#ffb3df', 'panel': 'rgba(42, 20, 66, 0.50)', 'panel_strong': 'rgba(71, 36, 102, 0.64)', 'border': 'rgba(209, 177, 255, 0.30)', 'heading': '#ffffff', 'text': '#fbf7ff', 'body': '#f1e9ff', 'muted': '#d0bee8', 'subtle': '#ad98ca', 'meta': '#ad98ca', 'link': '#e3d4ff', 'nav_text': '#fbf7ff', 'button_text': '#160d22', 'on_accent': '#160d22', 'secondary_button_text': '#f1e9ff', 'danger_button_text': '#ffffff', 'input_text': '#fbf7ff', 'placeholder': '#bda9d9', 'card_text': '#f1e9ff', 'overlay_text': '#ffffff', 'badge_text': '#160d22', 'chip_text': '#fbf7ff', 'success_text': '#c5ffd9', 'danger_text': '#ffc6dc', 'warning_text': '#fff0b0'}, 'minimal_dark': {'accent': '#d8d8d8', 'accent_2': '#ffffff', 'panel': 'rgba(14, 15, 18, 0.72)', 'panel_strong': 'rgba(24, 25, 30, 0.82)', 'border': 'rgba(255, 255, 255, 0.16)', 'heading': '#ffffff', 'text': '#f5f5f5', 'body': '#e8e8ea', 'muted': '#b9bcc3', 'subtle': '#969aa4', 'meta': '#969aa4', 'link': '#ffffff', 'nav_text': '#f5f5f5', 'button_text': '#101114', 'on_accent': '#101114', 'secondary_button_text': '#e8e8ea', 'danger_button_text': '#ffffff', 'input_text': '#f5f5f5', 'placeholder': '#989ca5', 'card_text': '#e8e8ea', 'overlay_text': '#ffffff', 'badge_text': '#101114', 'chip_text': '#f5f5f5', 'success_text': '#bfffd2', 'danger_text': '#ffc4d2', 'warning_text': '#fff1ad'}, 'cream_glass': {'accent': '#ffe4b6', 'accent_2': '#ffc4d9', 'panel': 'rgba(255, 240, 209, 0.15)', 'panel_strong': 'rgba(255, 249, 232, 0.24)', 'border': 'rgba(255, 232, 184, 0.32)', 'heading': '#ffffff', 'text': '#fffaf0', 'body': '#f8edd7', 'muted': '#e5d0b0', 'subtle': '#c6a982', 'meta': '#c6a982', 'link': '#fff0b8', 'nav_text': '#fffaf0', 'button_text': '#21150d', 'on_accent': '#21150d', 'secondary_button_text': '#f8edd7', 'danger_button_text': '#ffffff', 'input_text': '#fffaf0', 'placeholder': '#c9ad8b', 'card_text': '#f8edd7', 'overlay_text': '#ffffff', 'badge_text': '#21150d', 'chip_text': '#fffaf0', 'success_text': '#d8ffca', 'danger_text': '#ffd0d0', 'warning_text': '#fff3a8'}, 'ocean_mist': {'accent': '#8df7ee', 'accent_2': '#ffb3a3', 'panel': 'rgba(8, 45, 58, 0.46)', 'panel_strong': 'rgba(18, 74, 88, 0.62)', 'border': 'rgba(141, 247, 238, 0.28)', 'heading': '#f8ffff', 'text': '#efffff', 'body': '#dff8f7', 'muted': '#afd4d3', 'subtle': '#88b6b5', 'meta': '#88b6b5', 'link': '#9ffcf5', 'nav_text': '#efffff', 'button_text': '#061917', 'on_accent': '#061917', 'secondary_button_text': '#dff8f7', 'danger_button_text': '#ffffff', 'input_text': '#efffff', 'placeholder': '#9bbfc0', 'card_text': '#dff8f7', 'overlay_text': '#ffffff', 'badge_text': '#061917', 'chip_text': '#efffff', 'success_text': '#b9ffd7', 'danger_text': '#ffc7c9', 'warning_text': '#fff0aa'}, 'ember_noir': {'accent': '#ffbf7a', 'accent_2': '#ff6b6b', 'panel': 'rgba(40, 18, 10, 0.58)', 'panel_strong': 'rgba(76, 34, 18, 0.70)', 'border': 'rgba(255, 177, 104, 0.30)', 'heading': '#fffaf5', 'text': '#fff2e8', 'body': '#f6dfcf', 'muted': '#d7b39d', 'subtle': '#b98e75', 'meta': '#b98e75', 'link': '#ffd39a', 'nav_text': '#fff2e8', 'button_text': '#1f0d06', 'on_accent': '#1f0d06', 'secondary_button_text': '#f6dfcf', 'danger_button_text': '#ffffff', 'input_text': '#fff2e8', 'placeholder': '#bf9984', 'card_text': '#f6dfcf', 'overlay_text': '#ffffff', 'badge_text': '#1f0d06', 'chip_text': '#fff2e8', 'success_text': '#d5ffbd', 'danger_text': '#ffd0c7', 'warning_text': '#fff0a6'}, 'forest_glass': {'accent': '#9ff2b2', 'accent_2': '#e7d58b', 'panel': 'rgba(12, 38, 24, 0.52)', 'panel_strong': 'rgba(28, 70, 43, 0.66)', 'border': 'rgba(159, 242, 178, 0.28)', 'heading': '#f8fff9', 'text': '#effff2', 'body': '#e0f5e4', 'muted': '#bad8c1', 'subtle': '#93b49b', 'meta': '#93b49b', 'link': '#b7ffc6', 'nav_text': '#effff2', 'button_text': '#07170b', 'on_accent': '#07170b', 'secondary_button_text': '#e0f5e4', 'danger_button_text': '#ffffff', 'input_text': '#effff2', 'placeholder': '#9abb9f', 'card_text': '#e0f5e4', 'overlay_text': '#ffffff', 'badge_text': '#07170b', 'chip_text': '#effff2', 'success_text': '#c5ffd6', 'danger_text': '#ffc8d0', 'warning_text': '#fff0ad'}, 'sakura_night': {'accent': '#ffb3d1', 'accent_2': '#f7e6a6', 'panel': 'rgba(42, 18, 38, 0.54)', 'panel_strong': 'rgba(76, 32, 65, 0.68)', 'border': 'rgba(255, 179, 209, 0.32)', 'heading': '#fff8fc', 'text': '#fff0f7', 'body': '#f7dfea', 'muted': '#d8b2c6', 'subtle': '#b98ba5', 'meta': '#b98ba5', 'link': '#ffd7e8', 'nav_text': '#fff0f7', 'button_text': '#1d0a15', 'on_accent': '#1d0a15', 'secondary_button_text': '#f7dfea', 'danger_button_text': '#ffffff', 'input_text': '#fff0f7', 'placeholder': '#c49aad', 'card_text': '#f7dfea', 'overlay_text': '#ffffff', 'badge_text': '#1d0a15', 'chip_text': '#fff0f7', 'success_text': '#d1ffd6', 'danger_text': '#ffcbd7', 'warning_text': '#fff0ad'}, 'arctic_blue': {'accent': '#b5e2ff', 'accent_2': '#c9b8ff', 'panel': 'rgba(14, 31, 50, 0.58)', 'panel_strong': 'rgba(27, 52, 78, 0.72)', 'border': 'rgba(181, 226, 255, 0.28)', 'heading': '#f8fcff', 'text': '#eff8ff', 'body': '#e5f1ff', 'muted': '#b9cde1', 'subtle': '#96abc0', 'meta': '#96abc0', 'link': '#c9e9ff', 'nav_text': '#eff8ff', 'button_text': '#081420', 'on_accent': '#081420', 'secondary_button_text': '#e5f1ff', 'danger_button_text': '#ffffff', 'input_text': '#eff8ff', 'placeholder': '#9aafc4', 'card_text': '#e5f1ff', 'overlay_text': '#ffffff', 'badge_text': '#081420', 'chip_text': '#eff8ff', 'success_text': '#c9ffdb', 'danger_text': '#ffc9d8', 'warning_text': '#fff0ad'}}
-
-# Single-source theme roles added for exact page previews and grouped controls.
-_EXTRA_THEME_VARIABLES = [
-    {"key": "pagination_panel", "css_var": "--theme-pagination-panel", "css_name": "theme-pagination-panel", "label": "Pagination Panel", "group": "Pagination"},
-    {"key": "pagination_button_bg", "css_var": "--theme-pagination-button-bg", "css_name": "theme-pagination-button-bg", "label": "Pagination Button Background", "group": "Pagination"},
-    {"key": "pagination_button_text", "css_var": "--theme-pagination-button-text", "css_name": "theme-pagination-button-text", "label": "Pagination Button Text", "group": "Pagination"},
-    {"key": "pagination_active_bg", "css_var": "--theme-pagination-active-bg", "css_name": "theme-pagination-active-bg", "label": "Pagination Active Background", "group": "Pagination"},
-    {"key": "pagination_active_text", "css_var": "--theme-pagination-active-text", "css_name": "theme-pagination-active-text", "label": "Pagination Active Text", "group": "Pagination"},
-    {"key": "pagination_info_text", "css_var": "--theme-pagination-info-text", "css_name": "theme-pagination-info-text", "label": "Pagination Info Text", "group": "Pagination"},
-    {"key": "button_bg", "css_var": "--theme-button-bg", "css_name": "theme-button-bg", "label": "Primary Button Background", "group": "Buttons"},
-    {"key": "secondary_button_bg", "css_var": "--theme-secondary-button-bg", "css_name": "theme-secondary-button-bg", "label": "Secondary Button Background", "group": "Buttons"},
-    {"key": "card_bg", "css_var": "--theme-card-bg", "css_name": "theme-card-bg", "label": "Card Background", "group": "Cards / overlays"},
-    {"key": "input_bg", "css_var": "--theme-input-bg", "css_name": "theme-input-bg", "label": "Input Background", "group": "Forms"},
-    {"key": "danger_bg", "css_var": "--theme-danger-bg", "css_name": "theme-danger-bg", "label": "Danger Background", "group": "State colors"},
-    {"key": "success_bg", "css_var": "--theme-success-bg", "css_name": "theme-success-bg", "label": "Success Background", "group": "State colors"},
-    {"key": "warning_bg", "css_var": "--theme-warning-bg", "css_name": "theme-warning-bg", "label": "Warning Background", "group": "State colors"}
-]
-_existing_theme_variable_keys = {item["key"] for item in THEME_VARIABLE_METADATA}
-for _item in _EXTRA_THEME_VARIABLES:
-    if _item["key"] not in _existing_theme_variable_keys:
-        THEME_VARIABLE_METADATA.append(_item)
-        _existing_theme_variable_keys.add(_item["key"])
-
-_EXTRA_DEFAULTS = {
-    "pagination_panel": "var(--theme-panel)",
-    "pagination_button_bg": "var(--theme-button-bg)",
-    "pagination_button_text": "var(--theme-button-text)",
-    "pagination_active_bg": "var(--theme-accent)",
-    "pagination_active_text": "var(--theme-on-accent)",
-    "pagination_info_text": "var(--theme-muted)",
-    "button_bg": "var(--theme-accent)",
-    "secondary_button_bg": "var(--theme-panel-strong)",
-    "card_bg": "var(--theme-panel-strong)",
-    "input_bg": "rgba(0, 0, 0, 0.32)",
-    "danger_bg": "rgba(255, 88, 116, 0.28)",
-    "success_bg": "rgba(100, 255, 166, 0.22)",
-    "warning_bg": "rgba(255, 211, 99, 0.22)"
-}
-for _theme_defaults in THEME_VARIABLE_DEFAULTS.values():
-    _theme_defaults.setdefault("button_bg", _theme_defaults.get("accent", "#ffffff"))
-    _theme_defaults.setdefault("secondary_button_bg", _theme_defaults.get("panel_strong", "rgba(255,255,255,.14)"))
-    _theme_defaults.setdefault("card_bg", _theme_defaults.get("panel_strong", "rgba(255,255,255,.14)"))
-    _theme_defaults.setdefault("input_bg", "rgba(0,0,0,.34)")
-    _theme_defaults.setdefault("pagination_panel", _theme_defaults.get("panel", "rgba(255,255,255,.12)"))
-    _theme_defaults.setdefault("pagination_button_bg", _theme_defaults.get("accent", "#ffffff"))
-    _theme_defaults.setdefault("pagination_button_text", _theme_defaults.get("on_accent", _theme_defaults.get("button_text", "#111111")))
-    _theme_defaults.setdefault("pagination_active_bg", _theme_defaults.get("accent_2", _theme_defaults.get("accent", "#ffffff")))
-    _theme_defaults.setdefault("pagination_active_text", _theme_defaults.get("on_accent", _theme_defaults.get("button_text", "#111111")))
-    _theme_defaults.setdefault("pagination_info_text", _theme_defaults.get("muted", "#e5e7eb"))
-    _theme_defaults.setdefault("danger_bg", "rgba(255, 88, 116, 0.28)")
-    _theme_defaults.setdefault("success_bg", "rgba(100, 255, 166, 0.22)")
-    _theme_defaults.setdefault("warning_bg", "rgba(255, 211, 99, 0.22)")
-
-THEME_VARIABLE_KEYS = [item["key"] for item in THEME_VARIABLE_METADATA]
-THEME_VARIABLE_CSS_MAP = {item["key"]: item["css_var"] for item in THEME_VARIABLE_METADATA}
-
-# Merge the CSS-derived variables into the descriptive profiles used by Theme Studio.
-for _theme_key, _variables in THEME_VARIABLE_DEFAULTS.items():
-    if _theme_key in THEME_STYLE_PROFILES:
-        THEME_STYLE_PROFILES[_theme_key].update(_variables)
-
-def sanitize_color_value(value, fallback="#ffffff"):
-    value = str(value or "").strip()
-    if re.match(r"^#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?$", value):
-        return value
-    if re.match(r"^rgba?\([0-9.,%\s]+\)$", value):
-        return value
-    if re.match(r"^hsla?\([0-9.,%\s]+\)$", value):
-        return value
-    if value.startswith("color-mix(") or value.startswith("linear-gradient("):
-        return value
-    return fallback
-
-def normalize_theme_variables(payload, fallback_profile=None):
-    fallback_profile = fallback_profile or {}
-    if not isinstance(payload, dict):
-        payload = {}
-    normalized = {}
-    for item in THEME_VARIABLE_METADATA:
-        key = item["key"]
-        fallback = fallback_profile.get(key) or THEME_VARIABLE_DEFAULTS.get("soft_pink_glass", {}).get(key, "#ffffff")
-        normalized[key] = sanitize_color_value(payload.get(key, fallback), fallback)
-    return normalized
-
-def normalize_override_variables(payload):
-    if not isinstance(payload, dict):
-        return {}
-    normalized = {}
-    for key, value in payload.items():
-        if key in THEME_VARIABLE_KEYS:
-            normalized[key] = sanitize_color_value(value, "#ffffff")
-        elif isinstance(key, str) and key.startswith("custom_"):
-            normalized[key] = sanitize_color_value(value, "#ffffff")
-    return normalized
-
-def build_css_variable_string(variable_values):
-    pairs = []
-    if not isinstance(variable_values, dict):
-        return ""
-    for key, value in variable_values.items():
-        css_var = THEME_VARIABLE_CSS_MAP.get(key)
-        if not css_var:
-            css_var = "--theme-custom-" + re.sub(r"[^a-zA-Z0-9_-]", "-", key.replace("custom_", "")).strip("-").lower()
-        pairs.append(f"{css_var}: {value};")
-    return " ".join(pairs)
-
-def get_active_theme_variables(settings, section_key=None):
-    active_theme = settings.get("theme", "soft_pink_glass")
-    profile = normalize_theme_variables(settings.get("theme_profiles", {}).get(active_theme), THEME_STYLE_PROFILES.get(active_theme, {}))
-    variables = dict(profile)
-    variables.update(normalize_override_variables(settings.get("global_overrides", {})))
-    return variables
-
-SECTION_THEME_KEYS = [
-    "home", "anime", "manga", "queue", "player", "details", "add", "sections"
-]
-
-ALLOWED_BACKGROUND_EXTENSIONS = {"mp4", "webm", "jpg", "jpeg", "png", "webp", "gif"}
-
-WATCH_STATUS_OPTIONS = [
-    "Not Started",
-    "Plan to Watch",
-    "Watching",
-    "On Hold",
-    "Dropped",
-    "Rewatching",
-    "Completed"
-]
-
 ANIME_RELEASE_STATUS_OPTIONS = [
     "Ongoing",
     "Completed",
@@ -1930,13 +1493,6 @@ def anime_release_status_label(status):
     return "Not Aired" if status == "Not_Aired" else status
 
 
-def normalize_watch_status(value, fallback="Not Started"):
-    if value is None and fallback is None:
-        return None
-    value = str(value or fallback or "").strip()
-    return value if value in WATCH_STATUS_OPTIONS else fallback
-
-
 def get_anime_tracking_context(anime):
     tracking = load_tracking_data()
     entry = get_tracking_anime_entry(tracking, anime, create=False)
@@ -1955,437 +1511,12 @@ def enrich_episode_progress(anime, tracking_entry):
         episode["has_resume"] = (not episode.get("watched")) and episode["progress_percentage"] > 0
     return anime
 
-
-def empty_theme_settings():
-    return {
-        "schema_version": 1,
-        "theme": "soft_pink_glass",
-        "dark_mode": False,
-        "same_theme_everywhere": True,
-        "section_themes": {key: "soft_pink_glass" for key in SECTION_THEME_KEYS},
-        "background": {
-            "mode": "default_video",
-            "url": "/static/images/stars.mp4",
-            "type": "video"
-        },
-        "theme_profiles": {key: profile.copy() for key, profile in THEME_STYLE_PROFILES.items()},
-        "global_overrides": {},
-        "page_overrides": {key: {} for key in SECTION_THEME_KEYS},
-        "updated_at": None
-    }
-
-
-def normalize_theme_name(value):
-    value = (value or "soft_pink_glass").strip()
-    return value if value in THEME_PRESETS else "soft_pink_glass"
-
-
-def normalize_theme_settings(data):
-    base = empty_theme_settings()
-    if not isinstance(data, dict):
-        return base
-
-    base["theme"] = normalize_theme_name(data.get("theme"))
-    base["dark_mode"] = bool(data.get("dark_mode", False))
-    base["same_theme_everywhere"] = True
-    base["section_themes"] = {key: base["theme"] for key in SECTION_THEME_KEYS}
-
-    background = data.get("background") if isinstance(data.get("background"), dict) else {}
-    mode = background.get("mode", base["background"]["mode"])
-    if mode not in {"default_video", "uploaded_video", "uploaded_image", "solid", "none"}:
-        mode = "default_video"
-    url = background.get("url") or base["background"]["url"]
-    media_type = background.get("type") or ("image" if mode == "uploaded_image" else "video")
-    base["background"] = {"mode": mode, "url": url, "type": media_type}
-
-    saved_profiles = data.get("theme_profiles") if isinstance(data.get("theme_profiles"), dict) else {}
-    base["theme_profiles"] = {}
-    for theme_key, default_profile in THEME_STYLE_PROFILES.items():
-        saved_profile = saved_profiles.get(theme_key) if isinstance(saved_profiles.get(theme_key), dict) else {}
-        profile = default_profile.copy()
-        profile.update({
-            key: str(value)
-            for key, value in saved_profile.items()
-            if key in default_profile or key in THEME_VARIABLE_KEYS
-        })
-        profile.update(normalize_theme_variables(profile, default_profile))
-        base["theme_profiles"][theme_key] = profile
-
-    base["global_overrides"] = normalize_override_variables(data.get("global_overrides"))
-    base["page_overrides"] = {key: {} for key in SECTION_THEME_KEYS}
-
-    base["updated_at"] = data.get("updated_at")
-    return base
-
-
-def load_theme_settings():
-    if not os.path.exists(THEME_SETTINGS_FILE):
-        return empty_theme_settings()
-    try:
-        return normalize_theme_settings(read_json_file(THEME_SETTINGS_FILE))
-    except (json.JSONDecodeError, OSError):
-        return empty_theme_settings()
-
-
-def save_theme_settings(settings):
-    settings = normalize_theme_settings(settings)
-    settings["updated_at"] = utc_now_iso()
-    write_json_file_atomic(THEME_SETTINGS_FILE, settings, indent=4)
-    return settings
-
-
-def get_current_section_key():
-    endpoint = request.endpoint or ""
-    path = request.path.strip("/")
-    if endpoint in {"hub"} or path == "":
-        return "home"
-    if "queue" in endpoint or path.startswith("queue"):
-        return "queue"
-    if "player" in endpoint:
-        return "player"
-    if endpoint in {"anime_detail"}:
-        return "details"
-    if endpoint in {"add_anime", "add_manga", "add_section_item"}:
-        return "add"
-    if path.startswith("manga"):
-        return "manga"
-    if path.startswith("anime"):
-        return "anime"
-    if endpoint == "section_index" or endpoint == "section_detail":
-        return "sections"
-    return "anime"
-
-
-def allowed_background_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_BACKGROUND_EXTENSIONS
-
-
-
-
-# ---------------- Per-element color editor ----------------
-def safe_element_selector(selector):
-    selector = str(selector or '').strip()
-    if not selector or len(selector) > 900:
-        return ''
-    if any(token in selector for token in ['{', '}', ';', '@', '\n', '\r']):
-        return ''
-    if not re.fullmatch(r'[A-Za-z0-9_\-:.# >+~*\[\]=\"\'(),]+', selector):
-        return ''
-    return selector
-
-
-def normalize_hex_color(value, fallback='#ffffff'):
-    value = str(value or '').strip()
-    if re.fullmatch(r'#[0-9a-fA-F]{6}', value):
-        return value.lower()
-    if re.fullmatch(r'#[0-9a-fA-F]{3}', value):
-        return '#' + ''.join(ch * 2 for ch in value[1:]).lower()
-    return fallback
-
-
-def normalize_alpha(value, fallback=1):
-    try:
-        alpha = float(value)
-    except (TypeError, ValueError):
-        alpha = fallback
-    return max(0, min(1, alpha))
-
-
-def normalize_pixel_value(value, fallback=0, minimum=0, maximum=120):
-    try:
-        number = float(str(value).replace('px', '').strip())
-    except (TypeError, ValueError):
-        number = fallback
-    return max(minimum, min(maximum, number))
-
-
-def safe_css_token(value, fallback='', max_len=180):
-    value = str(value or '').strip()
-    if not value:
-        return fallback
-    blocked = [';', '{', '}', '@', '<', '>', '`', '\\', 'url(', 'expression(', 'javascript:', 'data:']
-    lowered = value.lower().replace(' ', '')
-    if any(token in lowered for token in blocked):
-        return fallback
-    if len(value) > max_len:
-        return fallback
-    if not re.fullmatch(r'[A-Za-z0-9_#.,%() /+\-:\'"!]+', value):
-        return fallback
-    return value
-
-
-def safe_css_color(value, fallback='#ffffff'):
-    value = str(value or '').strip()
-    if not value:
-        return fallback
-    if re.fullmatch(r'#[0-9a-fA-F]{3,8}', value):
-        return value.lower()
-    if re.fullmatch(r'(rgb|rgba|hsl|hsla)\([A-Za-z0-9.,% /+-]+\)', value, flags=re.I):
-        return safe_css_token(value, fallback, 90)
-    if re.fullmatch(r'var\(--[A-Za-z0-9_-]+\)', value):
-        return value
-    if re.fullmatch(r'[A-Za-z]+', value):
-        return value.lower()
-    return fallback
-
-
-def safe_css_length(value, fallback='', max_len=80):
-    value = safe_css_token(value, fallback, max_len)
-    if not value:
-        return fallback
-    return value
-
-
-def hex_to_rgba(hex_color, alpha):
-    hex_color = normalize_hex_color(hex_color)
-    red = int(hex_color[1:3], 16)
-    green = int(hex_color[3:5], 16)
-    blue = int(hex_color[5:7], 16)
-    return f'rgba({red}, {green}, {blue}, {alpha:.3f})'
-
-
-def css_color_with_alpha(color, alpha, fallback='#ffffff'):
-    color = safe_css_color(color, fallback)
-    alpha = normalize_alpha(alpha, 1)
-    if re.fullmatch(r'#[0-9a-fA-F]{6}', color):
-        red = int(color[1:3], 16)
-        green = int(color[3:5], 16)
-        blue = int(color[5:7], 16)
-        return f'rgba({red}, {green}, {blue}, {alpha:.3f})'
-    if re.fullmatch(r'#[0-9a-fA-F]{3}', color):
-        expanded = '#' + ''.join(ch * 2 for ch in color[1:])
-        return css_color_with_alpha(expanded, alpha, fallback)
-    if color.lower().startswith('rgb('):
-        return re.sub(r'^rgb\((.*)\)$', rf'rgba(\1, {alpha:.3f})', color, flags=re.I)
-    return color
-
-
-def safe_background_css(values):
-    mode = safe_css_token(values.get('background_mode', 'solid'), 'solid', 32)
-    if mode == 'custom':
-        custom = safe_css_token(values.get('background_custom'), '', 260)
-        if custom and ('gradient(' in custom.lower() or custom.lower().startswith(('rgba(', 'rgb(', 'hsl(', 'hsla(', '#', 'var(')) or re.fullmatch(r'[A-Za-z]+', custom)):
-            return custom
-        return css_color_with_alpha(values.get('background_color', '#101018'), values.get('background_alpha', 0.7), '#101018')
-    if mode == 'linear-gradient':
-        angle = safe_css_token(values.get('gradient_angle', '135deg'), '135deg', 40)
-        start = css_color_with_alpha(values.get('gradient_start_color', '#101018'), values.get('gradient_start_alpha', 0.9), '#101018')
-        end = css_color_with_alpha(values.get('gradient_end_color', '#ffd4e6'), values.get('gradient_end_alpha', 0.15), '#ffd4e6')
-        return f'linear-gradient({angle}, {start}, {end})'
-    if mode == 'radial-gradient':
-        position = safe_css_token(values.get('gradient_angle', 'circle at center'), 'circle at center', 60)
-        start = css_color_with_alpha(values.get('gradient_start_color', '#101018'), values.get('gradient_start_alpha', 0.9), '#101018')
-        end = css_color_with_alpha(values.get('gradient_end_color', '#ffd4e6'), values.get('gradient_end_alpha', 0.15), '#ffd4e6')
-        return f'radial-gradient({position}, {start}, {end})'
-    return css_color_with_alpha(values.get('background_color', '#101018'), values.get('background_alpha', 0.7), '#101018')
-
-
-def load_element_theme():
-    if not os.path.exists(ELEMENT_THEME_FILE):
-        return {"rules": {}}
-    try:
-        data = read_json_file(ELEMENT_THEME_FILE)
-    except (json.JSONDecodeError, OSError):
-        return {"rules": {}}
-    if not isinstance(data, dict):
-        return {"rules": {}}
-    rules = data.get("rules") if isinstance(data.get("rules"), dict) else {}
-    return {"rules": rules}
-
-
-def normalize_element_values(payload):
-    return {
-        "background_mode": safe_css_token(payload.get("background_mode"), "solid", 32),
-        "background_color": safe_css_color(payload.get("background_color"), "#101018"),
-        "background_alpha": normalize_alpha(payload.get("background_alpha"), 0.7),
-        "gradient_angle": safe_css_token(payload.get("gradient_angle"), "135deg", 60),
-        "gradient_start_color": safe_css_color(payload.get("gradient_start_color"), "#101018"),
-        "gradient_start_alpha": normalize_alpha(payload.get("gradient_start_alpha"), 0.9),
-        "gradient_end_color": safe_css_color(payload.get("gradient_end_color"), "#ffd4e6"),
-        "gradient_end_alpha": normalize_alpha(payload.get("gradient_end_alpha"), 0.15),
-        "background_custom": safe_css_token(payload.get("background_custom"), "", 260),
-        "text_color": safe_css_color(payload.get("text_color"), "#ffffff"),
-        "text_alpha": normalize_alpha(payload.get("text_alpha"), 1),
-        "border_color": safe_css_color(payload.get("border_color"), "#ffffff"),
-        "border_alpha": normalize_alpha(payload.get("border_alpha"), 0.25),
-        "border_width": safe_css_length(payload.get("border_width"), "1px"),
-        "border_style": safe_css_token(payload.get("border_style"), "solid", 24),
-        "border_radius": safe_css_length(payload.get("border_radius"), "12px"),
-        "shadow_color": safe_css_color(payload.get("shadow_color"), "#000000"),
-        "shadow_alpha": normalize_alpha(payload.get("shadow_alpha"), 0.35),
-        "shadow_x": safe_css_length(payload.get("shadow_x"), "0px"),
-        "shadow_y": safe_css_length(payload.get("shadow_y"), "14px"),
-        "shadow_blur": safe_css_length(payload.get("shadow_blur"), "24px"),
-        "shadow_spread": safe_css_length(payload.get("shadow_spread"), "0px"),
-        "font_size": safe_css_length(payload.get("font_size"), "16px"),
-        "font_weight": safe_css_token(payload.get("font_weight"), "inherit", 40),
-        "line_height": safe_css_token(payload.get("line_height"), "normal", 40),
-        "opacity": str(normalize_alpha(payload.get("opacity"), 1)),
-        "backdrop_blur": safe_css_length(payload.get("backdrop_blur"), "0px"),
-        "padding": safe_css_length(payload.get("padding"), "", 80),
-        "margin": safe_css_length(payload.get("margin"), "", 80)
-    }
-
-
-def write_element_theme_css(data=None):
-    data = data or load_element_theme()
-    lines = [
-        "/* Generated by the in-app element visual editor. Do not hand-edit while the app is running. */",
-        "/* All per-element overrides are stored in data/element_theme.json. */",
-        ""
-    ]
-    for selector, values in sorted((data.get("rules") or {}).items()):
-        safe_selector = safe_element_selector(selector)
-        if not safe_selector or not isinstance(values, dict):
-            continue
-        values = normalize_element_values(values)
-        background = safe_background_css(values)
-        text = css_color_with_alpha(values.get("text_color"), values.get("text_alpha"), "#ffffff")
-        border = css_color_with_alpha(values.get("border_color"), values.get("border_alpha"), "#ffffff")
-        shadow = css_color_with_alpha(values.get("shadow_color"), values.get("shadow_alpha"), "#000000")
-        lines.append(f"{safe_selector} {{")
-        lines.append(f"    background: {background} !important;")
-        lines.append(f"    color: {text} !important;")
-        lines.append(f"    border-color: {border} !important;")
-        lines.append(f"    border-width: {values['border_width']} !important;")
-        lines.append(f"    border-style: {values['border_style']} !important;")
-        lines.append(f"    border-radius: {values['border_radius']} !important;")
-        lines.append(f"    box-shadow: {values['shadow_x']} {values['shadow_y']} {values['shadow_blur']} {values['shadow_spread']} {shadow} !important;")
-        lines.append(f"    font-size: {values['font_size']} !important;")
-        lines.append(f"    font-weight: {values['font_weight']} !important;")
-        lines.append(f"    line-height: {values['line_height']} !important;")
-        lines.append(f"    opacity: {values['opacity']} !important;")
-        lines.append(f"    backdrop-filter: blur({values['backdrop_blur']}) !important;")
-        if values.get('padding'):
-            lines.append(f"    padding: {values['padding']} !important;")
-        if values.get('margin'):
-            lines.append(f"    margin: {values['margin']} !important;")
-        lines.append("}")
-        lines.append("")
-    lines.extend([
-        "",
-        "/* Keep page media backgrounds detached from page scrolling. */",
-        "/* Fixed media can scroll with the page in Chromium/Electron when body has backdrop-filter/filter/transform. */",
-        "body.section-details,",
-        "body.section-add {",
-        "    background: transparent !important;",
-        "    box-shadow: none !important;",
-        "    backdrop-filter: none !important;",
-        "    -webkit-backdrop-filter: none !important;",
-        "    filter: none !important;",
-        "    transform: none !important;",
-        "    perspective: none !important;",
-        "    contain: none !important;",
-        "    overflow: hidden !important;",
-        "}",
-        "",
-        "body.section-details main,",
-        "body.section-add main {",
-        "    height: 100vh !important;",
-        "    min-height: 100vh !important;",
-        "    overflow-x: hidden !important;",
-        "    overflow-y: auto !important;",
-        "    position: relative !important;",
-        "    z-index: 1 !important;",
-        "    -webkit-overflow-scrolling: touch;",
-        "}",
-        "",
-        "body.section-details .theme-background-video,",
-        "body.section-details .theme-background-image,",
-        "body.section-details .video-background,",
-        "body.section-add .theme-background-video,",
-        "body.section-add .theme-background-image,",
-        "body.section-add .video-background {",
-        "    position: fixed !important;",
-        "    top: 0 !important;",
-        "    right: 0 !important;",
-        "    bottom: 0 !important;",
-        "    left: 0 !important;",
-        "    width: 100vw !important;",
-        "    height: 100vh !important;",
-        "    min-width: 100vw !important;",
-        "    min-height: 100vh !important;",
-        "    object-fit: cover !important;",
-        "    transform: none !important;",
-        "    pointer-events: none !important;",
-        "    z-index: -3 !important;",
-        "}",
-        "",
-        "body.section-details::after,",
-        "body.section-add::after {",
-        "    position: fixed !important;",
-        "    inset: 0 !important;",
-        "    pointer-events: none !important;",
-        "    z-index: -2 !important;",
-        "}",
-    ])
-    os.makedirs(os.path.dirname(ELEMENT_THEME_CSS_FILE), exist_ok=True)
-    with open(ELEMENT_THEME_CSS_FILE, "w", encoding="utf-8") as file:
-        file.write("\n".join(lines).rstrip() + "\n")
-
-
-def save_element_theme(data):
-    normalized = {"rules": data.get("rules", {}) if isinstance(data, dict) else {}}
-    write_json_file_atomic(ELEMENT_THEME_FILE, normalized, indent=4)
-    write_element_theme_css(normalized)
-    return normalized
-
-@app.context_processor
-def inject_theme_settings():
-    settings = load_theme_settings()
-    section_key = get_current_section_key()
-    active_theme = settings.get("theme", "soft_pink_glass")
-    return {
-        "theme_settings": settings,
-        "theme_presets": THEME_PRESETS,
-        "theme_style_profiles": settings.get("theme_profiles", THEME_STYLE_PROFILES),
-        "theme_variable_metadata": THEME_VARIABLE_METADATA,
-        "theme_css_overrides": build_css_variable_string(get_active_theme_variables(settings, section_key)),
-        "section_theme_keys": SECTION_THEME_KEYS,
-        "active_theme": active_theme,
-        "active_section_key": section_key,
-        "element_theme_version": int(os.path.getmtime(ELEMENT_THEME_CSS_FILE)) if os.path.exists(ELEMENT_THEME_CSS_FILE) else 0
-    }
-
-
-
-
-
-@app.route('/api/element-theme', methods=['GET'])
-def api_get_element_theme():
-    write_element_theme_css()
-    return jsonify(load_element_theme())
-
-
-@app.route('/api/element-theme', methods=['POST'])
-def api_save_element_theme():
-    payload = request.get_json(silent=True) or {}
-    selector = safe_element_selector(payload.get('selector'))
-    if not selector:
-        return jsonify({"status": "error", "message": "Invalid selector"}), 400
-    data = load_element_theme()
-    data.setdefault("rules", {})[selector] = normalize_element_values(payload)
-    save_element_theme(data)
-    return jsonify({"status": "success", "selector": selector})
-
-
-@app.route('/api/element-theme/reset', methods=['POST'])
-def api_reset_element_theme():
-    payload = request.get_json(silent=True) or {}
-    selector = safe_element_selector(payload.get('selector'))
-    if not selector:
-        return jsonify({"status": "error", "message": "Invalid selector"}), 400
-    data = load_element_theme()
-    data.setdefault("rules", {}).pop(selector, None)
-    save_element_theme(data)
-    return jsonify({"status": "success", "selector": selector})
-
-@app.route('/')
+@core_bp.route('/')
 def hub():
     sections = load_sections()
     return render_template("hub.html", sections=sections)
 
-@app.route('/anime')
+@anime_bp.route('/anime')
 def index():
     return render_template("index.html", global_queue=build_enriched_queue())
 
@@ -2397,7 +1528,7 @@ def get_anime_image(title):
                 return f"/static/anime_images/{filename}"
     return DEFAULT_IMAGE
 
-@app.route('/api/anime')
+@anime_bp.route('/api/anime')
 def api_anime():
     anime_data = load_anime_data()
     for anime in anime_data:
@@ -2405,29 +1536,29 @@ def api_anime():
     return jsonify(anime_data)
 
 
-@app.route('/api/anime-filter-state', methods=['GET'])
+@anime_bp.route('/api/anime-filter-state', methods=['GET'])
 def api_get_anime_filter_state():
     return jsonify(load_anime_filter_state())
 
 
-@app.route('/api/anime-filter-state', methods=['POST'])
+@anime_bp.route('/api/anime-filter-state', methods=['POST'])
 def api_save_anime_filter_state():
     payload = request.get_json(silent=True) or {}
     return jsonify(save_anime_filter_state(payload))
 
 
-@app.route('/api/manga-filter-state', methods=['GET'])
+@manga_bp.route('/api/manga-filter-state', methods=['GET'])
 def api_get_manga_filter_state():
     return jsonify(load_filter_state(MANGA_FILTER_STATE_FILE))
 
 
-@app.route('/api/manga-filter-state', methods=['POST'])
+@manga_bp.route('/api/manga-filter-state', methods=['POST'])
 def api_save_manga_filter_state():
     payload = request.get_json(silent=True) or {}
     return jsonify(save_filter_state(MANGA_FILTER_STATE_FILE, payload))
 
 
-@app.route('/api/section-filter-state/<section>', methods=['GET'])
+@sections_bp.route('/api/section-filter-state/<section>', methods=['GET'])
 def api_get_section_filter_state(section):
     try:
         section_states = read_json_file(SECTION_FILTER_STATE_FILE) if os.path.exists(SECTION_FILTER_STATE_FILE) else {}
@@ -2438,7 +1569,7 @@ def api_get_section_filter_state(section):
     return jsonify(empty_filter_state())
 
 
-@app.route('/api/section-filter-state/<section>', methods=['POST'])
+@sections_bp.route('/api/section-filter-state/<section>', methods=['POST'])
 def api_save_section_filter_state(section):
     payload = request.get_json(silent=True) or {}
     try:
@@ -2453,7 +1584,7 @@ def api_save_section_filter_state(section):
     write_json_file_atomic(SECTION_FILTER_STATE_FILE, section_states, indent=4)
     return jsonify(normalized)
 
-@app.route('/api/anime-tags')
+@anime_bp.route('/api/anime-tags')
 def api_anime_tags():
     if os.path.exists(ANIME_TAGS_FILE):
         with open(ANIME_TAGS_FILE, 'r', encoding='utf-8') as file:
@@ -2478,15 +1609,15 @@ def api_anime_tags():
         }
     })
 
-@app.route('/api/tracking')
+@tracking_bp.route('/api/tracking')
 def api_tracking():
     return jsonify(load_tracking_data())
 
-@app.route('/api/tracking/continue-watching')
+@tracking_bp.route('/api/tracking/continue-watching')
 def api_continue_watching():
     return jsonify({"items": build_continue_watching_items()})
 
-@app.route('/api/tracking/progress', methods=['POST'])
+@tracking_bp.route('/api/tracking/progress', methods=['POST'])
 def api_save_episode_progress():
     payload = request.get_json(silent=True) or {}
     anime_id = payload.get("anime_id")
@@ -2565,7 +1696,7 @@ def api_save_episode_progress():
         "continue_watching": build_continue_watching_items()
     })
 
-@app.route('/api/tracking/discard', methods=['POST'])
+@tracking_bp.route('/api/tracking/discard', methods=['POST'])
 def api_discard_continue_watching():
     payload = request.get_json(silent=True) or {}
     try:
@@ -2592,7 +1723,7 @@ def api_discard_continue_watching():
     save_tracking_data(tracking)
     return jsonify({"status": "success", "continue_watching": build_continue_watching_items()})
 
-@app.route('/videos/<int:anime_id>/<path:filename>')
+@player_bp.route('/videos/<int:anime_id>/<path:filename>')
 def serve_video(anime_id, filename):
     anime_data = load_anime_data()
     anime = next((item for item in anime_data if item['id'] == anime_id), None)
@@ -2602,8 +1733,8 @@ def serve_video(anime_id, filename):
             return send_file(file_path, mimetype='video/mp4')
     return "File not found", 404
 
-@app.route('/player/<int:index>')
-@app.route('/player/<int:anime_id>/<int:episode_number>')
+@player_bp.route('/player/<int:index>')
+@player_bp.route('/player/<int:anime_id>/<int:episode_number>')
 def player(anime_id=None, episode_number=None, index=None):
     from_queue = request.args.get('from_queue', 'false').lower() == 'true'
     queue = load_queue().get("queue", [])
@@ -2631,10 +1762,10 @@ def player(anime_id=None, episode_number=None, index=None):
 
         next_episode = next((e for e in episodes if e["number"] > episode_number), None)
         if next_episode:
-            next_url = url_for('player', anime_id=anime_id, episode_number=next_episode["number"])
+            next_url = url_for('player.player', anime_id=anime_id, episode_number=next_episode["number"])
             next_episode_number = next_episode["number"]
         elif index + 1 < len(queue):
-            next_url = url_for('player', index=index + 1) + f"?from_queue=true"
+            next_url = url_for('player.player', index=index + 1) + f"?from_queue=true"
             next_episode_number = 1
         else:
             next_url = None
@@ -2665,7 +1796,7 @@ def inject_queue():
     except:
         return {'global_queue': []}
 
-@app.route("/queue")
+@queue_bp.route("/queue")
 def get_queue():
     try:
         return jsonify({"queue": build_enriched_queue()})
@@ -2673,18 +1804,18 @@ def get_queue():
         print("Error loading queue:", e)
         return jsonify({"queue": []}), 500
 
-@app.route("/queue-page")
+@queue_bp.route("/queue-page")
 def queue_page():
     return render_template("queue.html", queue_items=build_enriched_queue())
 
-@app.route("/queue-player/<int:index>")
+@queue_bp.route("/queue-player/<int:index>")
 def queue_player(index):
     context = get_queue_player_context(index)
     if not context:
         return "Queue item not found", 404
     return render_template("queue_player.html", **context)
 
-@app.route('/add_video', methods=['POST'])
+@queue_bp.route('/add_video', methods=['POST'])
 def add_to_queue():
     data = request.get_json()
     anime_id = data.get('id')
@@ -2773,7 +1904,7 @@ def save_queue(data):
 
 
 
-@app.route('/api/anime/<int:anime_id>/episode-file-targets')
+@anime_bp.route('/api/anime/<int:anime_id>/episode-file-targets')
 def anime_episode_file_targets(anime_id):
     anime_data = load_anime_data()
     anime = next((item for item in anime_data if item.get('id') == anime_id), None)
@@ -2786,7 +1917,7 @@ def anime_episode_file_targets(anime_id):
         'payload': build_anime_episode_file_check_payload(anime)
     })
 
-@app.route('/api/anime/<int:anime_id>/explorer-path')
+@anime_bp.route('/api/anime/<int:anime_id>/explorer-path')
 def anime_explorer_path(anime_id):
     anime_data = load_anime_data()
     anime = next((item for item in anime_data if item.get('id') == anime_id), None)
@@ -2804,7 +1935,7 @@ def anime_explorer_path(anime_id):
         'exists': os.path.exists(explorer_path)
     })
 
-@app.route('/anime/<int:anime_id>')
+@anime_bp.route('/anime/<int:anime_id>')
 def anime_detail(anime_id):
     anime_data = load_anime_data()
     anime = next((item for item in anime_data if item['id'] == anime_id), None)
@@ -2826,7 +1957,7 @@ def anime_detail(anime_id):
     else:
         return "Anime not found", 404
 
-@app.route('/add_anime', methods=['GET', 'POST'])
+@anime_bp.route('/add_anime', methods=['GET', 'POST'])
 def add_anime():
     if request.method == 'POST':
         title = request.form.get('title', '').strip()
@@ -2838,14 +1969,14 @@ def add_anime():
         missing_metadata = missing_anime_metadata_groups(metadata)
 
         if not title or not secure_path_title(title):
-            return redirect(url_for('add_anime'))
+            return redirect(url_for('anime.add_anime'))
 
         if missing_metadata:
-            return redirect(url_for('add_anime', missing_metadata=",".join(missing_metadata)))
+            return redirect(url_for('anime.add_anime', missing_metadata=",".join(missing_metadata)))
 
         anime_data = load_anime_data()
         if find_duplicate(anime_data, {"title": title, "season": season, "status": status}):
-            return redirect(url_for('add_anime', duplicate=1))
+            return redirect(url_for('anime.add_anime', duplicate=1))
 
         existing_ids = {anime["id"] for anime in anime_data}
         new_id = 1
@@ -2889,11 +2020,11 @@ def add_anime():
         save_anime_data(anime_data)
         rebuild_unique_anime_tags(anime_data)
 
-        return redirect(url_for('index'))
+        return redirect(url_for('anime.index'))
 
     return render_template('add_anime.html')
 
-@app.route('/mark_watched/<int:anime_id>/<int:episode_number>', methods=['POST'])
+@anime_bp.route('/mark_watched/<int:anime_id>/<int:episode_number>', methods=['POST'])
 def mark_watched(anime_id, episode_number):
     anime_data = load_anime_data()
     anime = next((item for item in anime_data if item['id'] == anime_id), None)
@@ -2912,7 +2043,7 @@ def mark_watched(anime_id, episode_number):
         return jsonify({'status': 'success'})
     return jsonify({'status': 'error'}), 404
 
-@app.route('/anime/<int:anime_id>/episodes', methods=['POST'])
+@anime_bp.route('/anime/<int:anime_id>/episodes', methods=['POST'])
 def add_anime_episode(anime_id):
     anime_data = load_anime_data()
     anime = find_by_id(anime_data, anime_id)
@@ -2937,7 +2068,7 @@ def add_anime_episode(anime_id):
 
     return jsonify({'status': 'success', 'episode': new_episode, 'total_episodes': len(anime["episodes"])})
 
-@app.route('/anime/<int:anime_id>/episodes/<int:episode_number>', methods=['DELETE'])
+@anime_bp.route('/anime/<int:anime_id>/episodes/<int:episode_number>', methods=['DELETE'])
 def delete_anime_episode(anime_id, episode_number):
     anime_data = load_anime_data()
     anime = find_by_id(anime_data, anime_id)
@@ -2958,7 +2089,7 @@ def delete_anime_episode(anime_id, episode_number):
 
     return jsonify({'status': 'success', 'episodes': anime["episodes"], 'total_episodes': len(anime["episodes"])})
 
-@app.route('/mark_anime_watched/<int:anime_id>', methods=['POST'])
+@anime_bp.route('/mark_anime_watched/<int:anime_id>', methods=['POST'])
 def mark_anime_watched(anime_id):
     anime_data = load_anime_data()
     anime = next((item for item in anime_data if item['id'] == anime_id), None)
@@ -2972,7 +2103,7 @@ def mark_anime_watched(anime_id):
 
     return jsonify({'status': 'error'}), 404
 
-@app.route('/update_anime_link/<int:anime_id>', methods=['POST'])
+@anime_bp.route('/update_anime_link/<int:anime_id>', methods=['POST'])
 def update_anime_link(anime_id):
     anime_data = load_anime_data()
     anime = find_by_id(anime_data, anime_id)
@@ -2991,7 +2122,7 @@ def update_anime_link(anime_id):
 
     return jsonify({'status': 'success', 'link': link})
 
-@app.route('/delete_anime/<int:anime_id>', methods=['DELETE'])
+@anime_bp.route('/delete_anime/<int:anime_id>', methods=['DELETE'])
 def delete_anime(anime_id):
     anime_data = load_anime_data()
     anime_index = next(
@@ -3034,11 +2165,11 @@ def delete_anime(anime_id):
 
     return jsonify({'status': 'error'}), 425
 
-@app.route('/static/images/stars.mp4')
+@core_bp.route('/static/images/stars.mp4')
 def serve_video1():
     return send_file("static/images/stars.mp4", mimetype="video/mp4", conditional=True)
 
-@app.route('/bookmark/<int:anime_id>', methods=['POST'])
+@anime_bp.route('/bookmark/<int:anime_id>', methods=['POST'])
 def toggle_bookmark(anime_id):
     anime_data = load_anime_data()
 
@@ -3059,7 +2190,7 @@ def toggle_bookmark(anime_id):
 
     return jsonify({'status': 'error', 'message': 'Anime not found'}), 403
 
-@app.route('/update_anime_status/<anime_id>', methods=['POST'])
+@anime_bp.route('/update_anime_status/<anime_id>', methods=['POST'])
 def update_anime_status(anime_id):
     try:
         anime_id = int(anime_id)
@@ -3089,7 +2220,7 @@ def update_anime_status(anime_id):
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-@app.route('/delete_from_queue/<int:index>', methods=['DELETE'])
+@queue_bp.route('/delete_from_queue/<int:index>', methods=['DELETE'])
 def delete_from_queue(index):
     queue_data = load_queue()
     queue = queue_data.get("queue", [])
@@ -3102,14 +2233,14 @@ def delete_from_queue(index):
     else:
         return jsonify({"status": "error", "message": "Invalid index"}), 400
 
-@app.route('/queue/clear', methods=['POST'])
+@queue_bp.route('/queue/clear', methods=['POST'])
 def clear_queue():
     save_queue({"queue": []})
     sync_tracking_queue()
     return jsonify({"status": "success", "queue": []})
 
 
-@app.route('/queue/clear-watched', methods=['POST'])
+@queue_bp.route('/queue/clear-watched', methods=['POST'])
 def clear_watched_queue():
     anime_data = load_anime_data()
     watched_lookup = {
@@ -3129,7 +2260,7 @@ def clear_watched_queue():
     return jsonify({"status": "success", "removed_count": removed_count, "queue": build_enriched_queue()})
 
 
-@app.route('/queue/move-top/<int:index>', methods=['POST'])
+@queue_bp.route('/queue/move-top/<int:index>', methods=['POST'])
 def move_queue_item_top(index):
     queue = load_queue().get("queue", [])
     if not (0 <= index < len(queue)):
@@ -3141,7 +2272,7 @@ def move_queue_item_top(index):
     return jsonify({"status": "success", "queue": build_enriched_queue()})
 
 
-@app.route('/queue/reorder', methods=['POST'])
+@queue_bp.route('/queue/reorder', methods=['POST'])
 def reorder_queue():
     payload = request.get_json(silent=True) or {}
     order = payload.get("order")
@@ -3164,6 +2295,19 @@ def reorder_queue():
     sync_tracking_queue()
 
     return jsonify({"status": "success", "queue": build_enriched_queue()})
+
+
+for blueprint in (
+    core_bp,
+    validation_bp,
+    sections_bp,
+    manga_bp,
+    anime_bp,
+    tracking_bp,
+    player_bp,
+    queue_bp,
+):
+    app.register_blueprint(blueprint)
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)

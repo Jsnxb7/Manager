@@ -24,10 +24,10 @@
             </small>
         </div>
         <div class="page-commandbar-actions">
-            <a href="{{ url_for('queue_player', index=0) if queue_items else url_for('index') }}" class="queue-page-action {% if not queue_items %}is-disabled{% endif %}">Start</a>
+            <a href="{{ url_for('queue.queue_player', index=0) if queue_items else url_for('anime.index') }}" class="queue-page-action {% if not queue_items %}is-disabled{% endif %}">Start</a>
             <button type="button" class="queue-page-action queue-clear-watched-btn" {% if not queue_items %}disabled{% endif %}>Clear Watched</button>
             <button type="button" class="queue-page-action danger queue-clear-btn" {% if not queue_items %}disabled{% endif %}>Clear</button>
-            <a href="{{ url_for('index') }}" class="queue-page-action subtle">Library</a>
+            <a href="{{ url_for('anime.index') }}" class="queue-page-action subtle">Library</a>
         </div>
     </div>
 
@@ -68,7 +68,7 @@
         <div class="empty-state queue-empty-state queue-clean-empty">
             <strong>No queued episodes</strong>
             <p>Your queue will appear here once you add episodes from an anime details page.</p>
-            <a href="{{ url_for('index') }}" class="queue-page-action">Browse Anime</a>
+            <a href="{{ url_for('anime.index') }}" class="queue-page-action">Browse Anime</a>
         </div>
     {% endif %}
 </section>

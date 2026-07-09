@@ -1,10 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<video class="video-background" autoplay loop muted playsinline>
-    <source src="{{ url_for('static', filename='images/stars.mp4') }}" type="video/mp4">
-    Your browser does not support the video tag.
-</video>
 
 <section class="continue-watching-shell" id="continue-watching-shell" hidden>
     <div class="continue-watching-header">
@@ -13,15 +9,25 @@
     <div class="continue-watching-row" id="continue-watching-row"></div>
 </section>
 
-<div class="anime-list">
-    <input type="text" id="search-bar" class="search-bar" placeholder="Search anime..." onkeyup="filterAnime()">
-
-    <details class="filter-accordion">
-        <summary>Tag Filters</summary>
-        <div class="filter-accordion-body">
-            <div id="anime-tag-filters" class="tag-filter-groups"></div>
+<div class="anime-list" id="anime-library">
+    <div class="library-control-strip">
+        <div class="library-toolbar-row">
+            <input type="text" id="search-bar" class="search-bar" placeholder="Search anime..." onkeyup="filterAnime()">
+            <div class="library-utility-actions">
+                <button type="button" class="library-mode-toggle" id="anime-density-toggle" onclick="toggleLibraryDensity()" aria-pressed="false">Compact</button>
+                <button type="button" class="library-top-button" onclick="scrollToLibraryTop()">Top</button>
+            </div>
         </div>
-    </details>
+
+        <details class="filter-accordion">
+            <summary>Tag Filters</summary>
+            <div class="filter-accordion-body">
+                <div id="anime-tag-filters" class="tag-filter-groups"></div>
+            </div>
+        </details>
+
+        <div class="active-filter-chips" id="anime-active-filters" aria-live="polite"></div>
+    </div>
 
     <div class="anime-grid" id="anime-grid"></div>
 
@@ -51,7 +57,7 @@
         <button type="button" class="rack-action" id="rack-unwatched-filter" onclick="toggleQuickFilter('unwatched')" title="Show unwatched anime">◌</button>
         <button type="button" class="rack-action" id="rack-ongoing-filter" onclick="toggleQuickFilter('ongoing')" title="Show ongoing anime">▶</button>
         <button type="button" class="rack-action" id="rack-bookmark-filter" onclick="toggleQuickFilter('bookmarked')" title="Show bookmarked anime">⭐</button>
-        <a href="{{ url_for('add_anime') }}" class="rack-action rack-add-action" title="Add Anime">＋ </a>
+        <a href="{{ url_for('anime.add_anime') }}" class="rack-action rack-add-action" title="Add Anime">＋ </a>
     </div>
 </div>
 
@@ -73,6 +79,83 @@ const activeQuickFilters = {
     bookmarked: false
 };
 let isRestoringFilterState = false;
+
+function renderLoadingSkeleton(gridId, count = itemsPerPage) {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    grid.innerHTML = Array.from({ length: count }, () => '<div class="anime-card skeleton-card" aria-hidden="true"><div></div><div></div><div></div></div>').join('');
+}
+
+function scrollToLibraryTop() {
+    document.querySelector('.anime-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function applyLibraryDensity(enabled) {
+    const library = document.getElementById('anime-library');
+    const toggle = document.getElementById('anime-density-toggle');
+    if (!library || !toggle) return;
+    library.classList.toggle('is-compact-library', enabled);
+    toggle.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+    toggle.textContent = enabled ? 'Comfort' : 'Compact';
+    localStorage.setItem('animeCompactMode', enabled ? '1' : '0');
+}
+
+function initLibraryDensity() {
+    applyLibraryDensity(localStorage.getItem('animeCompactMode') === '1');
+}
+
+function toggleLibraryDensity() {
+    const library = document.getElementById('anime-library');
+    applyLibraryDensity(!library?.classList.contains('is-compact-library'));
+}
+
+function updateActiveFilterChips() {
+    const container = document.getElementById('anime-active-filters');
+    if (!container) return;
+
+    const chips = [];
+    const searchValue = document.getElementById('search-bar')?.value.trim();
+    if (searchValue) {
+        chips.push({ label: `Search: ${searchValue}`, type: 'search' });
+    }
+    Object.entries(activeQuickFilters).forEach(([key, active]) => {
+        if (active) chips.push({ label: key, type: 'quick', key });
+    });
+    Object.entries(activeTagFilters).forEach(([group, selected]) => {
+        selected.forEach(value => {
+            chips.push({ label: `${group}: ${value}`, type: 'tag', key: group, value });
+        });
+    });
+
+    container.innerHTML = '';
+    chips.forEach(chip => {
+        const el = document.createElement('span');
+        el.className = 'active-filter-chip';
+        el.textContent = chip.label;
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = 'x';
+        button.setAttribute('aria-label', `Remove ${chip.label}`);
+        button.onclick = () => removeAnimeFilterChip(chip.type, chip.key, chip.value);
+        el.appendChild(button);
+        container.appendChild(el);
+    });
+}
+
+function removeAnimeFilterChip(type, key, value) {
+    if (type === 'search') {
+        document.getElementById('search-bar').value = '';
+    } else if (type === 'quick' && key in activeQuickFilters) {
+        activeQuickFilters[key] = false;
+    } else if (type === 'tag' && activeTagFilters[key]) {
+        activeTagFilters[key].delete(value);
+        document.querySelectorAll(`#anime-tag-filters input[data-group="${key}"]`).forEach(checkbox => {
+            if (checkbox.value === value) checkbox.checked = false;
+        });
+    }
+    applyAnimeFilters(1);
+}
 
 async function fetchAnimeData() {
     try {
@@ -411,6 +494,7 @@ function getFilteredAnimeData() {
 function applyAnimeFilters(page = 1) {
     setAnimeData(getFilteredAnimeData(), page);
     updateQuickFilterButtons();
+    updateActiveFilterChips();
     saveAnimeFilterState();
 }
 
@@ -503,6 +587,10 @@ function renderAnimePage() {
         animeCard.className = 'anime-card';
         animeCard.id = `anime-${anime.id}`;
         animeCard.dataset.title = (anime.title || '').toLowerCase();
+        if (anime.watched) {
+            animeCard.classList.add('is-complete');
+            animeCard.dataset.completionLabel = 'Watched';
+        }
 
         const animeThumbnail = document.createElement('img');
         animeThumbnail.className = 'anime-thumbnail';
@@ -764,11 +852,14 @@ function restoreAnimeFilterState(state) {
     if (pageSizeSelect) pageSizeSelect.value = String(itemsPerPage);
 
     updateQuickFilterButtons();
+    updateActiveFilterChips();
     isRestoringFilterState = false;
     return Math.max(1, parseInt(state.page, 10) || 1);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    initLibraryDensity();
+    renderLoadingSkeleton('anime-grid', itemsPerPage);
     const [animeItems, tagCatalog, continueItems, filterState] = await Promise.all([
         fetchAnimeData(),
         fetchAnimeTagCatalog(),
@@ -782,6 +873,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const restoredPage = restoreAnimeFilterState(filterState);
     setAnimeData(getFilteredAnimeData(), restoredPage);
     updateQuickFilterButtons();
+    updateActiveFilterChips();
 });
 </script>
 {% endblock %}
