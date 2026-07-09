@@ -1,62 +1,40 @@
 {
     "schema_version": 1,
-    "updated_at": "2026-07-04T10:25:26.700706+00:00",
+    "updated_at": "2026-07-07T11:32:23.432488+00:00",
     "last_use": {
-        "anime_id": 565,
-        "anime_title": "Tsue to Tsurugi no Wistoria",
-        "episode_number": 1,
-        "episode_title": "Episode 1",
-        "current_time": 192.41,
-        "total_duration": 1428.1,
-        "progress_percentage": 13.47,
-        "last_watched_at": "2026-07-04T10:25:26.697698+00:00"
+        "anime_id": 50,
+        "anime_title": "Working",
+        "episode_number": 3,
+        "episode_title": "Episode 3",
+        "current_time": 314.69,
+        "total_duration": 1436.06,
+        "progress_percentage": 21.91,
+        "last_watched_at": "2026-07-07T11:32:23.431298+00:00"
     },
     "queue": {
-        "updated_at": "2026-06-13T11:38:03.764928+00:00",
+        "updated_at": "2026-07-04T18:04:07.695145+00:00",
         "order": []
     },
     "anime": {
-        "566": {
-            "anime_id": 566,
-            "anime_title": "Tsue to Tsurugi no Wistoria",
-            "anime_thumbnail": "/static/anime_images/Tsue to Tsurugi no Wistoria.jpg",
+        "547": {
+            "anime_id": 547,
+            "anime_title": "Tensura_TOAS",
+            "anime_thumbnail": "/static/anime_images/Tensura_TOAS.webp",
             "watch_status": "Watching",
             "last_watched_episode": 1,
-            "last_watched_at": "2026-07-04T10:24:48.795349+00:00",
+            "last_watched_at": "2026-07-05T19:37:56.492525+00:00",
             "completion_percentage": 0.0,
             "episodes": {
                 "1": {
                     "episode_number": 1,
                     "episode_title": "Episode 1",
-                    "episode_video_path": "C:/Users/shour/Documents/Anime/Tsue to Tsurugi no Wistoria/S2/1.mp4",
-                    "current_time": 54.41,
-                    "total_duration": 1426.03,
-                    "progress_percentage": 3.82,
+                    "episode_video_path": "C:/Users/shour/Documents/Anime/Tensura_TOAS/Movie/1.mp4",
+                    "current_time": 3447.47,
+                    "total_duration": 6258.04,
+                    "progress_percentage": 55.09,
                     "completed": false,
                     "active_continue": true,
-                    "last_watched_at": "2026-07-04T10:24:48.795349+00:00"
-                }
-            }
-        },
-        "565": {
-            "anime_id": 565,
-            "anime_title": "Tsue to Tsurugi no Wistoria",
-            "anime_thumbnail": "/static/anime_images/Tsue to Tsurugi no Wistoria.jpg",
-            "watch_status": "Watching",
-            "last_watched_episode": 1,
-            "last_watched_at": "2026-07-04T10:25:26.697698+00:00",
-            "completion_percentage": 0.0,
-            "episodes": {
-                "1": {
-                    "episode_number": 1,
-                    "episode_title": "Episode 1",
-                    "episode_video_path": "C:/Users/shour/Documents/Anime/Tsue to Tsurugi no Wistoria/S1/1.mp4",
-                    "current_time": 192.41,
-                    "total_duration": 1428.1,
-                    "progress_percentage": 13.47,
-                    "completed": false,
-                    "active_continue": true,
-                    "last_watched_at": "2026-07-04T10:25:26.697698+00:00"
+                    "last_watched_at": "2026-07-05T19:37:56.492525+00:00"
                 }
             }
         }

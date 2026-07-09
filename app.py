@@ -321,34 +321,21 @@ def find_episode_video_file(directory, episode_number):
 
     video_files = _list_video_files(directory)
 
-    matches = [
-        filepath for filepath in video_files
-        if get_episode_number_from_filename(os.path.basename(filepath)) == episode_number
+    # Detect each file's embedded episode number, keep only files where one
+    # was found, then sort ascending by that number. Once sorted, the files
+    # are handed out under sequential numbers (1, 2, 3, ...) regardless of
+    # what number is actually embedded in the filename -- this way a season
+    # folder that keeps the show's absolute numbering (e.g. starts at
+    # "14.mkv") still lines up with the app's per-season episode numbers.
+    numbered_files = [
+        (get_episode_number_from_filename(os.path.basename(filepath)), filepath)
+        for filepath in video_files
     ]
+    numbered_files = [item for item in numbered_files if item[0] is not None]
+    numbered_files.sort(key=lambda item: (item[0], os.path.basename(item[1]).lower()))
 
-    if matches:
-        def match_rank(filepath):
-            filename = os.path.basename(filepath).lower()
-            stem, ext = os.path.splitext(filename)
-            exact_rank = 0 if stem == str(episode_number) else 1
-            ext_rank = 0 if ext == ".mp4" else 1
-            return (exact_rank, ext_rank, filename)
-
-        return sorted(matches, key=match_rank)[0]
-
-    # Fallback: some season folders keep the show's absolute numbering
-    # (e.g. season 2 starts at "14.mkv") instead of restarting at 1, so a
-    # direct number match will never hit. In that case, fall back to
-    # positional order: treat episode_number as this file's position
-    # within the folder once sorted by whatever numbering scheme it uses.
-    def sort_key(filepath):
-        filename = os.path.basename(filepath)
-        number = get_episode_number_from_filename(filename)
-        return (0, number) if number is not None else (1, filename.lower())
-
-    ordered = sorted(video_files, key=sort_key)
-    if 1 <= episode_number <= len(ordered):
-        return ordered[episode_number - 1]
+    if 1 <= episode_number <= len(numbered_files):
+        return numbered_files[episode_number - 1][1]
 
     return None
 

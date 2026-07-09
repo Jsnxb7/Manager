@@ -2,37 +2,37 @@
     "summary": {
         "unique_tags": 70,
         "unique_genres": 20,
-        "unique_themes": 45,
+        "unique_themes": 46,
         "unique_demographics": 5
     },
     "tags": [
         {
             "name": "Comedy",
-            "count": 240
+            "count": 246
         },
         {
             "name": "Romance",
-            "count": 194
-        },
-        {
-            "name": "School",
-            "count": 180
+            "count": 203
         },
         {
             "name": "Fantasy",
-            "count": 179
+            "count": 186
         },
         {
-            "name": "Shounen",
-            "count": 104
+            "name": "School",
+            "count": 181
         },
         {
             "name": "Action",
-            "count": 97
+            "count": 103
+        },
+        {
+            "name": "Shounen",
+            "count": 103
         },
         {
             "name": "Drama",
-            "count": 86
+            "count": 87
         },
         {
             "name": "Slice of Life",
@@ -40,11 +40,11 @@
         },
         {
             "name": "Isekai",
-            "count": 81
+            "count": 82
         },
         {
             "name": "Adventure",
-            "count": 75
+            "count": 78
         },
         {
             "name": "CGDCT",
@@ -56,7 +56,7 @@
         },
         {
             "name": "Supernatural",
-            "count": 57
+            "count": 58
         },
         {
             "name": "Adult Cast",
@@ -183,16 +183,16 @@
             "count": 8
         },
         {
-            "name": "Girls Love",
-            "count": 7
-        },
-        {
             "name": "Love Polygon",
             "count": 7
         },
         {
             "name": "Video Game",
             "count": 7
+        },
+        {
+            "name": "Girls Love",
+            "count": 6
         },
         {
             "name": "Pets",
@@ -290,35 +290,35 @@
     "genres": [
         {
             "name": "Comedy",
-            "count": 240
+            "count": 245
         },
         {
             "name": "Romance",
-            "count": 194
+            "count": 203
         },
         {
             "name": "Fantasy",
-            "count": 179
+            "count": 186
         },
         {
             "name": "Action",
-            "count": 97
+            "count": 103
         },
         {
             "name": "Drama",
-            "count": 86
+            "count": 87
         },
         {
             "name": "Slice of Life",
-            "count": 86
+            "count": 85
         },
         {
             "name": "Adventure",
-            "count": 75
+            "count": 78
         },
         {
             "name": "Supernatural",
-            "count": 57
+            "count": 58
         },
         {
             "name": "Award Winning",
@@ -330,7 +330,7 @@
         },
         {
             "name": "Gourmet",
-            "count": 17
+            "count": 18
         },
         {
             "name": "Sci-Fi",
@@ -354,7 +354,7 @@
         },
         {
             "name": "Girls Love",
-            "count": 7
+            "count": 6
         },
         {
             "name": "Hentai",
@@ -372,23 +372,23 @@
     "themes": [
         {
             "name": "School",
-            "count": 180
+            "count": 184
         },
         {
             "name": "Isekai",
-            "count": 83
+            "count": 88
         },
         {
             "name": "CGDCT",
-            "count": 68
+            "count": 67
         },
         {
             "name": "Adult Cast",
-            "count": 50
+            "count": 53
         },
         {
             "name": "Reincarnation",
-            "count": 50
+            "count": 52
         },
         {
             "name": "Iyashikei",
@@ -435,12 +435,12 @@
             "count": 14
         },
         {
-            "name": "Urban Fantasy",
+            "name": "Super Power",
             "count": 14
         },
         {
-            "name": "Super Power",
-            "count": 13
+            "name": "Urban Fantasy",
+            "count": 14
         },
         {
             "name": "Anthropomorphic",
@@ -523,6 +523,10 @@
             "count": 2
         },
         {
+            "name": "Isekai Fantasy",
+            "count": 2
+        },
+        {
             "name": "Magical Sex Shift",
             "count": 2
         },
@@ -554,15 +558,15 @@
     "demographics": [
         {
             "name": "Shounen",
-            "count": 106
+            "count": 111
         },
         {
             "name": "Seinen",
-            "count": 69
+            "count": 72
         },
         {
             "name": "Shoujo",
-            "count": 33
+            "count": 37
         },
         {
             "name": "Josei",

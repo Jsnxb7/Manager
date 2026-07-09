@@ -182,38 +182,19 @@ function findEpisodeVideoFile(directory, episodeNumber) {
     const targetNumber = Number(episodeNumber);
     const videoFiles = listVideoFiles(directory);
 
-    const matches = videoFiles.filter(
-        (filepath) => getEpisodeNumberFromFilename(path.basename(filepath)) === targetNumber
-    );
+    // Detect each file's embedded episode number, keep only files where one
+    // was found, then sort ascending by that number. Once sorted, the files
+    // are handed out under sequential numbers (1, 2, 3, ...) regardless of
+    // what number is actually embedded in the filename -- this way a season
+    // folder that keeps the show's absolute numbering (e.g. starts at
+    // "14.mkv") still lines up with the app's per-season episode numbers.
+    const numberedFiles = videoFiles
+        .map((filepath) => ({ number: getEpisodeNumberFromFilename(path.basename(filepath)), filepath }))
+        .filter((item) => item.number !== null)
+        .sort((a, b) => a.number - b.number || path.basename(a.filepath).toLowerCase().localeCompare(path.basename(b.filepath).toLowerCase()));
 
-    if (matches.length) {
-        return matches.sort((a, b) => {
-            const aName = path.basename(a).toLowerCase();
-            const bName = path.basename(b).toLowerCase();
-            const aParsed = path.parse(aName);
-            const bParsed = path.parse(bName);
-            const aRank = [aParsed.name === String(targetNumber) ? 0 : 1, aParsed.ext === '.mp4' ? 0 : 1, aName];
-            const bRank = [bParsed.name === String(targetNumber) ? 0 : 1, bParsed.ext === '.mp4' ? 0 : 1, bName];
-            return aRank[0] - bRank[0] || aRank[1] - bRank[1] || aRank[2].localeCompare(bRank[2]);
-        })[0];
-    }
-
-    // Fallback: some season folders keep the show's absolute numbering
-    // (e.g. season 2 starts at "14.mkv") instead of restarting at 1, so a
-    // direct number match never hits. Fall back to positional order:
-    // treat episodeNumber as this file's position within the folder once
-    // sorted by whatever numbering scheme it actually uses.
-    const ordered = videoFiles.slice().sort((a, b) => {
-        const aNum = getEpisodeNumberFromFilename(path.basename(a));
-        const bNum = getEpisodeNumberFromFilename(path.basename(b));
-        if (aNum !== null && bNum !== null) return aNum - bNum;
-        if (aNum !== null) return -1;
-        if (bNum !== null) return 1;
-        return path.basename(a).toLowerCase().localeCompare(path.basename(b).toLowerCase());
-    });
-
-    if (targetNumber >= 1 && targetNumber <= ordered.length) {
-        return ordered[targetNumber - 1];
+    if (targetNumber >= 1 && targetNumber <= numberedFiles.length) {
+        return numberedFiles[targetNumber - 1].filepath;
     }
 
     return null;
