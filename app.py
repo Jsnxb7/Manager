@@ -891,9 +891,13 @@ def toggle_manga_status(manga_id):
     if not manga:
         return jsonify({'error': 'Manga not found'}), 404
 
-    # Toggle status
-    current_status = manga.get('status', 'Ongoing').lower()
-    manga['status'] = 'Completed' if current_status == 'ongoing' else 'Ongoing'
+    status_flow = ["Ongoing", "Completed", "Haitus"]
+    current_status = str(manga.get('status', 'Ongoing')).lower()
+    current_index = next(
+        (index for index, status in enumerate(status_flow) if status.lower() == current_status),
+        -1
+    )
+    manga['status'] = status_flow[(current_index + 1) % len(status_flow)]
 
     save_manga_data(manga_data)
 
@@ -1525,10 +1529,48 @@ def enrich_episode_progress(anime, tracking_entry):
         episode["has_resume"] = (not episode.get("watched")) and episode["progress_percentage"] > 0
     return anime
 
+def build_hub_card(section):
+    slug = normalize_section(section)
+    badge_map = {
+        "anime": "AN",
+        "manga": "MG",
+        "tv_shows": "TV"
+    }
+
+    if slug == "anime":
+        items = load_anime_data()
+        image_getter = lambda item: get_anime_image(item.get("title", ""))
+    elif slug == "manga":
+        items = load_manga_data()
+        image_getter = get_manga_image
+    else:
+        items = load_section_data(slug)
+        image_getter = lambda item: get_section_image(slug, item.get("title", ""))
+
+    bookmarked_items = [item for item in items if item.get("bookmarked")]
+    fallback_items = [item for item in items if not item.get("bookmarked")]
+
+    images = []
+    for item in [*bookmarked_items, *fallback_items]:
+        image_url = image_getter(item)
+        if image_url and image_url not in {DEFAULT_IMAGE, DEFAULT_MANGA_IMAGE}:
+            images.append(image_url)
+        if len(images) >= 4:
+            break
+
+    return {
+        "name": section,
+        "slug": slug,
+        "badge": badge_map.get(slug, "".join(word[:1] for word in section.split()[:2]).upper() or "LIB"),
+        "count": len(items),
+        "images": images
+    }
+
 @core_bp.route('/')
 def hub():
     sections = load_sections()
-    return render_template("hub.html", sections=sections)
+    hub_cards = [build_hub_card(section) for section in sections]
+    return render_template("hub.html", sections=sections, hub_cards=hub_cards)
 
 @anime_bp.route('/anime')
 def index():

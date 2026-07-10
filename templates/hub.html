@@ -8,14 +8,23 @@
     </div>
 
     <div class="hub-grid" aria-label="Available content libraries">
-        {% for section in sections %}
-            {% set slug = section|lower|replace(' ', '_') %}
-            <a href="/{{ slug }}" class="hub-card hub-card-{{ slug }}">
-                <strong>{{ section }}</strong>
+        {% for card in hub_cards %}
+            <a href="/{{ card.slug }}" class="hub-card hub-card-{{ card.slug }}{% if not card.images %} hub-card-empty{% endif %}">
+                <span class="hub-card-collage" aria-hidden="true">
+                    {% for image_url in card.images %}
+                        <span class="hub-card-cover hub-card-cover-{{ loop.index }}" style="background-image: url(&quot;{{ image_url }}&quot;)"></span>
+                    {% endfor %}
+                </span>
+                <span class="hub-card-shade" aria-hidden="true"></span>
+                <span class="hub-card-icon-badge" aria-hidden="true">{{ card.badge }}</span>
+                <span class="hub-card-kicker">{{ card.count }} item{% if card.count != 1 %}s{% endif %}</span>
+                <strong>{{ card.name }}</strong>
             </a>
         {% endfor %}
 
         <button class="hub-card hub-add-card" type="button" id="open-section-modal">
+            <span class="hub-add-mark" aria-hidden="true">+</span>
+            <span class="hub-card-kicker">New library</span>
             <strong>Add Section</strong>
         </button>
     </div>

@@ -1,15 +1,15 @@
 {
     "schema_version": 1,
-    "updated_at": "2026-07-10T08:52:33.061762+00:00",
+    "updated_at": "2026-07-10T12:26:14.173486+00:00",
     "last_use": {
-        "anime_id": 50,
+        "anime_id": 51,
         "anime_title": "Working",
         "episode_number": 1,
         "episode_title": "Episode 1",
-        "current_time": 3.85,
-        "total_duration": 1426.05,
-        "progress_percentage": 0.27,
-        "last_watched_at": "2026-07-10T08:52:33.059736+00:00"
+        "current_time": 5.53,
+        "total_duration": 1425.05,
+        "progress_percentage": 0.39,
+        "last_watched_at": "2026-07-10T11:17:38.025042+00:00"
     },
     "queue": {
         "updated_at": "2026-07-10T08:52:15.571345+00:00",

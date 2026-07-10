@@ -8,15 +8,15 @@
     "tags": [
         {
             "name": "Comedy",
-            "count": 246
+            "count": 249
         },
         {
             "name": "Romance",
-            "count": 203
+            "count": 205
         },
         {
             "name": "Fantasy",
-            "count": 186
+            "count": 190
         },
         {
             "name": "School",
@@ -32,7 +32,7 @@
         },
         {
             "name": "Drama",
-            "count": 87
+            "count": 88
         },
         {
             "name": "Slice of Life",
@@ -48,11 +48,11 @@
         },
         {
             "name": "CGDCT",
-            "count": 67
+            "count": 68
         },
         {
             "name": "Seinen",
-            "count": 66
+            "count": 67
         },
         {
             "name": "Supernatural",
@@ -183,16 +183,16 @@
             "count": 8
         },
         {
-            "name": "Love Polygon",
-            "count": 7
-        },
-        {
             "name": "Video Game",
-            "count": 7
+            "count": 8
         },
         {
             "name": "Girls Love",
-            "count": 6
+            "count": 7
+        },
+        {
+            "name": "Love Polygon",
+            "count": 7
         },
         {
             "name": "Pets",
@@ -290,15 +290,15 @@
     "genres": [
         {
             "name": "Comedy",
-            "count": 245
+            "count": 247
         },
         {
             "name": "Romance",
-            "count": 203
+            "count": 205
         },
         {
             "name": "Fantasy",
-            "count": 186
+            "count": 190
         },
         {
             "name": "Action",
@@ -306,7 +306,7 @@
         },
         {
             "name": "Drama",
-            "count": 87
+            "count": 88
         },
         {
             "name": "Slice of Life",
@@ -314,7 +314,7 @@
         },
         {
             "name": "Adventure",
-            "count": 78
+            "count": 79
         },
         {
             "name": "Supernatural",
@@ -354,7 +354,7 @@
         },
         {
             "name": "Girls Love",
-            "count": 6
+            "count": 7
         },
         {
             "name": "Hentai",
@@ -372,23 +372,23 @@
     "themes": [
         {
             "name": "School",
-            "count": 184
+            "count": 185
         },
         {
             "name": "Isekai",
-            "count": 88
+            "count": 90
         },
         {
             "name": "CGDCT",
             "count": 67
         },
         {
-            "name": "Adult Cast",
-            "count": 53
+            "name": "Reincarnation",
+            "count": 54
         },
         {
-            "name": "Reincarnation",
-            "count": 52
+            "name": "Adult Cast",
+            "count": 53
         },
         {
             "name": "Iyashikei",
@@ -412,11 +412,11 @@
         },
         {
             "name": "Historical",
-            "count": 20
+            "count": 21
         },
         {
             "name": "Childcare",
-            "count": 17
+            "count": 18
         },
         {
             "name": "Music",
@@ -428,7 +428,7 @@
         },
         {
             "name": "Gag Humor",
-            "count": 14
+            "count": 15
         },
         {
             "name": "Performing Arts",
@@ -511,6 +511,10 @@
             "count": 3
         },
         {
+            "name": "Isekai Fantasy",
+            "count": 3
+        },
+        {
             "name": "Mahou Shoujo",
             "count": 3
         },
@@ -520,10 +524,6 @@
         },
         {
             "name": "Educational",
-            "count": 2
-        },
-        {
-            "name": "Isekai Fantasy",
             "count": 2
         },
         {
@@ -558,15 +558,15 @@
     "demographics": [
         {
             "name": "Shounen",
-            "count": 111
+            "count": 112
         },
         {
             "name": "Seinen",
-            "count": 72
+            "count": 73
         },
         {
             "name": "Shoujo",
-            "count": 37
+            "count": 41
         },
         {
             "name": "Josei",

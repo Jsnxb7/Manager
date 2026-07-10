@@ -56,6 +56,25 @@
 
 </div>
 
+<div class="manga-link-modal" id="manga-link-modal" aria-hidden="true">
+    <div class="manga-link-dialog" role="dialog" aria-modal="true" aria-labelledby="manga-link-title">
+        <form id="manga-link-form">
+            <div class="manga-link-header">
+                <h2 id="manga-link-title">Edit Manga Link</h2>
+                <button type="button" class="manga-link-close" id="manga-link-close" aria-label="Close edit link popup">x</button>
+            </div>
+            <label class="manga-link-field">
+                Link
+                <input type="text" id="manga-link-input" placeholder="https://example.com/manga" required>
+            </label>
+            <div class="manga-link-actions">
+                <button type="button" class="mark-watched-button" id="manga-link-cancel">Cancel</button>
+                <button type="submit" class="view-button">Save Link</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="floating-filter-rack" aria-label="Manga quick actions">
     <button type="button" class="floating-add-anime floating-filter-trigger" aria-label="Open manga filters" title="Manga Filters">☰</button>
     <div class="floating-filter-menu" aria-label="Manga filters and add action">
@@ -85,6 +104,8 @@ const activeMangaQuickFilters = {
     bookmarked: false
 };
 let isRestoringMangaFilterState = false;
+const MANGA_STATUS_FLOW = ["Ongoing", "Completed", "Haitus"];
+let activeMangaLinkEdit = null;
 
 function renderLoadingSkeleton(gridId, count = mangaItemsPerPage) {
     const grid = document.getElementById(gridId);
@@ -286,6 +307,13 @@ function statusClassName(status) {
     return normalized ? `status-${normalized}` : 'status-ongoing';
 }
 
+function nextMangaStatusLabel(status) {
+    const current = String(status || "Ongoing").toLowerCase();
+    const index = MANGA_STATUS_FLOW.findIndex(value => value.toLowerCase() === current);
+    const next = MANGA_STATUS_FLOW[(index + 1) % MANGA_STATUS_FLOW.length] || MANGA_STATUS_FLOW[0];
+    return `Mark ${next}`;
+}
+
 function mangaMatchesSelectedHeaders(manga) {
     return Object.entries(activeMangaHeaderFilters).every(([group, selected]) => {
         if (!selected.size) return true;
@@ -464,7 +492,7 @@ function renderMangaPage() {
         const editLinkBtn = document.createElement("button");
         editLinkBtn.className = "mark-watched-button";
         editLinkBtn.textContent = "Edit Link";
-        editLinkBtn.onclick = () => updateMangaLink(manga.id, viewBtn);
+        editLinkBtn.onclick = () => openMangaLinkEditor(manga.id, manga.link || "", viewBtn);
 
         const readBtn = document.createElement("button");
         readBtn.className = "mark-watched-button";
@@ -478,7 +506,7 @@ function renderMangaPage() {
 
         const statusBtn = document.createElement("button");
         statusBtn.className = "mark-watched-button status-toggle-button";
-        statusBtn.textContent = manga.status.toLowerCase() === "ongoing" ? "Mark Completed" : "Mark Ongoing";
+        statusBtn.textContent = nextMangaStatusLabel(manga.status);
         statusBtn.onclick = () => toggleMangaStatus(manga.id, status, statusBtn);
 
         const deleteBtn = document.createElement("button");
@@ -556,7 +584,7 @@ function toggleMangaStatus(mangaId, statusEl, btn) {
             syncMangaItem(mangaId, { status: data.status });
             statusEl.textContent = `Status: ${data.status}`;
             statusEl.className = `anime-status ${statusClassName(data.status)}`;
-            btn.textContent = data.status.toLowerCase() === "ongoing" ? "Mark Completed" : "Mark Ongoing";
+            btn.textContent = nextMangaStatusLabel(data.status);
             applyMangaFilters(currentMangaPage);
         });
 }
@@ -629,8 +657,28 @@ async function deleteManga(id) {
     }
 }
 
-async function updateMangaLink(id, viewBtn) {
-    const link = prompt("Update manga link", viewBtn.href || "");
+function openMangaLinkEditor(id, currentLink, viewBtn) {
+    const modal = document.getElementById("manga-link-modal");
+    const input = document.getElementById("manga-link-input");
+    if (!modal || !input) return;
+
+    activeMangaLinkEdit = { id, viewBtn };
+    input.value = currentLink || "";
+    modal.classList.add("is-open");
+    modal.setAttribute("aria-hidden", "false");
+    setTimeout(() => input.focus(), 0);
+}
+
+function closeMangaLinkEditor() {
+    const modal = document.getElementById("manga-link-modal");
+    if (!modal) return;
+
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+    activeMangaLinkEdit = null;
+}
+
+async function updateMangaLink(id, link, viewBtn) {
     if (link === null) return;
 
     const trimmed = link.trim();
@@ -650,6 +698,7 @@ async function updateMangaLink(id, viewBtn) {
         if (data.status === "success") {
             syncMangaItem(id, { link: data.link });
             viewBtn.href = data.link;
+            closeMangaLinkEditor();
         } else {
             alert(data.message || "Failed to update link");
         }
@@ -726,6 +775,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     setMangaData(getFilteredMangaData(), restoredPage);
     updateMangaQuickFilterButtons();
     updateActiveFilterChips();
+
+    const linkForm = document.getElementById("manga-link-form");
+    const linkInput = document.getElementById("manga-link-input");
+    const linkModal = document.getElementById("manga-link-modal");
+    linkForm?.addEventListener("submit", event => {
+        event.preventDefault();
+        if (!activeMangaLinkEdit || !linkInput) return;
+        updateMangaLink(activeMangaLinkEdit.id, linkInput.value, activeMangaLinkEdit.viewBtn);
+    });
+    document.getElementById("manga-link-cancel")?.addEventListener("click", closeMangaLinkEditor);
+    document.getElementById("manga-link-close")?.addEventListener("click", closeMangaLinkEditor);
+    linkModal?.addEventListener("click", event => {
+        if (event.target === linkModal) closeMangaLinkEditor();
+    });
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && linkModal?.classList.contains("is-open")) {
+            closeMangaLinkEditor();
+        }
+    });
 });
 </script>
 {% endblock %}

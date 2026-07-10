@@ -4,38 +4,38 @@
         "unique_genres": 19,
         "unique_themes": 36,
         "unique_demographics": 4,
-        "total_manga": 324,
+        "total_manga": 334,
         "unique_statuses": 4,
         "unique_source_lists": 1,
-        "thumbnail_present": 324,
+        "thumbnail_present": 334,
         "thumbnail_missing": 0,
-        "link_present": 324,
+        "link_present": 334,
         "link_missing": 0
     },
     "tags": [
         {
             "name": "Romance",
-            "count": 250
+            "count": 259
         },
         {
             "name": "Comedy",
-            "count": 203
+            "count": 213
         },
         {
             "name": "School",
-            "count": 140
-        },
-        {
-            "name": "Shoujo",
-            "count": 79
+            "count": 146
         },
         {
             "name": "Slice of Life",
-            "count": 72
+            "count": 83
+        },
+        {
+            "name": "Shoujo",
+            "count": 78
         },
         {
             "name": "Seinen",
-            "count": 47
+            "count": 49
         },
         {
             "name": "Shounen",
@@ -43,7 +43,7 @@
         },
         {
             "name": "Drama",
-            "count": 31
+            "count": 32
         },
         {
             "name": "Fantasy",
@@ -51,11 +51,11 @@
         },
         {
             "name": "Adult Cast",
-            "count": 26
+            "count": 27
         },
         {
             "name": "Girls Love",
-            "count": 24
+            "count": 25
         },
         {
             "name": "Love Status Quo",
@@ -67,7 +67,7 @@
         },
         {
             "name": "Childcare",
-            "count": 16
+            "count": 17
         },
         {
             "name": "Supernatural",
@@ -154,6 +154,10 @@
             "count": 2
         },
         {
+            "name": "Pets",
+            "count": 2
+        },
+        {
             "name": "Samurai",
             "count": 2
         },
@@ -202,10 +206,6 @@
             "count": 1
         },
         {
-            "name": "Pets",
-            "count": 1
-        },
-        {
             "name": "Psychological",
             "count": 1
         },
@@ -233,19 +233,19 @@
     "genres": [
         {
             "name": "Romance",
-            "count": 247
+            "count": 256
         },
         {
             "name": "Comedy",
-            "count": 203
+            "count": 213
         },
         {
             "name": "Slice of Life",
-            "count": 75
+            "count": 86
         },
         {
             "name": "Drama",
-            "count": 31
+            "count": 33
         },
         {
             "name": "Fantasy",
@@ -253,7 +253,7 @@
         },
         {
             "name": "Girls Love",
-            "count": 24
+            "count": 25
         },
         {
             "name": "Supernatural",
@@ -277,7 +277,7 @@
         },
         {
             "name": "Adventure",
-            "count": 6
+            "count": 7
         },
         {
             "name": "Seinen",
@@ -311,23 +311,23 @@
     "themes": [
         {
             "name": "School",
-            "count": 139
+            "count": 146
         },
         {
             "name": "Adult Cast",
-            "count": 26
+            "count": 27
         },
         {
             "name": "Love Status Quo",
-            "count": 22
+            "count": 24
         },
         {
             "name": "Workplace",
-            "count": 18
+            "count": 19
         },
         {
             "name": "Childcare",
-            "count": 16
+            "count": 18
         },
         {
             "name": "Isekai",
@@ -354,15 +354,7 @@
             "count": 4
         },
         {
-            "name": "Romance",
-            "count": 4
-        },
-        {
             "name": "CGDCT",
-            "count": 3
-        },
-        {
-            "name": "Comedy",
             "count": 3
         },
         {
@@ -370,8 +362,16 @@
             "count": 3
         },
         {
+            "name": "Romance",
+            "count": 3
+        },
+        {
             "name": "Visual Arts",
             "count": 3
+        },
+        {
+            "name": "Comedy",
+            "count": 2
         },
         {
             "name": "Delinquents",
@@ -394,6 +394,10 @@
             "count": 2
         },
         {
+            "name": "Pets",
+            "count": 2
+        },
+        {
             "name": "Samurai",
             "count": 2
         },
@@ -408,6 +412,10 @@
         {
             "name": "Video Game",
             "count": 2
+        },
+        {
+            "name": "Animals",
+            "count": 1
         },
         {
             "name": "Detective",
@@ -426,15 +434,7 @@
             "count": 1
         },
         {
-            "name": "Pets",
-            "count": 1
-        },
-        {
             "name": "Psychological",
-            "count": 1
-        },
-        {
-            "name": "school",
             "count": 1
         },
         {
@@ -457,11 +457,11 @@
     "demographics": [
         {
             "name": "Shoujo",
-            "count": 79
+            "count": 83
         },
         {
             "name": "Seinen",
-            "count": 47
+            "count": 52
         },
         {
             "name": "Shounen",
@@ -475,11 +475,11 @@
     "statuses": [
         {
             "name": "Completed",
-            "count": 262
+            "count": 268
         },
         {
             "name": "Ongoing",
-            "count": 60
+            "count": 64
         },
         {
             "name": "Hiatus",

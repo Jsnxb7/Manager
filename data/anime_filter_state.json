@@ -1,7 +1,7 @@
 {
     "schema_version": 1,
-    "updated_at": "2026-07-10T08:45:03.346845+00:00",
-    "search": "",
+    "updated_at": "2026-07-10T12:52:22.229384+00:00",
+    "search": "\\",
     "quick_filters": {
         "unread": false,
         "unwatched": false,
@@ -14,6 +14,6 @@
         "themes": [],
         "demographics": []
     },
-    "page": 2,
+    "page": 1,
     "items_per_page": 12
 }

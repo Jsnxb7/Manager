@@ -1070,7 +1070,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": true,
+        "bookmarked": false,
         "tags": [
             "Comedy",
             "Drama",
@@ -2065,7 +2065,7 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Alma-chan wa Kazoku ni Naritai/S1/11.mp4"
             }
         ],
-        "bookmarked": true,
+        "bookmarked": false,
         "tags": [
             "Comedy",
             "Romance",
@@ -5966,6 +5966,105 @@
         "tag_match_status": "matched"
     },
     {
+        "id": 576,
+        "title": "Buchigire Reijou wa Houfuku wo Chikaimashita",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://myanimelist.net/anime/62289",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Buchigire Reijou wa Houfuku wo Chikaimashita\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Buchigire Reijou wa Houfuku wo Chikaimashita/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Buchigire Reijou wa Houfuku wo Chikaimashita/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Buchigire Reijou wa Houfuku wo Chikaimashita/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Buchigire Reijou wa Houfuku wo Chikaimashita/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Buchigire Reijou wa Houfuku wo Chikaimashita/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Buchigire Reijou wa Houfuku wo Chikaimashita/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Buchigire Reijou wa Houfuku wo Chikaimashita/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Buchigire Reijou wa Houfuku wo Chikaimashita/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Buchigire Reijou wa Houfuku wo Chikaimashita/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Buchigire Reijou wa Houfuku wo Chikaimashita/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Buchigire Reijou wa Houfuku wo Chikaimashita/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Buchigire Reijou wa Houfuku wo Chikaimashita/S1/12.mp4"
+            }
+        ],
+        "tags": [
+            "Fantasy",
+            "Drama"
+        ],
+        "genres": [
+            "Fantasy",
+            "Drama"
+        ],
+        "themes": [
+            "Isekai Fantasy"
+        ],
+        "demographics": [
+            "Shoujo"
+        ],
+        "tag_source": "manual",
+        "tag_match_status": "manual",
+        "bookmarked": false
+    },
+    {
         "id": 217,
         "title": "Buddy Daddies",
         "season": "S1",
@@ -8490,7 +8589,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": true,
+        "bookmarked": false,
         "tags": [
             "Slice of Life",
             "Workplace",
@@ -16262,6 +16361,104 @@
         "tag_match_status": "matched"
     },
     {
+        "id": 573,
+        "title": "Ibitte Konai Gibo to Gishi",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://myanimelist.net/anime/62102",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Ibitte Konai Gibo to Gishi\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ibitte Konai Gibo to Gishi/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ibitte Konai Gibo to Gishi/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ibitte Konai Gibo to Gishi/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ibitte Konai Gibo to Gishi/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ibitte Konai Gibo to Gishi/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ibitte Konai Gibo to Gishi/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ibitte Konai Gibo to Gishi/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ibitte Konai Gibo to Gishi/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ibitte Konai Gibo to Gishi/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ibitte Konai Gibo to Gishi/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ibitte Konai Gibo to Gishi/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Ibitte Konai Gibo to Gishi/S1/12.mp4"
+            }
+        ],
+        "tags": [
+            "Comedy"
+        ],
+        "genres": [
+            "Comedy"
+        ],
+        "themes": [
+            "Historical",
+            "Gag Humor"
+        ],
+        "demographics": [
+            "Shoujo"
+        ],
+        "tag_source": "manual",
+        "tag_match_status": "manual",
+        "bookmarked": false
+    },
+    {
         "id": 564,
         "title": "Ichijouma Mankitsugurashi",
         "season": "S1",
@@ -17608,7 +17805,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": true,
+        "bookmarked": false,
         "tags": [
             "Fantasy",
             "Gourmet",
@@ -17710,7 +17907,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": true,
+        "bookmarked": false,
         "tags": [
             "Fantasy",
             "Gourmet",
@@ -18408,7 +18605,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": true,
+        "bookmarked": false,
         "tags": [
             "Comedy",
             "Romance",
@@ -19147,7 +19344,7 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Jishou Akuyaku Reijou na Konyakusha no Kansatsu Kiroku/S1/12.mp4"
             }
         ],
-        "bookmarked": true,
+        "bookmarked": false,
         "tags": [
             "Comedy",
             "Romance",
@@ -20647,7 +20844,7 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Kami no Niwatsuki Kusunoki-tei/S1/12.mp4"
             }
         ],
-        "bookmarked": true,
+        "bookmarked": false,
         "tags": [
             "Slice of Life",
             "Supernatural",
@@ -25669,7 +25866,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": true,
+        "bookmarked": false,
         "tags": [
             "Comedy",
             "Romance",
@@ -31274,7 +31471,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": true,
+        "bookmarked": false,
         "tags": [
             "Drama",
             "Sports",
@@ -36377,7 +36574,7 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Omoide Poroporo/Movie/1.mp4"
             }
         ],
-        "bookmarked": true,
+        "bookmarked": false,
         "watched": true,
         "tags": [
             "Drama",
@@ -37841,6 +38038,204 @@
         "tag_match_status": "matched"
     },
     {
+        "id": 574,
+        "title": "Otome Game Sekai wa Mob ni Kibishii Sekai desu",
+        "season": "S1",
+        "status": "Completed",
+        "download_link": "https://myanimelist.net/anime/50461",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Otome Game Sekai wa Mob ni Kibishii Sekai desu\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S1/12.mp4"
+            }
+        ],
+        "tags": [
+            "Comedy",
+            "Romance",
+            "Fantasy"
+        ],
+        "genres": [
+            "Romance",
+            "Fantasy",
+            "Adventure"
+        ],
+        "themes": [
+            "Isekai",
+            "Reincarnation"
+        ],
+        "demographics": [
+            "Shoujo"
+        ],
+        "tag_source": "manual",
+        "tag_match_status": "manual",
+        "bookmarked": false,
+        "watched": true
+    },
+    {
+        "id": 575,
+        "title": "Otome Game Sekai wa Mob ni Kibishii Sekai desu",
+        "season": "S2",
+        "status": "Ongoing",
+        "download_link": "https://myanimelist.net/anime/54000",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Otome Game Sekai wa Mob ni Kibishii Sekai desu\\S2",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S2/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S2/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S2/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S2/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S2/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S2/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S2/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S2/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S2/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S2/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Otome Game Sekai wa Mob ni Kibishii Sekai desu/S2/11.mp4"
+            }
+        ],
+        "tags": [
+            "Romance",
+            "Fantasy"
+        ],
+        "genres": [
+            "Romance",
+            "Fantasy"
+        ],
+        "themes": [
+            "Isekai",
+            "Reincarnation"
+        ],
+        "demographics": [
+            "Shounen"
+        ],
+        "tag_source": "manual",
+        "tag_match_status": "manual",
+        "bookmarked": false,
+        "watched": false
+    },
+    {
         "id": 374,
         "title": "Otome Kaijuu Caram\u00e9liser",
         "season": "S1",
@@ -38127,7 +38522,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": true,
+        "bookmarked": false,
         "tags": [
             "Romance",
             "School"
@@ -42073,7 +42468,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": false,
+        "bookmarked": true,
         "tags": [
             "Drama",
             "Romance",
@@ -47989,6 +48384,107 @@
         "tag_match_status": "matched"
     },
     {
+        "id": 578,
+        "title": "Tai-Ari deshita. Ojousama wa Kakutou Game nante Shinai",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://myanimelist.net/anime/46488",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Tai-Ari deshita. Ojousama wa Kakutou Game nante Shinai\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tai-Ari deshita. Ojousama wa Kakutou Game nante Shinai/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tai-Ari deshita. Ojousama wa Kakutou Game nante Shinai/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tai-Ari deshita. Ojousama wa Kakutou Game nante Shinai/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tai-Ari deshita. Ojousama wa Kakutou Game nante Shinai/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tai-Ari deshita. Ojousama wa Kakutou Game nante Shinai/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tai-Ari deshita. Ojousama wa Kakutou Game nante Shinai/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tai-Ari deshita. Ojousama wa Kakutou Game nante Shinai/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tai-Ari deshita. Ojousama wa Kakutou Game nante Shinai/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tai-Ari deshita. Ojousama wa Kakutou Game nante Shinai/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tai-Ari deshita. Ojousama wa Kakutou Game nante Shinai/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tai-Ari deshita. Ojousama wa Kakutou Game nante Shinai/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tai-Ari deshita. Ojousama wa Kakutou Game nante Shinai/S1/12.mp4"
+            }
+        ],
+        "tags": [
+            "Comedy",
+            "CGDCT",
+            "Video Game",
+            "Girls Love"
+        ],
+        "genres": [
+            "Comedy",
+            "Girls Love"
+        ],
+        "themes": [
+            "School"
+        ],
+        "demographics": [
+            "Shoujo"
+        ],
+        "tag_source": "manual",
+        "tag_match_status": "manual",
+        "bookmarked": false
+    },
+    {
         "id": 405,
         "title": "Tamako Love Story",
         "season": "Movie",
@@ -48101,7 +48597,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": true,
+        "bookmarked": false,
         "tags": [
             "Slice of Life",
             "Iyashikei"
@@ -48324,6 +48820,104 @@
         "tag_source": "jikan",
         "tag_source_id": 52962,
         "tag_match_status": "matched"
+    },
+    {
+        "id": 577,
+        "title": "Tefuda ga Oome no Victoria",
+        "season": "S1",
+        "status": "Ongoing",
+        "download_link": "https://myanimelist.net/anime/62476",
+        "directory": "C:\\Users\\shour\\Documents\\Anime\\Tefuda ga Oome no Victoria\\S1",
+        "episodes": [
+            {
+                "number": 1,
+                "title": "Episode 1",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tefuda ga Oome no Victoria/S1/1.mp4"
+            },
+            {
+                "number": 2,
+                "title": "Episode 2",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tefuda ga Oome no Victoria/S1/2.mp4"
+            },
+            {
+                "number": 3,
+                "title": "Episode 3",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tefuda ga Oome no Victoria/S1/3.mp4"
+            },
+            {
+                "number": 4,
+                "title": "Episode 4",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tefuda ga Oome no Victoria/S1/4.mp4"
+            },
+            {
+                "number": 5,
+                "title": "Episode 5",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tefuda ga Oome no Victoria/S1/5.mp4"
+            },
+            {
+                "number": 6,
+                "title": "Episode 6",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tefuda ga Oome no Victoria/S1/6.mp4"
+            },
+            {
+                "number": 7,
+                "title": "Episode 7",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tefuda ga Oome no Victoria/S1/7.mp4"
+            },
+            {
+                "number": 8,
+                "title": "Episode 8",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tefuda ga Oome no Victoria/S1/8.mp4"
+            },
+            {
+                "number": 9,
+                "title": "Episode 9",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tefuda ga Oome no Victoria/S1/9.mp4"
+            },
+            {
+                "number": 10,
+                "title": "Episode 10",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tefuda ga Oome no Victoria/S1/10.mp4"
+            },
+            {
+                "number": 11,
+                "title": "Episode 11",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tefuda ga Oome no Victoria/S1/11.mp4"
+            },
+            {
+                "number": 12,
+                "title": "Episode 12",
+                "watched": false,
+                "file_path": "C:/Users/shour/Documents/Anime/Tefuda ga Oome no Victoria/S1/12.mp4"
+            }
+        ],
+        "tags": [
+            "Fantasy",
+            "Seinen"
+        ],
+        "genres": [
+            "Fantasy"
+        ],
+        "themes": [
+            "Childcare"
+        ],
+        "demographics": [
+            "Seinen"
+        ],
+        "tag_source": "manual",
+        "tag_match_status": "manual",
+        "bookmarked": false
     },
     {
         "id": 484,
@@ -54630,7 +55224,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": true,
+        "bookmarked": false,
         "tags": [
             "Drama",
             "Fantasy",
@@ -55224,7 +55818,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": true,
+        "bookmarked": false,
         "tags": [
             "Comedy",
             "Romance",
@@ -55335,7 +55929,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": true,
+        "bookmarked": false,
         "tags": [
             "Comedy",
             "Romance",
@@ -55451,7 +56045,7 @@
                 "file_path": "C:/Users/shour/Documents/Anime/Working/S3/14.mp4"
             }
         ],
-        "bookmarked": true,
+        "bookmarked": false,
         "watched": true,
         "tags": [
             "Comedy",
@@ -57971,7 +58565,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": true,
+        "bookmarked": false,
         "tags": [
             "Slice of Life",
             "CGDCT",
@@ -58071,7 +58665,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": true,
+        "bookmarked": false,
         "tags": [
             "Slice of Life",
             "CGDCT",
@@ -58105,7 +58699,7 @@
             }
         ],
         "watched": true,
-        "bookmarked": true,
+        "bookmarked": false,
         "tags": [
             "Slice of Life",
             "CGDCT",
