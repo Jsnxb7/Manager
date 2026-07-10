@@ -18,7 +18,7 @@
             <strong>{{ queue_items|length if queue_items else 0 }} queued</strong>
             <small>
                 {% if queue_items %}
-                    Item {{ active.position }} of {{ queue_items|length }} • {{ queue_items|length - active.position }} remaining
+                    Item {{ active.position }} of {{ queue_items|length }} - {{ queue_items|length - active.position }} remaining
                 {% else %}
                     Add episodes from anime details to build your playlist
                 {% endif %}
@@ -42,7 +42,7 @@
         <div class="queue-page-list queue-clean-list" id="queue-page-list">
             {% for item in queue_items %}
                 <article class="queue-card-full queue-clean-card {% if item.is_now_playing %}is-now-playing{% endif %}" draggable="true" data-index="{{ item.index }}">
-                    <span class="queue-drag-handle queue-drag-handle-full" aria-label="Drag handle">⋮⋮</span>
+                    <span class="queue-drag-handle queue-drag-handle-full" aria-label="Drag handle">::</span>
                     <img class="queue-card-thumb" src="{{ item.thumbnail_url }}" alt="{{ item.anime_title }}">
                     <div class="queue-card-main">
                         <div class="queue-card-title-row">
@@ -50,12 +50,13 @@
                             {% if item.is_now_playing %}<span class="queue-now-indicator">Now</span>{% endif %}
                         </div>
                         <strong class="queue-clean-title">{{ item.anime_title }}</strong>
-                        <p>Episode {{ item.episode_number }} — {{ item.episode_title }}</p>
+                        <p>{{ item.season }}</p>
                         <div class="queue-card-meta">
-                            <span>{{ item.duration_label }}</span>
-                            <span>{{ item.season }}</span>
+                            <span>{{ item.progress_label }}</span>
+                            <span>{{ item.completed_episodes }} / {{ item.total_episodes }} episodes</span>
                             <span>{{ loop.revindex0 }} after this</span>
                         </div>
+                        <progress class="queue-item-progress" value="{{ item.progress_percentage }}" max="100" aria-label="{{ item.anime_title }} progress"></progress>
                     </div>
                     <div class="queue-card-actions">
                         <a href="{{ item.player_url }}" class="queue-play-link">Play</a>

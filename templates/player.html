@@ -72,6 +72,21 @@
                     </select>
                 </div>
 
+                <div class="player-track-controls">
+                    <label>
+                        <span>Audio</span>
+                        <select id="player-audio-track-select"></select>
+                    </label>
+                    <label>
+                        <span>Subtitles</span>
+                        <select id="player-subtitle-track-select"></select>
+                    </label>
+                    <label class="subtitle-import-control">
+                        <span>Import SRT</span>
+                        <input type="file" id="subtitle-import-input" accept=".srt,.vtt,text/vtt,application/x-subrip">
+                    </label>
+                </div>
+
                 <a href="{{ url_for('anime.anime_detail', anime_id=anime.id) }}" class="back-link">⬅️ Back to Anime Details</a>
             </section>
         </section>
@@ -111,9 +126,7 @@
 
 <script>
 function suppressPlayerPageOverlays() {
-    const selectors = [
-        "button.custom-player-btn"
-    ];
+    const selectors = [];
 
     selectors.forEach((selector) => {
         document.querySelectorAll(selector).forEach((element) => {
@@ -125,10 +138,10 @@ function suppressPlayerPageOverlays() {
         const style = document.createElement("style");
         style.id = "player-page-forced-hide";
         style.textContent = `
-            button.custom-player-btn {
-                display: none !important;
-                visibility: hidden !important;
-                pointer-events: none !important;
+            body.player-page .custom-player-btn {
+                display: inline-grid !important;
+                visibility: visible !important;
+                pointer-events: auto !important;
             }
         `;
         document.head.appendChild(style);
@@ -275,6 +288,12 @@ document.addEventListener("DOMContentLoaded", function () {
     player.on("timeupdate", scheduleProgressSave);
     player.on("pause", () => saveEpisodeProgress(false));
     window.addEventListener("beforeunload", () => saveEpisodeProgress(false, true));
+    window.setupSubtitleImport?.(player, "subtitle-import-input");
+    window.setupPlayerTrackControls?.(player, {
+        audioSelectId: "player-audio-track-select",
+        textSelectId: "player-subtitle-track-select",
+        subtitleInputId: "subtitle-import-input"
+    });
 
     const hideBigPlayButton = () => {
         player.el().classList.add("player-hide-big-play");

@@ -1296,6 +1296,15 @@ def build_enriched_queue():
         if anime:
             episodes = prepare_anime_episodes_for_player(anime)
             episode = next((entry for entry in episodes if entry.get("number") == episode_number), None)
+            tracking_entry = tracking.get("anime", {}).get(str(anime_id), {})
+            progress_summary = get_anime_progress_summary(anime, tracking_entry)
+        else:
+            tracking_entry = {}
+            progress_summary = {
+                "completion_percentage": 0,
+                "completed_episodes": 0,
+                "total_episodes": 0
+            }
 
         duration = (
             (episode or {}).get("duration")
@@ -1317,6 +1326,11 @@ def build_enriched_queue():
             "episode_title": (episode or {}).get("title") or f"Episode {episode_number}",
             "duration": duration,
             "duration_label": format_duration_label(duration),
+            "watch_status": tracking_entry.get("watch_status", "Watching") if isinstance(tracking_entry, dict) else "Watching",
+            "progress_percentage": progress_summary.get("completion_percentage", 0),
+            "progress_label": f"{progress_summary.get('completion_percentage', 0)}% watched",
+            "completed_episodes": progress_summary.get("completed_episodes", 0),
+            "total_episodes": progress_summary.get("total_episodes", 0),
             "video_url": (episode or {}).get("video_url"),
             "player_url": url_for("queue.queue_player", index=index),
             "legacy_player_url": url_for("player.player", index=index) + "?from_queue=true",

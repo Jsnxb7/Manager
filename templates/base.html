@@ -136,8 +136,9 @@
                 {% endif %}
               </div>
               <strong>{{ item.anime_title }}</strong>
-              <span>Episode {{ item.episode_number }} - {{ item.episode_title }}</span>
-              <span>Duration: {{ item.duration_label }}</span>
+              <span>{{ item.season }}</span>
+              <span>{{ item.progress_label }}</span>
+              <progress class="queue-mini-progress" value="{{ item.progress_percentage }}" max="100" aria-label="{{ item.anime_title }} progress"></progress>
               <a href="{{ item.player_url }}" class="queue-play-link">Queue Player</a>
               <a href="{{ url_for('player.player', index=loop.index0) }}?from_queue=true" class="queue-mini-direct-play">▶️</a>
             </div>
@@ -178,17 +179,22 @@
         if (!list) return;
 
         let draggedItem = null;
+        let originalOrder = [];
+        const getOrderedCards = () => [...list.querySelectorAll(':scope > [data-index]')];
 
         list.querySelectorAll('[draggable="true"]').forEach(item => {
             item.addEventListener('dragstart', () => {
                 draggedItem = item;
+                originalOrder = getOrderedCards().map(card => card.dataset.index);
                 item.classList.add('is-dragging');
             });
 
             item.addEventListener('dragend', async () => {
                 item.classList.remove('is-dragging');
-                const order = [...list.querySelectorAll('[data-index]')].map(card => Number(card.dataset.index));
+                const order = getOrderedCards().map(card => Number(card.dataset.index));
                 draggedItem = null;
+
+                if (order.map(String).join(',') === originalOrder.join(',')) return;
 
                 try {
                     const response = await fetch('/queue/reorder', {
@@ -196,7 +202,10 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ order })
                     });
-                    if (!response.ok) throw new Error('Failed to save queue order');
+                    if (!response.ok) {
+                        const data = await response.json().catch(() => ({}));
+                        throw new Error(data.message || 'Failed to save queue order');
+                    }
                     location.reload();
                 } catch (error) {
                     alert(error.message);

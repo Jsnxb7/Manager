@@ -247,3 +247,167 @@ function setupValidatedAddForm(form) {
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".validated-add-form").forEach(setupValidatedAddForm);
 });
+
+function srtToVtt(text) {
+    const normalized = String(text || "").replace(/\r+/g, "").trim();
+    if (!normalized) return "WEBVTT\n\n";
+    if (normalized.startsWith("WEBVTT")) return normalized;
+    return `WEBVTT\n\n${normalized.replace(/(\d{2}:\d{2}:\d{2}),(\d{3})/g, "$1.$2")}\n`;
+}
+
+function reportPlayerTracks(player, label = "Player") {
+    if (!player) return;
+    const audioTracks = player.audioTracks ? player.audioTracks() : null;
+    const textTracks = player.textTracks ? player.textTracks() : null;
+    console.log(`${label} audio tracks detected: ${audioTracks ? audioTracks.length : 0}`);
+    console.log(`${label} subtitle/text tracks detected: ${textTracks ? textTracks.length : 0}`);
+}
+
+function setupSubtitleImport(player, inputId) {
+    const input = document.getElementById(inputId);
+    if (!player || !input) return;
+
+    let currentTrack = null;
+    let currentUrl = null;
+
+    input.addEventListener("change", async () => {
+        const file = input.files && input.files[0];
+        if (!file) return;
+
+        try {
+            const vtt = srtToVtt(await file.text());
+            if (currentTrack) {
+                player.removeRemoteTextTrack(currentTrack);
+                currentTrack = null;
+            }
+            if (currentUrl) URL.revokeObjectURL(currentUrl);
+
+            currentUrl = URL.createObjectURL(new Blob([vtt], { type: "text/vtt" }));
+            const remote = player.addRemoteTextTrack({
+                kind: "subtitles",
+                label: file.name.replace(/\.(srt|vtt)$/i, "") || "Imported subtitles",
+                srclang: "external",
+                src: currentUrl,
+                default: true
+            }, false);
+
+            currentTrack = remote;
+            const track = remote.track || remote;
+            if (track) track.mode = "showing";
+            input.dispatchEvent(new CustomEvent("subtitle-imported", { bubbles: true }));
+            if (typeof showToast === "function") showToast(`Loaded subtitles: ${file.name}`, "success");
+        } catch (error) {
+            console.error("Subtitle import failed:", error);
+            if (typeof showToast === "function") showToast("Could not load subtitle file", "error");
+        } finally {
+            input.value = "";
+        }
+    });
+}
+
+function setupPlayerTrackControls(player, options = {}) {
+    if (!player) return;
+    const audioSelect = document.getElementById(options.audioSelectId);
+    const textSelect = document.getElementById(options.textSelectId);
+
+    function populateAudioTracks() {
+        if (!audioSelect) return;
+        const tracks = player.audioTracks ? player.audioTracks() : null;
+        audioSelect.innerHTML = "";
+
+        if (!tracks || !tracks.length) {
+            audioSelect.add(new Option("Default audio", ""));
+            audioSelect.disabled = true;
+            return;
+        }
+
+        audioSelect.disabled = tracks.length <= 1;
+        for (let index = 0; index < tracks.length; index += 1) {
+            const track = tracks[index];
+            const label = track.label || track.language || `Audio ${index + 1}`;
+            const option = new Option(label, String(index), false, Boolean(track.enabled));
+            audioSelect.add(option);
+        }
+    }
+
+    function populateTextTracks() {
+        if (!textSelect) return;
+        const tracks = player.textTracks ? player.textTracks() : null;
+        textSelect.innerHTML = "";
+        textSelect.add(new Option("Subtitles off", "off"));
+
+        if (!tracks || !tracks.length) {
+            textSelect.disabled = false;
+            return;
+        }
+
+        for (let index = 0; index < tracks.length; index += 1) {
+            const track = tracks[index];
+            if (!["subtitles", "captions"].includes(track.kind)) continue;
+            const label = track.label || track.language || `Subtitle ${index + 1}`;
+            const option = new Option(label, String(index), false, track.mode === "showing");
+            textSelect.add(option);
+        }
+        textSelect.disabled = false;
+    }
+
+    audioSelect?.addEventListener("change", () => {
+        const tracks = player.audioTracks ? player.audioTracks() : null;
+        if (!tracks) return;
+        const activeIndex = Number(audioSelect.value);
+        for (let index = 0; index < tracks.length; index += 1) {
+            tracks[index].enabled = index === activeIndex;
+        }
+        populateAudioTracks();
+    });
+
+    textSelect?.addEventListener("change", () => {
+        const tracks = player.textTracks ? player.textTracks() : null;
+        if (!tracks) return;
+        const activeIndex = textSelect.value === "off" ? -1 : Number(textSelect.value);
+        for (let index = 0; index < tracks.length; index += 1) {
+            if (["subtitles", "captions"].includes(tracks[index].kind)) {
+                tracks[index].mode = index === activeIndex ? "showing" : "disabled";
+            }
+        }
+        populateTextTracks();
+    });
+
+    const refresh = () => {
+        populateAudioTracks();
+        populateTextTracks();
+    };
+
+    player.ready(refresh);
+    player.on("loadedmetadata", refresh);
+    document.getElementById(options.subtitleInputId)?.addEventListener("subtitle-imported", () => {
+        window.setTimeout(refresh, 80);
+    });
+}
+
+function setupLibraryCompactSearch() {
+    const library = document.querySelector(".anime-list");
+    const strip = library?.querySelector(".library-control-strip");
+    if (!library || !strip) return;
+
+    let triggerY = 0;
+
+    const measure = () => {
+        const topGap = document.body.classList.contains("electron-shell") ? 66 : 26;
+        triggerY = strip.getBoundingClientRect().top + window.scrollY - topGap;
+    };
+
+    const update = () => {
+        library.classList.toggle("is-search-condensed", window.scrollY > triggerY);
+    };
+
+    measure();
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", () => {
+        measure();
+        update();
+    });
+}
+
+document.addEventListener("DOMContentLoaded", setupLibraryCompactSearch);

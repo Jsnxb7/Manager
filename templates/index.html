@@ -699,6 +699,7 @@ function renderPagination() {
     for (let page = first; page <= last; page++) {
         const btn = document.createElement('button');
         btn.className = `pagination-page ${page === currentPage ? 'active' : ''}`;
+        if (page === currentPage) btn.setAttribute('aria-current', 'page');
         btn.textContent = page;
         btn.onclick = () => goToPage(page);
         pageButtons.appendChild(btn);

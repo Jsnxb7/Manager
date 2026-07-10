@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block body_class %}manga-page{% endblock %}
 
 {% block content %}
 <div class="anime-list" id="manga-library">
@@ -516,6 +517,7 @@ function renderMangaPagination() {
     for (let page = first; page <= last; page++) {
         const btn = document.createElement("button");
         btn.className = `pagination-page ${page === currentMangaPage ? "active" : ""}`;
+        if (page === currentMangaPage) btn.setAttribute("aria-current", "page");
         btn.textContent = page;
         btn.onclick = () => goToMangaPage(page);
         pageButtons.appendChild(btn);

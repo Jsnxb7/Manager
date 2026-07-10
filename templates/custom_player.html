@@ -13,6 +13,18 @@
             {% if current_item %}{{ current_item.name | truncate(52, True, '…') }}{% else %}Custom Player{% endif %}
         </h1>
         <div class="cp-header-actions">
+            <label class="player-track-select-label">
+                <span>Audio</span>
+                <select id="cp-audio-track-select"></select>
+            </label>
+            <label class="player-track-select-label">
+                <span>Subtitles</span>
+                <select id="cp-subtitle-track-select"></select>
+            </label>
+            <label class="cp-btn cp-btn-sm subtitle-import-control cp-subtitle-import">
+                <span>Import SRT</span>
+                <input type="file" id="cp-subtitle-import-input" accept=".srt,.vtt,text/vtt,application/x-subrip">
+            </label>
             <a href="{{ url_for('custom_player.custom_player_home') }}" class="cp-btn cp-btn-sm">↺ New Session</a>
         </div>
     </div>
@@ -454,6 +466,12 @@ document.addEventListener('DOMContentLoaded', () => {
     player.on('timeupdate', scheduleSave);
     player.on('pause', () => saveProgress());
     window.addEventListener('beforeunload', () => saveProgress(false, true));
+    window.setupSubtitleImport?.(player, 'cp-subtitle-import-input');
+    window.setupPlayerTrackControls?.(player, {
+        audioSelectId: 'cp-audio-track-select',
+        textSelectId: 'cp-subtitle-track-select',
+        subtitleInputId: 'cp-subtitle-import-input'
+    });
 
     player.on('ended', async () => {
         await saveProgress(true);
