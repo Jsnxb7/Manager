@@ -1,32 +1,19 @@
 {
     "schema_version": 1,
-    "updated_at": "2026-07-10T12:26:14.173486+00:00",
+    "updated_at": "2026-08-22T19:01:44.508317+00:00",
     "last_use": {
-        "anime_id": 51,
+        "anime_id": 50,
         "anime_title": "Working",
-        "episode_number": 1,
-        "episode_title": "Episode 1",
-        "current_time": 5.53,
-        "total_duration": 1425.05,
-        "progress_percentage": 0.39,
-        "last_watched_at": "2026-07-10T11:17:38.025042+00:00"
+        "episode_number": 2,
+        "episode_title": "Episode 2",
+        "current_time": 1.24,
+        "total_duration": 1460.04,
+        "progress_percentage": 0.08,
+        "last_watched_at": "2026-08-22T19:01:44.507310+00:00"
     },
     "queue": {
-        "updated_at": "2026-07-10T08:52:15.571345+00:00",
-        "order": [
-            {
-                "position": 1,
-                "anime_id": 50,
-                "anime_title": "Working",
-                "episode_number": 1
-            },
-            {
-                "position": 2,
-                "anime_id": 51,
-                "anime_title": "Working",
-                "episode_number": 1
-            }
-        ]
+        "updated_at": "2026-08-05T08:15:33.784498+00:00",
+        "order": []
     },
     "anime": {
         "547": {
@@ -35,19 +22,19 @@
             "anime_thumbnail": "/static/anime_images/Tensura_TOAS.webp",
             "watch_status": "Watching",
             "last_watched_episode": 1,
-            "last_watched_at": "2026-07-10T08:51:46.952551+00:00",
+            "last_watched_at": "2026-07-19T11:57:49.181276+00:00",
             "completion_percentage": 0.0,
             "episodes": {
                 "1": {
                     "episode_number": 1,
                     "episode_title": "Episode 1",
                     "episode_video_path": "C:/Users/shour/Documents/Anime/Tensura_TOAS/Movie/1.mp4",
-                    "current_time": 3453.92,
+                    "current_time": 3704.19,
                     "total_duration": 6258.04,
-                    "progress_percentage": 55.19,
+                    "progress_percentage": 59.19,
                     "completed": false,
                     "active_continue": true,
-                    "last_watched_at": "2026-07-10T08:51:46.952551+00:00"
+                    "last_watched_at": "2026-07-19T11:57:49.181276+00:00"
                 }
             }
         }

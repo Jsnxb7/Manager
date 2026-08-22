@@ -1,12 +1,3 @@
 {
-  "queue": [
-    {
-      "id": 50,
-      "title": "Working"
-    },
-    {
-      "id": 51,
-      "title": "Working"
-    }
-  ]
+  "queue": []
 }

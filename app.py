@@ -10,6 +10,18 @@ import shutil
 from datetime import datetime, timezone
 import tempfile
 
+from anime_relations import (
+    cleanup_relations,
+    empty_relation_data,
+    find_group as find_relation_group,
+    merge_related_ids,
+    normalize_relation_data,
+    remove_related_id,
+    reorder_group,
+    scan_relations,
+)
+from jikan_client import JikanClient, JikanError, download_cover_bytes, external_source
+
 if len(sys.argv) > 1:
     BASE_PATH = sys.argv[1]
 else:
@@ -34,6 +46,7 @@ ANIME_FILTER_STATE_FILE = os.path.join(BASE_PATH, 'data', 'anime_filter_state.js
 MANGA_FILTER_STATE_FILE = os.path.join(BASE_PATH, 'data', 'manga_filter_state.json')
 SECTION_FILTER_STATE_FILE = os.path.join(BASE_PATH, 'data', 'section_filter_state.json')
 MANGA_HEADERS_FILE = os.path.join(BASE_PATH, 'data', 'unique_manga_headers.json')
+ANIME_RELATIONS_FILE = os.path.join(BASE_PATH, 'data', 'anime_relations.json')
 ALLOWED_IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "avif", "webp", "gif"}
 IMAGE_EXTENSION_ORDER = ["jpg", "png", "jpeg", "avif", "webp", "gif"]
 VIDEO_EXTENSIONS = {".mp4", ".mkv", ".avi", ".mov", ".webm", ".m4v"}
@@ -51,6 +64,7 @@ if not os.path.exists(STATIC_FOLDER) or not os.path.exists(TEMPLATES_FOLDER):
     sys.exit(1)
 
 app = Flask(__name__, static_folder=STATIC_FOLDER, template_folder=TEMPLATES_FOLDER)
+jikan_client = JikanClient()
 
 core_bp = Blueprint("core", __name__)
 validation_bp = Blueprint("validation", __name__)
@@ -247,6 +261,30 @@ def validate_entry():
     return jsonify(payload)
 
 
+@core_bp.route("/api/jikan/search")
+def api_jikan_search():
+    media_type = request.args.get("media_type", "")
+    query = " ".join(request.args.get("q", "").strip().split())
+    if media_type not in {"anime", "manga"}:
+        return jsonify({"status": "error", "message": "media_type must be anime or manga"}), 400
+    if len(query) < 2:
+        return jsonify({"status": "error", "message": "Enter at least two characters"}), 400
+    try:
+        return jsonify({"status": "success", "results": jikan_client.search(media_type, query, limit=8)})
+    except JikanError as error:
+        return jikan_error_response(error)
+
+
+@core_bp.route("/api/jikan/<media_type>/<int:mal_id>")
+def api_jikan_detail(media_type, mal_id):
+    if media_type not in {"anime", "manga"}:
+        return jsonify({"status": "error", "message": "Unknown media type"}), 404
+    try:
+        return jsonify({"status": "success", "item": jikan_client.detail(media_type, mal_id)})
+    except JikanError as error:
+        return jikan_error_response(error)
+
+
 def get_section_paths(section):
     section = section.lower()
 
@@ -388,6 +426,188 @@ def get_adjacent_episode_context(anime, episode):
         "previous_episode_video_url": previous_episode.get("video_url") if previous_episode else None,
         "next_episode_video_url": next_episode.get("video_url") if next_episode else None
     }
+
+
+def select_start_episode(anime):
+    episodes = prepare_anime_episodes_for_player(anime)
+    if not episodes:
+        return None, False
+    tracking_entry = load_tracking_data().get("anime", {}).get(str(anime.get("id")), {})
+    tracked_episodes = tracking_entry.get("episodes", {}) if isinstance(tracking_entry, dict) else {}
+    resumable = []
+    for tracked in tracked_episodes.values():
+        if not isinstance(tracked, dict) or tracked.get("completed") is True:
+            continue
+        if float(tracked.get("current_time") or 0) <= 1:
+            continue
+        episode = next((item for item in episodes if item.get("number") == tracked.get("episode_number")), None)
+        if episode:
+            resumable.append((tracked.get("last_watched_at") or "", episode))
+    if resumable:
+        resumable.sort(key=lambda item: item[0], reverse=True)
+        return resumable[0][1], True
+
+    completed_numbers = {
+        int(number) for number, tracked in tracked_episodes.items()
+        if isinstance(tracked, dict) and tracked.get("completed") is True and str(number).isdigit()
+    }
+    first_unwatched = next(
+        (item for item in episodes if item.get("watched") is not True and item.get("number") not in completed_numbers),
+        None
+    )
+    return first_unwatched or episodes[0], False
+
+
+def build_playback_target(
+    anime, episode, target_type, *, queue_index=None, resume=False, direction="next"
+):
+    if queue_index is None:
+        target_url = url_for("player.player", anime_id=anime["id"], episode_number=episode["number"])
+    else:
+        target_url = url_for("queue.queue_player", index=queue_index, episode=episode["number"])
+    if resume:
+        target_url += ("&" if "?" in target_url else "?") + "resume=1"
+    labels = {
+        ("next", "episode"): "Next Episode",
+        ("next", "queue"): "Next in Queue",
+        ("next", "relation"): "Next Relation",
+        ("previous", "episode"): "Previous Episode",
+        ("previous", "queue"): "Previous in Queue",
+        ("previous", "relation"): "Previous Relation",
+    }
+    return {
+        "type": target_type,
+        "direction": direction,
+        "label": labels.get((direction, target_type), direction.title()),
+        "url": target_url,
+        "anime_id": anime.get("id"),
+        "anime_title": anime.get("title", "Untitled"),
+        "season": anime.get("season", "N/A"),
+        "episode_number": episode.get("number"),
+        "episode_title": episode.get("title") or f"Episode {episode.get('number')}",
+        "video_url": episode.get("video_url"),
+        "thumbnail_url": get_anime_image(anime.get("title", "")),
+        "resume": resume,
+    }
+
+
+def resolve_next_playback_target(anime, episode, queue_index=None):
+    anime_data = load_anime_data()
+    anime_lookup = {item.get("id"): item for item in anime_data}
+    episodes = prepare_anime_episodes_for_player(anime)
+    current_index = next(
+        (index for index, item in enumerate(episodes) if item.get("number") == episode.get("number")),
+        None
+    )
+    if current_index is not None and current_index + 1 < len(episodes):
+        return build_playback_target(
+            anime, episodes[current_index + 1], "episode", queue_index=queue_index
+        )
+
+    queue = load_queue().get("queue", [])
+    if queue_index is not None:
+        queue_start = queue_index + 1
+    else:
+        current_queue_index = next(
+            (index for index, item in enumerate(queue) if item.get("id") == anime.get("id")),
+            None
+        )
+        queue_start = current_queue_index + 1 if current_queue_index is not None else 0
+    for index in range(queue_start, len(queue)):
+        queued_id = queue[index].get("id")
+        if queued_id == anime.get("id"):
+            continue
+        queued_anime = anime_lookup.get(queued_id)
+        if not queued_anime:
+            continue
+        queued_episode, should_resume = select_start_episode(queued_anime)
+        if queued_episode:
+            return build_playback_target(
+                queued_anime, queued_episode, "queue", queue_index=index, resume=should_resume
+            )
+
+    relation_group = find_relation_group(load_relation_data(), anime.get("id"))
+    if relation_group:
+        ordered_ids = relation_group.get("ordered_anime_ids", [])
+        try:
+            relation_start = ordered_ids.index(anime.get("id")) + 1
+        except ValueError:
+            relation_start = len(ordered_ids)
+        for related_id in ordered_ids[relation_start:]:
+            related_anime = anime_lookup.get(related_id)
+            if not related_anime:
+                continue
+            related_episode, should_resume = select_start_episode(related_anime)
+            if related_episode:
+                return build_playback_target(
+                    related_anime, related_episode, "relation", resume=should_resume
+                )
+    return None
+
+
+def resolve_previous_playback_target(anime, episode, queue_index=None):
+    anime_data = load_anime_data()
+    anime_lookup = {item.get("id"): item for item in anime_data}
+    episodes = prepare_anime_episodes_for_player(anime)
+    current_index = next(
+        (index for index, item in enumerate(episodes) if item.get("number") == episode.get("number")),
+        None,
+    )
+    if current_index is not None and current_index > 0:
+        return build_playback_target(
+            anime,
+            episodes[current_index - 1],
+            "episode",
+            queue_index=queue_index,
+            direction="previous",
+        )
+
+    queue = load_queue().get("queue", [])
+    if queue_index is not None:
+        queue_start = queue_index - 1
+    else:
+        current_queue_index = next(
+            (index for index, item in enumerate(queue) if item.get("id") == anime.get("id")),
+            None,
+        )
+        queue_start = current_queue_index - 1 if current_queue_index is not None else -1
+    for index in range(queue_start, -1, -1):
+        queued_id = queue[index].get("id")
+        if queued_id == anime.get("id"):
+            continue
+        queued_anime = anime_lookup.get(queued_id)
+        if not queued_anime:
+            continue
+        queued_episodes = prepare_anime_episodes_for_player(queued_anime)
+        if queued_episodes:
+            return build_playback_target(
+                queued_anime,
+                queued_episodes[-1],
+                "queue",
+                queue_index=index,
+                direction="previous",
+            )
+
+    relation_group = find_relation_group(load_relation_data(), anime.get("id"))
+    if relation_group:
+        ordered_ids = relation_group.get("ordered_anime_ids", [])
+        try:
+            relation_end = ordered_ids.index(anime.get("id"))
+        except ValueError:
+            relation_end = 0
+        for related_id in reversed(ordered_ids[:relation_end]):
+            related_anime = anime_lookup.get(related_id)
+            if not related_anime:
+                continue
+            related_episodes = prepare_anime_episodes_for_player(related_anime)
+            if related_episodes:
+                return build_playback_target(
+                    related_anime,
+                    related_episodes[-1],
+                    "relation",
+                    direction="previous",
+                )
+    return None
 
 def get_section_image(section, title):
     paths = get_section_paths(section)
@@ -710,12 +930,7 @@ def parse_manga_metadata_form():
     return parse_metadata_form(MANGA_HEADER_GROUPS)
 
 def missing_manga_metadata_groups(metadata):
-    return missing_metadata_groups(metadata, {
-        "genres": "Genres",
-        "themes": "Themes",
-        "demographics": "Demographics",
-        "tags": "Tags"
-    })
+    return [] if any(metadata.get(group) for group in MANGA_HEADER_GROUPS) else ["Metadata"]
 
 def rebuild_unique_manga_headers(manga_data):
     enriched_data = [enrich_manga_headers(dict(manga)) for manga in manga_data]
@@ -801,6 +1016,11 @@ def add_manga():
         link = request.form.get("link")
         metadata = parse_manga_metadata_form()
         missing_metadata = missing_manga_metadata_groups(metadata)
+        jikan_mal_id = request.form.get("jikan_mal_id", "").strip()
+        try:
+            jikan_mal_id = int(jikan_mal_id) if jikan_mal_id else None
+        except ValueError:
+            jikan_mal_id = None
 
         if not title or not secure_path_title(title):
             return redirect(url_for('manga.add_manga'))
@@ -810,6 +1030,12 @@ def add_manga():
 
         manga_data = load_manga_data()
         if find_duplicate(manga_data, {"title": title}):
+            return redirect(url_for('manga.add_manga', duplicate=1))
+        if jikan_mal_id and any(
+            (manga.get("external_source") or {}).get("provider") == "jikan"
+            and (manga.get("external_source") or {}).get("mal_id") == jikan_mal_id
+            for manga in manga_data
+        ):
             return redirect(url_for('manga.add_manga', duplicate=1))
         existing_ids = {m["id"] for m in manga_data}
         new_id = 1
@@ -831,12 +1057,35 @@ def add_manga():
             "tag_match_status": "manual"
         }
 
+        jikan_detail = None
+        cover_warning = False
+        if jikan_mal_id:
+            try:
+                jikan_detail = jikan_client.detail("manga", jikan_mal_id)
+                new_manga["external_source"] = external_source(jikan_detail)
+                new_manga["tag_source"] = "jikan-edited"
+                new_manga["tag_match_status"] = "selected"
+            except JikanError:
+                cover_warning = True
+                new_manga["external_source"] = {
+                    "provider": "jikan", "mal_id": jikan_mal_id,
+                    "url": "", "fetched_at": utc_now_iso()
+                }
+
         manga_data.append(new_manga)
-        save_uploaded_thumbnail(request.files.get("thumbnail"), title, MANGA_IMAGE_FOLDER)
+        saved_thumbnail = save_uploaded_thumbnail(request.files.get("thumbnail"), title, MANGA_IMAGE_FOLDER)
+        if saved_thumbnail:
+            cover_warning = False
+        if not saved_thumbnail and jikan_detail:
+            try:
+                if not save_downloaded_jikan_thumbnail(jikan_detail, title, MANGA_IMAGE_FOLDER):
+                    cover_warning = True
+            except JikanError:
+                cover_warning = True
         save_manga_data(manga_data)
         rebuild_unique_manga_headers(manga_data)
 
-        return redirect(url_for('manga.manga_index'))
+        return redirect(url_for('manga.manga_index', cover_warning=1) if cover_warning else url_for('manga.manga_index'))
 
     return render_template("add_manga.html")
 
@@ -1019,12 +1268,7 @@ def parse_anime_metadata_form():
     return parse_metadata_form(["tags", "genres", "themes", "demographics"])
 
 def missing_anime_metadata_groups(metadata):
-    return missing_metadata_groups(metadata, {
-        "genres": "Genres",
-        "themes": "Themes",
-        "demographics": "Demographics",
-        "tags": "Tags"
-    })
+    return [] if any(metadata.get(group) for group in ("genres", "themes", "demographics", "tags")) else ["Metadata"]
 
 def rebuild_unique_anime_tags(anime_data):
     payload = build_unique_metadata_payload(anime_data, ["tags", "genres", "themes", "demographics"])
@@ -1058,6 +1302,102 @@ def write_json_file_atomic(path, data, **dump_kwargs):
 
 def utc_now_iso():
     return datetime.now(timezone.utc).isoformat()
+
+
+def save_relation_data(data):
+    normalized = normalize_relation_data(data)
+    normalized["updated_at"] = utc_now_iso()
+    write_json_file_atomic(ANIME_RELATIONS_FILE, normalized, indent=4, ensure_ascii=False)
+    return normalized
+
+
+def load_relation_data(initialize=True):
+    file_exists = os.path.exists(ANIME_RELATIONS_FILE)
+    try:
+        raw = read_json_file(ANIME_RELATIONS_FILE) if file_exists else empty_relation_data()
+    except (json.JSONDecodeError, OSError):
+        raw = empty_relation_data()
+    data = cleanup_relations(raw, load_anime_data())
+    if initialize and (not file_exists or not data.get("last_full_scan_at")):
+        data, _linked = scan_relations(data, load_anime_data())
+        return save_relation_data(data)
+    return data
+
+
+def save_downloaded_jikan_thumbnail(detail, title, image_folder):
+    image_url = detail.get("image_url") if isinstance(detail, dict) else None
+    if not image_url:
+        return None
+    image_bytes, extension = download_cover_bytes(image_url)
+    os.makedirs(image_folder, exist_ok=True)
+    filename = title_to_image_filename(title, extension)
+    destination = os.path.join(image_folder, filename)
+    fd, temp_path = tempfile.mkstemp(prefix=f".{filename}.", suffix=".tmp", dir=image_folder)
+    try:
+        with os.fdopen(fd, "wb") as file:
+            file.write(image_bytes)
+            file.flush()
+            os.fsync(file.fileno())
+        os.replace(temp_path, destination)
+    finally:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+    return filename
+
+
+def relation_payload_for_anime(anime_id):
+    anime_data = load_anime_data()
+    anime_lookup = {anime.get("id"): anime for anime in anime_data}
+    data = load_relation_data()
+    group = find_relation_group(data, anime_id)
+    members = []
+    if group:
+        tracking = load_tracking_data()
+        for position, member_id in enumerate(group.get("ordered_anime_ids", []), start=1):
+            anime = anime_lookup.get(member_id)
+            if not anime:
+                continue
+            tracking_entry = tracking.get("anime", {}).get(str(member_id), {})
+            summary = get_anime_progress_summary(anime, tracking_entry)
+            members.append({
+                "id": member_id,
+                "position": position,
+                "title": anime.get("title", "Untitled"),
+                "season": anime.get("season", "N/A"),
+                "status": anime.get("status", "Unknown"),
+                "thumbnail_url": get_anime_image(anime.get("title", "")),
+                "completion_percentage": summary.get("completion_percentage", 0),
+                "completed_episodes": summary.get("completed_episodes", 0),
+                "total_episodes": summary.get("total_episodes", 0),
+                "detail_url": url_for("anime.anime_detail", anime_id=member_id),
+                "is_current": member_id == anime_id,
+            })
+    member_ids = {member["id"] for member in members}
+    available = [
+        {
+            "id": anime.get("id"),
+            "title": anime.get("title", "Untitled"),
+            "season": anime.get("season", "N/A"),
+            "thumbnail_url": get_anime_image(anime.get("title", "")),
+            "grouped": find_relation_group(data, anime.get("id")) is not None,
+        }
+        for anime in anime_data
+        if anime.get("id") != anime_id and anime.get("id") not in member_ids
+    ]
+    return {
+        "anime_id": anime_id,
+        "group_id": group.get("id") if group else None,
+        "order_mode": group.get("order_mode", "auto") if group else "auto",
+        "relations": members,
+        "available_anime": available,
+    }
+
+
+def jikan_error_response(error):
+    response = jsonify({"status": "error", "message": str(error)})
+    if getattr(error, "retry_after", None):
+        response.headers["Retry-After"] = str(error.retry_after)
+    return response, getattr(error, "status", 502)
 
 def empty_tracking_data():
     return {
@@ -1450,7 +1790,7 @@ def get_episode_tracking_progress(anime_id, episode_number):
     )
     return episode if isinstance(episode, dict) else {}
 
-def get_queue_player_context(index):
+def get_queue_player_context(index, requested_episode=None):
     queue_items = build_enriched_queue()
     if not (0 <= index < len(queue_items)):
         return None
@@ -1462,12 +1802,18 @@ def get_queue_player_context(index):
         return None
 
     episodes = prepare_anime_episodes_for_player(anime)
-    episode = next((item for item in episodes if item.get("number") == current_item.get("episode_number")), None)
+    try:
+        episode_number = int(requested_episode) if requested_episode is not None else current_item.get("episode_number")
+    except (TypeError, ValueError):
+        return None
+    episode = next((item for item in episodes if item.get("number") == episode_number), None)
     if not episode:
         return None
 
     previous_item = queue_items[index - 1] if index > 0 else None
     next_item = queue_items[index + 1] if index + 1 < len(queue_items) else None
+    next_target = resolve_next_playback_target(anime, episode, queue_index=index)
+    previous_target = resolve_previous_playback_target(anime, episode, queue_index=index)
 
     return {
         "queue_items": queue_items,
@@ -1480,6 +1826,8 @@ def get_queue_player_context(index):
         "next_item": next_item,
         "anime": anime,
         "episode": episode,
+        "previous_target": previous_target,
+        "next_target": next_target,
         "saved_progress": {} if request.args.get("start_over") == "1" else get_episode_tracking_progress(anime["id"], episode["number"])
     }
 
@@ -1816,21 +2164,17 @@ def player(anime_id=None, episode_number=None, index=None):
         if not episode:
             return f"Episode {episode_number} not found for {anime_title}", 404
 
-        next_episode = next((e for e in episodes if e["number"] > episode_number), None)
-        if next_episode:
-            next_url = url_for('player.player', anime_id=anime_id, episode_number=next_episode["number"])
-            next_episode_number = next_episode["number"]
-        elif index + 1 < len(queue):
-            next_url = url_for('player.player', index=index + 1) + f"?from_queue=true"
-            next_episode_number = 1
-        else:
-            next_url = None
-            next_episode_number = None
+        anime["thumbnail_url"] = get_anime_image(anime.get("title", ""))
+        next_target = resolve_next_playback_target(anime, episode, queue_index=index)
+        previous_target = resolve_previous_playback_target(anime, episode, queue_index=index)
+        next_url = next_target.get("url") if next_target else None
+        next_episode_number = next_target.get("episode_number") if next_target else None
 
         saved_progress = {} if request.args.get("start_over") == "1" else get_episode_tracking_progress(anime_id, episode_number)
         adjacent_context = get_adjacent_episode_context(anime, episode)
         return render_template("player.html", anime=anime, episode=episode, queue_index=index,
                                next_url=next_url, next_episode_number=next_episode_number,
+                               previous_target=previous_target, next_target=next_target,
                                saved_progress=saved_progress, **adjacent_context)
 
     anime_data = load_anime_data()
@@ -1839,9 +2183,19 @@ def player(anime_id=None, episode_number=None, index=None):
         prepare_anime_episodes_for_player(anime)
         episode = next((item for item in anime['episodes'] if item['number'] == episode_number), None)
         if episode:
+            anime["thumbnail_url"] = get_anime_image(anime.get("title", ""))
             saved_progress = {} if request.args.get("start_over") == "1" else get_episode_tracking_progress(anime_id, episode_number)
             adjacent_context = get_adjacent_episode_context(anime, episode)
-            return render_template('player.html', anime=anime, episode=episode, saved_progress=saved_progress, **adjacent_context)
+            next_target = resolve_next_playback_target(anime, episode)
+            previous_target = resolve_previous_playback_target(anime, episode)
+            return render_template(
+                'player.html', anime=anime, episode=episode, saved_progress=saved_progress,
+                previous_target=previous_target,
+                next_target=next_target,
+                next_url=next_target.get("url") if next_target else None,
+                next_episode_number=next_target.get("episode_number") if next_target else None,
+                **adjacent_context
+            )
 
     return "Anime or episode not found", 404
 
@@ -1866,7 +2220,7 @@ def queue_page():
 
 @queue_bp.route("/queue-player/<int:index>")
 def queue_player(index):
-    context = get_queue_player_context(index)
+    context = get_queue_player_context(index, request.args.get("episode"))
     if not context:
         return "Queue item not found", 404
     return render_template("queue_player.html", **context)
@@ -1991,6 +2345,71 @@ def anime_explorer_path(anime_id):
         'exists': os.path.exists(explorer_path)
     })
 
+
+@anime_bp.route('/api/anime/<int:anime_id>/relations')
+def api_anime_relations(anime_id):
+    if not find_by_id(load_anime_data(), anime_id):
+        return jsonify({'status': 'error', 'message': 'Anime not found'}), 404
+    return jsonify({'status': 'success', **relation_payload_for_anime(anime_id)})
+
+
+@anime_bp.route('/api/anime/<int:anime_id>/relations', methods=['POST'])
+def api_add_anime_relation(anime_id):
+    payload = request.get_json(silent=True) or {}
+    try:
+        related_id = int(payload.get('related_anime_id'))
+        anime_data = load_anime_data()
+        data, _group, _changed = merge_related_ids(
+            load_relation_data(), anime_data, anime_id, related_id, manual=True
+        )
+    except (TypeError, ValueError) as error:
+        return jsonify({'status': 'error', 'message': str(error)}), 400
+    save_relation_data(data)
+    return jsonify({'status': 'success', **relation_payload_for_anime(anime_id)})
+
+
+@anime_bp.route('/api/anime/<int:anime_id>/relations/<int:related_id>', methods=['DELETE'])
+def api_remove_anime_relation(anime_id, related_id):
+    try:
+        data = remove_related_id(load_relation_data(), load_anime_data(), anime_id, related_id)
+    except ValueError as error:
+        return jsonify({'status': 'error', 'message': str(error)}), 400
+    save_relation_data(data)
+    return jsonify({'status': 'success', **relation_payload_for_anime(anime_id)})
+
+
+@anime_bp.route('/api/anime/<int:anime_id>/relations/reorder', methods=['POST'])
+def api_reorder_anime_relations(anime_id):
+    payload = request.get_json(silent=True) or {}
+    try:
+        data, _group = reorder_group(
+            load_relation_data(),
+            load_anime_data(),
+            anime_id,
+            ordered_ids=payload.get('ordered_anime_ids'),
+            reset_default=payload.get('reset_default') is True,
+        )
+    except ValueError as error:
+        return jsonify({'status': 'error', 'message': str(error)}), 400
+    save_relation_data(data)
+    return jsonify({'status': 'success', **relation_payload_for_anime(anime_id)})
+
+
+@anime_bp.route('/api/anime/relations/check', methods=['POST'])
+def api_check_anime_relations():
+    payload = request.get_json(silent=True) or {}
+    anime_id = payload.get('anime_id')
+    try:
+        anime_id = int(anime_id) if anime_id is not None else None
+        data, linked = scan_relations(load_relation_data(), load_anime_data(), anime_id=anime_id)
+    except (TypeError, ValueError) as error:
+        return jsonify({'status': 'error', 'message': str(error)}), 400
+    save_relation_data(data)
+    response = {'status': 'success', 'linked_groups': linked}
+    if anime_id is not None:
+        response.update(relation_payload_for_anime(anime_id))
+    return jsonify(response)
+
 @anime_bp.route('/anime/<int:anime_id>')
 def anime_detail(anime_id):
     anime_data = load_anime_data()
@@ -2023,6 +2442,11 @@ def add_anime():
         episodes = int(request.form.get('episodes'))
         metadata = parse_anime_metadata_form()
         missing_metadata = missing_anime_metadata_groups(metadata)
+        jikan_mal_id = request.form.get("jikan_mal_id", "").strip()
+        try:
+            jikan_mal_id = int(jikan_mal_id) if jikan_mal_id else None
+        except ValueError:
+            jikan_mal_id = None
 
         if not title or not secure_path_title(title):
             return redirect(url_for('anime.add_anime'))
@@ -2032,6 +2456,12 @@ def add_anime():
 
         anime_data = load_anime_data()
         if find_duplicate(anime_data, {"title": title, "season": season, "status": status}):
+            return redirect(url_for('anime.add_anime', duplicate=1))
+        if jikan_mal_id and any(
+            (anime.get("external_source") or {}).get("provider") == "jikan"
+            and (anime.get("external_source") or {}).get("mal_id") == jikan_mal_id
+            for anime in anime_data
+        ):
             return redirect(url_for('anime.add_anime', duplicate=1))
 
         existing_ids = {anime["id"] for anime in anime_data}
@@ -2071,12 +2501,38 @@ def add_anime():
             "tag_match_status": "manual"
         }
 
+        jikan_detail = None
+        cover_warning = False
+        if jikan_mal_id:
+            try:
+                jikan_detail = jikan_client.detail("anime", jikan_mal_id)
+                new_anime["external_source"] = external_source(jikan_detail)
+                new_anime["tag_source"] = "jikan-edited"
+                new_anime["tag_match_status"] = "selected"
+            except JikanError:
+                cover_warning = True
+                new_anime["external_source"] = {
+                    "provider": "jikan", "mal_id": jikan_mal_id,
+                    "url": "", "fetched_at": utc_now_iso()
+                }
+
         anime_data.append(new_anime)
-        save_uploaded_thumbnail(request.files.get("thumbnail"), title, IMAGE_FOLDER)
+        saved_thumbnail = save_uploaded_thumbnail(request.files.get("thumbnail"), title, IMAGE_FOLDER)
+        if saved_thumbnail:
+            cover_warning = False
+        if not saved_thumbnail and jikan_detail:
+            try:
+                if not save_downloaded_jikan_thumbnail(jikan_detail, title, IMAGE_FOLDER):
+                    cover_warning = True
+            except JikanError:
+                cover_warning = True
         save_anime_data(anime_data)
         rebuild_unique_anime_tags(anime_data)
+        relation_data = load_relation_data()
+        relation_data, _linked = scan_relations(relation_data, anime_data, anime_id=new_id)
+        save_relation_data(relation_data)
 
-        return redirect(url_for('anime.index'))
+        return redirect(url_for('anime.index', cover_warning=1) if cover_warning else url_for('anime.index'))
 
     return render_template('add_anime.html')
 
@@ -2216,6 +2672,7 @@ def delete_anime(anime_id):
         anime_data.pop(anime_index)
         save_anime_data(anime_data)
         remove_tracking_anime(anime_id)
+        save_relation_data(cleanup_relations(load_relation_data(initialize=False), anime_data))
 
         return jsonify({'status': 'success'})
 
@@ -2367,4 +2824,9 @@ for blueprint in (
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
+    try:
+        relation_data = load_relation_data()
+        logging.info("Loaded %s anime relation groups", len(relation_data.get("groups", [])))
+    except Exception:
+        logging.exception("Anime relation initialization failed; the app will retry when relations are opened")
     app.run(port=7777, debug=False)  # Runs Flask on port 7777

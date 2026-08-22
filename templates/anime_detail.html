@@ -1,173 +1,434 @@
 {% extends "base.html" %}
 
+{% block body_class %}anime-detail-page{% endblock %}
+
 {% block content %}
 
-<div class="anime-detail-container detail-polish-shell">
-    <section class="anime-detail detail-hero-card">
-        <div class="anime-header detail-hero-layout">
-            <img id="anime-thumbnail" src="{{ anime.thumbnail_url if anime.thumbnail_url is defined else '' }}" alt="{{ anime.title }}" class="anime-thumbnail detail-poster">
+<div class="amd-shell">
+    <nav class="amd-tabs anime-detail-tabs" role="tablist" aria-label="Anime information">
+        <button type="button" class="amd-tab anime-detail-tab is-active" id="details-tab" role="tab" aria-selected="true" aria-controls="details-panel" data-tab="details">Details</button>
+        <button type="button" class="amd-tab anime-detail-tab" id="relations-tab" role="tab" aria-selected="false" aria-controls="relations-panel" data-tab="relations">Relations</button>
+    </nav>
 
-            <div class="anime-info detail-hero-info">
-                <span class="detail-kicker">Anime Details</span>
-                <h1>🎬 {{ anime.title }}</h1>
-
-                <div class="local-availability-line" id="anime-file-availability" title="Checking local episode files through Electron">
+    <section id="details-panel" class="amd-panel anime-tab-panel" role="tabpanel" aria-labelledby="details-tab">
+        <section class="amd-hero" aria-labelledby="amd-anime-title">
+            <div class="amd-poster-column">
+                <img id="anime-thumbnail" src="{{ anime.thumbnail_url if anime.thumbnail_url is defined else '' }}" alt="{{ anime.title }}" class="amd-poster">
+                <div class="amd-file-status" id="anime-file-availability" title="Checking local episode files through Electron">
                     <span id="anime-file-dot" class="file-status-dot checking" aria-hidden="true"></span>
                     <span id="anime-file-status-text">Checking local files...</span>
                 </div>
+            </div>
 
-                <div class="detail-stat-grid">
-                    <div><strong>{{ anime.season }}</strong><span>Season</span></div>
-                    <div><strong>{{ anime.episodes|length }}</strong><span>Total Episodes</span></div>
-                    <div><strong>{{ progress_summary.completed_episodes }}</strong><span>Completed</span></div>
-                    <div><strong>{{ progress_summary.completion_percentage }}%</strong><span>Progress</span></div>
+            <div class="amd-summary">
+                <header class="amd-title-block">
+                    <span class="amd-eyebrow">Anime details</span>
+                    <h1 id="amd-anime-title"><span aria-hidden="true">🎬</span> {{ anime.title }}</h1>
+                </header>
+
+                <div class="amd-stat-grid" aria-label="Anime summary">
+                    <div class="amd-stat"><span>Season</span><strong>{{ anime.season }}</strong></div>
+                    <div class="amd-stat"><span>Total episodes</span><strong>{{ anime.episodes|length }}</strong></div>
+                    <div class="amd-stat"><span>Completed</span><strong>{{ progress_summary.completed_episodes }}</strong></div>
+                    <div class="amd-stat"><span>Progress</span><strong>{{ progress_summary.completion_percentage }}%</strong></div>
                 </div>
 
-                <div class="anime-progress-panel">
-                    <div class="anime-progress-header">
-                        <span>Overall Episode Progress</span>
+                <section class="amd-card amd-progress-card" aria-label="Overall episode progress">
+                    <div class="amd-card-heading">
+                        <span>Overall episode progress</span>
                         <strong>{{ progress_summary.completed_episodes }} / {{ progress_summary.total_episodes }}</strong>
                     </div>
-                    <div class="anime-detail-progress-track">
-                        <progress class="anime-progress-fill" value="{{ progress_summary.completion_percentage }}" max="100" aria-label="Anime completion"></progress>
-                    </div>
+                    <progress class="amd-progress anime-progress-fill" value="{{ progress_summary.completion_percentage }}" max="100" aria-label="Anime completion"></progress>
                     {% if tracking_entry.last_watched_episode %}
-                        <p>Last watched: Episode {{ tracking_entry.last_watched_episode }}{% if tracking_entry.last_watched_at %} • {{ tracking_entry.last_watched_at[:10] }}{% endif %}</p>
+                        <p>Last watched: Episode {{ tracking_entry.last_watched_episode }}{% if tracking_entry.last_watched_at %} · {{ tracking_entry.last_watched_at[:10] }}{% endif %}</p>
                     {% else %}
                         <p>No saved episode progress yet.</p>
                     {% endif %}
+                </section>
+
+                <div class="amd-control-grid">
+                    <section class="amd-card amd-status-card">
+                        <label for="anime-status-select">Anime status</label>
+                        <div class="amd-status-control">
+                            <select id="anime-status-select" data-anime-id="{{ anime.id }}">
+                                {% for status in anime_status_options %}
+                                    <option value="{{ status }}" {% if active_anime_status == status %}selected{% endif %}>{{ anime_status_label(status) }}</option>
+                                {% endfor %}
+                            </select>
+                            <span id="anime-status-pill" class="watch-status-pill anime-status status-{{ active_anime_status|lower|replace('_', '-')|replace(' ', '-') }}">{{ anime_status_label(active_anime_status) }}</span>
+                        </div>
+                    </section>
+
+                    <section class="amd-card amd-watched-card">
+                        <span>Library progress</span>
+                        <button type="button" onclick="toggleAnimeWatched('{{ anime.id }}', this)" class="amd-button amd-button-primary {% if anime.watched %}watched{% endif %}">
+                            {% if anime.watched %}✔ Anime Watched{% else %}Mark Anime as Watched{% endif %}
+                        </button>
+                    </section>
                 </div>
 
-                <div class="watch-status-panel anime-release-status-panel">
-                    <label for="anime-status-select">Anime Status</label>
-                    <div class="watch-status-control">
-                        <select id="anime-status-select" data-anime-id="{{ anime.id }}">
-                            {% for status in anime_status_options %}
-                                <option value="{{ status }}" {% if active_anime_status == status %}selected{% endif %}>{{ anime_status_label(status) }}</option>
-                            {% endfor %}
-                        </select>
-                        <span id="anime-status-pill" class="watch-status-pill anime-status status-{{ active_anime_status|lower|replace('_', '-')|replace(' ', '-') }}">{{ anime_status_label(active_anime_status) }}</span>
+                <section class="amd-card amd-management-card">
+                    <div class="amd-card-heading">
+                        <div><span class="amd-eyebrow">Management</span><strong>Links and local files</strong></div>
                     </div>
-                </div>
-
-                <div class="detail-management-panel">
-                    <div class="detail-management-heading">
-                        <span class="detail-kicker">Management</span>
-                        <strong>Links & local files</strong>
-                    </div>
-                    <p class="detail-download-row"><strong>Download:</strong>
-                        <a href="{{ anime.download_link }}" target="_blank" class="download-link" id="anime-download-link">{{ anime.download_link }}</a>
-                    </p>
-                    <form class="inline-edit-form" id="anime-link-form">
-                        <input type="url" id="anime-link-input" value="{{ anime.download_link }}" required>
-                        <button type="submit" class="watched-button">Save Link</button>
+                    <p class="amd-download-row"><strong>Download</strong><a href="{{ anime.download_link }}" target="_blank" id="anime-download-link">{{ anime.download_link }}</a></p>
+                    <form class="amd-inline-form" id="anime-link-form">
+                        <input type="url" id="anime-link-input" value="{{ anime.download_link }}" aria-label="Anime download link" required>
+                        <button type="submit" class="amd-button amd-button-primary">Save Link</button>
                     </form>
-                    <button type="button" id="open-anime-folder" class="watched-button secondary">📁 Open in Explorer</button>
-                    <p id="open-explorer-status" class="detail-explorer-status" aria-live="polite"></p>
-                </div>
+                    <button type="button" id="open-anime-folder" class="amd-button amd-button-secondary amd-wide-button">📁 Open in Explorer</button>
+                    <p id="open-explorer-status" class="amd-feedback" aria-live="polite"></p>
+                </section>
 
-                <div class="anime-tag-details">
-                    {% set tag_groups = [("Genres", anime.genres), ("Themes", anime.themes), ("Demographics", anime.demographics), ("Tags", anime.tags)] %}
+                {% set tag_groups = [("Genres", anime.genres), ("Themes", anime.themes), ("Demographics", anime.demographics), ("Tags", anime.tags)] %}
+                <section class="amd-metadata" aria-label="Anime metadata">
                     {% for label, values in tag_groups %}
                         {% if values %}
-                            <div class="detail-metadata-hover">
-                                <button type="button" class="metadata-hover-trigger">{{ label }}</button>
-                                <div class="metadata-hover-panel detail-metadata-panel">
-                                    {% for value in values %}
-                                        <span class="anime-tag-chip">{{ value }}</span>
-                                    {% endfor %}
+                            <div class="amd-metadata-group">
+                                <strong>{{ label }}</strong>
+                                <div class="amd-chip-list">
+                                    {% for value in values %}<span class="amd-chip">{{ value }}</span>{% endfor %}
                                 </div>
                             </div>
                         {% endif %}
                     {% endfor %}
-                </div>
-
-                <div class="anime-actions">
-                    <button onclick="toggleAnimeWatched('{{ anime.id }}', this)" class="watched-button {% if anime.watched %}watched{% endif %}">
-                        {% if anime.watched %}✔ Anime Watched{% else %}Mark Anime as Watched{% endif %}
-                    </button>
-                </div>
+                </section>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="episode-section-header">
-        <div>
-            <span class="detail-kicker">Episode Progress</span>
-            <h2>Episodes</h2>
-            <p>Resume unfinished episodes, restart from zero, or mark episodes as watched.</p>
-        </div>
-        <form id="add-episode-form" class="inline-edit-form episode-add-form">
-            <input type="text" id="new-episode-title" placeholder="Episode title (optional)">
-            <button type="submit" class="watched-button">Add Episode</button>
-        </form>
-    </section>
-
-    <div class="episode-cards episode-progress-grid">
-        {% for episode in anime.episodes %}
-            <article class="episode-card episode-progress-card {% if episode.watched %}is-complete{% elif episode.has_resume %}is-in-progress{% endif %}">
-                <div class="episode-preview">
-                    <video class="preview-video" muted loop preload="metadata">
-                        <source src="{{ episode.video_url }}" type="video/mp4">
-                    </video>
-                    <div class="play-overlay" onclick="window.location.href=`{{ url_for('player.player', anime_id=anime.id, episode_number=episode.number) }}{% if episode.has_resume %}?resume=1{% endif %}`">
-                        {% if episode.has_resume %}▶ Continue{% elif episode.watched %}↺ Rewatch{% else %}▶ Play{% endif %}
-                    </div>
+        <section class="amd-episodes" aria-labelledby="amd-episodes-title">
+            <header class="amd-section-header">
+                <div>
+                    <span class="amd-eyebrow">Episode progress</span>
+                    <h2 id="amd-episodes-title">Episodes</h2>
+                    <p>Resume unfinished episodes, restart from zero, or mark episodes as watched.</p>
                 </div>
+                <form id="add-episode-form" class="amd-inline-form amd-add-episode-form">
+                    <input type="text" id="new-episode-title" placeholder="Episode title (optional)" aria-label="New episode title">
+                    <button type="submit" class="amd-button amd-button-primary">Add Episode</button>
+                </form>
+            </header>
 
-                <div class="episode-info episode-progress-info">
-                    <div class="episode-title-row">
-                        <span class="episode-number">Episode {{ episode.number }}</span>
-                        {% if episode.watched %}
-                            <span class="episode-state-badge complete">Completed</span>
-                        {% elif episode.has_resume %}
-                            <span class="episode-state-badge progress">In Progress</span>
-                        {% else %}
-                            <span class="episode-state-badge fresh">Unwatched</span>
-                        {% endif %}
-                    </div>
-                    <span class="episode-title-line">
-                        <span class="file-status-dot checking episode-file-dot episode-title-file-dot" id="episode-file-dot-{{ episode.number }}" aria-label="Checking local file availability" title="Checking local file availability"></span>
-                        <span class="episode-title">{{ episode.title }}</span>
-                    </span>
-
-                    <div class="episode-card-progress">
-                        <div class="episode-card-progress-track">
-                            <progress class="episode-progress-fill" value="{% if episode.watched %}100{% else %}{{ episode.progress_percentage }}{% endif %}" max="100" aria-label="Episode progress"></progress>
+            <div class="amd-episode-grid">
+                {% for episode in anime.episodes %}
+                    <article class="amd-episode-card {% if episode.watched %}is-complete{% elif episode.has_resume %}is-in-progress{% endif %}">
+                        <div class="amd-episode-preview">
+                            <video class="preview-video" muted loop preload="metadata">
+                                <source src="{{ episode.video_url }}" type="video/mp4">
+                            </video>
+                            <button type="button" class="amd-play-overlay" onclick="window.location.href=`{{ url_for('player.player', anime_id=anime.id, episode_number=episode.number) }}{% if episode.has_resume %}?resume=1{% endif %}`">
+                                {% if episode.has_resume %}▶ Continue{% elif episode.watched %}↺ Rewatch{% else %}▶ Play{% endif %}
+                            </button>
                         </div>
-                        <small>
-                            {% if episode.watched %}
-                                Completed
-                            {% elif episode.has_resume %}
-                                {{ episode.current_time_label }} / {{ episode.duration_label }} • {{ episode.progress_percentage }}%
-                            {% else %}
-                                Not started
-                            {% endif %}
-                        </small>
-                    </div>
-                </div>
 
-                <div class="episode-actions episode-progress-actions">
-                    {% if episode.has_resume %}
-                        <a href="{{ url_for('player.player', anime_id=anime.id, episode_number=episode.number) }}?resume=1" class="watched-button episode-action-link">Continue</a>
-                        <a href="{{ url_for('player.player', anime_id=anime.id, episode_number=episode.number) }}?start_over=1" class="watched-button episode-action-link secondary">Start Over</a>
-                    {% elif episode.watched %}
-                        <a href="{{ url_for('player.player', anime_id=anime.id, episode_number=episode.number) }}?start_over=1" class="watched-button episode-action-link secondary">Rewatch</a>
-                    {% else %}
-                        <a href="{{ url_for('player.player', anime_id=anime.id, episode_number=episode.number) }}" class="watched-button episode-action-link">Start Episode</a>
-                    {% endif %}
-                    <button onclick="toggleWatched('{{ anime.id }}', '{{ episode.number }}', this)" class="watched-button {% if episode.watched %}watched{% endif %}">
-                        {% if episode.watched %}✔ Watched{% else %}Mark Watched{% endif %}
-                    </button>
-                    <button onclick="deleteEpisode('{{ episode.number }}')" class="delete-button">Delete</button>
-                </div>
-            </article>
-        {% endfor %}
-    </div>
+                        <div class="amd-episode-body">
+                            <div class="amd-episode-heading">
+                                <span class="amd-episode-number">Episode {{ episode.number }}</span>
+                                {% if episode.watched %}
+                                    <span class="episode-state-badge complete">Completed</span>
+                                {% elif episode.has_resume %}
+                                    <span class="episode-state-badge progress">In Progress</span>
+                                {% else %}
+                                    <span class="episode-state-badge fresh">Unwatched</span>
+                                {% endif %}
+                            </div>
+                            <div class="amd-episode-title">
+                                <span class="file-status-dot checking episode-file-dot" id="episode-file-dot-{{ episode.number }}" aria-label="Checking local file availability" title="Checking local file availability"></span>
+                                <strong>{{ episode.title }}</strong>
+                            </div>
+                            <progress class="amd-progress episode-progress-fill" value="{% if episode.watched %}100{% else %}{{ episode.progress_percentage }}{% endif %}" max="100" aria-label="Episode progress"></progress>
+                            <small>
+                                {% if episode.watched %}Completed{% elif episode.has_resume %}{{ episode.current_time_label }} / {{ episode.duration_label }} · {{ episode.progress_percentage }}%{% else %}Not started{% endif %}
+                            </small>
+                        </div>
+
+                        <div class="amd-episode-actions">
+                            {% if episode.has_resume %}
+                                <a href="{{ url_for('player.player', anime_id=anime.id, episode_number=episode.number) }}?resume=1" class="amd-button amd-button-primary">Continue</a>
+                                <a href="{{ url_for('player.player', anime_id=anime.id, episode_number=episode.number) }}?start_over=1" class="amd-button amd-button-secondary">Start Over</a>
+                            {% elif episode.watched %}
+                                <a href="{{ url_for('player.player', anime_id=anime.id, episode_number=episode.number) }}?start_over=1" class="amd-button amd-button-secondary">Rewatch</a>
+                            {% else %}
+                                <a href="{{ url_for('player.player', anime_id=anime.id, episode_number=episode.number) }}" class="amd-button amd-button-primary">Start Episode</a>
+                            {% endif %}
+                            <button type="button" onclick="toggleWatched('{{ anime.id }}', '{{ episode.number }}', this)" class="amd-button amd-button-secondary {% if episode.watched %}watched{% endif %}">
+                                {% if episode.watched %}✔ Watched{% else %}Mark Watched{% endif %}
+                            </button>
+                            <button type="button" onclick="deleteEpisode('{{ episode.number }}')" class="amd-button amd-button-danger">Delete</button>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    </section>
+
+    <section id="relations-panel" class="amd-panel amd-relations anime-tab-panel" role="tabpanel" aria-labelledby="relations-tab" hidden>
+        <header class="amd-section-header amd-relations-header">
+            <div>
+                <span class="amd-eyebrow">Watch sequence</span>
+                <h2>Related Anime</h2>
+                <p>Arrange seasons, specials, and movies in the order they should continue playing.</p>
+            </div>
+            <div class="relations-toolbar">
+                <button type="button" class="amd-button amd-button-primary" id="relations-edit">Edit Order</button>
+                <button type="button" class="amd-button amd-button-primary" id="relations-save" hidden>Save Order</button>
+                <button type="button" class="amd-button amd-button-secondary" id="relations-cancel" hidden>Cancel</button>
+                <button type="button" class="amd-button amd-button-secondary" id="relations-reset">Reset Default</button>
+                <button type="button" class="amd-button amd-button-secondary" id="relations-check">Check Relations</button>
+            </div>
+        </header>
+        <p class="relations-mode" id="relations-mode"></p>
+        <div id="relations-list" class="relations-card-list" aria-live="polite"></div>
+
+        <section class="amd-card relation-add-panel">
+            <h3>Add a local title</h3>
+            <label for="relation-search">Search your anime library</label>
+            <input type="search" id="relation-search" placeholder="Type a title or season" autocomplete="off">
+            <div id="relation-search-results" class="relation-search-results" aria-live="polite"></div>
+        </section>
+        <p id="relations-status" class="amd-feedback relations-status" aria-live="polite"></p>
+    </section>
 </div>
 
 <script>
     const ANIME_ID = "{{ anime.id }}";
+    const relationState = { data: null, editing: false, draft: [], dragIndex: null };
+
+    function setRelationsStatus(message, isError = false) {
+        const status = document.getElementById("relations-status");
+        if (!status) return;
+        status.textContent = message || "";
+        status.classList.toggle("is-error", isError);
+    }
+
+    function activateAnimeTab(name, updateHash = true) {
+        const selected = name === "relations" ? "relations" : "details";
+        document.querySelectorAll(".anime-detail-tab").forEach(button => {
+            const active = button.dataset.tab === selected;
+            button.classList.toggle("is-active", active);
+            button.setAttribute("aria-selected", active ? "true" : "false");
+        });
+        document.querySelectorAll(".anime-tab-panel").forEach(panel => {
+            panel.hidden = panel.id !== `${selected}-panel`;
+        });
+        if (updateHash) history.replaceState(null, "", `#${selected}`);
+        if (selected === "relations" && !relationState.data) loadRelations();
+    }
+
+    function relationCard(member, index) {
+        const card = document.createElement("article");
+        card.className = `relation-card${member.is_current ? " is-current" : ""}${relationState.editing ? " is-editing" : ""}`;
+        card.dataset.animeId = String(member.id);
+        card.draggable = relationState.editing;
+
+        const order = document.createElement("span");
+        order.className = "relation-order";
+        order.textContent = String(index + 1);
+        const image = document.createElement("img");
+        image.src = member.thumbnail_url || "/static/placeholder.jpeg";
+        image.alt = `${member.title} cover`;
+        const body = document.createElement("div");
+        body.className = "relation-card-body";
+        const heading = document.createElement("div");
+        heading.className = "relation-card-heading";
+        const title = document.createElement("h3");
+        title.textContent = member.title;
+        const badge = document.createElement("span");
+        badge.className = "episode-state-badge fresh";
+        badge.textContent = member.is_current ? "Current" : member.status;
+        heading.append(title, badge);
+        const meta = document.createElement("p");
+        meta.textContent = `${member.season} · ${member.completed_episodes}/${member.total_episodes} episodes · ${member.completion_percentage}%`;
+        const progress = document.createElement("progress");
+        progress.className = "relation-progress";
+        progress.max = 100;
+        progress.value = member.completion_percentage;
+        const actions = document.createElement("div");
+        actions.className = "relation-card-actions";
+        const open = document.createElement("a");
+        open.className = "watched-button episode-action-link";
+        open.href = member.detail_url;
+        open.textContent = "Open";
+        actions.appendChild(open);
+
+        if (relationState.editing) {
+            const up = document.createElement("button");
+            up.type = "button";
+            up.className = "watched-button secondary relation-move";
+            up.textContent = "↑";
+            up.disabled = index === 0;
+            up.setAttribute("aria-label", `Move ${member.title} up`);
+            up.addEventListener("click", () => moveRelation(index, -1));
+            const down = document.createElement("button");
+            down.type = "button";
+            down.className = "watched-button secondary relation-move";
+            down.textContent = "↓";
+            down.disabled = index === relationState.draft.length - 1;
+            down.setAttribute("aria-label", `Move ${member.title} down`);
+            down.addEventListener("click", () => moveRelation(index, 1));
+            actions.append(up, down);
+        }
+        if (!member.is_current) {
+            const remove = document.createElement("button");
+            remove.type = "button";
+            remove.className = "delete-button relation-remove";
+            remove.textContent = "Remove";
+            remove.addEventListener("click", () => removeRelation(member));
+            actions.appendChild(remove);
+        }
+        body.append(heading, meta, progress, actions);
+        card.append(order, image, body);
+
+        card.addEventListener("dragstart", () => { relationState.dragIndex = index; card.classList.add("is-dragging"); });
+        card.addEventListener("dragend", () => { relationState.dragIndex = null; card.classList.remove("is-dragging"); });
+        card.addEventListener("dragover", event => event.preventDefault());
+        card.addEventListener("drop", event => {
+            event.preventDefault();
+            if (relationState.dragIndex === null || relationState.dragIndex === index) return;
+            const [moved] = relationState.draft.splice(relationState.dragIndex, 1);
+            relationState.draft.splice(index, 0, moved);
+            renderRelations();
+        });
+        return card;
+    }
+
+    function renderRelations() {
+        const list = document.getElementById("relations-list");
+        const mode = document.getElementById("relations-mode");
+        if (!list || !relationState.data) return;
+        const members = relationState.editing ? relationState.draft : relationState.data.relations;
+        list.replaceChildren();
+        if (!members.length) {
+            const empty = document.createElement("div");
+            empty.className = "relations-empty";
+            empty.innerHTML = "<strong>No related local titles yet.</strong><span>Run the checker or add a title from your library below.</span>";
+            list.appendChild(empty);
+        } else {
+            members.forEach((member, index) => list.appendChild(relationCard(member, index)));
+        }
+        mode.textContent = members.length ? `Order: ${relationState.data.order_mode === "custom" ? "Custom" : "Automatic"}${relationState.editing ? " · Editing" : ""}` : "";
+        document.getElementById("relations-edit").hidden = relationState.editing || members.length < 2;
+        document.getElementById("relations-save").hidden = !relationState.editing;
+        document.getElementById("relations-cancel").hidden = !relationState.editing;
+        document.getElementById("relations-reset").disabled = members.length < 2 || relationState.editing;
+        renderRelationSearch(document.getElementById("relation-search")?.value || "");
+    }
+
+    async function loadRelations() {
+        setRelationsStatus("Loading relations…");
+        try {
+            const response = await fetch(`/api/anime/${ANIME_ID}/relations`);
+            const data = await response.json();
+            if (!response.ok || data.status !== "success") throw new Error(data.message || "Could not load relations");
+            relationState.data = data;
+            relationState.editing = false;
+            relationState.draft = [];
+            setRelationsStatus("");
+            renderRelations();
+        } catch (error) {
+            setRelationsStatus(error.message || "Could not load relations", true);
+        }
+    }
+
+    function moveRelation(index, direction) {
+        const nextIndex = index + direction;
+        if (nextIndex < 0 || nextIndex >= relationState.draft.length) return;
+        [relationState.draft[index], relationState.draft[nextIndex]] = [relationState.draft[nextIndex], relationState.draft[index]];
+        renderRelations();
+    }
+
+    async function relationRequest(url, options, successMessage) {
+        setRelationsStatus("Saving…");
+        try {
+            const response = await fetch(url, options);
+            const data = await response.json();
+            if (!response.ok || data.status !== "success") throw new Error(data.message || "Relation update failed");
+            relationState.data = data;
+            relationState.editing = false;
+            relationState.draft = [];
+            renderRelations();
+            setRelationsStatus(successMessage || "Relations updated.");
+        } catch (error) {
+            setRelationsStatus(error.message || "Relation update failed", true);
+        }
+    }
+
+    function removeRelation(member) {
+        if (!confirm(`Remove ${member.title} (${member.season}) from this relation group? The checker will remember this choice.`)) return;
+        relationRequest(`/api/anime/${ANIME_ID}/relations/${member.id}`, { method: "DELETE" }, "Relation removed and blocked from automatic re-linking.");
+    }
+
+    function renderRelationSearch(query) {
+        const container = document.getElementById("relation-search-results");
+        if (!container || !relationState.data) return;
+        container.replaceChildren();
+        const normalized = query.trim().toLowerCase();
+        if (normalized.length < 2) return;
+        const matches = relationState.data.available_anime.filter(item =>
+            `${item.title} ${item.season}`.toLowerCase().includes(normalized)
+        ).slice(0, 12);
+        matches.forEach(item => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "relation-search-result";
+            const image = document.createElement("img");
+            image.src = item.thumbnail_url || "/static/placeholder.jpeg";
+            image.alt = "";
+            const text = document.createElement("span");
+            text.innerHTML = `<strong></strong><small></small>`;
+            text.querySelector("strong").textContent = item.title;
+            text.querySelector("small").textContent = `${item.season}${item.grouped ? " · Will merge its relation group" : ""}`;
+            button.append(image, text);
+            button.addEventListener("click", () => {
+                if (item.grouped && !confirm(`${item.title} already belongs to another relation group. Merge both groups?`)) return;
+                relationRequest(`/api/anime/${ANIME_ID}/relations`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ related_anime_id: item.id })
+                }, `${item.title} added to relations.`);
+                document.getElementById("relation-search").value = "";
+            });
+            container.appendChild(button);
+        });
+        if (!matches.length) container.textContent = "No matching local anime outside this group.";
+    }
+
+    document.querySelectorAll(".anime-detail-tab").forEach(button => {
+        button.addEventListener("click", () => activateAnimeTab(button.dataset.tab));
+    });
+    document.getElementById("relation-search")?.addEventListener("input", event => renderRelationSearch(event.target.value));
+    document.getElementById("relations-edit")?.addEventListener("click", () => {
+        relationState.editing = true;
+        relationState.draft = relationState.data.relations.map(item => ({ ...item }));
+        renderRelations();
+    });
+    document.getElementById("relations-cancel")?.addEventListener("click", () => {
+        relationState.editing = false;
+        relationState.draft = [];
+        renderRelations();
+    });
+    document.getElementById("relations-save")?.addEventListener("click", () => {
+        relationRequest(`/api/anime/${ANIME_ID}/relations/reorder`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ordered_anime_ids: relationState.draft.map(item => item.id) })
+        }, "Custom relation order saved.");
+    });
+    document.getElementById("relations-reset")?.addEventListener("click", () => {
+        relationRequest(`/api/anime/${ANIME_ID}/relations/reorder`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ reset_default: true })
+        }, "Default relation order restored.");
+    });
+    document.getElementById("relations-check")?.addEventListener("click", () => {
+        relationRequest("/api/anime/relations/check", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ anime_id: Number(ANIME_ID) })
+        }, "Relation check complete.");
+    });
+    window.addEventListener("hashchange", () => activateAnimeTab(location.hash.slice(1), false));
 
     function toggleAnimeWatched(animeId, button) {
         fetch(`/mark_anime_watched/${animeId}`, { method: 'POST' })
@@ -301,6 +562,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         loadAnimeThumbnail();
         checkLocalEpisodeFiles();
+        activateAnimeTab(location.hash.slice(1), false);
     });
 
     document.getElementById("open-anime-folder")?.addEventListener("click", openAnimeInExplorer);

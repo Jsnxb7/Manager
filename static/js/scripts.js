@@ -32,6 +32,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (pendingToast) {
         showToast(pendingToast, "success");
     }
+
+    const currentUrl = new URL(window.location.href);
+    if (currentUrl.searchParams.get("cover_warning") === "1") {
+        showToast("The title was added, but its Jikan cover could not be downloaded. A placeholder is being used.", "warn", 6000);
+        currentUrl.searchParams.delete("cover_warning");
+        history.replaceState(null, "", `${currentUrl.pathname}${currentUrl.search}${currentUrl.hash}`);
+    }
 });
 
 function toggleWatched(animeId, episodeNumber, button) {
@@ -388,6 +395,7 @@ function setupPlayerTrackControls(player, options = {}) {
 function setupLibraryCompactSearch() {
     const library = document.querySelector(".anime-list");
     const strip = library?.querySelector(".library-control-strip");
+    const filterAccordion = strip?.querySelector(".filter-accordion");
     if (!library || !strip) return;
 
     let triggerY = 0;
@@ -398,7 +406,8 @@ function setupLibraryCompactSearch() {
     };
 
     const update = () => {
-        library.classList.toggle("is-search-condensed", window.scrollY > triggerY);
+        const filtersAreOpen = Boolean(filterAccordion?.open);
+        library.classList.toggle("is-search-condensed", window.scrollY > triggerY && !filtersAreOpen);
     };
 
     measure();
@@ -408,6 +417,7 @@ function setupLibraryCompactSearch() {
         measure();
         update();
     });
+    filterAccordion?.addEventListener("toggle", update);
 }
 
 document.addEventListener("DOMContentLoaded", setupLibraryCompactSearch);

@@ -1,0 +1,1026 @@
+{
+    "schema_version": 1,
+    "updated_at": "2026-08-22T17:26:03.666722+00:00",
+    "groups": [
+        {
+            "id": "5b9a1d10-2895-41c7-a9c9-0033bcb13ac5",
+            "ordered_anime_ids": [
+                45,
+                135
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:26.849526+00:00",
+            "updated_at": "2026-08-22T17:13:26.849526+00:00"
+        },
+        {
+            "id": "30edb8ac-f9fc-4d98-b059-098dc081fcb6",
+            "ordered_anime_ids": [
+                10,
+                11
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:26.918600+00:00",
+            "updated_at": "2026-08-22T17:13:26.918600+00:00"
+        },
+        {
+            "id": "6b619b56-fc48-440f-a7c2-12403ea87fbe",
+            "ordered_anime_ids": [
+                402,
+                403
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:26.982347+00:00",
+            "updated_at": "2026-08-22T17:13:26.982347+00:00"
+        },
+        {
+            "id": "13dd1c3c-8121-4b1f-bf65-9a350e252fa4",
+            "ordered_anime_ids": [
+                385,
+                386
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:27.202763+00:00",
+            "updated_at": "2026-08-22T17:13:27.202763+00:00"
+        },
+        {
+            "id": "4e4490fd-36de-4127-ad5b-6573269e7150",
+            "ordered_anime_ids": [
+                297,
+                298
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:27.311465+00:00",
+            "updated_at": "2026-08-22T17:13:27.311465+00:00"
+        },
+        {
+            "id": "108d6de7-7080-438d-9eba-439dd5dab00d",
+            "ordered_anime_ids": [
+                6,
+                7,
+                8
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:27.402154+00:00",
+            "updated_at": "2026-08-22T17:13:27.402154+00:00"
+        },
+        {
+            "id": "9a722284-115e-44cd-b25e-0e133b4bee56",
+            "ordered_anime_ids": [
+                178,
+                179
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:27.463556+00:00",
+            "updated_at": "2026-08-22T17:13:27.463556+00:00"
+        },
+        {
+            "id": "898ff794-1527-42f7-a559-ba185325e397",
+            "ordered_anime_ids": [
+                208,
+                209,
+                210
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:27.490237+00:00",
+            "updated_at": "2026-08-22T17:13:27.490237+00:00"
+        },
+        {
+            "id": "0a60bbfd-90b5-491a-ad5e-a86aedde165d",
+            "ordered_anime_ids": [
+                221,
+                222
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:27.607378+00:00",
+            "updated_at": "2026-08-22T17:13:27.607378+00:00"
+        },
+        {
+            "id": "6f6da753-a7d9-41b0-a7eb-7da93746e79d",
+            "ordered_anime_ids": [
+                429,
+                430
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:27.625410+00:00",
+            "updated_at": "2026-08-22T17:13:27.625410+00:00"
+        },
+        {
+            "id": "e60a7ffc-a0e8-425a-ad5c-f5ad5447a47c",
+            "ordered_anime_ids": [
+                466,
+                467
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:27.784883+00:00",
+            "updated_at": "2026-08-22T17:13:27.784883+00:00"
+        },
+        {
+            "id": "956eb076-c4c9-45de-b75d-d7255a094a06",
+            "ordered_anime_ids": [
+                338,
+                339,
+                340
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:27.856522+00:00",
+            "updated_at": "2026-08-22T17:13:27.856522+00:00"
+        },
+        {
+            "id": "ef3e0613-e9ce-465c-bd24-f6f7c5ddc380",
+            "ordered_anime_ids": [
+                166,
+                168,
+                167
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:28.178327+00:00",
+            "updated_at": "2026-08-22T17:13:28.178327+00:00"
+        },
+        {
+            "id": "17004739-183d-4627-b627-eaaf5f47b6f6",
+            "ordered_anime_ids": [
+                282,
+                519
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:28.229639+00:00",
+            "updated_at": "2026-08-22T17:13:28.229639+00:00"
+        },
+        {
+            "id": "fd0c0c79-642b-4c5c-b101-00dac8c1a277",
+            "ordered_anime_ids": [
+                309,
+                310
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:28.341552+00:00",
+            "updated_at": "2026-08-22T17:13:28.341552+00:00"
+        },
+        {
+            "id": "17aab529-d3ae-456c-819b-63301de6cd52",
+            "ordered_anime_ids": [
+                1,
+                4
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:28.397655+00:00",
+            "updated_at": "2026-08-22T17:13:28.397655+00:00"
+        },
+        {
+            "id": "4bc847a5-74f2-4757-8606-d7f4afd94266",
+            "ordered_anime_ids": [
+                104,
+                105,
+                106
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:28.424482+00:00",
+            "updated_at": "2026-08-22T17:13:28.424482+00:00"
+        },
+        {
+            "id": "e500bc51-6de8-43ba-9b77-a52e250791c0",
+            "ordered_anime_ids": [
+                365,
+                366,
+                367,
+                369,
+                368
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:28.460849+00:00",
+            "updated_at": "2026-08-22T17:13:28.461848+00:00"
+        },
+        {
+            "id": "1c8cb860-6a7d-491e-9919-581d430c7516",
+            "ordered_anime_ids": [
+                442,
+                443,
+                444
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:28.604741+00:00",
+            "updated_at": "2026-08-22T17:13:28.604741+00:00"
+        },
+        {
+            "id": "d6bd6c97-ede0-45bb-ba31-54c9c62cc60e",
+            "ordered_anime_ids": [
+                251,
+                252,
+                253
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:28.728491+00:00",
+            "updated_at": "2026-08-22T17:13:28.728491+00:00"
+        },
+        {
+            "id": "4acab1ee-1b44-4e02-b8ac-1474700e3696",
+            "ordered_anime_ids": [
+                80,
+                536
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:28.889623+00:00",
+            "updated_at": "2026-08-22T17:13:28.889623+00:00"
+        },
+        {
+            "id": "a9543b6b-6aea-4c66-9d67-8f273329a095",
+            "ordered_anime_ids": [
+                341,
+                342,
+                343
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:28.924277+00:00",
+            "updated_at": "2026-08-22T17:13:28.924277+00:00"
+        },
+        {
+            "id": "30aa92a0-421a-4147-af2f-1e7411468b79",
+            "ordered_anime_ids": [
+                141,
+                142,
+                143
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:28.990134+00:00",
+            "updated_at": "2026-08-22T17:13:28.990134+00:00"
+        },
+        {
+            "id": "958fc0cd-fbf9-419c-ad81-5e4c77f395f5",
+            "ordered_anime_ids": [
+                130,
+                131
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:29.048626+00:00",
+            "updated_at": "2026-08-22T17:13:29.048626+00:00"
+        },
+        {
+            "id": "015ad32c-ad18-42fa-9260-d274d848f79a",
+            "ordered_anime_ids": [
+                215,
+                216
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:29.140734+00:00",
+            "updated_at": "2026-08-22T17:13:29.140734+00:00"
+        },
+        {
+            "id": "4b8ab1a7-87cb-441d-ab56-41aac799da40",
+            "ordered_anime_ids": [
+                133,
+                134
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:29.177455+00:00",
+            "updated_at": "2026-08-22T17:13:29.177455+00:00"
+        },
+        {
+            "id": "ce8f8a3e-86d8-4554-8649-147d79577e1a",
+            "ordered_anime_ids": [
+                58,
+                549
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:29.282492+00:00",
+            "updated_at": "2026-08-22T17:13:29.282492+00:00"
+        },
+        {
+            "id": "79dd2752-8118-47d3-9e6a-39c3de9b62f0",
+            "ordered_anime_ids": [
+                335,
+                336
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:29.325617+00:00",
+            "updated_at": "2026-08-22T17:13:29.325617+00:00"
+        },
+        {
+            "id": "24cf3c76-2754-4a9e-9f9b-445c698d9186",
+            "ordered_anime_ids": [
+                147,
+                148
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:29.347356+00:00",
+            "updated_at": "2026-08-22T17:13:29.347356+00:00"
+        },
+        {
+            "id": "ac2d07ba-46ba-4351-944f-6287cdeeaeba",
+            "ordered_anime_ids": [
+                330,
+                331,
+                332,
+                333,
+                334
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:29.684386+00:00",
+            "updated_at": "2026-08-22T17:13:29.684386+00:00"
+        },
+        {
+            "id": "c0126219-545d-4267-b3fe-a82ae4cd3c26",
+            "ordered_anime_ids": [
+                580,
+                581
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:29.739201+00:00",
+            "updated_at": "2026-08-22T17:13:29.739201+00:00"
+        },
+        {
+            "id": "9cc641fb-ff40-4e6e-b849-ef733c5e9b62",
+            "ordered_anime_ids": [
+                406,
+                407
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:29.857162+00:00",
+            "updated_at": "2026-08-22T17:13:29.857162+00:00"
+        },
+        {
+            "id": "adfd9b2f-3739-4425-8bc4-3f0fb082f597",
+            "ordered_anime_ids": [
+                156,
+                157
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:29.915708+00:00",
+            "updated_at": "2026-08-22T17:13:29.915708+00:00"
+        },
+        {
+            "id": "4bb3e20c-d627-4779-bf42-a4021c5bcd40",
+            "ordered_anime_ids": [
+                320,
+                321,
+                322,
+                323
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:30.075223+00:00",
+            "updated_at": "2026-08-22T17:13:30.075223+00:00"
+        },
+        {
+            "id": "7d766df1-883b-4079-9eca-ffb2bbf0b349",
+            "ordered_anime_ids": [
+                173,
+                175,
+                176,
+                177
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:30.352332+00:00",
+            "updated_at": "2026-08-22T17:13:30.353332+00:00"
+        },
+        {
+            "id": "89f1ec55-0575-403b-ba0e-4a6d816783ba",
+            "ordered_anime_ids": [
+                424,
+                425
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:30.428283+00:00",
+            "updated_at": "2026-08-22T17:13:30.428283+00:00"
+        },
+        {
+            "id": "e7d3ebc3-d988-4539-8681-d81ed1397981",
+            "ordered_anime_ids": [
+                350,
+                351,
+                352,
+                353
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:30.480377+00:00",
+            "updated_at": "2026-08-22T17:13:30.480377+00:00"
+        },
+        {
+            "id": "e978b8a0-8836-495f-ab18-fd8739843a23",
+            "ordered_anime_ids": [
+                395,
+                397,
+                396,
+                544
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:30.585335+00:00",
+            "updated_at": "2026-08-22T17:13:30.585335+00:00"
+        },
+        {
+            "id": "42b0eadf-240f-46b8-88e7-9aab8648e233",
+            "ordered_anime_ids": [
+                265,
+                266
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:30.734600+00:00",
+            "updated_at": "2026-08-22T17:13:30.734600+00:00"
+        },
+        {
+            "id": "1fcd1aa8-b8b8-4078-8157-76d38a307809",
+            "ordered_anime_ids": [
+                236,
+                237
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:30.808959+00:00",
+            "updated_at": "2026-08-22T17:13:30.808959+00:00"
+        },
+        {
+            "id": "540e7b22-04ba-4332-a5ef-de35981360ed",
+            "ordered_anime_ids": [
+                299,
+                300
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:30.913593+00:00",
+            "updated_at": "2026-08-22T17:13:30.913593+00:00"
+        },
+        {
+            "id": "353dcc2d-484f-4a44-9f68-df8c1d2da575",
+            "ordered_anime_ids": [
+                187,
+                188
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:30.959340+00:00",
+            "updated_at": "2026-08-22T17:13:30.959340+00:00"
+        },
+        {
+            "id": "45bb8fb6-fb96-4cc8-843c-a48959335161",
+            "ordered_anime_ids": [
+                30,
+                31
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.022612+00:00",
+            "updated_at": "2026-08-22T17:13:31.022612+00:00"
+        },
+        {
+            "id": "ffac8f24-5453-4f90-9c5f-afa20fea208e",
+            "ordered_anime_ids": [
+                240,
+                241
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.055205+00:00",
+            "updated_at": "2026-08-22T17:13:31.055205+00:00"
+        },
+        {
+            "id": "e2bf75ea-6ea9-4e10-bdd2-b6497c35f8a3",
+            "ordered_anime_ids": [
+                263,
+                169
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.126639+00:00",
+            "updated_at": "2026-08-22T17:13:31.126639+00:00"
+        },
+        {
+            "id": "2107883f-8222-4f4d-9b65-8bb56007f015",
+            "ordered_anime_ids": [
+                289,
+                290
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.142237+00:00",
+            "updated_at": "2026-08-22T17:13:31.142237+00:00"
+        },
+        {
+            "id": "44ab079d-55cb-473f-8d43-f7cd1b0aa528",
+            "ordered_anime_ids": [
+                18,
+                571
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.166658+00:00",
+            "updated_at": "2026-08-22T17:13:31.166658+00:00"
+        },
+        {
+            "id": "b56ba982-2042-40c7-8f49-d3f1ee237ded",
+            "ordered_anime_ids": [
+                55,
+                56,
+                57
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.243032+00:00",
+            "updated_at": "2026-08-22T17:13:31.243032+00:00"
+        },
+        {
+            "id": "2c9f318c-ed76-44c7-9751-cccfab78890f",
+            "ordered_anime_ids": [
+                162,
+                163
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.317359+00:00",
+            "updated_at": "2026-08-22T17:13:31.317359+00:00"
+        },
+        {
+            "id": "8574ab84-71f4-462d-ab51-abe9fa577fa5",
+            "ordered_anime_ids": [
+                36,
+                545
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.357487+00:00",
+            "updated_at": "2026-08-22T17:13:31.357487+00:00"
+        },
+        {
+            "id": "d51f3c8b-3464-4c84-8af7-b5164961eca3",
+            "ordered_anime_ids": [
+                432,
+                433,
+                434
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.384868+00:00",
+            "updated_at": "2026-08-22T17:13:31.384868+00:00"
+        },
+        {
+            "id": "8268db26-2f6b-4846-8686-e45ba9172b9c",
+            "ordered_anime_ids": [
+                485,
+                501
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.444256+00:00",
+            "updated_at": "2026-08-22T17:13:31.444256+00:00"
+        },
+        {
+            "id": "298ca725-a304-4ac4-b365-292bd6313317",
+            "ordered_anime_ids": [
+                408,
+                409
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.589614+00:00",
+            "updated_at": "2026-08-22T17:13:31.589614+00:00"
+        },
+        {
+            "id": "03fc8b2a-c484-4983-a150-84870ef79b04",
+            "ordered_anime_ids": [
+                417,
+                418
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.622198+00:00",
+            "updated_at": "2026-08-22T17:13:31.622198+00:00"
+        },
+        {
+            "id": "fb654045-5ae6-4c11-9c0d-5a5f1c524bd8",
+            "ordered_anime_ids": [
+                111,
+                112,
+                113
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.704478+00:00",
+            "updated_at": "2026-08-22T17:13:31.704478+00:00"
+        },
+        {
+            "id": "b8d7a124-0cf8-49ea-9784-121004197564",
+            "ordered_anime_ids": [
+                420,
+                421,
+                422
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.725980+00:00",
+            "updated_at": "2026-08-22T17:13:31.725980+00:00"
+        },
+        {
+            "id": "d5bba6e0-05d2-4624-bd43-4935ce968b89",
+            "ordered_anime_ids": [
+                375,
+                377,
+                378,
+                376,
+                379
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.753763+00:00",
+            "updated_at": "2026-08-22T17:13:31.753763+00:00"
+        },
+        {
+            "id": "12f101df-439b-4aa3-9781-7f45bbd1598b",
+            "ordered_anime_ids": [
+                328,
+                329
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.850957+00:00",
+            "updated_at": "2026-08-22T17:13:31.850957+00:00"
+        },
+        {
+            "id": "b0b5ba2c-736f-4b65-864e-07ac2f373991",
+            "ordered_anime_ids": [
+                19,
+                20
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.888967+00:00",
+            "updated_at": "2026-08-22T17:13:31.888967+00:00"
+        },
+        {
+            "id": "2d005764-4be1-4153-af5b-792dd7e7333b",
+            "ordered_anime_ids": [
+                426,
+                427
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.901543+00:00",
+            "updated_at": "2026-08-22T17:13:31.901543+00:00"
+        },
+        {
+            "id": "0da7d539-43a5-4229-81f5-c56f176b4732",
+            "ordered_anime_ids": [
+                574,
+                575
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.957446+00:00",
+            "updated_at": "2026-08-22T17:13:31.957446+00:00"
+        },
+        {
+            "id": "cbb25e1b-07af-4bcc-bb43-6cf2ec8da07c",
+            "ordered_anime_ids": [
+                218,
+                534
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:31.995423+00:00",
+            "updated_at": "2026-08-22T17:13:31.995423+00:00"
+        },
+        {
+            "id": "5e475d08-9e30-4e8f-9b02-f7ba556100c8",
+            "ordered_anime_ids": [
+                159,
+                160
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:32.111872+00:00",
+            "updated_at": "2026-08-22T17:13:32.111872+00:00"
+        },
+        {
+            "id": "af5e953e-7ae7-4e5d-a3ba-a4a5ae59d95b",
+            "ordered_anime_ids": [
+                295,
+                296
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:32.127355+00:00",
+            "updated_at": "2026-08-22T17:13:32.127355+00:00"
+        },
+        {
+            "id": "030699d8-d0e7-4124-a22e-a285b0c7a66c",
+            "ordered_anime_ids": [
+                99,
+                100
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:32.232522+00:00",
+            "updated_at": "2026-08-22T17:13:32.232522+00:00"
+        },
+        {
+            "id": "13b420fd-aa2d-42a7-9577-89e407e36a61",
+            "ordered_anime_ids": [
+                535,
+                569
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:32.409129+00:00",
+            "updated_at": "2026-08-22T17:13:32.409129+00:00"
+        },
+        {
+            "id": "82762207-29c4-4842-8627-c326874a151b",
+            "ordered_anime_ids": [
+                108,
+                109
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:32.440299+00:00",
+            "updated_at": "2026-08-22T17:13:32.440299+00:00"
+        },
+        {
+            "id": "93ff1bb5-5acc-4fa4-8caa-0c34346b97a6",
+            "ordered_anime_ids": [
+                493,
+                495,
+                494,
+                496,
+                497,
+                498
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:32.537745+00:00",
+            "updated_at": "2026-08-22T17:13:32.538333+00:00"
+        },
+        {
+            "id": "0b2b0021-27ab-409f-8f50-976134f6b3d9",
+            "ordered_anime_ids": [
+                91,
+                92
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:32.664384+00:00",
+            "updated_at": "2026-08-22T17:13:32.664384+00:00"
+        },
+        {
+            "id": "e3a2ae1b-4150-4420-a2ea-96bfe0dc9b42",
+            "ordered_anime_ids": [
+                63,
+                64,
+                65
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:32.673906+00:00",
+            "updated_at": "2026-08-22T17:13:32.673906+00:00"
+        },
+        {
+            "id": "c7042128-2214-4482-850b-63bd4ed4b7bd",
+            "ordered_anime_ids": [
+                393,
+                394
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:32.779674+00:00",
+            "updated_at": "2026-08-22T17:13:32.779674+00:00"
+        },
+        {
+            "id": "ece594ba-36f3-4f4c-bb07-62d78e1a79df",
+            "ordered_anime_ids": [
+                238,
+                506
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:32.803490+00:00",
+            "updated_at": "2026-08-22T17:13:32.803490+00:00"
+        },
+        {
+            "id": "fe2c22d9-6729-446e-a511-245420ddeabe",
+            "ordered_anime_ids": [
+                110,
+                528
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:32.862386+00:00",
+            "updated_at": "2026-08-22T17:13:32.862386+00:00"
+        },
+        {
+            "id": "b57d331a-ed85-4bfd-9357-c1dbf733d479",
+            "ordered_anime_ids": [
+                286,
+                287
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:32.876673+00:00",
+            "updated_at": "2026-08-22T17:13:32.876673+00:00"
+        },
+        {
+            "id": "f9c69f7a-ca27-4352-bb50-59f3f463b96f",
+            "ordered_anime_ids": [
+                144,
+                145
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:32.898516+00:00",
+            "updated_at": "2026-08-22T17:13:32.898516+00:00"
+        },
+        {
+            "id": "3a678381-bf12-406e-9ecb-71fcfdd079ac",
+            "ordered_anime_ids": [
+                439,
+                440
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:32.918980+00:00",
+            "updated_at": "2026-08-22T17:13:32.918980+00:00"
+        },
+        {
+            "id": "923175fb-9bc2-4f42-8911-edb650a789ce",
+            "ordered_anime_ids": [
+                24,
+                25
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.032491+00:00",
+            "updated_at": "2026-08-22T17:13:33.032491+00:00"
+        },
+        {
+            "id": "2a84f9c9-38ef-4ae3-9c43-150e9ab0f68a",
+            "ordered_anime_ids": [
+                79,
+                517
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.063619+00:00",
+            "updated_at": "2026-08-22T17:13:33.063619+00:00"
+        },
+        {
+            "id": "ecadaabd-7ec5-4e96-b8d6-9451d76858b1",
+            "ordered_anime_ids": [
+                70,
+                72,
+                73,
+                75,
+                539
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.094697+00:00",
+            "updated_at": "2026-08-22T17:13:33.095700+00:00"
+        },
+        {
+            "id": "c9813e3d-721a-41b9-bb2e-2a510691865f",
+            "ordered_anime_ids": [
+                492,
+                62
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.121560+00:00",
+            "updated_at": "2026-08-22T17:13:33.121560+00:00"
+        },
+        {
+            "id": "9d43a297-2b2b-498d-b66c-8454480c8120",
+            "ordered_anime_ids": [
+                213,
+                462
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.149488+00:00",
+            "updated_at": "2026-08-22T17:13:33.149488+00:00"
+        },
+        {
+            "id": "f7d30434-5bb5-444d-bab6-2429074e3767",
+            "ordered_anime_ids": [
+                150,
+                153,
+                152,
+                151
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.169286+00:00",
+            "updated_at": "2026-08-22T17:13:33.169286+00:00"
+        },
+        {
+            "id": "eedebbc9-eddd-47ba-b5bd-7fc70dac6537",
+            "ordered_anime_ids": [
+                565,
+                566
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.210705+00:00",
+            "updated_at": "2026-08-22T17:13:33.210705+00:00"
+        },
+        {
+            "id": "fa460fd0-5dc7-4bab-9ab9-b44be8e87816",
+            "ordered_anime_ids": [
+                87,
+                88
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.229350+00:00",
+            "updated_at": "2026-08-22T17:13:33.229350+00:00"
+        },
+        {
+            "id": "11e0054b-de6f-405e-a43f-e75f97b2e628",
+            "ordered_anime_ids": [
+                231,
+                232
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.254569+00:00",
+            "updated_at": "2026-08-22T17:13:33.254569+00:00"
+        },
+        {
+            "id": "f0cf1255-07e6-432d-81ca-8fed0c1c8b9e",
+            "ordered_anime_ids": [
+                304,
+                305
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.263531+00:00",
+            "updated_at": "2026-08-22T17:13:33.263531+00:00"
+        },
+        {
+            "id": "cc072a80-8a96-483e-aa7b-a745f12fabf2",
+            "ordered_anime_ids": [
+                301,
+                302
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.268755+00:00",
+            "updated_at": "2026-08-22T17:13:33.268755+00:00"
+        },
+        {
+            "id": "79196c08-184a-4c9a-91de-562206dd2364",
+            "ordered_anime_ids": [
+                357,
+                358
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.272726+00:00",
+            "updated_at": "2026-08-22T17:13:33.272726+00:00"
+        },
+        {
+            "id": "803580f1-b24e-4b6d-a379-f06847083beb",
+            "ordered_anime_ids": [
+                37,
+                38
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.283330+00:00",
+            "updated_at": "2026-08-22T17:13:33.283330+00:00"
+        },
+        {
+            "id": "edf17de6-c6e8-4038-8683-34c5d281e002",
+            "ordered_anime_ids": [
+                190,
+                191
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.295088+00:00",
+            "updated_at": "2026-08-22T17:13:33.295088+00:00"
+        },
+        {
+            "id": "d39573a0-a2a3-458d-b77a-90842bd3548e",
+            "ordered_anime_ids": [
+                48,
+                49,
+                50,
+                51
+            ],
+            "order_mode": "custom",
+            "created_at": "2026-08-22T17:13:33.303220+00:00",
+            "updated_at": "2026-08-22T17:26:03.665722+00:00"
+        },
+        {
+            "id": "4da04387-15c1-4480-8bcb-8ba4c22a4f1e",
+            "ordered_anime_ids": [
+                481,
+                482
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.310268+00:00",
+            "updated_at": "2026-08-22T17:13:33.310268+00:00"
+        },
+        {
+            "id": "f4625ac1-7886-4019-88c0-e068c110a016",
+            "ordered_anime_ids": [
+                473,
+                474,
+                475
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.315268+00:00",
+            "updated_at": "2026-08-22T17:13:33.315268+00:00"
+        },
+        {
+            "id": "6d8af723-dcbd-46d2-b3a5-c38844689c9c",
+            "ordered_anime_ids": [
+                226,
+                227,
+                229,
+                230,
+                228
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.324303+00:00",
+            "updated_at": "2026-08-22T17:13:33.325306+00:00"
+        },
+        {
+            "id": "594df7b6-868d-4ff6-a075-6d421d86e538",
+            "ordered_anime_ids": [
+                69,
+                196
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.340525+00:00",
+            "updated_at": "2026-08-22T17:13:33.340525+00:00"
+        },
+        {
+            "id": "b11b3d89-e05f-4833-b8b3-749f03d35cda",
+            "ordered_anime_ids": [
+                13,
+                14,
+                15,
+                16
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.344524+00:00",
+            "updated_at": "2026-08-22T17:13:33.345541+00:00"
+        },
+        {
+            "id": "6c384081-46ba-4d32-afb8-b59368cc4ec6",
+            "ordered_anime_ids": [
+                242,
+                243
+            ],
+            "order_mode": "auto",
+            "created_at": "2026-08-22T17:13:33.348779+00:00",
+            "updated_at": "2026-08-22T17:13:33.348779+00:00"
+        }
+    ],
+    "blocked_pairs": [],
+    "last_full_scan_at": "2026-08-22T17:13:33.349709+00:00"
+}

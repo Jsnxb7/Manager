@@ -4,31 +4,31 @@
 {% block content %}
 
 <div class="queue-player-rails">
-    {% if previous_item %}
-        <a href="{{ previous_item.player_url }}" class="queue-side-preview queue-side-prev" aria-label="Previous queue item">
-            {% if previous_item.video_url %}
+    {% if previous_target %}
+        <a href="{{ previous_target.url }}" class="queue-side-preview queue-side-prev" aria-label="{{ previous_target.label }}">
+            {% if previous_target.video_url %}
                 <video class="queue-side-video" muted playsinline preload="metadata">
-                    <source src="{{ previous_item.video_url }}" type="video/mp4">
+                    <source src="{{ previous_target.video_url }}" type="video/mp4">
                 </video>
             {% else %}
-                <img src="{{ previous_item.thumbnail_url }}" alt="">
+                <img src="{{ previous_target.thumbnail_url }}" alt="">
             {% endif %}
             <span class="queue-side-shade"></span>
-            <span class="queue-side-text"><span>Previous</span><strong>{{ previous_item.anime_title }}</strong><em>{{ previous_item.season }}</em></span>
+            <span class="queue-side-text"><span>{{ previous_target.label }}</span><strong>{{ previous_target.anime_title }}</strong><em>{{ previous_target.season }} · Episode {{ previous_target.episode_number }}</em></span>
         </a>
     {% endif %}
 
-    {% if next_item %}
-        <a href="{{ next_item.player_url }}" class="queue-side-preview queue-side-next" aria-label="Next queue item">
-            {% if next_item.video_url %}
+    {% if next_target %}
+        <a href="{{ next_target.url }}" class="queue-side-preview queue-side-next" aria-label="{{ next_target.label }}">
+            {% if next_target.video_url %}
                 <video class="queue-side-video" muted playsinline preload="metadata">
-                    <source src="{{ next_item.video_url }}" type="video/mp4">
+                    <source src="{{ next_target.video_url }}" type="video/mp4">
                 </video>
             {% else %}
-                <img src="{{ next_item.thumbnail_url }}" alt="">
+                <img src="{{ next_target.thumbnail_url }}" alt="">
             {% endif %}
             <span class="queue-side-shade"></span>
-            <span class="queue-side-text"><span>Next</span><strong>{{ next_item.anime_title }}</strong><em>{{ next_item.season }}</em></span>
+            <span class="queue-side-text"><span>{{ next_target.label }}</span><strong>{{ next_target.anime_title }}</strong><em>{{ next_target.season }} · Episode {{ next_target.episode_number }}</em></span>
         </a>
     {% endif %}
 </div>
@@ -69,7 +69,7 @@
                        data-anime-id="{{ anime.id }}"
                        data-episode-number="{{ episode.number }}"
                        data-resume-time="{{ saved_progress.current_time|default(0) }}"
-                       data-next-url="{{ next_item.player_url if next_item else '' }}"
+                       data-next-url="{{ next_target.url if next_target else '' }}"
                        data-setup='{}'>
                     <source src="{{ episode.video_url }}" type="video/mp4">
                     Your browser does not support the video tag.
@@ -81,12 +81,12 @@
             </div>
 
             <div class="cp-nav-rails">
-                {% if previous_item %}
-                    <a href="{{ previous_item.player_url }}" class="cp-nav-btn">
+                {% if previous_target %}
+                    <a href="{{ previous_target.url }}" class="cp-nav-btn">
                         <span class="cp-nav-arrow">&lt;</span>
                         <span class="cp-nav-info">
-                            <span class="cp-nav-kicker">Previous</span>
-                            <span class="cp-nav-name">{{ previous_item.anime_title }} - {{ previous_item.season }}</span>
+                            <span class="cp-nav-kicker">{{ previous_target.label }}</span>
+                            <span class="cp-nav-name">{{ previous_target.anime_title }} - {{ previous_target.season }} - Episode {{ previous_target.episode_number }}</span>
                         </span>
                     </a>
                 {% else %}
@@ -99,11 +99,11 @@
                     </div>
                 {% endif %}
 
-                {% if next_item %}
-                    <a href="{{ next_item.player_url }}" class="cp-nav-btn cp-nav-btn-next">
+                {% if next_target %}
+                    <a href="{{ next_target.url }}" class="cp-nav-btn cp-nav-btn-next">
                         <span class="cp-nav-info cp-nav-info-end">
-                            <span class="cp-nav-kicker">Next</span>
-                            <span class="cp-nav-name">{{ next_item.anime_title }} - {{ next_item.season }}</span>
+                            <span class="cp-nav-kicker">{{ next_target.label }}</span>
+                            <span class="cp-nav-name">{{ next_target.anime_title }} - {{ next_target.season }} - Episode {{ next_target.episode_number }}</span>
                         </span>
                         <span class="cp-nav-arrow">&gt;</span>
                     </a>
@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
     player.on("ended", async () => {
         await saveQueueProgress(true);
         if (videoElement.dataset.nextUrl) window.location.href = videoElement.dataset.nextUrl;
-        else alert("Queue ended. No more episodes to play.");
+        else alert("Playback complete. No queued or related anime remains.");
     });
 
     window.addEventListener("beforeunload", () => saveQueueProgress(false, true));

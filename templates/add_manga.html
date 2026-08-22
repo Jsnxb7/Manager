@@ -6,6 +6,14 @@
         <h1>Add New Manga</h1>
 
         <form method="POST" id="add-manga-form" class="clean-add-form validated-add-form" enctype="multipart/form-data" data-entry-type="manga">
+            <div class="form-section-title"><span>Search Jikan</span><small>Choose a result to fill the form, then edit anything you need.</small></div>
+            <div class="form-group jikan-search-group">
+                <label for="jikan-search-input">Find Manga</label>
+                <input type="search" id="jikan-search-input" autocomplete="off" placeholder="Search by manga title" aria-autocomplete="list" aria-controls="jikan-search-results" aria-expanded="false">
+                <div id="jikan-search-results" class="jikan-search-results" role="listbox" hidden></div>
+                <p id="jikan-search-status" class="field-feedback jikan-search-status" aria-live="polite"></p>
+                <input type="hidden" id="jikan-mal-id" name="jikan_mal_id" value="">
+            </div>
             <div class="form-section-title"><span>Basics</span><small>Add reading link, status, metadata, and cover artwork.</small></div>
             <div class="form-group">
                 <label for="title">Manga Title</label>
@@ -52,6 +60,7 @@
     </div>
 </div>
 
+<script src="{{ url_for('static', filename='js/jikan_search.js') }}"></script>
 <script>
 const MANGA_METADATA_GROUPS = [
     ["genres", "Genres"],
@@ -77,7 +86,12 @@ function findExistingMangaMetadataGroup(name) {
     if (!target) return null;
 
     for (const [group] of MANGA_METADATA_GROUPS) {
-        const items = Array.isArray(mangaMetadataCatalog[group]) ? mangaMetadataCatalog[group] : [];
+        const catalogItems = Array.isArray(mangaMetadataCatalog[group]) ? mangaMetadataCatalog[group] : [];
+        const catalogNames = new Set(catalogItems.map(item => normalizeMangaMetadataName(item.name || item).toLowerCase()));
+        const selectedExtras = [...selectedMangaMetadata[group]]
+            .filter(name => !catalogNames.has(normalizeMangaMetadataName(name).toLowerCase()))
+            .map(name => ({ name }));
+        const items = [...catalogItems, ...selectedExtras];
         if (items.some(item => normalizeMangaMetadataName(item.name || item).toLowerCase() === target)) {
             return group;
         }
@@ -152,13 +166,8 @@ function confirmNewMangaMetadataValues() {
 }
 
 function validateRequiredMangaMetadata() {
-    const missing = MANGA_METADATA_GROUPS
-        .filter(([group]) => selectedMangaMetadata[group].size === 0)
-        .map(([, label]) => label);
-
-    if (!missing.length) return true;
-
-    alert(`Select at least one value from each manga header before adding.\n\nMissing: ${missing.join(", ")}`);
+    if (MANGA_METADATA_GROUPS.some(([group]) => selectedMangaMetadata[group].size > 0)) return true;
+    alert("Select or add at least one manga metadata value before adding.");
     return false;
 }
 
@@ -189,6 +198,7 @@ function renderMangaMetadataPicker() {
             checkbox.type = "checkbox";
             checkbox.value = name;
             checkbox.dataset.metadataGroup = group;
+            checkbox.checked = selectedMangaMetadata[group].has(name);
             checkbox.addEventListener("change", () => updateMangaMetadataSelected(group, name, checkbox.checked));
 
             const text = document.createElement("span");
@@ -234,6 +244,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     renderMangaMetadataPicker();
+    window.setupJikanSearch?.("manga");
 
     document.getElementById("add-manga-form")?.addEventListener("submit", (event) => {
         syncMangaMetadataInputs();
@@ -245,6 +256,36 @@ document.addEventListener("DOMContentLoaded", async () => {
             event.preventDefault();
         }
     });
+});
+
+document.addEventListener("jikan:item-selected", event => {
+    if (event.detail.mediaType !== "manga") return;
+    const item = event.detail.item;
+    const values = {
+        title: item.title,
+        status: item.status_local || "Ongoing",
+        link: item.url || ""
+    };
+    Object.entries(values).forEach(([name, value]) => {
+        const field = document.querySelector(`[name="${name}"]`);
+        if (!field) return;
+        field.value = value;
+        field.dispatchEvent(new Event("input", { bubbles: true }));
+        field.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    MANGA_METADATA_GROUPS.forEach(([group]) => {
+        selectedMangaMetadata[group].clear();
+        (item[group] || []).forEach(value => selectedMangaMetadata[group].add(value));
+    });
+    renderMangaMetadataPicker();
+    syncMangaMetadataInputs();
+    const image = document.getElementById("thumbnail-preview-img");
+    const label = document.getElementById("thumbnail-preview-label");
+    if (image && item.image_url) {
+        image.src = item.image_url;
+        image.classList.add("is-visible");
+        if (label) label.textContent = "Jikan cover — choose a file to override";
+    }
 });
 </script>
 {% endblock %}

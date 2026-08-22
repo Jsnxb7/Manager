@@ -4,12 +4,12 @@
         "unique_genres": 19,
         "unique_themes": 36,
         "unique_demographics": 4,
-        "total_manga": 334,
-        "unique_statuses": 4,
+        "total_manga": 331,
+        "unique_statuses": 3,
         "unique_source_lists": 1,
-        "thumbnail_present": 334,
+        "thumbnail_present": 331,
         "thumbnail_missing": 0,
-        "link_present": 334,
+        "link_present": 331,
         "link_missing": 0
     },
     "tags": [
@@ -23,11 +23,11 @@
         },
         {
             "name": "School",
-            "count": 146
+            "count": 144
         },
         {
             "name": "Slice of Life",
-            "count": 83
+            "count": 82
         },
         {
             "name": "Shoujo",
@@ -39,11 +39,11 @@
         },
         {
             "name": "Shounen",
-            "count": 34
+            "count": 33
         },
         {
             "name": "Drama",
-            "count": 32
+            "count": 31
         },
         {
             "name": "Fantasy",
@@ -67,7 +67,7 @@
         },
         {
             "name": "Childcare",
-            "count": 17
+            "count": 16
         },
         {
             "name": "Supernatural",
@@ -83,7 +83,7 @@
         },
         {
             "name": "Award Winning",
-            "count": 12
+            "count": 11
         },
         {
             "name": "Action",
@@ -126,10 +126,6 @@
             "count": 3
         },
         {
-            "name": "Music",
-            "count": 3
-        },
-        {
             "name": "Visual Arts",
             "count": 3
         },
@@ -150,7 +146,7 @@
             "count": 2
         },
         {
-            "name": "Organized Crime",
+            "name": "Music",
             "count": 2
         },
         {
@@ -159,10 +155,6 @@
         },
         {
             "name": "Samurai",
-            "count": 2
-        },
-        {
-            "name": "Strategy Game",
             "count": 2
         },
         {
@@ -202,6 +194,10 @@
             "count": 1
         },
         {
+            "name": "Organized Crime",
+            "count": 1
+        },
+        {
             "name": "Otaku Culture",
             "count": 1
         },
@@ -211,6 +207,10 @@
         },
         {
             "name": "Sci-Fi",
+            "count": 1
+        },
+        {
+            "name": "Strategy Game",
             "count": 1
         },
         {
@@ -237,15 +237,15 @@
         },
         {
             "name": "Comedy",
-            "count": 213
+            "count": 212
         },
         {
             "name": "Slice of Life",
-            "count": 86
+            "count": 85
         },
         {
             "name": "Drama",
-            "count": 33
+            "count": 32
         },
         {
             "name": "Fantasy",
@@ -269,7 +269,7 @@
         },
         {
             "name": "Award Winning",
-            "count": 12
+            "count": 11
         },
         {
             "name": "Action",
@@ -311,7 +311,7 @@
     "themes": [
         {
             "name": "School",
-            "count": 146
+            "count": 144
         },
         {
             "name": "Adult Cast",
@@ -323,7 +323,7 @@
         },
         {
             "name": "Workplace",
-            "count": 19
+            "count": 20
         },
         {
             "name": "Childcare",
@@ -358,7 +358,7 @@
             "count": 3
         },
         {
-            "name": "Music",
+            "name": "Comedy",
             "count": 3
         },
         {
@@ -368,10 +368,6 @@
         {
             "name": "Visual Arts",
             "count": 3
-        },
-        {
-            "name": "Comedy",
-            "count": 2
         },
         {
             "name": "Delinquents",
@@ -390,7 +386,7 @@
             "count": 2
         },
         {
-            "name": "Organized Crime",
+            "name": "Music",
             "count": 2
         },
         {
@@ -399,10 +395,6 @@
         },
         {
             "name": "Samurai",
-            "count": 2
-        },
-        {
-            "name": "Strategy Game",
             "count": 2
         },
         {
@@ -430,11 +422,19 @@
             "count": 1
         },
         {
+            "name": "Organized Crime",
+            "count": 1
+        },
+        {
             "name": "Otaku Culture",
             "count": 1
         },
         {
             "name": "Psychological",
+            "count": 1
+        },
+        {
+            "name": "Strategy Game",
             "count": 1
         },
         {
@@ -475,25 +475,21 @@
     "statuses": [
         {
             "name": "Completed",
-            "count": 268
+            "count": 278
         },
         {
             "name": "Ongoing",
-            "count": 64
+            "count": 52
         },
         {
-            "name": "Hiatus",
-            "count": 1
-        },
-        {
-            "name": "Unknown",
+            "name": "Haitus",
             "count": 1
         }
     ],
     "source_lists": [
         {
             "name": "K <3",
-            "count": 323
+            "count": 319
         }
     ]
 }

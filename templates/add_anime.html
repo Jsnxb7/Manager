@@ -6,6 +6,14 @@
         <h1>Add New Anime</h1>
 
         <form method="POST" id="add-anime-form" class="clean-add-form validated-add-form" enctype="multipart/form-data" data-entry-type="anime">
+            <div class="form-section-title"><span>Search Jikan</span><small>Choose a result to fill the form, then edit anything you need.</small></div>
+            <div class="form-group jikan-search-group">
+                <label for="jikan-search-input">Find Anime</label>
+                <input type="search" id="jikan-search-input" autocomplete="off" placeholder="Search by anime title" aria-autocomplete="list" aria-controls="jikan-search-results" aria-expanded="false">
+                <div id="jikan-search-results" class="jikan-search-results" role="listbox" hidden></div>
+                <p id="jikan-search-status" class="field-feedback jikan-search-status" aria-live="polite"></p>
+                <input type="hidden" id="jikan-mal-id" name="jikan_mal_id" value="">
+            </div>
             <div class="form-section-title"><span>Basics</span><small>Add title, season, status, episodes, tags, and artwork.</small></div>
             <div class="form-group">
                 <label for="title">Anime Title</label>
@@ -62,6 +70,7 @@
     </div>
 </div>
 
+<script src="{{ url_for('static', filename='js/jikan_search.js') }}"></script>
 <script>
 const METADATA_GROUPS = [
     ["genres", "Genres"],
@@ -87,7 +96,12 @@ function findExistingMetadataGroup(name) {
     if (!target) return null;
 
     for (const [group] of METADATA_GROUPS) {
-        const items = Array.isArray(animeMetadataCatalog[group]) ? animeMetadataCatalog[group] : [];
+        const catalogItems = Array.isArray(animeMetadataCatalog[group]) ? animeMetadataCatalog[group] : [];
+        const catalogNames = new Set(catalogItems.map(item => normalizeMetadataName(item.name || item).toLowerCase()));
+        const selectedExtras = [...selectedAnimeMetadata[group]]
+            .filter(name => !catalogNames.has(normalizeMetadataName(name).toLowerCase()))
+            .map(name => ({ name }));
+        const items = [...catalogItems, ...selectedExtras];
         if (items.some(item => normalizeMetadataName(item.name || item).toLowerCase() === target)) {
             return group;
         }
@@ -162,13 +176,8 @@ function confirmNewMetadataValues() {
 }
 
 function validateRequiredMetadata() {
-    const missing = METADATA_GROUPS
-        .filter(([group]) => selectedAnimeMetadata[group].size === 0)
-        .map(([, label]) => label);
-
-    if (!missing.length) return true;
-
-    alert(`Select at least one value from each anime header before adding.\n\nMissing: ${missing.join(", ")}`);
+    if (METADATA_GROUPS.some(([group]) => selectedAnimeMetadata[group].size > 0)) return true;
+    alert("Select or add at least one anime metadata value before adding.");
     return false;
 }
 
@@ -199,6 +208,7 @@ function renderMetadataPicker() {
             checkbox.type = "checkbox";
             checkbox.value = name;
             checkbox.dataset.metadataGroup = group;
+            checkbox.checked = selectedAnimeMetadata[group].has(name);
             checkbox.addEventListener("change", () => updateMetadataSelected(group, name, checkbox.checked));
 
             const text = document.createElement("span");
@@ -244,6 +254,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     renderMetadataPicker();
+    window.setupJikanSearch?.("anime");
 
     document.getElementById("add-anime-form")?.addEventListener("submit", (event) => {
         syncMetadataInputs();
@@ -255,6 +266,37 @@ document.addEventListener("DOMContentLoaded", async () => {
             event.preventDefault();
         }
     });
+});
+
+document.addEventListener("jikan:item-selected", event => {
+    if (event.detail.mediaType !== "anime") return;
+    const item = event.detail.item;
+    const values = {
+        title: item.title,
+        season: item.season_local || "S1",
+        status: item.status_local || "Ongoing",
+        episodes: item.episodes || ""
+    };
+    Object.entries(values).forEach(([name, value]) => {
+        const field = document.querySelector(`[name="${name}"]`);
+        if (!field) return;
+        field.value = value;
+        field.dispatchEvent(new Event("input", { bubbles: true }));
+        field.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    METADATA_GROUPS.forEach(([group]) => {
+        selectedAnimeMetadata[group].clear();
+        (item[group] || []).forEach(value => selectedAnimeMetadata[group].add(value));
+    });
+    renderMetadataPicker();
+    syncMetadataInputs();
+    const image = document.getElementById("thumbnail-preview-img");
+    const label = document.getElementById("thumbnail-preview-label");
+    if (image && item.image_url) {
+        image.src = item.image_url;
+        image.classList.add("is-visible");
+        if (label) label.textContent = "Jikan cover — choose a file to override";
+    }
 });
 </script>
 {% endblock %}

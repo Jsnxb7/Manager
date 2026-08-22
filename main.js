@@ -1,4 +1,11 @@
 const { app, BrowserWindow, dialog, ipcMain, shell, Menu } = require('electron');
+
+// Chromium's GPU compositor can produce visible ordered-dither bands across
+// large dark surfaces on some Windows display/driver combinations. Render the
+// Windows app in software so flat panels remain visually flat and consistent.
+if (process.platform === 'win32') {
+    app.disableHardwareAcceleration();
+}
 const { spawn, exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -6,10 +13,92 @@ const http = require('http');
 
 const CONFIG_FILE = path.join(app.getPath('userData'), 'config.json');
 const LOG_FILE = path.join(app.getPath('userData'), 'flask_logs.json');
+const INSTANCE_FILE = path.join(app.getPath('userData'), 'electron_instances.json');
+const BACKEND_PID_FILE = path.join(app.getPath('userData'), 'flask_backend_pid.json');
 const VIDEO_EXTENSIONS = new Set(['.mp4', '.mkv', '.avi', '.mov', '.webm', '.m4v', '.ogg']);
 
 let mainWindow;
 let flaskProcess;
+let isShuttingDown = false;
+
+function isProcessRunning(pid) {
+    if (!pid || pid === process.pid) return false;
+
+    try {
+        process.kill(pid, 0);
+        return true;
+    } catch (_error) {
+        return false;
+    }
+}
+
+function readActiveInstancePids() {
+    try {
+        if (!fs.existsSync(INSTANCE_FILE)) return [];
+
+        const pids = JSON.parse(fs.readFileSync(INSTANCE_FILE, 'utf-8') || '[]');
+        return Array.isArray(pids)
+            ? pids.filter((pid) => Number.isInteger(pid) && isProcessRunning(pid))
+            : [];
+    } catch (error) {
+        console.warn("Error reading Electron instance registry:", error.message);
+        return [];
+    }
+}
+
+function writeInstancePids(pids) {
+    try {
+        fs.writeFileSync(INSTANCE_FILE, JSON.stringify([...new Set(pids)], null, 4));
+    } catch (error) {
+        console.warn("Error writing Electron instance registry:", error.message);
+    }
+}
+
+function registerElectronInstance() {
+    writeInstancePids([...readActiveInstancePids(), process.pid]);
+}
+
+function unregisterElectronInstance() {
+    const remainingPids = readActiveInstancePids().filter((pid) => pid !== process.pid);
+    writeInstancePids(remainingPids);
+    return remainingPids;
+}
+
+function hasOtherElectronInstances() {
+    return readActiveInstancePids().some((pid) => pid !== process.pid);
+}
+
+function saveBackendPid(pid) {
+    if (!pid) return;
+
+    try {
+        fs.writeFileSync(BACKEND_PID_FILE, JSON.stringify({ pid }, null, 4));
+    } catch (error) {
+        console.warn("Error writing Flask backend PID:", error.message);
+    }
+}
+
+function getSavedBackendPid() {
+    try {
+        if (!fs.existsSync(BACKEND_PID_FILE)) return null;
+
+        const backend = JSON.parse(fs.readFileSync(BACKEND_PID_FILE, 'utf-8') || '{}');
+        return Number.isInteger(backend.pid) && isProcessRunning(backend.pid) ? backend.pid : null;
+    } catch (error) {
+        console.warn("Error reading Flask backend PID:", error.message);
+        return null;
+    }
+}
+
+function clearBackendPid(pid) {
+    try {
+        const savedPid = getSavedBackendPid();
+        if (!fs.existsSync(BACKEND_PID_FILE) || (pid && savedPid && savedPid !== pid)) return;
+        fs.unlinkSync(BACKEND_PID_FILE);
+    } catch (error) {
+        console.warn("Error clearing Flask backend PID:", error.message);
+    }
+}
 
 function getLaunchFilePath() {
     const candidates = (process.argv || []).slice(1).filter(Boolean);
@@ -75,6 +164,12 @@ function waitForServer(url, timeout = 20000) {
         const retry = () => setTimeout(check, 1000);
         check();
     });
+}
+
+function isServerReady(url, timeout = 1000) {
+    return waitForServer(url, timeout)
+        .then(() => true)
+        .catch(() => false);
 }
 
 // Load / save config
@@ -420,6 +515,8 @@ async function getPaths() {
 }
 
 app.whenReady().then(async () => {
+    registerElectronInstance();
+
     const launchFilePath = getLaunchFilePath();
     let useLocalServer = !launchFilePath;
 
@@ -461,44 +558,58 @@ app.whenReady().then(async () => {
             console.log("🧩 Using local dev Flask exe:", flaskExePath);
         }
 
-        // 🧠 Start Flask process
-        flaskProcess = spawn(flaskExePath, [config.flaskDataPath], {
-            cwd: flaskCwd,
-            detached: true,
-            stdio: ['ignore', 'pipe', 'pipe'],
-            shell: false
-        });
+        const savedBackendPid = getSavedBackendPid();
+        const existingServerReady = await isServerReady(serverURL);
 
-        flaskProcess.stdout.on('data', (data) => {
-            const msg = `[FLASK]: ${data.toString().trim()}`;
-            console.log(msg);
-            logToFile('stdout', data);
-        });
+        if (existingServerReady || savedBackendPid) {
+            console.log("Flask server is already running; reusing existing backend.");
+            if (!existingServerReady) {
+                try {
+                    await waitForServer(serverURL);
+                } catch (err) {
+                    console.error("Flask server did not start in time:", err.message);
+                }
+            }
+        } else {
+            flaskProcess = spawn(flaskExePath, [config.flaskDataPath], {
+                cwd: flaskCwd,
+                detached: true,
+                stdio: ['ignore', 'pipe', 'pipe'],
+                shell: false
+            });
 
-        flaskProcess.stderr.on('data', (data) => {
-            const msg = `[FLASK ERROR]: ${data.toString().trim()}`;
-            console.error(msg);
-            logToFile('stderr', data);
-        });
+            saveBackendPid(flaskProcess.pid);
 
-        flaskProcess.on('close', (code) => {
-            const msg = `[FLASK CLOSED]: Process exited with code ${code}`;
-            console.log(msg);
-            logToFile('exit', msg);
-        });
+            flaskProcess.stdout.on('data', (data) => {
+                const msg = `[FLASK]: ${data.toString().trim()}`;
+                console.log(msg);
+                logToFile('stdout', data);
+            });
 
-        flaskProcess.unref();
+            flaskProcess.stderr.on('data', (data) => {
+                const msg = `[FLASK ERROR]: ${data.toString().trim()}`;
+                console.error(msg);
+                logToFile('stderr', data);
+            });
 
-        // 🕐 Wait for Flask server to become ready
-        console.log("⏳ Waiting for Flask server to start...");
-        try {
-            await waitForServer(serverURL);
-            console.log("✅ Flask server is ready!");
-        } catch (err) {
-            console.error("❌ Flask server did not start in time:", err.message);
+            flaskProcess.on('close', (code) => {
+                const msg = `[FLASK CLOSED]: Process exited with code ${code}`;
+                console.log(msg);
+                logToFile('exit', msg);
+            });
+
+            flaskProcess.unref();
+
+            console.log("Waiting for Flask server to start...");
+            try {
+                await waitForServer(serverURL);
+                console.log("Flask server is ready!");
+            } catch (err) {
+                console.error("Flask server did not start in time:", err.message);
+            }
         }
     } else {
-        console.log("🔗 Using local Flask development server...");
+        console.log("Using local Flask development server...");
     }
 
     createAppMenu();
@@ -533,31 +644,49 @@ app.whenReady().then(async () => {
     mainWindow.setMenuBarVisibility(false);
 
     mainWindow.on('closed', () => {
-        if (!useLocalServer) closeFlaskProcess();
-        app.quit();
+        shutdownApp(useLocalServer);
     });
 });
 
 app.on('window-all-closed', () => {
-    if (!flaskProcess) app.quit();
-    else {
-        closeFlaskProcess();
-        app.quit();
-    }
+    shutdownApp(!flaskProcess);
 });
 
+app.on('will-quit', () => {
+    unregisterElectronInstance();
+});
+
+function shutdownApp(useLocalServer) {
+    if (isShuttingDown) return;
+    isShuttingDown = true;
+
+    unregisterElectronInstance();
+
+    if (!useLocalServer) {
+        if (hasOtherElectronInstances()) {
+            console.log("Other Electron instance is still running; keeping Flask process alive.");
+        } else {
+            closeFlaskProcess();
+        }
+    }
+
+    app.quit();
+}
+
 function closeFlaskProcess() {
-    if (flaskProcess && flaskProcess.pid) {
-        console.log(`Attempting to kill Flask process with PID ${flaskProcess.pid}...`);
+    const backendPid = flaskProcess?.pid || getSavedBackendPid();
+
+    if (backendPid) {
+        console.log(`Attempting to kill Flask process with PID ${backendPid}...`);
         try {
-            process.kill(flaskProcess.pid);
-            console.log(`Killed Flask process by PID: ${flaskProcess.pid}`);
+            process.kill(backendPid);
+            console.log(`Killed Flask process by PID: ${backendPid}`);
         } catch (error) {
             console.warn(`Could not kill by PID: ${error.message}`);
         }
 
         if (process.platform === 'win32') {
-            exec('taskkill /IM app.exe /F', (err, stdout, stderr) => {
+            exec(`taskkill /PID ${backendPid} /T /F`, (err, stdout, stderr) => {
                 if (err) console.error(`[taskkill ERROR]: ${err.message}`);
                 else {
                     console.log(`[taskkill OUTPUT]: ${stdout}`);
@@ -565,6 +694,7 @@ function closeFlaskProcess() {
                 }
             });
         }
+        clearBackendPid(backendPid);
         flaskProcess = null;
     }
 }
