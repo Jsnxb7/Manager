@@ -7,9 +7,11 @@ Register this blueprint in your main app:
     app.register_blueprint(custom_player_bp)
 
 Behavior notes (matching the requirements):
-- The JSON "queue" (custom_playlist.json) is wiped EVERY time the
-  /custom_player home route is visited fresh -- so each new visit starts
-  with an empty log and the user has to (re)import media.
+- Copied media and the JSON queue are ephemeral. They are cleared when the
+  Flask backend starts, when it exits normally, and when the Electron wrapper
+  shuts down its compiled backend.
+- The JSON queue is also wiped every time the /custom_player home route is
+  visited fresh, so each new visit starts with an empty log.
 - Navigating between items via /custom_player/<index> (prev/next rails,
   the "Switch Media" dropdown, or autoplay-on-ended) does NOT wipe the
   JSON -- it just reads the existing queue.
@@ -34,8 +36,12 @@ custom_player_bp = Blueprint("custom_player", __name__)
 
 # --- JSON queue storage ----------------------------------------------------
 
-def _playlist_path():
-    data_dir = os.path.join(current_app.instance_path, "custom_player_data")
+def _get_app(flask_app=None):
+    return flask_app or current_app._get_current_object()
+
+
+def _playlist_path(flask_app=None):
+    data_dir = os.path.join(_get_app(flask_app).instance_path, "custom_player_data")
     os.makedirs(data_dir, exist_ok=True)
     return os.path.join(data_dir, "custom_playlist.json")
 
@@ -51,8 +57,8 @@ def load_playlist():
         return []
 
 
-def save_playlist(playlist):
-    with open(_playlist_path(), "w", encoding="utf-8") as fp:
+def save_playlist(playlist, flask_app=None):
+    with open(_playlist_path(flask_app), "w", encoding="utf-8") as fp:
         json.dump(playlist, fp, indent=2)
 
 
@@ -125,22 +131,41 @@ def _build_playlist_item_from_source(source, *, name=None, source_type="path"):
     }
 
 
-def reset_playlist():
-    # Wipe all files in the custom_media upload folder on each new session
-    try:
-        upload_dir = os.path.join(current_app.static_folder, "custom_media")
-        if os.path.isdir(upload_dir):
-            for filename in os.listdir(upload_dir):
-                filepath = os.path.join(upload_dir, filename)
-                try:
-                    if os.path.isfile(filepath):
-                        os.remove(filepath)
-                except OSError:
-                    pass
-    except RuntimeError:
-        pass  # outside app context - skip file deletion
+def cleanup_custom_media(flask_app=None):
+    """Remove all ephemeral custom-player media and reset its playlist.
 
-    save_playlist([])
+    The upload directory itself is retained so subsequent imports can reuse it.
+    Individual failures are logged and returned instead of preventing the Flask
+    backend from starting or shutting down.
+    """
+    app = _get_app(flask_app)
+    upload_dir = os.path.join(app.static_folder, "custom_media")
+    removed = 0
+    failures = []
+
+    os.makedirs(upload_dir, exist_ok=True)
+    for entry in os.scandir(upload_dir):
+        try:
+            if entry.is_dir(follow_symlinks=False) and not entry.is_symlink():
+                shutil.rmtree(entry.path)
+            else:
+                os.remove(entry.path)
+            removed += 1
+        except OSError as error:
+            failures.append(entry.name)
+            app.logger.warning("Could not remove custom media %s: %s", entry.path, error)
+
+    try:
+        save_playlist([], app)
+    except OSError as error:
+        failures.append(os.path.basename(_playlist_path(app)))
+        app.logger.warning("Could not reset the custom media playlist: %s", error)
+
+    return {"removed": removed, "failures": failures}
+
+
+def reset_playlist():
+    return cleanup_custom_media()
 
 
 # --- Page routes -------------------------------------------------------

@@ -79,6 +79,10 @@ flask_flutter_phase1_backend/data/exports/
 # =========================================================
 build/
 dist/
+/electron-dist/
+/verify-dist/
+/release/
+/release-cleanup/
 *.exe
 *.dll
 *.pyd
@@ -146,4 +150,4 @@ temp/
 folder_structure.txt
 map.py
 /static/custom_media/
-package.json
+electron-dist/

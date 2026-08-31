@@ -21,7 +21,7 @@
 
     <div class="library-control-strip">
         <div class="library-toolbar-row">
-            <input type="text" id="search-bar" class="search-bar" placeholder="Search anime..." onkeyup="filterAnime()">
+            <input type="text" id="search-bar" class="search-bar" placeholder="Search anime...">
             <div class="library-utility-actions">
                 <button type="button" class="library-mode-toggle" id="anime-density-toggle" onclick="toggleLibraryDensity()" aria-pressed="false">Compact</button>
                 <button type="button" class="library-top-button" onclick="scrollToLibraryTop()">Top</button>
@@ -89,6 +89,8 @@ const activeQuickFilters = {
     bookmarked: false
 };
 let isRestoringFilterState = false;
+let animeFilterSaveTimer = null;
+let animeSearchTimer = null;
 
 function renderLoadingSkeleton(gridId, count = itemsPerPage) {
     const grid = document.getElementById(gridId);
@@ -200,7 +202,7 @@ async function fetchAnimeFilterState() {
     }
 }
 
-async function saveAnimeFilterState() {
+async function persistAnimeFilterState() {
     if (isRestoringFilterState) return;
     const payload = getAnimeFilterStatePayload();
     try {
@@ -212,6 +214,12 @@ async function saveAnimeFilterState() {
     } catch (error) {
         console.error('Error saving anime filter state:', error);
     }
+}
+
+function saveAnimeFilterState() {
+    if (isRestoringFilterState) return;
+    window.clearTimeout(animeFilterSaveTimer);
+    animeFilterSaveTimer = window.setTimeout(persistAnimeFilterState, 350);
 }
 
 async function fetchContinueWatching() {
@@ -606,6 +614,8 @@ function renderAnimePage() {
         animeThumbnail.className = 'anime-thumbnail';
         animeThumbnail.src = anime.thumbnail_url || '/static/placeholder.jpeg';
         animeThumbnail.alt = anime.title || 'Anime thumbnail';
+        animeThumbnail.loading = 'lazy';
+        animeThumbnail.decoding = 'async';
         animeThumbnail.onerror = function () {
             this.onerror = null;
             this.src = '/static/placeholder.jpeg';
@@ -870,6 +880,10 @@ function restoreAnimeFilterState(state) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     initLibraryDensity();
+    document.getElementById('search-bar')?.addEventListener('input', () => {
+        window.clearTimeout(animeSearchTimer);
+        animeSearchTimer = window.setTimeout(filterAnime, 120);
+    });
     renderLoadingSkeleton('anime-grid', itemsPerPage);
     const [animeItems, tagCatalog, continueItems, filterState] = await Promise.all([
         fetchAnimeData(),

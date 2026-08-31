@@ -1,0 +1,39 @@
+{
+  "name": "anime-manager",
+  "version": "1.0.0",
+  "description": "Electron wrapper for Flask Anime Manager",
+  "main": "main.js",
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win"
+  },
+  "build": {
+    "appId": "com.animemanager.app",
+    "productName": "Anime Manager",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "devDependencies": {
+    "electron": "42.5.0",
+    "electron-builder": "^26.0.12"
+  }
+}

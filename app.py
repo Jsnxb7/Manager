@@ -57,6 +57,7 @@ WINDOWS_RESERVED_NAMES = {
     "com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8", "com9",
     "lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9"
 }
+_IMAGE_DIRECTORY_CACHE = {}
 
 # Ensure folders exist
 if not os.path.exists(STATIC_FOLDER) or not os.path.exists(TEMPLATES_FOLDER):
@@ -79,8 +80,23 @@ queue_bp = Blueprint("queue", __name__)
 app.instance_path = os.path.join(BASE_PATH, 'instance')
 os.makedirs(app.instance_path, exist_ok=True)
 
-from blueprints.custom_player_routes import custom_player_bp
+from blueprints.custom_player_routes import cleanup_custom_media, custom_player_bp
 app.register_blueprint(custom_player_bp)
+
+
+def cleanup_custom_player_session(reason):
+    try:
+        result = cleanup_custom_media(app)
+        logging.info(
+            "Custom media cleanup (%s): removed=%s failures=%s",
+            reason,
+            result["removed"],
+            len(result["failures"]),
+        )
+        return result
+    except Exception:
+        logging.exception("Custom media cleanup failed during %s", reason)
+        return {"removed": 0, "failures": ["cleanup_failed"]}
 
 def allowed_image_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
@@ -122,6 +138,40 @@ def image_filename_candidates(title, extension):
     if legacy not in candidates:
         candidates.append(legacy)
     return candidates
+
+
+def image_directory_index(image_folder):
+    """Return a case-insensitive filename index with one directory stat per call."""
+    try:
+        modified_ns = os.stat(image_folder).st_mtime_ns
+    except OSError:
+        return {}
+
+    cached = _IMAGE_DIRECTORY_CACHE.get(image_folder)
+    if cached and cached[0] == modified_ns:
+        return cached[1]
+
+    try:
+        names = {
+            entry.name.casefold(): entry.name
+            for entry in os.scandir(image_folder)
+            if entry.is_file() and allowed_image_file(entry.name)
+        }
+    except OSError:
+        return {}
+
+    _IMAGE_DIRECTORY_CACHE[image_folder] = (modified_ns, names)
+    return names
+
+
+def find_image_filename(image_folder, title):
+    names = image_directory_index(image_folder)
+    for extension in IMAGE_EXTENSION_ORDER:
+        for candidate in image_filename_candidates(title, extension):
+            filename = names.get(candidate.casefold())
+            if filename:
+                return filename
+    return None
 
 
 def save_uploaded_thumbnail(file_storage, title, image_folder):
@@ -903,18 +953,8 @@ def enrich_manga_headers(manga):
 
 def get_manga_image(manga):
     title = manga.get("title", "") if isinstance(manga, dict) else manga
-    for ext in IMAGE_EXTENSION_ORDER:
-        safe_filename = title_to_image_filename(title, ext)
-        filepath = os.path.join(MANGA_IMAGE_FOLDER, safe_filename)
-        if os.path.exists(filepath):
-            return f"/static/manga_images/{quote(safe_filename)}"
-
-        legacy_filename = f"{(title or '').strip()}.{ext}"
-        legacy_path = os.path.join(MANGA_IMAGE_FOLDER, legacy_filename)
-        if legacy_filename != safe_filename and os.path.exists(legacy_path):
-            return f"/static/manga_images/{quote(legacy_filename)}"
-
-    return DEFAULT_MANGA_IMAGE
+    filename = find_image_filename(MANGA_IMAGE_FOLDER, title)
+    return f"/static/manga_images/{quote(filename)}" if filename else DEFAULT_MANGA_IMAGE
 
 def build_manga_api_item(manga):
     item = dict(manga)
@@ -1925,12 +1965,8 @@ def index():
     return render_template("index.html", global_queue=build_enriched_queue())
 
 def get_anime_image(title):
-    for ext in IMAGE_EXTENSION_ORDER:
-        for filename in image_filename_candidates(title, ext):
-            filepath = os.path.join(IMAGE_FOLDER, filename)
-            if os.path.exists(filepath):
-                return f"/static/anime_images/{filename}"
-    return DEFAULT_IMAGE
+    filename = find_image_filename(IMAGE_FOLDER, title)
+    return f"/static/anime_images/{quote(filename)}" if filename else DEFAULT_IMAGE
 
 @anime_bp.route('/api/anime')
 def api_anime():
@@ -2824,9 +2860,13 @@ for blueprint in (
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
+    cleanup_custom_player_session("startup")
     try:
         relation_data = load_relation_data()
         logging.info("Loaded %s anime relation groups", len(relation_data.get("groups", [])))
     except Exception:
         logging.exception("Anime relation initialization failed; the app will retry when relations are opened")
-    app.run(port=7777, debug=False)  # Runs Flask on port 7777
+    try:
+        app.run(port=7777, debug=False)  # Runs Flask on port 7777
+    finally:
+        cleanup_custom_player_session("server shutdown")

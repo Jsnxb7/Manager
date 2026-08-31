@@ -1,9 +1,10 @@
 const { app, BrowserWindow, dialog, ipcMain, shell, Menu } = require('electron');
 
-// Chromium's GPU compositor can produce visible ordered-dither bands across
-// large dark surfaces on some Windows display/driver combinations. Render the
-// Windows app in software so flat panels remain visually flat and consistent.
-if (process.platform === 'win32') {
+// Keep Chromium's GPU compositor enabled by default. This UI uses a full-screen
+// video and translucent surfaces, which are prohibitively expensive to render
+// in software. The environment override remains available for machines with a
+// broken display driver.
+if (process.platform === 'win32' && process.env.ANIME_MANAGER_SOFTWARE_RENDERING === '1') {
     app.disableHardwareAcceleration();
 }
 const { spawn, exec } = require('child_process');
@@ -20,6 +21,58 @@ const VIDEO_EXTENSIONS = new Set(['.mp4', '.mkv', '.avi', '.mov', '.webm', '.m4v
 let mainWindow;
 let flaskProcess;
 let isShuttingDown = false;
+let activeFlaskDataPath;
+
+function cleanupCustomMedia(flaskDataPath, reason) {
+    if (!flaskDataPath) return { removed: 0, failures: [] };
+
+    const staticRoot = path.resolve(flaskDataPath, 'static');
+    const customMediaRoot = path.resolve(staticRoot, 'custom_media');
+
+    // Keep deletion constrained to <selected Flask data>/static/custom_media.
+    if (path.dirname(customMediaRoot) !== staticRoot || path.basename(customMediaRoot) !== 'custom_media') {
+        console.error(`Refusing unsafe custom media cleanup path: ${customMediaRoot}`);
+        return { removed: 0, failures: [customMediaRoot] };
+    }
+
+    let removed = 0;
+    const failures = [];
+
+    try {
+        fs.mkdirSync(customMediaRoot, { recursive: true });
+        for (const entry of fs.readdirSync(customMediaRoot)) {
+            const target = path.join(customMediaRoot, entry);
+            try {
+                fs.rmSync(target, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+                removed += 1;
+            } catch (error) {
+                failures.push(entry);
+                console.warn(`Could not remove custom media ${target}: ${error.message}`);
+            }
+        }
+
+        const playlistPath = path.join(
+            path.resolve(flaskDataPath, 'instance'),
+            'custom_player_data',
+            'custom_playlist.json'
+        );
+        if (fs.existsSync(playlistPath)) {
+            fs.writeFileSync(playlistPath, '[]', 'utf-8');
+        }
+    } catch (error) {
+        failures.push(customMediaRoot);
+        console.warn(`Custom media cleanup failed during ${reason}: ${error.message}`);
+    }
+
+    console.log(`Custom media cleanup (${reason}): removed=${removed}, failures=${failures.length}`);
+    return { removed, failures };
+}
+
+function restartApp() {
+    if (isShuttingDown) return;
+    app.relaunch();
+    shutdownApp(!flaskProcess);
+}
 
 function isProcessRunning(pid) {
     if (!pid || pid === process.pid) return false;
@@ -386,7 +439,7 @@ function createAppMenu() {
                 { label: 'Toggle Full Screen', accelerator: 'F11', click: () => mainWindow && mainWindow.setFullScreen(!mainWindow.isFullScreen()) },
                 { label: 'Toggle DevTools', accelerator: 'CmdOrCtrl+Shift+I', click: () => mainWindow && mainWindow.webContents.toggleDevTools() },
                 { type: 'separator' },
-                { label: 'Restart App', click: () => { app.relaunch(); app.exit(0); } },
+                { label: 'Restart App', click: restartApp },
                 { label: 'Quit', accelerator: 'Alt+F4', click: () => app.quit() }
             ]
         },
@@ -425,7 +478,7 @@ ipcMain.handle('electron-window-control', async (_event, action) => {
         case 'fullscreen': mainWindow.setFullScreen(!mainWindow.isFullScreen()); return { success: true, fullscreen: mainWindow.isFullScreen() };
         case 'devtools': mainWindow.webContents.toggleDevTools(); return { success: true };
         case 'always-on-top': mainWindow.setAlwaysOnTop(!mainWindow.isAlwaysOnTop()); return { success: true, alwaysOnTop: mainWindow.isAlwaysOnTop() };
-        case 'restart': app.relaunch(); app.exit(0); return { success: true };
+        case 'restart': restartApp(); return { success: true };
         default: return { success: false, message: `Unknown window action: ${action}` };
     }
 });
@@ -540,6 +593,7 @@ app.whenReady().then(async () => {
     if (!useLocalServer) {
         config = await getPaths();
         if (!config) return;
+        activeFlaskDataPath = config.flaskDataPath;
 
         const isDev = !app.isPackaged;
         let flaskExePath = config.flaskExePath;
@@ -571,6 +625,7 @@ app.whenReady().then(async () => {
                 }
             }
         } else {
+            cleanupCustomMedia(activeFlaskDataPath, 'backend startup');
             flaskProcess = spawn(flaskExePath, [config.flaskDataPath], {
                 cwd: flaskCwd,
                 detached: true,
@@ -666,6 +721,7 @@ function shutdownApp(useLocalServer) {
         if (hasOtherElectronInstances()) {
             console.log("Other Electron instance is still running; keeping Flask process alive.");
         } else {
+            cleanupCustomMedia(activeFlaskDataPath, 'app shutdown');
             closeFlaskProcess();
         }
     }

@@ -14,7 +14,7 @@
 
     <div class="library-control-strip">
         <div class="library-toolbar-row">
-            <input type="text" id="search-bar" class="search-bar" placeholder="Search manga..." onkeyup="filterManga()">
+            <input type="text" id="search-bar" class="search-bar" placeholder="Search manga...">
             <div class="library-utility-actions">
                 <button type="button" class="library-mode-toggle" id="manga-density-toggle" onclick="toggleLibraryDensity()" aria-pressed="false">Compact</button>
                 <button type="button" class="library-top-button" onclick="scrollToLibraryTop()">Top</button>
@@ -104,6 +104,8 @@ const activeMangaQuickFilters = {
     bookmarked: false
 };
 let isRestoringMangaFilterState = false;
+let mangaFilterSaveTimer = null;
+let mangaSearchTimer = null;
 const MANGA_STATUS_FLOW = ["Ongoing", "Completed", "Haitus"];
 let activeMangaLinkEdit = null;
 
@@ -257,7 +259,7 @@ async function fetchMangaFilterState() {
     }
 }
 
-async function saveMangaFilterState() {
+async function persistMangaFilterState() {
     if (isRestoringMangaFilterState) return;
     try {
         await fetch('/api/manga-filter-state', {
@@ -268,6 +270,12 @@ async function saveMangaFilterState() {
     } catch (error) {
         console.error("Error saving manga filter state:", error);
     }
+}
+
+function saveMangaFilterState() {
+    if (isRestoringMangaFilterState) return;
+    window.clearTimeout(mangaFilterSaveTimer);
+    mangaFilterSaveTimer = window.setTimeout(persistMangaFilterState, 350);
 }
 
 function getMangaFilterStatePayload() {
@@ -455,6 +463,8 @@ function renderMangaPage() {
         img.className = "anime-thumbnail";
         img.src = manga.thumbnail_url || "/static/placeholder.jpeg";
         img.alt = manga.title;
+        img.loading = "lazy";
+        img.decoding = "async";
         img.onerror = function () {
             this.onerror = null;
             this.src = "/static/placeholder.jpeg";
@@ -762,6 +772,10 @@ function restoreMangaFilterState(state) {
 // -----------------------------
 document.addEventListener("DOMContentLoaded", async () => {
     initLibraryDensity();
+    document.getElementById("search-bar")?.addEventListener("input", () => {
+        window.clearTimeout(mangaSearchTimer);
+        mangaSearchTimer = window.setTimeout(filterManga, 120);
+    });
     renderLoadingSkeleton('manga-grid', mangaItemsPerPage);
     const [mangaItems, headerCatalog, filterState] = await Promise.all([
         fetchMangaData(),

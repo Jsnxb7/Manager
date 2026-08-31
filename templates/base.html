@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anime Manager</title>
-    <!-- Video.js CSS -->
-    <link href="https://vjs.zencdn.net/7.15.4/video-js.css" rel="stylesheet" />
+    {% block vendor_head %}{% endblock %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css', v='20260823-anime-details-rebuild-2') }}">
     <style>
         #toast-container {
@@ -90,10 +89,12 @@
 </div>
 
 <div class="app-bg" aria-hidden="true">
-    <video class="video-background" autoplay loop muted playsinline poster="{{ url_for('static', filename='placeholder.jpeg') }}">
+    {% block app_background_media %}
+    <video class="video-background" autoplay loop muted playsinline preload="metadata" poster="{{ url_for('static', filename='placeholder.jpeg') }}">
         <source src="{{ url_for('static', filename='images/universal-video-bg.mp4') }}" type="video/mp4">
         <source src="{{ url_for('static', filename='images/stars.webm') }}" type="video/webm">
     </video>
+    {% endblock %}
     <div class="video-bg-overlay"></div>
 </div>
 
@@ -343,7 +344,6 @@
             refreshStatus();
         })();
     </script>
-    <!-- Video.js Script -->
-    <script src="https://vjs.zencdn.net/7.15.4/video.min.js"></script>
+    {% block vendor_scripts %}{% endblock %}
 </body>
 </html>

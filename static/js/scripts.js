@@ -19,6 +19,22 @@ function showToast(message, type = "success", duration = 3500) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    const backgroundVideo = document.querySelector(".video-background");
+    if (backgroundVideo) {
+        const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+        const syncBackgroundPlayback = () => {
+            if (document.hidden || motionQuery.matches) {
+                backgroundVideo.pause();
+                return;
+            }
+            backgroundVideo.play().catch(() => {});
+        };
+
+        document.addEventListener("visibilitychange", syncBackgroundPlayback);
+        motionQuery.addEventListener?.("change", syncBackgroundPlayback);
+        syncBackgroundPlayback();
+    }
+
     let pendingToast = null;
     try {
         pendingToast = sessionStorage.getItem("pendingAddToast");
