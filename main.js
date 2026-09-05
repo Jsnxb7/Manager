@@ -26,6 +26,20 @@ let activeFlaskDataPath;
 let activeServerURL;
 let usingCompiledBackend = false;
 
+// One Electron process owns the UI and its shared local Flask lifecycle. A
+// second launch focuses the existing window instead of creating another app
+// process that can accidentally tear down the shared backend when it closes.
+const hasSingleInstanceLock = app.requestSingleInstanceLock();
+if (!hasSingleInstanceLock) {
+    app.quit();
+}
+
+app.on('second-instance', () => {
+    if (!mainWindow || mainWindow.isDestroyed()) return;
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.focus();
+});
+
 function cleanupCustomMedia(flaskDataPath, reason) {
     if (!flaskDataPath) return { removed: 0, failures: [] };
 
@@ -597,6 +611,7 @@ async function getPaths() {
 }
 
 app.whenReady().then(async () => {
+    if (!hasSingleInstanceLock) return;
     registerElectronInstance();
 
     const startupConfig = loadConfig();
@@ -762,13 +777,13 @@ app.whenReady().then(async () => {
 
     mainWindow.setMenuBarVisibility(false);
 
-    mainWindow.on('closed', () => {
-        shutdownApp();
+    mainWindow.once('closed', () => {
+        mainWindow = null;
     });
 });
 
 app.on('window-all-closed', () => {
-    shutdownApp();
+    if (hasSingleInstanceLock) shutdownApp();
 });
 
 app.on('will-quit', () => {

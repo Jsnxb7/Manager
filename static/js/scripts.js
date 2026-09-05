@@ -395,24 +395,44 @@ function setupPlayerTrackControls(player, options = {}) {
 function setupLibraryCompactSearch() {
     const library = document.querySelector(".anime-list");
     const strip = library?.querySelector(".library-control-strip");
+    const search = strip?.querySelector(".search-bar");
     const filterAccordion = strip?.querySelector(".filter-accordion");
     if (!library || !strip) return;
 
-    let triggerY = 0;
+    // Enter and leave the compact state at different positions. This avoids
+    // flicker/restarts when a touchpad rests near one exact scroll position.
+    let isCompact = false;
+    let compactAt = 0;
+    let expandAt = 0;
     const measure = () => {
         const topGap = document.body.classList.contains("electron-shell") ? 66 : 26;
-        triggerY = strip.getBoundingClientRect().top + window.scrollY - topGap;
+        const origin = strip.getBoundingClientRect().top + window.scrollY - topGap;
+        compactAt = origin + 24;
+        expandAt = Math.max(0, origin - 28);
     };
-    const update = () => {
+    const updateCompactState = () => {
         const filtersAreOpen = Boolean(filterAccordion?.open);
-        library.classList.toggle("is-search-condensed", window.scrollY > triggerY && !filtersAreOpen);
+        const shouldCompact = !filtersAreOpen && (
+            isCompact ? window.scrollY > expandAt : window.scrollY > compactAt
+        );
+        if (shouldCompact === isCompact) return;
+        isCompact = shouldCompact;
+        library.classList.toggle("is-search-condensed", isCompact);
     };
-
+    const refreshEngagement = () => {
+        library.classList.toggle(
+            "is-library-engaged",
+            document.activeElement === search || Boolean(filterAccordion?.open)
+        );
+    };
+    search?.addEventListener("focus", refreshEngagement);
+    search?.addEventListener("blur", () => window.setTimeout(refreshEngagement, 0));
+    filterAccordion?.addEventListener("toggle", () => { refreshEngagement(); updateCompactState(); });
     measure();
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", () => { measure(); update(); });
-    filterAccordion?.addEventListener("toggle", update);
+    updateCompactState();
+    window.addEventListener("scroll", updateCompactState, { passive: true });
+    window.addEventListener("resize", () => { measure(); updateCompactState(); });
+    refreshEngagement();
 }
 
 document.addEventListener("DOMContentLoaded", setupLibraryCompactSearch);

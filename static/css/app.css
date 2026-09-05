@@ -7792,21 +7792,65 @@ html body.electron-shell .electron-options-status {
     pointer-events: none;
 }
 
-/* The compact-search/filter state is intentionally slower and eased so it
-   settles instead of snapping while scrolling or opening a filter group. */
+/* Stable, intentional library-control motion. It never runs during a scroll:
+   search focus gets a gentle lift and filter panels expand from their content. */
 .library-control-strip {
-    transition-duration: 0.48s !important;
-    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
+    transition: max-width 420ms cubic-bezier(0.22, 1, 0.36, 1),
+        margin 420ms cubic-bezier(0.22, 1, 0.36, 1),
+        padding 420ms cubic-bezier(0.22, 1, 0.36, 1),
+        border-radius 420ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 260ms ease, border-color 260ms ease,
+        background-color 260ms ease !important;
 }
 
-.library-toolbar-row,
-.library-toolbar-row .search-bar,
-.library-utility-actions,
-.filter-accordion,
-.active-filter-chips,
-.floating-filter-menu {
-    transition-duration: 0.38s !important;
-    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
+.anime-list.is-library-engaged .library-control-strip {
+    border-color: rgba(255, 255, 255, 0.28) !important;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.30) !important;
+}
+
+.library-toolbar-row .search-bar {
+    transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1),
+        padding 420ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 220ms ease, box-shadow 220ms ease,
+        border-color 220ms ease, background-color 220ms ease !important;
+}
+
+.library-toolbar-row .search-bar:focus {
+    transform: translateY(-1px);
+}
+
+.library-control-strip .filter-accordion {
+    transition: max-height 380ms cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 260ms ease, margin 380ms cubic-bezier(0.22, 1, 0.36, 1),
+        padding 380ms cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 220ms ease, border-color 220ms ease,
+        box-shadow 220ms ease !important;
+}
+
+.library-control-strip .filter-accordion-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+    transition: grid-template-rows 320ms cubic-bezier(0.22, 1, 0.36, 1),
+        padding 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.library-control-strip .filter-accordion-body > * {
+    min-height: 0;
+    overflow: hidden;
+}
+
+.library-control-strip .filter-accordion[open] .filter-accordion-body {
+    grid-template-rows: 1fr;
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+
+.library-control-strip .filter-accordion[open] {
+    border-color: rgba(255, 255, 255, 0.24);
 }
 
 /* Anime relations and Jikan-assisted entry */

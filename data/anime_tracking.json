@@ -1,15 +1,15 @@
 {
     "schema_version": 1,
-    "updated_at": "2026-09-05T13:10:18.154205+00:00",
+    "updated_at": "2026-09-05T14:55:18.820269+00:00",
     "last_use": {
         "anime_id": 320,
         "anime_title": "Karakai Jouzu no Takagi-san",
         "episode_number": 1,
         "episode_title": "Episode 1",
-        "current_time": 16.07,
+        "current_time": 2.71,
         "total_duration": 1417.96,
-        "progress_percentage": 1.13,
-        "last_watched_at": "2026-09-05T13:10:18.152699+00:00"
+        "progress_percentage": 0.19,
+        "last_watched_at": "2026-09-05T14:55:18.820269+00:00"
     },
     "queue": {
         "updated_at": "2026-09-05T07:21:49.357512+00:00",

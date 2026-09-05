@@ -71,6 +71,13 @@ class BackendLifecycleTests(unittest.TestCase):
         run_timers(self.clock)
         self.assertEqual(self.terminated, 0)
 
+    def test_terminates_when_electron_closes_before_grace_period_ends(self):
+        scheduler = self.scheduler(lambda _path: 4 <= self.clock.value < 7)
+        scheduler.schedule_if_idle()
+        run_timers(self.clock)
+        self.assertEqual(self.clock.value, 10)
+        self.assertEqual(self.terminated, 1)
+
     def test_cancel_prevents_an_old_shutdown_request_from_terminating(self):
         scheduler = self.scheduler(lambda _path: False)
         scheduler.schedule_if_idle()

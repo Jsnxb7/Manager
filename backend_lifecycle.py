@@ -57,20 +57,22 @@ class IdleBackendShutdown:
             self.cancel()
             generation = self._generation
             deadline = self.clock() + self.grace_seconds
-        self._poll(generation, deadline, seen_electron=False)
+        self._poll(generation, deadline)
 
-    def _poll(self, generation, deadline, seen_electron):
+    def _poll(self, generation, deadline):
         with self._lock:
             if generation != self._generation:
                 return
-        seen_electron = seen_electron or self.is_active(self.instance_file)
         remaining = deadline - self.clock()
         if remaining <= 0:
-            if not seen_electron:
+            # An Electron window may legitimately exist while its process is
+            # finishing shutdown. Only the state at the deadline matters;
+            # latching an earlier sighting left Flask alive forever.
+            if not self.is_active(self.instance_file):
                 self.terminate()
             return
         timer = self.timer_factory(min(self.poll_seconds, remaining), self._poll,
-                                   args=(generation, deadline, seen_electron))
+                                   args=(generation, deadline))
         timer.daemon = True
         with self._lock:
             if generation != self._generation:
