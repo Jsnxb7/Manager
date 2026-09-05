@@ -171,7 +171,7 @@ function removeAnimeFilterChip(type, key, value) {
 
 async function fetchAnimeData() {
     try {
-        const response = await fetch('/api/anime');
+        const response = await fetch('/api/anime?summary=1');
         if (!response.ok) throw new Error('Failed to fetch anime data');
         return await response.json();
     } catch (error) {
@@ -302,7 +302,8 @@ function renderContinueWatching(items) {
             video.muted = true;
             video.loop = true;
             video.playsInline = true;
-            video.preload = 'metadata';
+            video.preload = 'none';
+            video.poster = item.anime_thumbnail || '/static/placeholder.jpeg';
 
             const source = document.createElement('source');
             source.src = item.episode_video_url;

@@ -6038,6 +6038,23 @@ body.custom-player-page #global-queue {
     min-height: 360px !important;
 }
 
+/* Fullscreen must size both the Video.js wrapper and its inner video.
+   The embedded stage's height cap otherwise leaves the video only partly tall. */
+body.custom-player-page #video-player:is(.vjs-fullscreen, :fullscreen),
+body.custom-player-page #video-player:is(.vjs-fullscreen, :fullscreen) .vjs-tech {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+    aspect-ratio: auto !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    object-fit: contain;
+}
+
 .cp-now-playing-bar {
     position: static !important;
     display: grid !important;

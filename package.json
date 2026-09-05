@@ -18,6 +18,7 @@
     },
     "files": [
       "main.js",
+      "buffered_logger.js",
       "preload.js",
       "package.json"
     ],

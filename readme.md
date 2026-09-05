@@ -472,6 +472,44 @@ Supported video types include:
 | `M` | Toggle mute |
 ## Development Notes
 
+Performance: anime data is cached after path resolution, with invalidation when
+the data files or library root change. Browse requests omit episode records;
+the full `/api/anime` response remains available. Episode availability checks use
+asynchronous filesystem calls and one folder scan per check. Flask logs retain
+the latest 1,000 messages (up to 16 KiB each) and are written asynchronously.
+Continue-watching video previews load on hover instead of preloading metadata.
+
+Local measurements on the 579-title / 6,949-episode library (median of five Flask
+test-client requests, excluding browser rendering): anime page 212 → 24 ms;
+browse data 122 → 33 ms; continue-watching data 104 → 23 ms. The browse response
+fell from 1,306,275 to 354,681 bytes. The first library read after a change still
+performs path normalization. These figures do not measure scrolling FPS.
+
+Electron remembers the Anime library folder and only asks on first launch or
+when the saved folder is unavailable. Use **Options → Change anime series folder**
+(also available in the native Paths menu) to change it. Select the folder containing the series
+folders (for example `OneDrive/Documents/Anime`), not the Manager or season folder.
+The backend saves this root in `data/anime_library.json` and automatically rewrites
+anime directories and episode paths in `data/anime_data.json`, then refreshes the UI.
+Explorer, availability checks, playback, and new entries use the saved root.
+Before changing records, it creates an `anime_data.json.paths-*.bak` backup beside
+the data file. Watch progress and other metadata are preserved.
+Legacy paths keep their final series/season folders and episode filenames; media
+files are not moved. This works with both a compiled backend and a running local
+server. After updating, rebuild the Flask executable and Electron app if using
+packaged builds, or restart Flask and Electron when running from source.
+
+The same migration is available as a standalone script. Close the app before
+running it manually, and select the same root in Electron when next using the app:
+
+```powershell
+py rename_anime_paths.py --root "D:\Anime" --dry-run
+py rename_anime_paths.py --root "D:\Anime"
+```
+
+Use `--data-file "C:\path\to\data\anime_data.json"` for another data folder.
+The script updates saved path strings; it does not rename or move media folders.
+
 - The app is designed as a local personal manager, so JSON files may contain private paths, links, watch history, queue history, and theme-upload paths.
 - Keep generated build output and large media files out of GitHub unless they are required sample assets.
 - Do not document external integrations unless they are actually implemented in `app.py` or the frontend.

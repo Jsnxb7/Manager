@@ -9,6 +9,12 @@ import logging
 import shutil
 from datetime import datetime, timezone
 import tempfile
+from copy import deepcopy
+from functools import lru_cache
+from threading import RLock
+from backend_lifecycle import IdleBackendShutdown
+from library_paths import resolve_anime_paths
+from rename_anime_paths import rename_anime_paths
 
 from anime_relations import (
     cleanup_relations,
@@ -58,6 +64,8 @@ WINDOWS_RESERVED_NAMES = {
     "lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9"
 }
 _IMAGE_DIRECTORY_CACHE = {}
+ELECTRON_INSTANCE_FILE = os.environ.get("ANIME_MANAGER_ELECTRON_INSTANCE_FILE")
+BACKEND_IDLE_SHUTDOWN_SECONDS = 10
 
 # Ensure folders exist
 if not os.path.exists(STATIC_FOLDER) or not os.path.exists(TEMPLATES_FOLDER):
@@ -97,6 +105,20 @@ def cleanup_custom_player_session(reason):
     except Exception:
         logging.exception("Custom media cleanup failed during %s", reason)
         return {"removed": 0, "failures": ["cleanup_failed"]}
+
+
+def terminate_idle_backend():
+    """Finish local cleanup, then let the compiled Flask process end itself."""
+    logging.info("No Electron window appeared during the idle grace period; stopping Flask.")
+    cleanup_custom_player_session("idle shutdown")
+    os._exit(0)
+
+
+idle_backend_shutdown = IdleBackendShutdown(
+    ELECTRON_INSTANCE_FILE,
+    terminate_idle_backend,
+    grace_seconds=BACKEND_IDLE_SHUTDOWN_SECONDS,
+)
 
 def allowed_image_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
@@ -509,12 +531,15 @@ def select_start_episode(anime):
 
 
 def build_playback_target(
-    anime, episode, target_type, *, queue_index=None, resume=False, direction="next"
+    anime, episode, target_type, *, queue_index=None, continuation_queue_index=None,
+    resume=False, direction="next"
 ):
     if queue_index is None:
         target_url = url_for("player.player", anime_id=anime["id"], episode_number=episode["number"])
     else:
         target_url = url_for("queue.queue_player", index=queue_index, episode=episode["number"])
+    if queue_index is None and continuation_queue_index is not None:
+        target_url += ("&" if "?" in target_url else "?") + f"queue_after={continuation_queue_index}"
     if resume:
         target_url += ("&" if "?" in target_url else "?") + "resume=1"
     labels = {
@@ -541,7 +566,7 @@ def build_playback_target(
     }
 
 
-def resolve_next_playback_target(anime, episode, queue_index=None):
+def resolve_next_playback_target(anime, episode, queue_index=None, continuation_queue_index=None):
     anime_data = load_anime_data()
     anime_lookup = {item.get("id"): item for item in anime_data}
     episodes = prepare_anime_episodes_for_player(anime)
@@ -551,32 +576,23 @@ def resolve_next_playback_target(anime, episode, queue_index=None):
     )
     if current_index is not None and current_index + 1 < len(episodes):
         return build_playback_target(
-            anime, episodes[current_index + 1], "episode", queue_index=queue_index
+            anime, episodes[current_index + 1], "episode", queue_index=queue_index,
+            continuation_queue_index=continuation_queue_index
         )
 
     queue = load_queue().get("queue", [])
     if queue_index is not None:
-        queue_start = queue_index + 1
+        queue_cursor = queue_index
+    elif continuation_queue_index is not None:
+        queue_cursor = continuation_queue_index
     else:
-        current_queue_index = next(
+        queue_cursor = next(
             (index for index, item in enumerate(queue) if item.get("id") == anime.get("id")),
             None
         )
-        queue_start = current_queue_index + 1 if current_queue_index is not None else 0
-    for index in range(queue_start, len(queue)):
-        queued_id = queue[index].get("id")
-        if queued_id == anime.get("id"):
-            continue
-        queued_anime = anime_lookup.get(queued_id)
-        if not queued_anime:
-            continue
-        queued_episode, should_resume = select_start_episode(queued_anime)
-        if queued_episode:
-            return build_playback_target(
-                queued_anime, queued_episode, "queue", queue_index=index, resume=should_resume
-            )
 
     relation_group = find_relation_group(load_relation_data(), anime.get("id"))
+    relation_ids = set(relation_group.get("ordered_anime_ids", [])) if relation_group else set()
     if relation_group:
         ordered_ids = relation_group.get("ordered_anime_ids", [])
         try:
@@ -590,12 +606,27 @@ def resolve_next_playback_target(anime, episode, queue_index=None):
             related_episode, should_resume = select_start_episode(related_anime)
             if related_episode:
                 return build_playback_target(
-                    related_anime, related_episode, "relation", resume=should_resume
+                    related_anime, related_episode, "relation",
+                    continuation_queue_index=queue_cursor, resume=should_resume
                 )
+
+    queue_start = queue_cursor + 1 if queue_cursor is not None else 0
+    for index in range(queue_start, len(queue)):
+        queued_id = queue[index].get("id")
+        if queued_id == anime.get("id") or queued_id in relation_ids:
+            continue
+        queued_anime = anime_lookup.get(queued_id)
+        if not queued_anime:
+            continue
+        queued_episode, should_resume = select_start_episode(queued_anime)
+        if queued_episode:
+            return build_playback_target(
+                queued_anime, queued_episode, "queue", queue_index=index, resume=should_resume
+            )
     return None
 
 
-def resolve_previous_playback_target(anime, episode, queue_index=None):
+def resolve_previous_playback_target(anime, episode, queue_index=None, continuation_queue_index=None):
     anime_data = load_anime_data()
     anime_lookup = {item.get("id"): item for item in anime_data}
     episodes = prepare_anime_episodes_for_player(anime)
@@ -609,36 +640,23 @@ def resolve_previous_playback_target(anime, episode, queue_index=None):
             episodes[current_index - 1],
             "episode",
             queue_index=queue_index,
+            continuation_queue_index=continuation_queue_index,
             direction="previous",
         )
 
     queue = load_queue().get("queue", [])
     if queue_index is not None:
-        queue_start = queue_index - 1
+        queue_cursor = queue_index
+    elif continuation_queue_index is not None:
+        queue_cursor = continuation_queue_index
     else:
-        current_queue_index = next(
+        queue_cursor = next(
             (index for index, item in enumerate(queue) if item.get("id") == anime.get("id")),
             None,
         )
-        queue_start = current_queue_index - 1 if current_queue_index is not None else -1
-    for index in range(queue_start, -1, -1):
-        queued_id = queue[index].get("id")
-        if queued_id == anime.get("id"):
-            continue
-        queued_anime = anime_lookup.get(queued_id)
-        if not queued_anime:
-            continue
-        queued_episodes = prepare_anime_episodes_for_player(queued_anime)
-        if queued_episodes:
-            return build_playback_target(
-                queued_anime,
-                queued_episodes[-1],
-                "queue",
-                queue_index=index,
-                direction="previous",
-            )
 
     relation_group = find_relation_group(load_relation_data(), anime.get("id"))
+    relation_ids = set(relation_group.get("ordered_anime_ids", [])) if relation_group else set()
     if relation_group:
         ordered_ids = relation_group.get("ordered_anime_ids", [])
         try:
@@ -655,8 +673,27 @@ def resolve_previous_playback_target(anime, episode, queue_index=None):
                     related_anime,
                     related_episodes[-1],
                     "relation",
+                    continuation_queue_index=queue_cursor,
                     direction="previous",
                 )
+
+    queue_start = queue_cursor - 1 if queue_cursor is not None else -1
+    for index in range(queue_start, -1, -1):
+        queued_id = queue[index].get("id")
+        if queued_id == anime.get("id") or queued_id in relation_ids:
+            continue
+        queued_anime = anime_lookup.get(queued_id)
+        if not queued_anime:
+            continue
+        queued_episodes = prepare_anime_episodes_for_player(queued_anime)
+        if queued_episodes:
+            return build_playback_target(
+                queued_anime,
+                queued_episodes[-1],
+                "queue",
+                queue_index=index,
+                direction="previous",
+            )
     return None
 
 def get_section_image(section, title):
@@ -1216,21 +1253,66 @@ def delete_manga(manga_id):
 
     return jsonify({"status": "success"})
 
-def load_anime_data():
-    data = read_json_file(DATA_FILE, fallback=os.path.join(BASE_PATH, 'data', 'anime_data.backup.json'))
+_ANIME_CACHE_LOCK = RLock()
+
+
+def file_version(path):
+    try:
+        stat = os.stat(path)
+        return (stat.st_mtime_ns, stat.st_ctime_ns, stat.st_size, stat.st_ino)
+    except FileNotFoundError:
+        return None
+
+
+@lru_cache(maxsize=2)
+def cached_anime_data(data_file, fallback, library_root, versions):
+    data = read_json_file(data_file, fallback=fallback)
     new_data = []
     for anime in data:
         if isinstance(anime, str):
             anime = {"title": anime, "bookmarked": False}
         elif "bookmarked" not in anime:
             anime["bookmarked"] = False
+        if library_root:
+            resolve_anime_paths(anime, library_root)
         new_data.append(anime)
     new_data.sort(key=lambda anime: anime.get("title", "").lower())
     return new_data
 
+
+def load_anime_data():
+    fallback = os.path.join(BASE_PATH, 'data', 'anime_data.backup.json')
+    library_root = get_anime_library_root()
+    # Cache normalized records until either source or the library root changes.
+    # Callers mutate records, so never expose the cached objects themselves.
+    with _ANIME_CACHE_LOCK:
+        versions = (file_version(DATA_FILE), file_version(fallback))
+        return deepcopy(cached_anime_data(DATA_FILE, fallback, library_root, versions))
+
 # Save anime data
 def save_anime_data(data):
     write_json_file_atomic(DATA_FILE, data, indent=4)
+
+
+def get_anime_library_root():
+    settings_path = os.path.join(DATA_FOLDER, 'anime_library.json')
+    if not os.path.exists(settings_path):
+        return None
+    return read_json_file(settings_path).get('root')
+
+
+@anime_bp.route('/api/anime-library', methods=['POST'])
+def set_anime_library_root():
+    payload = request.get_json(silent=True) or {}
+    root = payload.get('root')
+    if not isinstance(root, str) or not os.path.isabs(root) or not os.path.isdir(root):
+        return jsonify(status='error', message='Select an existing absolute anime folder path.'), 400
+    root = os.path.normpath(root)
+    try:
+        result = rename_anime_paths(DATA_FILE, root)
+    except (ValueError, OSError) as error:
+        return jsonify(status='error', message=str(error)), 400
+    return jsonify(status='success', **result)
 
 FILTER_PAGE_SIZE_OPTIONS = {8, 12, 16, 24}
 FILTER_QUICK_KEYS = ("unread", "unwatched", "ongoing", "bookmarked")
@@ -1962,7 +2044,7 @@ def hub():
 
 @anime_bp.route('/anime')
 def index():
-    return render_template("index.html", global_queue=build_enriched_queue())
+    return render_template("index.html")
 
 def get_anime_image(title):
     filename = find_image_filename(IMAGE_FOLDER, title)
@@ -1973,6 +2055,8 @@ def api_anime():
     anime_data = load_anime_data()
     for anime in anime_data:
         anime["thumbnail_url"] = get_anime_image(anime["title"])
+        if request.args.get('summary') == '1':
+            anime.pop('episodes', None)
     return jsonify(anime_data)
 
 
@@ -2222,8 +2306,13 @@ def player(anime_id=None, episode_number=None, index=None):
             anime["thumbnail_url"] = get_anime_image(anime.get("title", ""))
             saved_progress = {} if request.args.get("start_over") == "1" else get_episode_tracking_progress(anime_id, episode_number)
             adjacent_context = get_adjacent_episode_context(anime, episode)
-            next_target = resolve_next_playback_target(anime, episode)
-            previous_target = resolve_previous_playback_target(anime, episode)
+            continuation_queue_index = request.args.get("queue_after", type=int)
+            next_target = resolve_next_playback_target(
+                anime, episode, continuation_queue_index=continuation_queue_index
+            )
+            previous_target = resolve_previous_playback_target(
+                anime, episode, continuation_queue_index=continuation_queue_index
+            )
             return render_template(
                 'player.html', anime=anime, episode=episode, saved_progress=saved_progress,
                 previous_target=previous_target,
@@ -2505,8 +2594,7 @@ def add_anime():
         while new_id in existing_ids:
             new_id += 1
 
-        # ✅ FIX: remove "manager"
-        ROOT_PATH = os.path.dirname(BASE_PATH)
+        ROOT_PATH = get_anime_library_root() or os.path.dirname(BASE_PATH)
 
         directory = os.path.join(ROOT_PATH, title, f"{season}")
         os.makedirs(directory, exist_ok=True)
@@ -2717,6 +2805,14 @@ def delete_anime(anime_id):
 @core_bp.route('/static/images/stars.mp4')
 def serve_video1():
     return send_file("static/images/stars.mp4", mimetype="video/mp4", conditional=True)
+
+
+@core_bp.route('/api/backend-lifecycle/idle', methods=['POST'])
+def shutdown_backend_if_idle():
+    if not ELECTRON_INSTANCE_FILE:
+        return jsonify(status='error', message='Electron instance registry is unavailable.'), 503
+    idle_backend_shutdown.schedule_if_idle()
+    return jsonify(status='success', grace_seconds=BACKEND_IDLE_SHUTDOWN_SECONDS)
 
 @anime_bp.route('/bookmark/<int:anime_id>', methods=['POST'])
 def toggle_bookmark(anime_id):

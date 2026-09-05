@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anime Manager</title>
     {% block vendor_head %}{% endblock %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css', v='20260823-anime-details-rebuild-2') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css', v='20260903-custom-player-fullscreen') }}">
     <style>
         #toast-container {
             position: fixed;
@@ -67,6 +67,7 @@
                 <strong>Paths</strong>
                 <button type="button" data-electron-option="selectFlaskExe">Change Flask app.exe</button>
                 <button type="button" data-electron-option="selectFlaskDataFolder">Change Flask data folder</button>
+                <button type="button" data-electron-option="selectAnimeLibrary">Change anime series folder</button>
                 <button type="button" data-electron-option="openFlaskDataFolder">Open data folder</button>
                 <button type="button" data-electron-option="openConfigFolder">Open config folder</button>
                 <button type="button" data-electron-option="openFlaskLogs">Open Flask logs</button>
@@ -287,7 +288,7 @@
                 try {
                     const info = await electron.getStatus();
                     const dataFolder = info.flaskDataPath ? info.flaskDataPath.split(/[\\/]/).pop() : 'not set';
-                    setStatus(`Data: ${dataFolder} · v${info.appVersion || '1.0.0'}`);
+                    setStatus(`Anime: ${info.animeLibraryRoot || 'not set'} · Data: ${dataFolder} · v${info.appVersion || '1.0.0'}`);
                 } catch (error) {
                     setStatus(error.message || 'Could not read Electron status.', true);
                 }
@@ -333,7 +334,7 @@
                         } else if (result && result.cancelled) {
                             setStatus('No change made.');
                         } else {
-                            setStatus('Updated successfully. Restart if the backend path changed.');
+                            setStatus(result?.message || 'Updated successfully. Restart if the backend path changed.');
                         }
                     } catch (error) {
                         setStatus(error.message || 'Option failed.', true);

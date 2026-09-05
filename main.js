@@ -7,10 +7,11 @@ const { app, BrowserWindow, dialog, ipcMain, shell, Menu } = require('electron')
 if (process.platform === 'win32' && process.env.ANIME_MANAGER_SOFTWARE_RENDERING === '1') {
     app.disableHardwareAcceleration();
 }
-const { spawn, exec } = require('child_process');
+const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const http = require('http');
+const { createBufferedLogger } = require('./buffered_logger');
 
 const CONFIG_FILE = path.join(app.getPath('userData'), 'config.json');
 const LOG_FILE = path.join(app.getPath('userData'), 'flask_logs.json');
@@ -22,6 +23,8 @@ let mainWindow;
 let flaskProcess;
 let isShuttingDown = false;
 let activeFlaskDataPath;
+let activeServerURL;
+let usingCompiledBackend = false;
 
 function cleanupCustomMedia(flaskDataPath, reason) {
     if (!flaskDataPath) return { removed: 0, failures: [] };
@@ -71,7 +74,7 @@ function cleanupCustomMedia(flaskDataPath, reason) {
 function restartApp() {
     if (isShuttingDown) return;
     app.relaunch();
-    shutdownApp(!flaskProcess);
+    shutdownApp();
 }
 
 function isProcessRunning(pid) {
@@ -143,16 +146,6 @@ function getSavedBackendPid() {
     }
 }
 
-function clearBackendPid(pid) {
-    try {
-        const savedPid = getSavedBackendPid();
-        if (!fs.existsSync(BACKEND_PID_FILE) || (pid && savedPid && savedPid !== pid)) return;
-        fs.unlinkSync(BACKEND_PID_FILE);
-    } catch (error) {
-        console.warn("Error clearing Flask backend PID:", error.message);
-    }
-}
-
 function getLaunchFilePath() {
     const candidates = (process.argv || []).slice(1).filter(Boolean);
 
@@ -177,27 +170,8 @@ function getLaunchFilePath() {
 // 🧹 Clear previous logs
 fs.writeFileSync(LOG_FILE, '[]');
 
-// 🧾 Log helper
-function logToFile(type, data) {
-    try {
-        const logEntry = {
-            timestamp: new Date().toISOString(),
-            type,
-            message: data.toString().trim()
-        };
-
-        let existingLogs = [];
-        if (fs.existsSync(LOG_FILE)) {
-            const content = fs.readFileSync(LOG_FILE, 'utf-8');
-            existingLogs = JSON.parse(content || '[]');
-        }
-
-        existingLogs.push(logEntry);
-        fs.writeFileSync(LOG_FILE, JSON.stringify(existingLogs, null, 4));
-    } catch (err) {
-        console.error("Log error:", err);
-    }
-}
+// Keep recent diagnostics without synchronous disk I/O on every server message.
+const logToFile = createBufferedLogger(LOG_FILE);
 
 // ✅ Wait until Flask actually starts serving
 function waitForServer(url, timeout = 20000) {
@@ -223,6 +197,35 @@ function isServerReady(url, timeout = 1000) {
     return waitForServer(url, timeout)
         .then(() => true)
         .catch(() => false);
+}
+
+function configureAnimeLibrary(serverURL, root) {
+    return new Promise((resolve, reject) => {
+        const body = JSON.stringify({ root });
+        const request = http.request(new URL('/api/anime-library', serverURL), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
+        }, (response) => {
+            let content = '';
+            response.setEncoding('utf8');
+            response.on('data', (chunk) => { content += chunk; });
+            response.on('error', reject);
+            response.on('end', () => {
+                try {
+                    const result = JSON.parse(content);
+                    if (response.statusCode !== 200 || result.status !== 'success') {
+                        throw new Error(result.message || 'The backend could not set the anime folder.');
+                    }
+                    resolve(result);
+                } catch (error) {
+                    reject(new Error(`Anime folder setup failed: ${error.message}`));
+                }
+            });
+        });
+        request.setTimeout(15000, () => request.destroy(new Error('Anime folder setup timed out.')));
+        request.on('error', reject);
+        request.end(body);
+    });
 }
 
 // Load / save config
@@ -298,37 +301,39 @@ function getEpisodeNumberFromFilename(filename) {
 
     return null;
 }
-function listVideoFiles(directory) {
+async function listVideoFiles(directory) {
     const files = [];
-    for (const filename of fs.readdirSync(directory)) {
-        const filepath = path.join(directory, filename);
-        let fileStat;
-        try {
-            fileStat = fs.statSync(filepath);
-        } catch (_error) {
-            continue;
-        }
-        const ext = path.extname(filename).toLowerCase();
-        if (fileStat.isFile() && VIDEO_EXTENSIONS.has(ext)) {
+    for (const entry of await fs.promises.readdir(directory, { withFileTypes: true })) {
+        const filepath = path.join(directory, entry.name);
+        const ext = path.extname(entry.name).toLowerCase();
+        if (VIDEO_EXTENSIONS.has(ext) && (entry.isFile() ||
+            (entry.isSymbolicLink() && (await safeFileStat(filepath))?.isFile()))) {
             files.push(filepath);
         }
     }
     return files;
 }
 
-function findEpisodeVideoFile(directory, episodeNumber) {
-    if (!directory || !fs.existsSync(directory)) return null;
-
-    let stat;
+async function safeFileStat(target) {
+    if (!target) return null;
     try {
-        stat = fs.statSync(directory);
+        return await fs.promises.stat(target);
     } catch (_error) {
         return null;
     }
-    if (!stat.isDirectory()) return null;
+}
+
+async function findEpisodeVideoFile(directory, episodeNumber, directoryCache) {
+    if (!directory) return null;
 
     const targetNumber = Number(episodeNumber);
-    const videoFiles = listVideoFiles(directory);
+    if (!directoryCache.has(directory)) {
+        directoryCache.set(directory, listVideoFiles(directory).then(videoFiles => videoFiles
+            .map((filepath) => ({ number: getEpisodeNumberFromFilename(path.basename(filepath)), filepath }))
+            .filter((item) => item.number !== null)
+            .sort((a, b) => a.number - b.number || path.basename(a.filepath).toLowerCase().localeCompare(path.basename(b.filepath).toLowerCase()))
+        ).catch(() => []));
+    }
 
     // Detect each file's embedded episode number, keep only files where one
     // was found, then sort ascending by that number. Once sorted, the files
@@ -336,10 +341,7 @@ function findEpisodeVideoFile(directory, episodeNumber) {
     // what number is actually embedded in the filename -- this way a season
     // folder that keeps the show's absolute numbering (e.g. starts at
     // "14.mkv") still lines up with the app's per-season episode numbers.
-    const numberedFiles = videoFiles
-        .map((filepath) => ({ number: getEpisodeNumberFromFilename(path.basename(filepath)), filepath }))
-        .filter((item) => item.number !== null)
-        .sort((a, b) => a.number - b.number || path.basename(a.filepath).toLowerCase().localeCompare(path.basename(b.filepath).toLowerCase()));
+    const numberedFiles = await directoryCache.get(directory);
 
     if (targetNumber >= 1 && targetNumber <= numberedFiles.length) {
         return numberedFiles[targetNumber - 1].filepath;
@@ -348,17 +350,15 @@ function findEpisodeVideoFile(directory, episodeNumber) {
     return null;
 }
 
-function checkEpisodeAvailability(episode, animeDirectory) {
+async function checkEpisodeAvailability(episode, animeDirectory, directoryCache) {
     const directPath = episode.file_path ? path.normalize(episode.file_path) : '';
-    if (directPath && fs.existsSync(directPath)) {
-        const stat = fs.statSync(directPath);
-        if (stat.isFile()) {
+    const stat = await safeFileStat(directPath);
+    if (stat?.isFile()) {
             return { ...episode, exists: true, resolved_path: directPath, match_type: 'direct' };
-        }
     }
 
     const searchDirectory = episode.directory || animeDirectory || (directPath ? path.dirname(directPath) : '');
-    const matchedPath = findEpisodeVideoFile(path.normalize(searchDirectory || ''), episode.number);
+    const matchedPath = await findEpisodeVideoFile(searchDirectory ? path.normalize(searchDirectory) : '', episode.number, directoryCache);
     if (matchedPath) {
         return { ...episode, exists: true, resolved_path: matchedPath, match_type: 'episode-number' };
     }
@@ -370,7 +370,13 @@ ipcMain.handle('check-anime-episode-files', async (_event, payload) => {
     try {
         const animeDirectory = payload && payload.directory ? path.normalize(payload.directory) : '';
         const episodes = Array.isArray(payload?.episodes) ? payload.episodes : [];
-        const checkedEpisodes = episodes.map((episode) => checkEpisodeAvailability(episode, animeDirectory));
+        const directoryCache = new Map();
+        const checkedEpisodes = [];
+        // Limit filesystem concurrency and reuse each folder listing for this check.
+        for (let offset = 0; offset < episodes.length; offset += 16) {
+            checkedEpisodes.push(...await Promise.all(episodes.slice(offset, offset + 16)
+                .map(episode => checkEpisodeAvailability(episode, animeDirectory, directoryCache))));
+        }
         const foundCount = checkedEpisodes.filter((episode) => episode.exists).length;
 
         return {
@@ -380,7 +386,7 @@ ipcMain.handle('check-anime-episode-files', async (_event, payload) => {
                 complete: episodes.length > 0 && foundCount === episodes.length,
                 found_count: foundCount,
                 total_count: episodes.length,
-                directory_exists: Boolean(animeDirectory && fs.existsSync(animeDirectory))
+                directory_exists: Boolean((await safeFileStat(animeDirectory))?.isDirectory())
             },
             episodes: checkedEpisodes
         };
@@ -398,9 +404,10 @@ function saveConfig(config) {
 }
 
 // Folder selector
-async function selectFolder(title) {
+async function selectFolder(title, defaultPath) {
     const result = await dialog.showOpenDialog({
         title: title,
+        ...(defaultPath ? { defaultPath } : {}),
         properties: ['openDirectory']
     });
     return result.filePaths.length > 0 ? result.filePaths[0] : null;
@@ -426,6 +433,7 @@ function getElectronStatus() {
         logFile: LOG_FILE,
         flaskExePath: config.flaskExePath || '',
         flaskDataPath: config.flaskDataPath || '',
+        animeLibraryRoot: config.animeLibraryRoot || '',
         serverURL: config.serverURL || 'http://127.0.0.1:7777'
     };
 }
@@ -448,6 +456,10 @@ function createAppMenu() {
             submenu: [
                 { label: 'Change Flask app.exe Path', click: async () => { const selected = await selectFile('Select compiled Flask app.exe', [{ name: 'Executable', extensions: ['exe'] }]); if (selected) { const config = loadConfig(); config.flaskExePath = selected; saveConfig(config); } } },
                 { label: 'Change Flask Data Folder', click: async () => { const selected = await selectFolder('Select Flask project/data folder'); if (selected) { const config = loadConfig(); config.flaskDataPath = selected; saveConfig(config); } } },
+                { label: 'Change Anime Series Folder', click: async () => {
+                    const result = await changeAnimeLibrary();
+                    if (!result.success && !result.cancelled) dialog.showErrorBox('Could not change anime folder', result.message);
+                } },
                 { type: 'separator' },
                 { label: 'Open Flask Data Folder', click: () => { const config = loadConfig(); if (config.flaskDataPath) shell.openPath(config.flaskDataPath); } },
                 { label: 'Open Config Folder', click: () => shell.openPath(app.getPath('userData')) },
@@ -484,6 +496,22 @@ ipcMain.handle('electron-window-control', async (_event, action) => {
 });
 
 ipcMain.handle('electron-get-status', async () => getElectronStatus());
+
+async function changeAnimeLibrary() {
+    const selected = await selectFolder('Select your Anime library folder (contains the series folders)', loadConfig().animeLibraryRoot);
+    if (!selected) return { success: false, cancelled: true };
+    try {
+        if (!activeServerURL) throw new Error('The backend is not ready yet.');
+        const result = await configureAnimeLibrary(activeServerURL, selected);
+        saveConfig({ ...loadConfig(), animeLibraryRoot: selected });
+        if (mainWindow) mainWindow.reload();
+        return { ...getElectronStatus(), message: `Anime folder updated. Rewrote paths for ${result.updated} entries.` };
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+}
+
+ipcMain.handle('electron-select-anime-library', changeAnimeLibrary);
 
 ipcMain.handle('electron-select-flask-exe', async () => {
     const selected = await selectFile('Select compiled Flask app.exe', [{ name: 'Executable', extensions: ['exe'] }]);
@@ -528,13 +556,14 @@ ipcMain.handle('electron-reset-paths', async () => {
         defaultId: 1,
         cancelId: 1,
         title: 'Reset Saved Paths',
-        message: 'Reset the saved Flask executable and data folder paths?',
-        detail: 'You will be asked to select them again the next time the compiled backend mode is used.'
+        message: 'Reset the saved Flask executable, data folder, and anime series folder paths?',
+        detail: 'You will be asked for the anime folder on next launch, and the Flask paths when compiled backend mode is used.'
     });
     if (response !== 0) return { success: false, cancelled: true };
     const config = loadConfig();
     delete config.flaskExePath;
     delete config.flaskDataPath;
+    delete config.animeLibraryRoot;
     saveConfig(config);
     return getElectronStatus();
 });
@@ -570,6 +599,23 @@ async function getPaths() {
 app.whenReady().then(async () => {
     registerElectronInstance();
 
+    const startupConfig = loadConfig();
+    let animeLibraryRoot = startupConfig.animeLibraryRoot;
+    let hasSavedLibrary = false;
+    try {
+        hasSavedLibrary = Boolean(animeLibraryRoot && fs.statSync(animeLibraryRoot).isDirectory());
+    } catch (_) { /* Ask again when the saved folder is no longer available. */ }
+    if (!hasSavedLibrary) {
+        animeLibraryRoot = await selectFolder(
+            'Select your Anime library folder (contains the series folders)',
+            startupConfig.animeLibraryRoot
+        );
+    }
+    if (!animeLibraryRoot) {
+        app.quit();
+        return;
+    }
+
     const launchFilePath = getLaunchFilePath();
     let useLocalServer = !launchFilePath;
 
@@ -591,6 +637,7 @@ app.whenReady().then(async () => {
     let config = {};
 
     if (!useLocalServer) {
+        usingCompiledBackend = true;
         config = await getPaths();
         if (!config) return;
         activeFlaskDataPath = config.flaskDataPath;
@@ -630,7 +677,8 @@ app.whenReady().then(async () => {
                 cwd: flaskCwd,
                 detached: true,
                 stdio: ['ignore', 'pipe', 'pipe'],
-                shell: false
+                shell: false,
+                env: { ...process.env, ANIME_MANAGER_ELECTRON_INSTANCE_FILE: INSTANCE_FILE }
             });
 
             saveBackendPid(flaskProcess.pid);
@@ -667,6 +715,18 @@ app.whenReady().then(async () => {
         console.log("Using local Flask development server...");
     }
 
+    try {
+        await waitForServer(serverURL);
+        await configureAnimeLibrary(serverURL, animeLibraryRoot);
+        activeServerURL = serverURL;
+        saveConfig({ ...loadConfig(), animeLibraryRoot });
+    } catch (error) {
+        dialog.showErrorBox('Could not configure anime library',
+            `${error.message}\nRebuild/restart the Flask backend if it does not support library selection.`);
+        shutdownApp();
+        return;
+    }
+
     createAppMenu();
 
     // ✅ Create main window
@@ -699,58 +759,59 @@ app.whenReady().then(async () => {
     mainWindow.setMenuBarVisibility(false);
 
     mainWindow.on('closed', () => {
-        shutdownApp(useLocalServer);
+        shutdownApp();
     });
 });
 
 app.on('window-all-closed', () => {
-    shutdownApp(!flaskProcess);
+    shutdownApp();
 });
 
 app.on('will-quit', () => {
     unregisterElectronInstance();
 });
 
-function shutdownApp(useLocalServer) {
+function askBackendToShutdownIfIdle(serverURL) {
+    return new Promise((resolve, reject) => {
+        const request = http.request(new URL('/api/backend-lifecycle/idle', serverURL), {
+            method: 'POST',
+            headers: { 'Content-Length': 0 }
+        }, (response) => {
+            let content = '';
+            response.setEncoding('utf8');
+            response.on('data', chunk => { content += chunk; });
+            response.on('end', () => {
+                try {
+                    const result = JSON.parse(content);
+                    if (response.statusCode !== 200 || result.status !== 'success') {
+                        throw new Error(result.message || 'Backend lifecycle request failed.');
+                    }
+                    resolve(result);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        });
+        request.setTimeout(5000, () => request.destroy(new Error('Backend lifecycle request timed out.')));
+        request.on('error', reject);
+        request.end();
+    });
+}
+
+async function shutdownApp() {
     if (isShuttingDown) return;
     isShuttingDown = true;
 
     unregisterElectronInstance();
 
-    if (!useLocalServer) {
-        if (hasOtherElectronInstances()) {
-            console.log("Other Electron instance is still running; keeping Flask process alive.");
-        } else {
-            cleanupCustomMedia(activeFlaskDataPath, 'app shutdown');
-            closeFlaskProcess();
+    if (usingCompiledBackend) {
+        try {
+            await askBackendToShutdownIfIdle(activeServerURL || 'http://127.0.0.1:7777');
+            console.log('Flask will check the Electron registry for 10 seconds before deciding whether to exit.');
+        } catch (error) {
+            console.warn(`Could not request Flask idle shutdown: ${error.message}`);
         }
     }
 
     app.quit();
-}
-
-function closeFlaskProcess() {
-    const backendPid = flaskProcess?.pid || getSavedBackendPid();
-
-    if (backendPid) {
-        console.log(`Attempting to kill Flask process with PID ${backendPid}...`);
-        try {
-            process.kill(backendPid);
-            console.log(`Killed Flask process by PID: ${backendPid}`);
-        } catch (error) {
-            console.warn(`Could not kill by PID: ${error.message}`);
-        }
-
-        if (process.platform === 'win32') {
-            exec(`taskkill /PID ${backendPid} /T /F`, (err, stdout, stderr) => {
-                if (err) console.error(`[taskkill ERROR]: ${err.message}`);
-                else {
-                    console.log(`[taskkill OUTPUT]: ${stdout}`);
-                    if (stderr) console.error(`[taskkill STDERR]: ${stderr}`);
-                }
-            });
-        }
-        clearBackendPid(backendPid);
-        flaskProcess = null;
-    }
 }

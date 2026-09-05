@@ -10,6 +10,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     windowControl: (action) => ipcRenderer.invoke('electron-window-control', action),
     selectFlaskExe: () => ipcRenderer.invoke('electron-select-flask-exe'),
     selectFlaskDataFolder: () => ipcRenderer.invoke('electron-select-flask-data-folder'),
+    selectAnimeLibrary: () => ipcRenderer.invoke('electron-select-anime-library'),
     openConfigFolder: () => ipcRenderer.invoke('electron-open-config-folder'),
     openFlaskDataFolder: () => ipcRenderer.invoke('electron-open-flask-data-folder'),
     openFlaskLogs: () => ipcRenderer.invoke('electron-open-flask-logs'),

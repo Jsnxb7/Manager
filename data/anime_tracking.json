@@ -1,19 +1,38 @@
 {
     "schema_version": 1,
-    "updated_at": "2026-08-22T19:53:56.896760+00:00",
+    "updated_at": "2026-09-05T13:10:18.154205+00:00",
     "last_use": {
-        "anime_id": 50,
-        "anime_title": "Working",
-        "episode_number": 2,
-        "episode_title": "Episode 2",
-        "current_time": 9.92,
-        "total_duration": 1460.04,
-        "progress_percentage": 0.68,
-        "last_watched_at": "2026-08-22T19:53:56.895759+00:00"
+        "anime_id": 320,
+        "anime_title": "Karakai Jouzu no Takagi-san",
+        "episode_number": 1,
+        "episode_title": "Episode 1",
+        "current_time": 16.07,
+        "total_duration": 1417.96,
+        "progress_percentage": 1.13,
+        "last_watched_at": "2026-09-05T13:10:18.152699+00:00"
     },
     "queue": {
-        "updated_at": "2026-08-05T08:15:33.784498+00:00",
-        "order": []
+        "updated_at": "2026-09-05T07:21:49.357512+00:00",
+        "order": [
+            {
+                "position": 1,
+                "anime_id": 516,
+                "anime_title": "Chanto Suenai Kyuuketsuki-chan",
+                "episode_number": 1
+            },
+            {
+                "position": 2,
+                "anime_id": 32,
+                "anime_title": "Akujiki Reijou to Kyouketsu Koushaku",
+                "episode_number": 1
+            },
+            {
+                "position": 3,
+                "anime_id": 320,
+                "anime_title": "Karakai Jouzu no Takagi-san",
+                "episode_number": 1
+            }
+        ]
     },
     "anime": {
         "547": {

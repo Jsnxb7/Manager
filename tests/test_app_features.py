@@ -88,22 +88,30 @@ class AppFeatureTests(unittest.TestCase):
             saved = json.load(file)
         self.assertIn([1, 2], [pair["anime_ids"] for pair in saved["blocked_pairs"]])
 
-    def test_playback_priority_episode_then_queue_then_relation(self):
+    def test_playback_priority_episode_then_relation_then_queue(self):
         with manager.app.test_request_context("/"):
             first = manager.resolve_next_playback_target(self.library[0], self.library[0]["episodes"][0])
             self.assertEqual(first["type"], "episode")
             self.assertEqual(first["episode_number"], 2)
 
-            queued = manager.resolve_next_playback_target(self.library[0], self.library[0]["episodes"][1])
+            self.write("QUEUE_FILE", {"queue": [
+                {"id": 1, "title": "Series"},
+                {"id": 2, "title": "Queued"},
+            ]})
+            related = manager.resolve_next_playback_target(
+                self.library[0], self.library[0]["episodes"][1], queue_index=0
+            )
+            self.assertEqual(related["type"], "relation")
+            self.assertEqual(related["anime_id"], 3)
+            self.assertIn("queue_after=0", related["url"])
+
+            queued = manager.resolve_next_playback_target(
+                self.library[2], self.library[2]["episodes"][0], continuation_queue_index=0
+            )
             self.assertEqual(queued["type"], "queue")
             self.assertEqual(queued["anime_id"], 2)
 
-            self.write("QUEUE_FILE", {"queue": []})
-            related = manager.resolve_next_playback_target(self.library[0], self.library[0]["episodes"][1])
-            self.assertEqual(related["type"], "relation")
-            self.assertEqual(related["anime_id"], 3)
-
-    def test_previous_playback_episode_queue_then_relation(self):
+    def test_previous_playback_episode_relation_then_queue(self):
         with manager.app.test_request_context("/"):
             previous_episode = manager.resolve_previous_playback_target(
                 self.library[0], self.library[0]["episodes"][1]
@@ -122,9 +130,12 @@ class AppFeatureTests(unittest.TestCase):
             self.assertEqual(previous_queue["anime_id"], 1)
             self.assertEqual(previous_queue["episode_number"], 2)
 
-            self.write("QUEUE_FILE", {"queue": []})
+            self.write("QUEUE_FILE", {"queue": [
+                {"id": 2, "title": "Queued"},
+                {"id": 3, "title": "Series"},
+            ]})
             previous_relation = manager.resolve_previous_playback_target(
-                self.library[2], self.library[2]["episodes"][0]
+                self.library[2], self.library[2]["episodes"][0], queue_index=1
             )
             self.assertEqual(previous_relation["type"], "relation")
             self.assertEqual(previous_relation["anime_id"], 1)
