@@ -19,22 +19,6 @@ function showToast(message, type = "success", duration = 3500) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const backgroundVideo = document.querySelector(".video-background");
-    if (backgroundVideo) {
-        const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-        const syncBackgroundPlayback = () => {
-            if (document.hidden || motionQuery.matches) {
-                backgroundVideo.pause();
-                return;
-            }
-            backgroundVideo.play().catch(() => {});
-        };
-
-        document.addEventListener("visibilitychange", syncBackgroundPlayback);
-        motionQuery.addEventListener?.("change", syncBackgroundPlayback);
-        syncBackgroundPlayback();
-    }
-
     let pendingToast = null;
     try {
         pendingToast = sessionStorage.getItem("pendingAddToast");
@@ -415,12 +399,10 @@ function setupLibraryCompactSearch() {
     if (!library || !strip) return;
 
     let triggerY = 0;
-
     const measure = () => {
         const topGap = document.body.classList.contains("electron-shell") ? 66 : 26;
         triggerY = strip.getBoundingClientRect().top + window.scrollY - topGap;
     };
-
     const update = () => {
         const filtersAreOpen = Boolean(filterAccordion?.open);
         library.classList.toggle("is-search-condensed", window.scrollY > triggerY && !filtersAreOpen);
@@ -429,10 +411,7 @@ function setupLibraryCompactSearch() {
     measure();
     update();
     window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", () => {
-        measure();
-        update();
-    });
+    window.addEventListener("resize", () => { measure(); update(); });
     filterAccordion?.addEventListener("toggle", update);
 }
 

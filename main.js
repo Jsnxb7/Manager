@@ -753,6 +753,10 @@ app.whenReady().then(async () => {
 
     const finalURL = `${serverURL}${launchTarget}`;
     console.log("🌐 Loading URL:", finalURL);
+    // The Flask app serves locally mutable templates/assets. Start every
+    // Electron session with an empty HTTP cache so a changed stylesheet,
+    // script, or generated cover cannot be held over from a prior launch.
+    await mainWindow.webContents.session.clearCache();
     mainWindow.loadURL(finalURL);
 
 

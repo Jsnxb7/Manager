@@ -91,6 +91,7 @@ let allMangaData = [];
 let currentMangaData = [];
 let currentMangaPage = 1;
 let mangaItemsPerPage = 15;
+let totalMangaItems = 0;
 let mangaHeaderCatalog = {};
 const activeMangaHeaderFilters = {
     tags: new Set(),
@@ -225,9 +226,14 @@ function buildMetadataHover(groups) {
 // -----------------------------
 // FETCH MANGA
 // -----------------------------
-async function fetchMangaData() {
+async function fetchMangaData(page = 1) {
     try {
-        const response = await fetch('/api/manga');
+        const params = new URLSearchParams({ page, per_page: mangaItemsPerPage });
+        const search = document.getElementById('search-bar')?.value.trim();
+        if (search) params.set('search', search);
+        Object.entries(activeMangaQuickFilters).forEach(([key, active]) => active && params.set(key, '1'));
+        Object.entries(activeMangaHeaderFilters).forEach(([group, values]) => values.forEach(value => params.append(group, value)));
+        const response = await fetch(`/api/manga?${params}`);
         if (!response.ok) throw new Error('Failed to fetch manga data');
         return await response.json();
     } catch (error) {
@@ -356,7 +362,7 @@ function getFilteredMangaData() {
 }
 
 function applyMangaFilters(page = 1) {
-    setMangaData(getFilteredMangaData(), page);
+    loadMangaPage(page);
     updateMangaQuickFilterButtons();
     updateActiveFilterChips();
     saveMangaFilterState();
@@ -422,18 +428,24 @@ function renderMangaHeaderFilters() {
 }
 
 function getMangaTotalPages() {
-    return Math.max(1, Math.ceil(currentMangaData.length / mangaItemsPerPage));
+    return Math.max(1, Math.ceil(totalMangaItems / mangaItemsPerPage));
 }
 
-function setMangaData(list, page = 1) {
+function setMangaData(list, page = 1, total = list.length) {
     currentMangaData = [...list];
+    totalMangaItems = total;
     currentMangaPage = Math.min(Math.max(page, 1), getMangaTotalPages());
     renderMangaPage();
 }
 
 function getMangaPageItems() {
-    const start = (currentMangaPage - 1) * mangaItemsPerPage;
-    return currentMangaData.slice(start, start + mangaItemsPerPage);
+    return currentMangaData;
+}
+
+async function loadMangaPage(page = 1) {
+    renderLoadingSkeleton('manga-grid', mangaItemsPerPage);
+    const result = await fetchMangaData(page);
+    setMangaData(result.items || [], result.page || page, result.total || 0);
 }
 
 // -----------------------------
@@ -534,7 +546,7 @@ function renderMangaPage() {
 
 function renderMangaPagination() {
     const totalPages = getMangaTotalPages();
-    const total = currentMangaData.length;
+    const total = totalMangaItems;
     const start = total ? ((currentMangaPage - 1) * mangaItemsPerPage) + 1 : 0;
     const end = Math.min(currentMangaPage * mangaItemsPerPage, total);
 
@@ -562,9 +574,8 @@ function renderMangaPagination() {
     }
 }
 
-function goToMangaPage(page) {
-    currentMangaPage = Math.min(Math.max(page, 1), getMangaTotalPages());
-    renderMangaPage();
+async function goToMangaPage(page) {
+    await loadMangaPage(Math.min(Math.max(page, 1), getMangaTotalPages()));
     saveMangaFilterState();
     document.querySelector(".anime-list")?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -657,10 +668,7 @@ async function deleteManga(id) {
     try {
         const res = await fetch(`/delete_manga/${id}`, { method: "DELETE" });
         if (res.ok) {
-            allMangaData = allMangaData.filter(item => item.id !== id);
-            currentMangaData = currentMangaData.filter(item => item.id !== id);
-            if (currentMangaPage > getMangaTotalPages()) currentMangaPage = getMangaTotalPages();
-            renderMangaPage();
+            await loadMangaPage(currentMangaPage);
         }
     } catch (err) {
         console.error("Error deleting manga:", err);
@@ -777,16 +785,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         mangaSearchTimer = window.setTimeout(filterManga, 120);
     });
     renderLoadingSkeleton('manga-grid', mangaItemsPerPage);
-    const [mangaItems, headerCatalog, filterState] = await Promise.all([
-        fetchMangaData(),
+    const [headerCatalog, filterState] = await Promise.all([
         fetchMangaHeaderCatalog(),
         fetchMangaFilterState()
     ]);
-    allMangaData = mangaItems;
     mangaHeaderCatalog = headerCatalog;
     renderMangaHeaderFilters();
     const restoredPage = restoreMangaFilterState(filterState);
-    setMangaData(getFilteredMangaData(), restoredPage);
+    await loadMangaPage(restoredPage);
     updateMangaQuickFilterButtons();
     updateActiveFilterChips();
 

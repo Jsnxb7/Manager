@@ -9,6 +9,7 @@ import logging
 import shutil
 from datetime import datetime, timezone
 import tempfile
+from io import BytesIO
 from copy import deepcopy
 from functools import lru_cache
 from threading import RLock
@@ -54,7 +55,9 @@ SECTION_FILTER_STATE_FILE = os.path.join(BASE_PATH, 'data', 'section_filter_stat
 MANGA_HEADERS_FILE = os.path.join(BASE_PATH, 'data', 'unique_manga_headers.json')
 ANIME_RELATIONS_FILE = os.path.join(BASE_PATH, 'data', 'anime_relations.json')
 ALLOWED_IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "avif", "webp", "gif"}
-IMAGE_EXTENSION_ORDER = ["jpg", "png", "jpeg", "avif", "webp", "gif"]
+# New and migrated covers are WebP.  Keep legacy formats as fallbacks so an
+# interrupted migration never makes a cover disappear.
+IMAGE_EXTENSION_ORDER = ["webp", "avif", "jpg", "jpeg", "png", "gif"]
 VIDEO_EXTENSIONS = {".mp4", ".mkv", ".avi", ".mov", ".webm", ".m4v"}
 MANGA_DEMOGRAPHICS = {"Shounen", "Seinen", "Shoujo", "Josei", "Kids"}
 MANGA_HEADER_GROUPS = ["tags", "genres", "themes", "demographics"]
@@ -73,6 +76,10 @@ if not os.path.exists(STATIC_FOLDER) or not os.path.exists(TEMPLATES_FOLDER):
     sys.exit(1)
 
 app = Flask(__name__, static_folder=STATIC_FOLDER, template_folder=TEMPLATES_FOLDER)
+# Static covers include a version query derived from their modification time.
+# This lets the browser cache them aggressively while a replaced cover appears
+# immediately instead of being held by an old cache entry.
+app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 60 * 60 * 24 * 30
 jikan_client = JikanClient()
 
 core_bp = Blueprint("core", __name__)
@@ -196,6 +203,83 @@ def find_image_filename(image_folder, title):
     return None
 
 
+def image_url(image_folder, url_prefix, title):
+    """Return a cache-busted local cover URL without rescanning the folder."""
+    filename = find_image_filename(image_folder, title)
+    if not filename:
+        return None
+    try:
+        version = os.stat(os.path.join(image_folder, filename)).st_mtime_ns
+    except OSError:
+        version = 0
+    return f"{url_prefix}/{quote(filename)}?v={version}"
+
+
+def requested_page(items, builder=lambda item: item):
+    """Paginate an API response only when a list page explicitly asks for it."""
+    page_value = request.args.get("page")
+    if page_value is None:
+        return None
+    try:
+        page = max(1, int(page_value))
+        per_page = min(100, max(1, int(request.args.get("per_page", 15))))
+    except ValueError:
+        return jsonify({"error": "page and per_page must be integers"}), 400
+    total = len(items)
+    start = (page - 1) * per_page
+    return jsonify({
+        "items": [builder(item) for item in items[start:start + per_page]],
+        "page": min(page, max(1, (total + per_page - 1) // per_page)),
+        "per_page": per_page,
+        "total": total,
+    })
+
+
+def filter_library_items(items, *, include_unread=False):
+    """Apply list-page filters before pagination so inactive records stay cold."""
+    search = request.args.get("search", "").strip().casefold()
+    selected = {
+        group: {value.casefold() for value in request.args.getlist(group)}
+        for group in ("tags", "genres", "themes", "demographics")
+    }
+    def matches(item):
+        if search:
+            values = [item.get("title"), item.get("season"), item.get("status"), item.get("link")]
+            for group in selected:
+                values.extend(item.get(group, []) or [])
+            if not any(search in str(value or "").casefold() for value in values):
+                return False
+        for group, wanted in selected.items():
+            if wanted and not wanted.intersection(str(value).casefold() for value in item.get(group, []) or []):
+                return False
+        if request.args.get("unwatched") == "1" and item.get("watched") is True:
+            return False
+        if include_unread and request.args.get("unread") == "1" and item.get("read") is True:
+            return False
+        if request.args.get("ongoing") == "1" and str(item.get("status", "")).casefold() != "ongoing":
+            return False
+        return not (request.args.get("bookmarked") == "1" and item.get("bookmarked") is not True)
+    return [item for item in items if matches(item)]
+
+
+def webp_bytes(source):
+    """Decode a supplied cover and return a compact, browser-friendly WebP."""
+    try:
+        from PIL import Image, ImageOps
+        with Image.open(source) as image:
+            # Covers are static artwork; flatten alpha onto a neutral background
+            # so all formats can use efficient lossy WebP encoding.
+            image = ImageOps.exif_transpose(image).convert("RGBA")
+            background = Image.new("RGBA", image.size, (18, 18, 20, 255))
+            background.alpha_composite(image)
+            output = BytesIO()
+            background.convert("RGB").save(output, "WEBP", quality=82, method=6)
+            return output.getvalue()
+    except Exception as error:
+        logging.warning("Could not convert cover to WebP: %s", error)
+        return None
+
+
 def save_uploaded_thumbnail(file_storage, title, image_folder):
     if not file_storage or not file_storage.filename:
         return None
@@ -205,11 +289,15 @@ def save_uploaded_thumbnail(file_storage, title, image_folder):
         return None
 
     os.makedirs(image_folder, exist_ok=True)
-    extension = original_filename.rsplit(".", 1)[1].lower()
-    filename = title_to_image_filename(title, extension)
+    filename = title_to_image_filename(title, "webp")
     if filename.startswith("."):
         return None
-    file_storage.save(os.path.join(image_folder, filename))
+    content = webp_bytes(file_storage.stream)
+    if not content:
+        return None
+    with open(os.path.join(image_folder, filename), "wb") as output:
+        output.write(content)
+    _IMAGE_DIRECTORY_CACHE.pop(image_folder, None)
     return filename
 
 def normalize_metadata_values(values):
@@ -371,19 +459,19 @@ def get_section_paths(section):
 def load_section_data(section):
     paths = get_section_paths(section)
     data_file = paths["DATA_FILE"]
+    return deepcopy(cached_section_data(data_file, file_version(data_file)))
 
-    if not os.path.exists(data_file):
+
+@lru_cache(maxsize=16)
+def cached_section_data(data_file, version):
+    if version is None:
         return []
-
-    with open(data_file, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
+    with open(data_file, "r", encoding="utf-8") as file:
+        data = json.load(file)
     for item in data:
         item.setdefault("read", False)
         item.setdefault("bookmarked", False)
-
-    data.sort(key=lambda x: x.get("title", "").lower())
-    return data
+    return sorted(data, key=lambda item: item.get("title", "").lower())
 
 def save_section_data(section, data):
     paths = get_section_paths(section)
@@ -698,15 +786,7 @@ def resolve_previous_playback_target(anime, episode, queue_index=None, continuat
 
 def get_section_image(section, title):
     paths = get_section_paths(section)
-
-    for ext in IMAGE_EXTENSION_ORDER:
-        for filename in image_filename_candidates(title, ext):
-            filepath = os.path.join(paths["IMAGE_FOLDER"], filename)
-
-            if os.path.exists(filepath):
-                return f"{paths['IMAGE_URL']}/{filename}"
-
-    return DEFAULT_IMAGE
+    return image_url(paths["IMAGE_FOLDER"], paths["IMAGE_URL"], title) or DEFAULT_IMAGE
 
 @sections_bp.route("/api/<section>")
 def api_section(section):
@@ -714,6 +794,13 @@ def api_section(section):
         return api_anime_tags()
 
     data = load_section_data(section)
+
+    paged = requested_page(filter_library_items(data, include_unread=True), lambda item: {
+        **item,
+        "thumbnail_url": get_section_image(section, item.get("title", "")),
+    })
+    if paged is not None:
+        return paged
 
     for item in data:
         item["thumbnail_url"] = get_section_image(section, item["title"])
@@ -944,11 +1031,14 @@ def normalize_manga_item(item, fallback_id):
     return manga
 
 def load_manga_data():
-    if not os.path.exists(MANGA_DATA_FILE):
-        return []
-    with open(MANGA_DATA_FILE, 'r', encoding='utf-8') as file:
-        raw_data = json.load(file)
+    return deepcopy(cached_manga_data(MANGA_DATA_FILE, file_version(MANGA_DATA_FILE)))
 
+@lru_cache(maxsize=2)
+def cached_manga_data(data_file, version):
+    if version is None:
+        return []
+    with open(data_file, 'r', encoding='utf-8') as file:
+        raw_data = json.load(file)
     data = []
     for index, item in enumerate(extract_manga_items(raw_data), start=1):
         manga = normalize_manga_item(item, index)
@@ -990,8 +1080,7 @@ def enrich_manga_headers(manga):
 
 def get_manga_image(manga):
     title = manga.get("title", "") if isinstance(manga, dict) else manga
-    filename = find_image_filename(MANGA_IMAGE_FOLDER, title)
-    return f"/static/manga_images/{quote(filename)}" if filename else DEFAULT_MANGA_IMAGE
+    return image_url(MANGA_IMAGE_FOLDER, "/static/manga_images", title) or DEFAULT_MANGA_IMAGE
 
 def build_manga_api_item(manga):
     item = dict(manga)
@@ -1059,6 +1148,9 @@ def rebuild_unique_manga_headers(manga_data):
 @manga_bp.route('/api/manga')
 def api_manga():
     manga_data = load_manga_data()
+    paged = requested_page(filter_library_items(manga_data, include_unread=True), build_manga_api_item)
+    if paged is not None:
+        return paged
     return jsonify([build_manga_api_item(manga) for manga in manga_data])
 
 @manga_bp.route('/api/manga-headers')
@@ -1450,9 +1542,12 @@ def save_downloaded_jikan_thumbnail(detail, title, image_folder):
     image_url = detail.get("image_url") if isinstance(detail, dict) else None
     if not image_url:
         return None
-    image_bytes, extension = download_cover_bytes(image_url)
+    image_bytes, _extension = download_cover_bytes(image_url)
+    image_bytes = webp_bytes(BytesIO(image_bytes))
+    if not image_bytes:
+        return None
     os.makedirs(image_folder, exist_ok=True)
-    filename = title_to_image_filename(title, extension)
+    filename = title_to_image_filename(title, "webp")
     destination = os.path.join(image_folder, filename)
     fd, temp_path = tempfile.mkstemp(prefix=f".{filename}.", suffix=".tmp", dir=image_folder)
     try:
@@ -1464,6 +1559,7 @@ def save_downloaded_jikan_thumbnail(detail, title, image_folder):
     finally:
         if os.path.exists(temp_path):
             os.remove(temp_path)
+    _IMAGE_DIRECTORY_CACHE.pop(image_folder, None)
     return filename
 
 
@@ -2047,12 +2143,19 @@ def index():
     return render_template("index.html")
 
 def get_anime_image(title):
-    filename = find_image_filename(IMAGE_FOLDER, title)
-    return f"/static/anime_images/{quote(filename)}" if filename else DEFAULT_IMAGE
+    return image_url(IMAGE_FOLDER, "/static/anime_images", title) or DEFAULT_IMAGE
 
 @anime_bp.route('/api/anime')
 def api_anime():
     anime_data = load_anime_data()
+    def build_item(anime):
+        item = dict(anime)
+        item["thumbnail_url"] = get_anime_image(item.get("title", ""))
+        item.pop("episodes", None)
+        return item
+    paged = requested_page(filter_library_items(anime_data), build_item)
+    if paged is not None:
+        return paged
     for anime in anime_data:
         anime["thumbnail_url"] = get_anime_image(anime["title"])
         if request.args.get('summary') == '1':

@@ -76,6 +76,7 @@ let allAnimeData = [];
 let currentAnimeData = [];
 let currentPage = 1;
 let itemsPerPage = 15;
+let totalAnimeItems = 0;
 let animeTagCatalog = {};
 const activeTagFilters = {
     tags: new Set(),
@@ -169,9 +170,14 @@ function removeAnimeFilterChip(type, key, value) {
     applyAnimeFilters(1);
 }
 
-async function fetchAnimeData() {
+async function fetchAnimeData(page = 1) {
     try {
-        const response = await fetch('/api/anime?summary=1');
+        const params = new URLSearchParams({ page, per_page: itemsPerPage });
+        const search = document.getElementById('search-bar')?.value.trim();
+        if (search) params.set('search', search);
+        Object.entries(activeQuickFilters).forEach(([key, active]) => active && params.set(key, '1'));
+        Object.entries(activeTagFilters).forEach(([group, values]) => values.forEach(value => params.append(group, value)));
+        const response = await fetch(`/api/anime?${params}`);
         if (!response.ok) throw new Error('Failed to fetch anime data');
         return await response.json();
     } catch (error) {
@@ -511,7 +517,7 @@ function getFilteredAnimeData() {
 }
 
 function applyAnimeFilters(page = 1) {
-    setAnimeData(getFilteredAnimeData(), page);
+    loadAnimePage(page);
     updateQuickFilterButtons();
     updateActiveFilterChips();
     saveAnimeFilterState();
@@ -577,18 +583,24 @@ function renderAnimeTagFilters() {
 }
 
 function getTotalPages() {
-    return Math.max(1, Math.ceil(currentAnimeData.length / itemsPerPage));
+    return Math.max(1, Math.ceil(totalAnimeItems / itemsPerPage));
 }
 
-function setAnimeData(items, page = 1) {
+function setAnimeData(items, page = 1, total = items.length) {
     currentAnimeData = [...items];
+    totalAnimeItems = total;
     currentPage = Math.min(Math.max(page, 1), getTotalPages());
     renderAnimePage();
 }
 
 function getPageItems() {
-    const start = (currentPage - 1) * itemsPerPage;
-    return currentAnimeData.slice(start, start + itemsPerPage);
+    return currentAnimeData;
+}
+
+async function loadAnimePage(page = 1) {
+    renderLoadingSkeleton('anime-grid', itemsPerPage);
+    const result = await fetchAnimeData(page);
+    setAnimeData(result.items || [], result.page || page, result.total || 0);
 }
 
 function renderAnimePage() {
@@ -689,7 +701,7 @@ function renderAnimePage() {
 
 function renderPagination() {
     const totalPages = getTotalPages();
-    const total = currentAnimeData.length;
+    const total = totalAnimeItems;
     const start = total ? ((currentPage - 1) * itemsPerPage) + 1 : 0;
     const end = Math.min(currentPage * itemsPerPage, total);
 
@@ -717,9 +729,8 @@ function renderPagination() {
     }
 }
 
-function goToPage(page) {
-    currentPage = Math.min(Math.max(page, 1), getTotalPages());
-    renderAnimePage();
+async function goToPage(page) {
+    await loadAnimePage(Math.min(Math.max(page, 1), getTotalPages()));
     saveAnimeFilterState();
     document.querySelector('.anime-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -833,10 +844,7 @@ async function deleteAnime(animeId) {
         const response = await fetch(`/delete_anime/${animeId}`, { method: 'DELETE' });
         if (!response.ok) throw new Error('Delete failed');
 
-        allAnimeData = allAnimeData.filter(anime => anime.id !== animeId);
-        currentAnimeData = currentAnimeData.filter(anime => anime.id !== animeId);
-        if (currentPage > getTotalPages()) currentPage = getTotalPages();
-        renderAnimePage();
+        await loadAnimePage(currentPage);
     } catch (error) {
         console.error('Error deleting anime:', error);
         alert('An error occurred while deleting the anime.');
@@ -886,18 +894,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         animeSearchTimer = window.setTimeout(filterAnime, 120);
     });
     renderLoadingSkeleton('anime-grid', itemsPerPage);
-    const [animeItems, tagCatalog, continueItems, filterState] = await Promise.all([
-        fetchAnimeData(),
+    const [tagCatalog, continueItems, filterState] = await Promise.all([
         fetchAnimeTagCatalog(),
         fetchContinueWatching(),
         fetchAnimeFilterState()
     ]);
-    allAnimeData = animeItems;
     animeTagCatalog = tagCatalog;
     renderContinueWatching(continueItems);
     renderAnimeTagFilters();
     const restoredPage = restoreAnimeFilterState(filterState);
-    setAnimeData(getFilteredAnimeData(), restoredPage);
+    await loadAnimePage(restoredPage);
     updateQuickFilterButtons();
     updateActiveFilterChips();
 });

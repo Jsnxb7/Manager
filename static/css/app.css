@@ -7780,6 +7780,35 @@ html body.electron-shell .electron-options-status {
     scrollbar-gutter: stable;
 }
 
+/* Static equivalent of the former full-window video background.  This avoids
+   permanent video decode/compositor work while preserving the visual layer. */
+.app-background-still {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: center / cover no-repeat url("/static/images/universal-video-bg.webp");
+    filter: grayscale(0.35) saturate(1.08) contrast(1.12) brightness(0.86);
+    transform: scale(1.015);
+    pointer-events: none;
+}
+
+/* The compact-search/filter state is intentionally slower and eased so it
+   settles instead of snapping while scrolling or opening a filter group. */
+.library-control-strip {
+    transition-duration: 0.48s !important;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.library-toolbar-row,
+.library-toolbar-row .search-bar,
+.library-utility-actions,
+.filter-accordion,
+.active-filter-chips,
+.floating-filter-menu {
+    transition-duration: 0.38s !important;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
 /* Anime relations and Jikan-assisted entry */
 .anime-detail-tabs {
     display: flex;

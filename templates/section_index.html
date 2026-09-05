@@ -72,6 +72,7 @@ let allSectionData = [];
 let currentSectionData = [];
 let currentPage = 1;
 let itemsPerPage = 15;
+let totalSectionItems = 0;
 const activeSectionQuickFilters = {
     unread: false,
     ongoing: false,
@@ -147,8 +148,12 @@ function removeSectionFilterChip(type, key) {
 // -----------------------------
 // FETCH DATA
 // -----------------------------
-async function fetchData() {
-    const res = await fetch(`/api/${SECTION}`);
+async function fetchData(page = 1) {
+    const params = new URLSearchParams({ page, per_page: itemsPerPage });
+    const search = document.getElementById('search-bar')?.value.trim();
+    if (search) params.set('search', search);
+    Object.entries(activeSectionQuickFilters).forEach(([key, active]) => active && params.set(key, '1'));
+    const res = await fetch(`/api/${SECTION}?${params}`);
     return await res.json();
 }
 
@@ -224,25 +229,31 @@ function updateSectionQuickFilterButtons() {
 }
 
 function applySectionFilters(page = 1) {
-    setSectionData(getFilteredSectionData(), page);
+    loadSectionPage(page);
     updateSectionQuickFilterButtons();
     updateActiveFilterChips();
     saveSectionFilterState();
 }
 
 function getTotalPages() {
-    return Math.max(1, Math.ceil(currentSectionData.length / itemsPerPage));
+    return Math.max(1, Math.ceil(totalSectionItems / itemsPerPage));
 }
 
-function setSectionData(items, page = 1) {
+function setSectionData(items, page = 1, total = items.length) {
     currentSectionData = [...items];
+    totalSectionItems = total;
     currentPage = Math.min(Math.max(page, 1), getTotalPages());
     renderPage();
 }
 
 function getPageItems() {
-    const start = (currentPage - 1) * itemsPerPage;
-    return currentSectionData.slice(start, start + itemsPerPage);
+    return currentSectionData;
+}
+
+async function loadSectionPage(page = 1) {
+    renderLoadingSkeleton('grid', itemsPerPage);
+    const result = await fetchData(page);
+    setSectionData(result.items || [], result.page || page, result.total || 0);
 }
 
 // -----------------------------
@@ -272,6 +283,8 @@ function renderPage() {
         img.className = "anime-thumbnail";
         img.src = item.thumbnail_url || "/static/placeholder.jpeg";
         img.alt = item.title;
+        img.loading = "lazy";
+        img.decoding = "async";
 
         const info = document.createElement("div");
         info.className = "anime-info";
@@ -330,7 +343,7 @@ function renderPage() {
 
 function renderPagination() {
     const totalPages = getTotalPages();
-    const total = currentSectionData.length;
+    const total = totalSectionItems;
     const start = total ? ((currentPage - 1) * itemsPerPage) + 1 : 0;
     const end = Math.min(currentPage * itemsPerPage, total);
 
@@ -357,9 +370,8 @@ function renderPagination() {
     }
 }
 
-function goToPage(page) {
-    currentPage = Math.min(Math.max(page, 1), getTotalPages());
-    renderPage();
+async function goToPage(page) {
+    await loadSectionPage(Math.min(Math.max(page, 1), getTotalPages()));
     saveSectionFilterState();
     document.querySelector(".anime-list")?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -522,13 +534,9 @@ function restoreSectionFilterState(state) {
 document.addEventListener("DOMContentLoaded", async () => {
     initLibraryDensity();
     renderLoadingSkeleton('grid', itemsPerPage);
-    const [sectionItems, filterState] = await Promise.all([
-        fetchData(),
-        fetchSectionFilterState()
-    ]);
-    allSectionData = sectionItems;
+    const [filterState] = await Promise.all([fetchSectionFilterState()]);
     const restoredPage = restoreSectionFilterState(filterState);
-    setSectionData(getFilteredSectionData(), restoredPage);
+    await loadSectionPage(restoredPage);
     updateSectionQuickFilterButtons();
     updateActiveFilterChips();
 });
