@@ -622,12 +622,13 @@ def build_playback_target(
     anime, episode, target_type, *, queue_index=None, continuation_queue_index=None,
     resume=False, direction="next"
 ):
-    if queue_index is None:
-        target_url = url_for("player.player", anime_id=anime["id"], episode_number=episode["number"])
-    else:
-        target_url = url_for("queue.queue_player", index=queue_index, episode=episode["number"])
-    if queue_index is None and continuation_queue_index is not None:
-        target_url += ("&" if "?" in target_url else "?") + f"queue_after={continuation_queue_index}"
+    queue_cursor = queue_index if queue_index is not None else continuation_queue_index
+    target_url = url_for(
+        "player.player",
+        anime_id=anime["id"],
+        episode_number=episode["number"],
+        **({"queue_after": queue_cursor} if queue_cursor is not None else {}),
+    )
     if resume:
         target_url += ("&" if "?" in target_url else "?") + "resume=1"
     labels = {
@@ -1894,8 +1895,12 @@ def build_enriched_queue():
             "completed_episodes": progress_summary.get("completed_episodes", 0),
             "total_episodes": progress_summary.get("total_episodes", 0),
             "video_url": (episode or {}).get("video_url"),
-            "player_url": url_for("queue.queue_player", index=index),
-            "legacy_player_url": url_for("player.player", index=index) + "?from_queue=true",
+            "player_url": url_for(
+                "player.player",
+                anime_id=anime_id,
+                episode_number=episode_number,
+                queue_after=index,
+            ) if anime and episode else None,
             "is_now_playing": (
                 last_use.get("anime_id") == anime_id
                 and last_use.get("episode_number") == episode_number
@@ -2007,47 +2012,6 @@ def get_episode_tracking_progress(anime_id, episode_number):
         .get(str(episode_number), {})
     )
     return episode if isinstance(episode, dict) else {}
-
-def get_queue_player_context(index, requested_episode=None):
-    queue_items = build_enriched_queue()
-    if not (0 <= index < len(queue_items)):
-        return None
-
-    current_item = queue_items[index]
-    anime_data = load_anime_data()
-    anime = next((item for item in anime_data if item.get("id") == current_item.get("anime_id")), None)
-    if not anime:
-        return None
-
-    episodes = prepare_anime_episodes_for_player(anime)
-    try:
-        episode_number = int(requested_episode) if requested_episode is not None else current_item.get("episode_number")
-    except (TypeError, ValueError):
-        return None
-    episode = next((item for item in episodes if item.get("number") == episode_number), None)
-    if not episode:
-        return None
-
-    previous_item = queue_items[index - 1] if index > 0 else None
-    next_item = queue_items[index + 1] if index + 1 < len(queue_items) else None
-    next_target = resolve_next_playback_target(anime, episode, queue_index=index)
-    previous_target = resolve_previous_playback_target(anime, episode, queue_index=index)
-
-    return {
-        "queue_items": queue_items,
-        "queue_index": index,
-        "queue_position": index + 1,
-        "queue_total": len(queue_items),
-        "remaining_count": max(0, len(queue_items) - index - 1),
-        "current_item": current_item,
-        "previous_item": previous_item,
-        "next_item": next_item,
-        "anime": anime,
-        "episode": episode,
-        "previous_target": previous_target,
-        "next_target": next_target,
-        "saved_progress": {} if request.args.get("start_over") == "1" else get_episode_tracking_progress(anime["id"], episode["number"])
-    }
 
 ANIME_RELEASE_STATUS_OPTIONS = [
     "Ongoing",
@@ -2360,46 +2324,8 @@ def serve_video(anime_id, filename):
             return send_file(file_path, mimetype='video/mp4')
     return "File not found", 404
 
-@player_bp.route('/player/<int:index>')
 @player_bp.route('/player/<int:anime_id>/<int:episode_number>')
-def player(anime_id=None, episode_number=None, index=None):
-    from_queue = request.args.get('from_queue', 'false').lower() == 'true'
-    queue = load_queue().get("queue", [])
-
-    if from_queue and index is not None:
-        if not (0 <= index < len(queue)):
-            return "Invalid queue index", 404
-
-        queue_item = queue[index]
-        anime_title = queue_item.get("title")
-        anime_id = queue_item.get("id")
-        episode_number = queue_item.get("episode", 1)
-
-        anime_data = load_anime_data()
-        anime = next((a for a in anime_data if a["title"] == anime_title and a["id"] == anime_id), None)
-
-        if not anime:
-            return f"Anime '{anime_title}' not found", 404
-
-        episodes = prepare_anime_episodes_for_player(anime)
-        episode = next((e for e in episodes if e["number"] == episode_number), None)
-
-        if not episode:
-            return f"Episode {episode_number} not found for {anime_title}", 404
-
-        anime["thumbnail_url"] = get_anime_image(anime.get("title", ""))
-        next_target = resolve_next_playback_target(anime, episode, queue_index=index)
-        previous_target = resolve_previous_playback_target(anime, episode, queue_index=index)
-        next_url = next_target.get("url") if next_target else None
-        next_episode_number = next_target.get("episode_number") if next_target else None
-
-        saved_progress = {} if request.args.get("start_over") == "1" else get_episode_tracking_progress(anime_id, episode_number)
-        adjacent_context = get_adjacent_episode_context(anime, episode)
-        return render_template("player.html", anime=anime, episode=episode, queue_index=index,
-                               next_url=next_url, next_episode_number=next_episode_number,
-                               previous_target=previous_target, next_target=next_target,
-                               saved_progress=saved_progress, **adjacent_context)
-
+def player(anime_id, episode_number):
     anime_data = load_anime_data()
     anime = next((item for item in anime_data if item['id'] == anime_id), None)
     if anime:
@@ -2445,13 +2371,6 @@ def get_queue():
 @queue_bp.route("/queue-page")
 def queue_page():
     return render_template("queue.html", queue_items=build_enriched_queue())
-
-@queue_bp.route("/queue-player/<int:index>")
-def queue_player(index):
-    context = get_queue_player_context(index, request.args.get("episode"))
-    if not context:
-        return "Queue item not found", 404
-    return render_template("queue_player.html", **context)
 
 @queue_bp.route('/add_video', methods=['POST'])
 def add_to_queue():

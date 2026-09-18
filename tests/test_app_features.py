@@ -110,6 +110,8 @@ class AppFeatureTests(unittest.TestCase):
             )
             self.assertEqual(queued["type"], "queue")
             self.assertEqual(queued["anime_id"], 2)
+            self.assertEqual(queued["url"], "/player/2/1?queue_after=1")
+            self.assertNotIn("queue-player", queued["url"])
 
     def test_previous_playback_episode_relation_then_queue(self):
         with manager.app.test_request_context("/"):
@@ -129,6 +131,7 @@ class AppFeatureTests(unittest.TestCase):
             self.assertEqual(previous_queue["type"], "queue")
             self.assertEqual(previous_queue["anime_id"], 1)
             self.assertEqual(previous_queue["episode_number"], 2)
+            self.assertEqual(previous_queue["url"], "/player/1/2?queue_after=0")
 
             self.write("QUEUE_FILE", {"queue": [
                 {"id": 2, "title": "Queued"},

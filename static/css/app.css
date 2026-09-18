@@ -7795,13 +7795,13 @@ html body.electron-shell .electron-options-status {
 /* Stable, intentional library-control motion. It never runs during a scroll:
    search focus gets a gentle lift and filter panels expand from their content. */
 .library-control-strip {
-    transition: max-width 420ms cubic-bezier(0.22, 1, 0.36, 1),
-        margin 420ms cubic-bezier(0.22, 1, 0.36, 1),
-        padding 420ms cubic-bezier(0.22, 1, 0.36, 1),
-        border-radius 420ms cubic-bezier(0.22, 1, 0.36, 1),
-        transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
-        box-shadow 260ms ease, border-color 260ms ease,
-        background-color 260ms ease !important;
+    transition: max-width 720ms cubic-bezier(0.16, 1, 0.3, 1),
+        margin 720ms cubic-bezier(0.16, 1, 0.3, 1),
+        padding 720ms cubic-bezier(0.16, 1, 0.3, 1),
+        border-radius 720ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 1000ms cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 420ms ease, border-color 420ms ease,
+        background-color 420ms ease !important;
 }
 
 .anime-list.is-library-engaged .library-control-strip {
@@ -7810,10 +7810,10 @@ html body.electron-shell .electron-options-status {
 }
 
 .library-toolbar-row .search-bar {
-    transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1),
-        padding 420ms cubic-bezier(0.22, 1, 0.36, 1),
-        transform 220ms ease, box-shadow 220ms ease,
-        border-color 220ms ease, background-color 220ms ease !important;
+    transition: width 680ms cubic-bezier(0.16, 1, 0.3, 1),
+        padding 680ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 320ms ease, box-shadow 320ms ease,
+        border-color 320ms ease, background-color 320ms ease !important;
 }
 
 .library-toolbar-row .search-bar:focus {
@@ -7821,11 +7821,11 @@ html body.electron-shell .electron-options-status {
 }
 
 .library-control-strip .filter-accordion {
-    transition: max-height 380ms cubic-bezier(0.22, 1, 0.36, 1),
-        opacity 260ms ease, margin 380ms cubic-bezier(0.22, 1, 0.36, 1),
-        padding 380ms cubic-bezier(0.22, 1, 0.36, 1),
-        background-color 220ms ease, border-color 220ms ease,
-        box-shadow 220ms ease !important;
+    transition: max-height 560ms cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 420ms ease, margin 560ms cubic-bezier(0.16, 1, 0.3, 1),
+        padding 560ms cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 320ms ease, border-color 320ms ease,
+        box-shadow 320ms ease !important;
 }
 
 .library-control-strip .filter-accordion-body {

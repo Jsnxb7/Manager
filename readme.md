@@ -85,7 +85,7 @@ This project is designed for personal/local use. Keep private JSON data, local m
 
 - Persistent queue stored in `data/queue.json`.
 - Dedicated queue page.
-- Queue player page with expandable/retractable sidebar.
+- Queue playback through the standard episode player.
 - Queue progress indicator showing current position and remaining episodes.
 - Queue cards include:
   - anime thumbnail
@@ -179,7 +179,6 @@ entertainment-manager/
     |-- anime_detail.html
     |-- player.html
     |-- queue.html
-    |-- queue_player.html
     |-- settings.html
     |-- settings_preview.html
     |-- add_anime.html

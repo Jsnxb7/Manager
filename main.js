@@ -25,6 +25,7 @@ let isShuttingDown = false;
 let activeFlaskDataPath;
 let activeServerURL;
 let usingCompiledBackend = false;
+let pendingLaunchFilePath = null;
 
 // One Electron process owns the UI and its shared local Flask lifecycle. A
 // second launch focuses the existing window instead of creating another app
@@ -34,7 +35,17 @@ if (!hasSingleInstanceLock) {
     app.quit();
 }
 
-app.on('second-instance', () => {
+app.on('second-instance', (_event, commandLine) => {
+    const launchFilePath = getLaunchFilePath(commandLine);
+    if (launchFilePath) {
+        pendingLaunchFilePath = launchFilePath;
+        if (mainWindow && !mainWindow.isDestroyed() && activeServerURL) {
+            mainWindow.loadURL(
+                `${activeServerURL}/custom_player?launch_path=${encodeURIComponent(launchFilePath)}`
+            );
+        }
+    }
+
     if (!mainWindow || mainWindow.isDestroyed()) return;
     if (mainWindow.isMinimized()) mainWindow.restore();
     mainWindow.focus();
@@ -160,8 +171,8 @@ function getSavedBackendPid() {
     }
 }
 
-function getLaunchFilePath() {
-    const candidates = (process.argv || []).slice(1).filter(Boolean);
+function getLaunchFilePath(commandLine = process.argv) {
+    const candidates = (commandLine || []).slice(1).filter(Boolean);
 
     for (const candidate of candidates) {
         if (!candidate || candidate === app.getPath('exe') || candidate === process.execPath) continue;
@@ -631,7 +642,7 @@ app.whenReady().then(async () => {
         return;
     }
 
-    const launchFilePath = getLaunchFilePath();
+    const launchFilePath = pendingLaunchFilePath || getLaunchFilePath();
     let useLocalServer = !launchFilePath;
 
     if (useLocalServer) {
@@ -762,8 +773,9 @@ app.whenReady().then(async () => {
         }
     });
 
-    const launchTarget = launchFilePath
-        ? `/custom_player?launch_path=${encodeURIComponent(launchFilePath)}`
+    const activeLaunchFilePath = pendingLaunchFilePath || launchFilePath;
+    const launchTarget = activeLaunchFilePath
+        ? `/custom_player?launch_path=${encodeURIComponent(activeLaunchFilePath)}`
         : '/';
 
     const finalURL = `${serverURL}${launchTarget}`;

@@ -25,7 +25,7 @@
             </small>
         </div>
         <div class="page-commandbar-actions">
-            <a href="{{ url_for('queue.queue_player', index=0) if queue_items else url_for('anime.index') }}" class="queue-page-action {% if not queue_items %}is-disabled{% endif %}">Start</a>
+            <a href="{{ queue_items[0].player_url if queue_items and queue_items[0].player_url else url_for('anime.index') }}" class="queue-page-action {% if not queue_items or not queue_items[0].player_url %}is-disabled{% endif %}">Start</a>
             <button type="button" class="queue-page-action queue-clear-watched-btn" {% if not queue_items %}disabled{% endif %}>Clear Watched</button>
             <button type="button" class="queue-page-action danger queue-clear-btn" {% if not queue_items %}disabled{% endif %}>Clear</button>
             <a href="{{ url_for('anime.index') }}" class="queue-page-action subtle">Library</a>
@@ -59,7 +59,7 @@
                         <progress class="queue-item-progress" value="{{ item.progress_percentage }}" max="100" aria-label="{{ item.anime_title }} progress"></progress>
                     </div>
                     <div class="queue-card-actions">
-                        <a href="{{ item.player_url }}" class="queue-play-link">Play</a>
+                        {% if item.player_url %}<a href="{{ item.player_url }}" class="queue-play-link">Play</a>{% endif %}
                         <button class="queue-move-top-btn" data-index="{{ item.index }}" type="button">Top</button>
                         <button class="delete-btn queue-remove-btn" data-index="{{ item.index }}" type="button">Remove</button>
                     </div>

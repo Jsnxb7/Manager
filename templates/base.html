@@ -138,8 +138,7 @@
               <span>{{ item.season }}</span>
               <span>{{ item.progress_label }}</span>
               <progress class="queue-mini-progress" value="{{ item.progress_percentage }}" max="100" aria-label="{{ item.anime_title }} progress"></progress>
-              <a href="{{ item.player_url }}" class="queue-play-link">Queue Player</a>
-              <a href="{{ url_for('player.player', index=loop.index0) }}?from_queue=true" class="queue-mini-direct-play">▶️</a>
+              {% if item.player_url %}<a href="{{ item.player_url }}" class="queue-play-link">Play</a>{% endif %}
             </div>
             <button class="delete-btn" data-index="{{ loop.index0 }}">🗑️</button>
           </li>

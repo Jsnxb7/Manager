@@ -1,18 +1,18 @@
 {
     "schema_version": 1,
-    "updated_at": "2026-09-05T14:55:18.820269+00:00",
+    "updated_at": "2026-09-15T18:32:05.708666+00:00",
     "last_use": {
-        "anime_id": 320,
-        "anime_title": "Karakai Jouzu no Takagi-san",
+        "anime_id": 486,
+        "anime_title": "Food for the Soul",
         "episode_number": 1,
         "episode_title": "Episode 1",
-        "current_time": 2.71,
-        "total_duration": 1417.96,
-        "progress_percentage": 0.19,
-        "last_watched_at": "2026-09-05T14:55:18.820269+00:00"
+        "current_time": 313.03,
+        "total_duration": 1439.99,
+        "progress_percentage": 21.74,
+        "last_watched_at": "2026-09-15T18:32:05.681914+00:00"
     },
     "queue": {
-        "updated_at": "2026-09-05T07:21:49.357512+00:00",
+        "updated_at": "2026-09-12T17:00:52.866505+00:00",
         "order": [
             {
                 "position": 1,
@@ -30,6 +30,24 @@
                 "position": 3,
                 "anime_id": 320,
                 "anime_title": "Karakai Jouzu no Takagi-san",
+                "episode_number": 1
+            },
+            {
+                "position": 4,
+                "anime_id": 24,
+                "anime_title": "Tensei Kizoku, Kantei Skill de Nariagaru",
+                "episode_number": 1
+            },
+            {
+                "position": 5,
+                "anime_id": 486,
+                "anime_title": "Food for the Soul",
+                "episode_number": 1
+            },
+            {
+                "position": 6,
+                "anime_id": 48,
+                "anime_title": "Working",
                 "episode_number": 1
             }
         ]

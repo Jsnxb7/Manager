@@ -407,8 +407,10 @@ function setupLibraryCompactSearch() {
     const measure = () => {
         const topGap = document.body.classList.contains("electron-shell") ? 66 : 26;
         const origin = strip.getBoundingClientRect().top + window.scrollY - topGap;
-        compactAt = origin + 24;
-        expandAt = Math.max(0, origin - 28);
+        // Keep the full controls available through normal reading scroll.
+        // Compact only after a deliberate distance, with a broad return zone.
+        compactAt = origin + 180;
+        expandAt = Math.max(0, origin + 72);
     };
     const updateCompactState = () => {
         const filtersAreOpen = Boolean(filterAccordion?.open);
