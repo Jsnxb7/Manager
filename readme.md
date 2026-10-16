@@ -5,7 +5,7 @@ A local Flask-based media manager for organizing anime, manga, and custom entert
 This project is designed for personal/local use. Keep private JSON data, local media paths, backups, uploaded backgrounds, and large media files out of public GitHub commits.
 
 ## Features
-
+ 
 ### Content Hub
 
 - Central dashboard for Anime, Manga, and custom media sections.
