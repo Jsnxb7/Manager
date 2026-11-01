@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "react-native start",
+    "start": "node tools/cli.cjs start",
     "typecheck": "tsc --noEmit",
     "lint": "eslint App.tsx src tests --ext .ts,.tsx --max-warnings 0",
     "format:check": "prettier --check App.tsx src tests",
     "static": "npm run typecheck && npm run lint && npm run format:check && node tools/check-source.cjs",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "cli": "node tools/cli.cjs"
   },
   "dependencies": {
     "@noble/hashes": "1.8.0",

@@ -7,3 +7,9 @@ TypeScript + React Native Windows/Android rebuild. See ../docs/rebuild/PLAN.md a
 - npm test: full non-native behavior suite; reserved for final verification.
 
 No native compilation or release artifacts have been verified. See packaging/README.md for future EXE installer and signed APK preparation. User data imports locally; no personal catalog is bundled. Original media deletion remains intentional, scoped to locally selected roots.
+
+## Development startup
+
+Use `npm run cli -- run-windows --help` to verify local Windows command discovery without building. The launcher pins the working directory and installed community CLI, bypassing global/npx ambiguity. It also makes an existing default .NET installation visible to its child process without changing saved environment settings.
+
+For a user-authorized development build, keep `npm start` running in one terminal and run `npm run cli -- run-windows --arch x64` in another. Android uses `npm run cli -- run-android`. These launch commands DO compile native code; they were not executed during source verification.

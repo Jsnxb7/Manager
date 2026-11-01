@@ -77,3 +77,5 @@ Final behavior suite: 9 suites, 28 tests passed. Covers JSON/recovery, migration
 No native compilation, APK/EXE packaging, native app launch or real media deletion was performed. No personal library data copied into fixtures/assets. Windows playback uses a separate app-owned native window; Windows covers retain original format when WebP encoding is unavailable; initial reorder/import uses move buttons/file pickers rather than drag/drop. iOS remains an extension point.
 
 Final source audit: Android/Windows host configuration inspected; XML and JS configuration syntax valid; 45 original reference hashes unchanged. Archived pre-import snapshots remain after later saves and can be reviewed/restored. Final suite rerun: 28/28 tests, 9/9 suites passed. Native compilation/device/visual checks remain deferred.
+
+Startup follow-up: added a project-local community CLI launcher with a fixed native workspace and existing .NET path fallback. Verified npm run cli -- run-windows --help, JavaScript syntax and source checks; no native build executed. npm start now uses the same launcher.
