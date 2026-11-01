@@ -1,0 +1,195 @@
+{
+  "reference_branch": "mob_use",
+  "base_commit": "387195109bed8e332ce0d6cda55ca42ffe6acaed",
+  "reference_workspace": "C:\\Users\\shour\\Documents\\Anime\\Manager",
+  "implementation_branch": "codex/react-native-rebuild",
+  "implementation_workspace": "C:\\Users\\shour\\Documents\\Anime\\Manager\\.worktrees\\react-native-rebuild",
+  "recorded_date": "2026-11-01",
+  "notes": [
+    "Source-only hashes; no personal catalog or media content copied.",
+    "Current original workspace includes uncommitted source changes absent from base commit.",
+    "Recheck source hashes at each phase; use original workspace read-only."
+  ],
+  "source_files": [
+    {
+      "path": "anime_relations.py",
+      "sha256": "33eae2c45b0e81cd4a82910407fe71fde7b332014d87ff2f4ae51f4305d0db34"
+    },
+    {
+      "path": "app.py",
+      "sha256": "31f09465638c39a4617b16296490c2923c5aa019371a8a2afa22c5e84fa26e6d"
+    },
+    {
+      "path": "backend_lifecycle.py",
+      "sha256": "6af3af8c3177276ab396750fbd1ff8bb804c4e844b0209f5979cecdb9717aa61"
+    },
+    {
+      "path": "blueprints/custom_player_routes.py",
+      "sha256": "ba7a636d101c81002905fbf98e434bcfac55fabd74681288d98d16ad3795ea1e"
+    },
+    {
+      "path": "buffered_logger.js",
+      "sha256": "3fba736541af4ffeec73f7742e9026098f659cd99b9349b4efceb6982f5aa478"
+    },
+    {
+      "path": "jikan_client.py",
+      "sha256": "851e70cda70a32e19edb9c5386307fd0943d1d2d14a2ba313756da94050b32cf"
+    },
+    {
+      "path": "library_paths.py",
+      "sha256": "6f616337e8ab0d969ff16c709b8f30290cdbc1034e377924b76bafb347971f22"
+    },
+    {
+      "path": "main.js",
+      "sha256": "ff7f1493efd2424de04544c8d370235260eff8a81710d1597dcf321739159382"
+    },
+    {
+      "path": "package.json",
+      "sha256": "ef9833d18a51ea9ba7b778a392e8a1835aa6d6ec8607059d214b307af43ea931"
+    },
+    {
+      "path": "preload.js",
+      "sha256": "86bd357799ef6ded9a90a09a5f9980fb88585e09e8da4ff07d6d00e4b37781a4"
+    },
+    {
+      "path": "readme.md",
+      "sha256": "c6a57b3f6a49f6bfbd61bcda2765e00c13859b1d76112613a492df2bf2266353"
+    },
+    {
+      "path": "rename_anime_paths.py",
+      "sha256": "0da3bfce203106249d9d991522496accb36eb2bf6f15c8dcfb1026e01e9ce1dc"
+    },
+    {
+      "path": "requirements.txt",
+      "sha256": "e72e81bc2e7634be9c77b5f2432630aba14b8d71885e245d72bbd0d5b8fb3a99"
+    },
+    {
+      "path": "setup_anime_folders.py",
+      "sha256": "0ce0e8bab9094b90ee12ce03c4bdefb5a470a072d5ce60fc9df290e0061c52f1"
+    },
+    {
+      "path": "static/css/app.css",
+      "sha256": "d72c11799683b6aeff8401b4e5431098e57791712c4104fbf7357fe48f9b863b"
+    },
+    {
+      "path": "static/css/base_inline.css",
+      "sha256": "402929c5a399490fd5759d52f9013f2e351cb46f251bd61355b08573f4c6b98c"
+    },
+    {
+      "path": "static/css/hub.css",
+      "sha256": "cb5dde2c6d3a54a0fc0b1b209a88eba858a02a3fc09681c3054785c3fcc97626"
+    },
+    {
+      "path": "static/css/player.css",
+      "sha256": "0e58bf7160ede33f1a0c1cc76c6c607694ff9e4c696452a717393c5a6d120a17"
+    },
+    {
+      "path": "static/css/video-player.css",
+      "sha256": "047b35b7a1e55b1ae0042091bcc93070048fd1e2af745bb34cdae72c6e926eba"
+    },
+    {
+      "path": "static/js/jikan_search.js",
+      "sha256": "d1482937d08b5612059c1b508d9923b13e0683ae13a23ebbedfc7b5fe5d24ef3"
+    },
+    {
+      "path": "static/js/player.js",
+      "sha256": "67b40128eb8e8343bba5b12fd8a4483a962bc09600dfcaaa6e608880865d3fa2"
+    },
+    {
+      "path": "static/js/scripts.js",
+      "sha256": "f927e8bb48bf80d18f3bbfe4f4300f3b904ee7fdb23929970f259deeb41f4162"
+    },
+    {
+      "path": "static/js/theme_runtime.js",
+      "sha256": "05a457b74bf407c319aab39471c608cb20dd75b16a86886749ea9eb167394624"
+    },
+    {
+      "path": "templates/add_anime.html",
+      "sha256": "302fb8848ca9c527bacdc782c1979eb03c3669e72c4ad7cf686680e56c6d7afe"
+    },
+    {
+      "path": "templates/add_manga.html",
+      "sha256": "c555bbd0950c866b9c110113e02c8dc9f648eb7049a02e4152d4ead349608332"
+    },
+    {
+      "path": "templates/add_section_item.html",
+      "sha256": "0931972f715e23bcc49afdddcaf8d085e1886324d5da8d700a5e659b3d8c8076"
+    },
+    {
+      "path": "templates/anime_detail.html",
+      "sha256": "ef27c5ce94511cab3971ba003c62ca8bfecf59a724b2883e9a475c735a0a4406"
+    },
+    {
+      "path": "templates/base.html",
+      "sha256": "5c969d2ccdc9608729d2acb8187041f6f875d8a9642820546927c30e414eb99d"
+    },
+    {
+      "path": "templates/custom_player.html",
+      "sha256": "188c7616bc529a72f1252980f4b6db594bf0c8b7833881b7dbfa229848a43ccb"
+    },
+    {
+      "path": "templates/hub.html",
+      "sha256": "194710317621120e755ee555ed8ab22798303d6d92c2bfd9fe71ed10a1f3b4f8"
+    },
+    {
+      "path": "templates/index.html",
+      "sha256": "34c26edb706c8b5568808b2a54b3d19149b5b00476f37db7d8907478e8715636"
+    },
+    {
+      "path": "templates/manga_index.html",
+      "sha256": "ebf5bf139d3cd7d1f597573f0718ce3ebedb6a1e4ba172edfa6adf3f80b2a0ef"
+    },
+    {
+      "path": "templates/player.html",
+      "sha256": "b79b232c3f8eeca408f756613835ac17802e62f66e36fc7a2a70edbba6907e50"
+    },
+    {
+      "path": "templates/queue.html",
+      "sha256": "4708e576e675bdf714e23c39bafb4d06cdf392fe1d0710875f8d0c0ddd330158"
+    },
+    {
+      "path": "templates/section_index.html",
+      "sha256": "55acd803c3062eff5a3c805996047f4544d0cb138d9f7cc4a516bbe50a1616d3"
+    },
+    {
+      "path": "tests/test_anime_relations.py",
+      "sha256": "2147e20f5dd0ed4407817d38305591c7196f268919d6d43272ab900017588486"
+    },
+    {
+      "path": "tests/test_app_features.py",
+      "sha256": "22bc17bfb95a7aa1044bc779f24875039769b0221117d38d0232929d0583aaf2"
+    },
+    {
+      "path": "tests/test_backend_lifecycle.py",
+      "sha256": "5c1e4ce3d1bebd464bdcbb2f3cb184157617eb0dd99cd977ea2216856ce5d7dd"
+    },
+    {
+      "path": "tests/test_buffered_logger.js",
+      "sha256": "232d46f509cac4bce7d3b68d0bb120a12db2be1720415c6514953b09a60e4142"
+    },
+    {
+      "path": "tests/test_custom_media_cleanup.py",
+      "sha256": "08e6cdd8a0c4a35859d7fa45c522bd4913afc93de9665116d7f0e89855c67d44"
+    },
+    {
+      "path": "tests/test_episode_availability.js",
+      "sha256": "d85856062e070e8a70dac2a67ba1b0d2e3957dcae9811f248a18bc820f520264"
+    },
+    {
+      "path": "tests/test_jikan_client.py",
+      "sha256": "cdd971fcfab4f5fc6fb0193b60ee99a001930c2029e0212f254160e59d0c6d21"
+    },
+    {
+      "path": "tests/test_library_path_resolution.py",
+      "sha256": "3edf732692a8715fdd0f509981f187e383189d363f2e36884d0f4cf9280cbb21"
+    },
+    {
+      "path": "tests/test_library_paths.py",
+      "sha256": "668fc12d8acced216f1cfc5b4db116633721829c2b63fb48da6c96ba2b2a15b2"
+    },
+    {
+      "path": "tests/test_player.js",
+      "sha256": "db6a6b3ec6e07d503f3ee9eb2dc168fb03c0346a32a31249e7c14cc42d04ceca"
+    }
+  ]
+}
