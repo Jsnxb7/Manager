@@ -43,3 +43,5 @@ Date: 2026-11-01. Branch: `codex/react-native-rebuild`. Implementation: `native/
 | EXE/APK delivery | `packaging/`, Gradle/C++ release settings | Configuration only; no build artifacts |
 
 The source implementation and non-compiling checks are complete for this pass. It is not a production-ready, device-verified release. The pending platform/visual checks above must remain visible in the handoff.
+
+Startup follow-up: Windows plugin import fails with Unable to find pwsh.exe under a PATH containing Windows system tools and .NET but no PowerShell 7. The repaired launcher succeeds with run-windows --help under that same PATH by discovering an existing developer runtime. Three focused Node environment tests pass (standard installations, existing fallback, PATH preservation/casing); source/configuration and syntax checks pass. This checks command discovery only, not native compilation or app startup. Upstream context: https://github.com/microsoft/react-native-windows/issues/16273.
