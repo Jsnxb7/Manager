@@ -1,6 +1,6 @@
 # Design plan — chrome, ash grey and graphite
 
-Apply the installed frontend-design skill at `C:/Users/shour/.agents/skills/frontend-design/SKILL.md`, verified against Anthropic's published frontend-design source on 2026-11-01. Its process is design plan -> review against brief -> implement -> critique. This document is the planning pass; no UI has been implemented yet.
+Apply the installed frontend-design skill at `C:/Users/shour/.agents/skills/frontend-design/SKILL.md`, verified against Anthropic's published frontend-design source on 2026-11-01. Its process is design plan -> review against brief -> implement -> critique. The source implementation now follows this planning pass; native screenshot critique remains deferred.
 
 ## Palette
 
@@ -17,7 +17,7 @@ Validate foreground/background combinations before assigning text roles. Dark te
 
 ## Typography and geometry
 
-Plan: bundled, license-checked Source Sans 3 for readable library labels and controls, with system fallback. Native rendering must support the intended weights on Android and Windows. Proposed scale: 12/14/16/20/26/34; title wraps rather than truncating essential identity, tabular digits for playback time only. Sentence-case labels, left alignment, no decorative all-caps microcopy.
+Implemented choice: Segoe UI Variable Text on Windows and system sans-serif on Android. This retains native text quality and avoids extra font registration/download overhead. Source Sans 3 remains a future option with bundled license/registration, rather than an unconfigured asset. Proposed scale: 12/14/16/20/26/34; title wraps rather than truncating essential identity, tabular digits for playback time only. Sentence-case labels, left alignment, no decorative all-caps microcopy.
 
 8-point spacing rhythm with 4-point refinements; compact rows and generous touch hit areas. Proposed 6px controls / 10px cards / 16px sheets express hierarchy rather than identical rounded boxes. Thin steel dividers and subtle material highlights suggest brushed metal without texture assets or costly blur. Focus rings are high contrast.
 

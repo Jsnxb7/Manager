@@ -1,7 +1,9 @@
-# Native workspace
+# Anime Manager Native
 
-Phase 0 preparation only. App scaffolding, dependencies and feature code begin after the user's go-ahead.
+TypeScript + React Native Windows/Android rebuild. See ../docs/rebuild/PLAN.md and STATUS.md for phase evidence and limitations.
 
-Read ../docs/rebuild/PLAN.md, DESIGN.md and feature-map.md before implementation. New code lives here; the repository root retains legacy reference code. Windows PC/laptop and Android phone/tablet are the initial targets. Core logic and UI use TypeScript/React Native; required native host/adapters are target-specific.
+- npm ci --ignore-scripts: install pinned JS dependencies without lifecycle builds.
+- npm run static: strict types, lint, formatting and source/config checks.
+- npm test: full non-native behavior suite; reserved for final verification.
 
-No compilation or package generation is authorized. Do not copy personal legacy catalog/media files into assets or fixtures.
+No native compilation or release artifacts have been verified. See packaging/README.md for future EXE installer and signed APK preparation. User data imports locally; no personal catalog is bundled. Original media deletion remains intentional, scoped to locally selected roots.

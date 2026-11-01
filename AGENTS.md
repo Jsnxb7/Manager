@@ -2,7 +2,7 @@
 
 Work only on `codex/react-native-rebuild` in this worktree. Original `mob_use` workspace is a read-only reference; preserve its uncommitted changes. See docs/rebuild/source-reference.json.
 
-Read docs/rebuild/PLAN.md, DESIGN.md and feature-map.md. This is phase 0 until the user explicitly gives go-ahead; no feature implementation or dependency install before then.
+Read docs/rebuild/PLAN.md, DESIGN.md and feature-map.md. User authorized execution on 2026-11-01. Phases 1–9 source implementation and phase 10 non-compiling checks are recorded in STATUS.md and VERIFICATION.md. Native builds remain prohibited.
 
 After go-ahead implement phases in order. Perform and record static checks after each phase; full automated/runtime verification only after all feature phases. Do not compile native hosts, EXE or APK, invoke Gradle/MSBuild/package commands, or trigger external build CI. Clearly report native runtime/release verification as pending when unavailable under that constraint.
 

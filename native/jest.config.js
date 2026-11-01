@@ -1,0 +1,1 @@
+module.exports = { preset: '@react-native/jest-preset', cacheDirectory: require('node:path').join(__dirname,'.cache','jest'), roots: ['<rootDir>/tests'], testRegex: '\.test\.ts$', collectCoverageFrom: ['src/services/**/*.ts','src/repositories/**/*.ts'], coverageDirectory: 'coverage' };

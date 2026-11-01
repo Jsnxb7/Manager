@@ -4,7 +4,7 @@ Source audit: 2026-11-01. This describes the current working tree, including unc
 
 ## 1. Agreed scope
 
-- Rebuild the interface in React Native, with Windows PC, phones, and tablets as targets. Android/iOS and iPadOS are the mobile targets considered here; other desktop systems remain a later scope decision.
+- Rebuild the interface in React Native, with Windows PC, phones, and tablets as targets. Android phone/tablet is the initial mobile target; iOS/iPadOS and other desktop systems remain later scope.
 - Keep local JSON file persistence. No database or hosted backend is required for the core app.
 - Transfer catalog records, metadata, local cover artwork, progress, queue, relations, and custom-section data between devices. **Do not transfer video/media-library files.**
 - Device-specific media paths are acceptable. Each installation selects its own media root once and can change/reselect it later.

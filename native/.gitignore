@@ -19,3 +19,11 @@ build/
 .env.*
 !.env.example
 !package-lock.json
+.bootstrap/
+ios/Pods/
+
+.bundle/
+__tests__/
+windows/**/Bundle/
+
+.cache/
