@@ -29,15 +29,21 @@ describe('Hub interactions in a mocked React Native host', () => {
       tree!.root
         .findAllByType(Button)
         .find(node => node.props.label === label)!;
+    const tile = (label: string) =>
+      tree!.root.findAll(
+        node =>
+          node.props.accessibilityLabel === label &&
+          typeof node.props.onPress === 'function',
+      )[0]!;
     await act(async () => {
-      button('Browse Anime').props.onPress();
+      tile('Browse Anime').props.onPress();
     });
     expect(navigate).toHaveBeenCalledWith({
       name: 'library',
       sectionId: 'anime',
     });
     await act(async () => {
-      button('Add section').props.onPress();
+      tile('Add section').props.onPress();
     });
     await act(async () => {
       tree!.root.findByType(Field).props.onChange('Movies');

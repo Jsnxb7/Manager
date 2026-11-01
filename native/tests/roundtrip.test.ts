@@ -130,7 +130,7 @@ describe('cross-device catalog transfer', () => {
       'Checksum mismatch',
     );
   });
-  it('resolves absolute-numbered complete seasons with one shared directory scan', async () => {
+  it('does not assign absolute-numbered files by ordinal and shares the directory scan', async () => {
     const memory = memoryStorage();
     const opened = await new CatalogRegistry(memory.io).start();
     const c = await opened.repo.mutate(d => {
@@ -157,10 +157,10 @@ describe('cross-device catalog transfer', () => {
       return listing(p);
     };
     const found = await new MediaResolver(memory.io).check(e, opened.settings);
-    expect(Object.values(found).every(v => v.state === 'available')).toBe(true);
+    expect(Object.values(found).every(v => v.state === 'missing')).toBe(true);
     expect(scans).toBe(1);
   });
-  it('requires a local root before intentional media deletion', async () => {
+  it('touches no media without a local root', async () => {
     const memory = memoryStorage();
     const opened = await new CatalogRegistry(memory.io).start();
     const c = await opened.repo.mutate(d => {
@@ -175,11 +175,11 @@ describe('cross-device catalog transfer', () => {
         external: null,
       });
     });
-    await expect(
-      deleteLocalMedia(c.entries[0]!, opened.settings, memory.io),
-    ).rejects.toThrow('Select the local');
+    // With no root there is nothing it may touch: the record alone can go.
+    await deleteLocalMedia(c.entries[0]!, opened.settings, memory.io);
     expect(memory.removed).toEqual([]);
     opened.settings.roots.anime = 'device-root';
+    memory.io.resolveChild = async (root, path) => `${root}/${path}`;
     await deleteLocalMedia(c.entries[0]!, opened.settings, memory.io);
     expect(memory.removed).toEqual(['device-root/Sample/S1']);
   });

@@ -79,7 +79,28 @@ _Use_decl_annotations_ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE, PSTR 
   g_mainWindow = winrt::Microsoft::UI::GetWindowFromWindowId(appWindow.Id());
   g_reactHost = reactNativeWin32App.ReactNativeHost();
   appWindow.Title(L"Anime Manager");
-  appWindow.Resize({1000, 1000});
+  appWindow.Resize({1440, 900});
+  // Pages draw up to the top of the window; only the caption buttons stay on top.
+  {
+    winrt::Windows::UI::Color const panel{0, 0, 0, 0};
+    winrt::Windows::UI::Color const raised{255, 29, 43, 58};
+    winrt::Windows::UI::Color const text{255, 242, 246, 250};
+    winrt::Windows::UI::Color const muted{255, 156, 175, 192};
+    auto titleBar{appWindow.TitleBar()};
+    titleBar.ExtendsContentIntoTitleBar(true);
+    titleBar.BackgroundColor(panel);
+    titleBar.ForegroundColor(text);
+    titleBar.InactiveBackgroundColor(panel);
+    titleBar.InactiveForegroundColor(muted);
+    titleBar.ButtonBackgroundColor(panel);
+    titleBar.ButtonForegroundColor(text);
+    titleBar.ButtonHoverBackgroundColor(raised);
+    titleBar.ButtonHoverForegroundColor(text);
+    titleBar.ButtonPressedBackgroundColor(raised);
+    titleBar.ButtonPressedForegroundColor(text);
+    titleBar.ButtonInactiveBackgroundColor(panel);
+    titleBar.ButtonInactiveForegroundColor(muted);
+  }
 
   // Get the ReactViewOptions so we can set the initial RN component to load
   auto viewOptions{reactNativeWin32App.ReactViewOptions()};

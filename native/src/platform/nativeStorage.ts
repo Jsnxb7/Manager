@@ -101,6 +101,8 @@ export async function createNativeStorage(): Promise<StorageAdapter> {
     deleteMediaFolder: async (root, relativePath) => {
       await call('deleteMediaFolder', { root, relativePath });
     },
+    createMediaFolder: (root, relativePath) =>
+      call<string>('createMediaFolder', { root, relativePath }),
     thumbnail: async (source, destination, width) => {
       await call('thumbnail', { source, destination, width });
     },

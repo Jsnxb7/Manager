@@ -83,11 +83,12 @@
       <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
       <AdditionalIncludeDirectories>
         $(MSBuildThisFileDirectory);
+        $(MSBuildThisFileDirectory)..\third_party\libwebp;
         %(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>mfplay.lib;mfplat.lib;mfuuid.lib;ole32.lib;shell32.lib;user32.lib;windowsapp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfplat.lib;oleaut32.lib;comctl32.lib;mfuuid.lib;ole32.lib;shell32.lib;user32.lib;gdi32.lib;uuid.lib;pathcch.lib;windowscodecs.lib;windowsapp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
@@ -114,6 +115,19 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <!-- Vendored libwebp encoder, plain C outside the app's C++/WinRT settings. -->
+    <ClCompile Include="..\third_party\libwebp\src\enc\*.c;..\third_party\libwebp\src\dsp\*.c;..\third_party\libwebp\src\utils\*.c;..\third_party\libwebp\sharpyuv\*.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <ConformanceMode>false</ConformanceMode>
+      <LanguageStandard></LanguageStandard>
+      <AdditionalOptions></AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="AnimeManager.cpp" />
     <ClCompile Include="AutolinkedNativeModules.g.cpp" />
     <ClCompile Include="pch.cpp">

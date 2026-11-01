@@ -245,6 +245,23 @@ export async function inspectSavedSnapshot(
   };
 }
 
+/** Null when this image cannot be converted, so the original bytes are kept. */
+async function coverAsWebp(
+  source: string,
+  io: StorageAdapter,
+): Promise<Uint8Array | null> {
+  const temporary = `${io.privateRoot}/artwork/${newId('convert')}.webp`;
+  try {
+    await io.mkdir(`${io.privateRoot}/artwork`);
+    await io.thumbnail(source, temporary, 640);
+    const bytes = await io.readBytes(temporary);
+    await io.removeOwned(temporary);
+    return bytes;
+  } catch {
+    return null;
+  }
+}
+
 export async function inspectLegacyFolder(
   root: string,
   repo: JsonRepository,
@@ -303,7 +320,9 @@ export async function inspectLegacyFolder(
       const safeTitle = candidate.title
         .replace(/[<>:"/\\|?*]/g, '-')
         .replace(/\s+/g, ' ')
-        .trim();
+        .trim()
+        // Windows drops trailing dots from file names.
+        .replace(/[. ]+$/, '');
       const image = (await io.list(source)).find(
         f =>
           !f.directory &&
@@ -315,15 +334,17 @@ export async function inspectLegacyFolder(
           ),
       );
       if (image) {
-        const bytes = await io.readBytes(image.uri);
+        const extension = image.name.split('.').pop()!.toLowerCase();
+        const converted =
+          extension === 'webp' ? null : await coverAsWebp(image.uri, io);
+        const bytes = converted ?? (await io.readBytes(image.uri));
         if (bytes.length > 8 * 1024 * 1024) {
           migrated.warnings.push(`Cover too large: ${entry.title}`);
           break;
         }
-        const name = `artwork/${newId('legacy')}.${image.name
-          .split('.')
-          .pop()!
-          .toLowerCase()}`;
+        const name = `artwork/${newId('legacy')}.${
+          converted ? 'webp' : extension
+        }`;
         entry.cover = name;
         artwork[name] = bytes;
         break;

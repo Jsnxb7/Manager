@@ -1,24 +1,35 @@
 import { Platform, StyleSheet } from 'react-native';
 export const colors = {
-  background: '#242629',
-  panel: '#303338',
-  raised: '#42474D',
-  line: '#747C85',
+  // Night blue sampled from the shadowed foothills of the mountain background.
+  background: '#0A131D',
+  panel: '#0A131D',
+  raised: '#1D2B3A',
+  line: '#2A3A4B',
   chrome: '#C9CFD5',
-  text: '#F1F3F5',
-  muted: '#B3BAC2',
-  danger: '#F0B5AF',
-  success: '#B7D6C0',
+  mist: '#F1F3F5',
+  // Hovered controls, then selected ones: the blue of the distant ridges.
+  hover: '#25364A',
+  accent: '#86B8DC',
+  accentSoft: '#1E3A52',
+  // Ash for main text, charcoal-grey for secondary text.
+  text: '#D6DADF',
+  muted: '#8B9299',
+  danger: '#E39E98',
+  success: '#A3C4AF',
 } as const;
-const fontFamily =
-  Platform.OS === 'windows' ? 'Segoe UI Variable Text' : 'sans-serif';
+// Bahnschrift's engineered DIN shapes suit the steel-and-ash look and ship with Windows.
+export const fontFamily =
+  Platform.OS === 'windows' ? 'Bahnschrift' : 'sans-serif-condensed';
+export const displayFamily = fontFamily;
+// Windows draws a heavy white ring on focus; controls show focus with their own colours.
+export const noFocusRing = { enableFocusRing: false } as object;
 export const ui = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
   page: { padding: 24, gap: 16, paddingBottom: 48 },
   row: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8 },
   heading: {
-    fontFamily,
-    fontSize: 30,
+    fontFamily: displayFamily,
+    fontSize: 34,
     fontWeight: '600',
     color: colors.text,
     letterSpacing: -0.5,
@@ -31,19 +42,13 @@ export const ui = StyleSheet.create({
   },
   text: { fontFamily, fontSize: 16, lineHeight: 23, color: colors.text },
   muted: { fontFamily, fontSize: 14, lineHeight: 21, color: colors.muted },
-  card: {
-    backgroundColor: colors.panel,
-    borderRadius: 10,
-    padding: 16,
-    gap: 12,
-  },
+  card: { gap: 12 },
   input: {
-    minHeight: 48,
-    backgroundColor: colors.background,
-    borderWidth: 1,
+    fontFamily,
+    minHeight: 44,
+    borderBottomWidth: 1,
     borderColor: colors.line,
-    borderRadius: 6,
-    paddingHorizontal: 12,
+    paddingHorizontal: 2,
     color: colors.text,
     fontSize: 16,
   },
@@ -51,10 +56,10 @@ export const ui = StyleSheet.create({
   thumbnail: { width: 72 },
   error: { color: colors.danger, fontSize: 14, lineHeight: 21 },
   button: {
-    minHeight: 46,
+    minHeight: 40,
     paddingHorizontal: 16,
-    paddingVertical: 11,
-    borderRadius: 6,
+    paddingVertical: 9,
+    borderRadius: 8,
     backgroundColor: colors.raised,
     alignItems: 'center',
     justifyContent: 'center',
@@ -71,8 +76,8 @@ export const ui = StyleSheet.create({
   primaryText: { color: colors.background },
   dangerText: { color: colors.danger },
   disabled: { opacity: 0.45 },
-  pressed: { borderColor: colors.chrome },
+  pressed: { borderColor: colors.accent },
   small: { fontFamily, fontSize: 12, color: colors.muted },
-  rule: { height: 1, backgroundColor: colors.raised },
+  rule: { height: 1, backgroundColor: colors.line },
   empty: { paddingVertical: 40, gap: 12, alignItems: 'flex-start' },
 });

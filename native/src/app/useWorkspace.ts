@@ -10,7 +10,30 @@ export function useWorkspace() {
   const [settings, setSettings] = useState<DeviceSettings>(emptySettings);
   const [io, setIo] = useState<StorageAdapter | null>(null);
   const [repo, setRepo] = useState<JsonRepository | null>(null);
-  const [error, setError] = useState('');
+  const [error, setShownError] = useState('');
+  const logTo = useRef<StorageAdapter | null>(null);
+  // Errors also go to a small log file so problems can be traced afterwards.
+  const setError = useCallback((value: unknown) => {
+    const message = value === '' ? '' : String(value);
+    setShownError(message);
+    const storage = logTo.current;
+    if (message && storage) {
+      const path = `${storage.privateRoot}/app-log.txt`;
+      storage
+        .exists(path)
+        .then(found => (found ? storage.readText(path) : ''))
+        .then(old =>
+          storage.writeText(
+            path,
+            [
+              ...old.split('\n').slice(-499),
+              `${new Date().toISOString()} ${message}`,
+            ].join('\n'),
+          ),
+        )
+        .catch(() => undefined);
+    }
+  }, []);
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
   const registry = useRef<CatalogRegistry | null>(null);
@@ -24,6 +47,7 @@ export function useWorkspace() {
     setBusy(true);
     try {
       const storage = await createNativeStorage();
+      logTo.current = storage;
       setIo(storage);
       const manager = new CatalogRegistry(storage);
       registry.current = manager;
@@ -31,10 +55,9 @@ export function useWorkspace() {
       setIo(storage);
       setRepo(opened.repo);
       setSavedCatalogs(manager.catalogs);
-      const data = opened.catalog;
       const local = opened.settings;
       if (live.current) {
-        setCatalog(data);
+        setCatalog(opened.catalog);
         setSettings(local);
       }
     } catch (e) {
@@ -49,14 +72,14 @@ export function useWorkspace() {
         setBusy(false);
       }
     }
-  }, []);
+  }, [setError]);
   useEffect(() => {
     live.current = true;
     start().catch(e => setError(String(e)));
     return () => {
       live.current = false;
     };
-  }, [start]);
+  }, [start, setError]);
   const run = async (
     task: () => Promise<void>,
     message = 'Saved',

@@ -22,6 +22,7 @@ export interface StorageAdapter {
   ): Promise<string[]>;
   saveFile(name: string, bytes: Uint8Array): Promise<string | null>;
   resolveChild(root: string, relativePath: string): Promise<string | null>;
+  createMediaFolder(root: string, relativePath: string): Promise<string>;
   deleteMediaFolder(root: string, relativePath: string): Promise<void>;
   thumbnail(source: string, destination: string, width: number): Promise<void>;
   reveal(uri: string): Promise<void>;

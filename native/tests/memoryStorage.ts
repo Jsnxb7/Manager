@@ -68,6 +68,25 @@ export function memoryStorage(privateRoot = 'app') {
     deleteMediaFolder: async (root, path) => {
       removed.push(root + '/' + path);
     },
+    createMediaFolder: async (root, path) => {
+      const parts = path.replace(/\\/g, '/').split('/');
+      if (
+        parts.some(
+          part => !part || part === '.' || part === '..' || part.includes(':'),
+        )
+      ) {
+        throw new Error('Invalid relative reference');
+      }
+      let current = root;
+      for (const part of parts) {
+        current += '/' + part;
+        if (files.has(current)) {
+          throw new Error('Expected a folder');
+        }
+        directories.add(current);
+      }
+      return current;
+    },
     thumbnail: async () => {
       throw new Error('No encoder');
     },

@@ -1,10 +1,289 @@
-import React, { useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  AccessibilityInfo,
+  Animated,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { Workspace } from '../app/useWorkspace';
 import { Route } from '../app/routes';
-import { normalizeImageUri } from '../components/Cover';
+import { coverUri } from '../components/Cover';
 import { Button, Field, Sheet } from '../components/controls';
-import { colors, ui } from '../design/theme';
+import { PanelPage } from '../components/Fade';
+import { Icon, IconButton } from '../components/Icon';
+import {
+  colors,
+  displayFamily,
+  fontFamily,
+  ui,
+  noFocusRing,
+} from '../design/theme';
+import { useViewport } from '../design/viewport';
+
+// Covers fan out like a hand of cards, with the first on top in the middle.
+const FAN = [
+  { left: 46, zIndex: 3, rotate: '0deg', top: 0 },
+  { left: 6, zIndex: 2, rotate: '-7deg', top: 10 },
+  { left: 86, zIndex: 1, rotate: '7deg', top: 10 },
+];
+// On hover the side covers spread further out and the front one lifts.
+function fan(index: number, total: number, open: Animated.Value) {
+  const place = total === 2 ? FAN[index === 0 ? 1 : 2]! : FAN[index]!;
+  const side = place.left < 46 ? -1 : place.left > 46 ? 1 : 0;
+  return {
+    left: place.left,
+    top: place.top,
+    zIndex: place.zIndex,
+    transform: [
+      {
+        translateX: open.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, side * 16],
+        }),
+      },
+      {
+        translateY: open.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, side ? 2 : -8],
+        }),
+      },
+      {
+        rotate: open.interpolate({
+          inputRange: [0, 1],
+          outputRange: [`${side * 7}deg`, `${side * 12}deg`],
+        }),
+      },
+    ],
+  };
+}
+
+const TILE_STEP = 224;
+
+/**
+ * Tiles travel slowly in an endless loop like train carriages. Hovering pauses
+ * them; scrolling, touch or the arrows pause them for a few seconds.
+ */
+function Train({
+  tiles,
+  paused,
+}: {
+  tiles: (clone: boolean) => React.ReactNode[];
+  paused: boolean;
+}): React.JSX.Element {
+  const list = useRef<ScrollView>(null);
+  const offset = useRef(0);
+  const expected = useRef(0);
+  const holdUntil = useRef(0);
+  const glidingUntil = useRef(0);
+  const hovering = useRef(false);
+  const stopped = useRef(paused);
+  stopped.current = paused;
+  const [viewWidth, setViewWidth] = useState(0);
+  const count = tiles(true).length;
+  const setWidth = count * TILE_STEP;
+  const copies = viewWidth ? Math.ceil(viewWidth / setWidth) + 3 : 1;
+  const place = (value: number, animated = false) => {
+    offset.current = value;
+    expected.current = value;
+    list.current?.scrollTo({ x: value, animated });
+  };
+  useEffect(() => {
+    if (viewWidth) {
+      place(setWidth);
+    }
+  }, [viewWidth, setWidth]);
+  useEffect(() => {
+    let reduced = false;
+    AccessibilityInfo.isReduceMotionEnabled?.().then(value => {
+      reduced = value;
+    });
+    let last = Date.now();
+    const timer = setInterval(() => {
+      const now = Date.now();
+      const elapsed = now - last;
+      last = now;
+      if (
+        reduced ||
+        !viewWidth ||
+        hovering.current ||
+        stopped.current ||
+        now < holdUntil.current
+      ) {
+        return;
+      }
+      const next = offset.current + (elapsed * 12) / 1000;
+      place(next >= setWidth * 2 ? next - setWidth : next);
+    }, 16);
+    return () => clearInterval(timer);
+  }, [viewWidth, setWidth]);
+  const page = (direction: 1 | -1) => {
+    holdUntil.current = Date.now() + 6000;
+    glidingUntil.current = Date.now() + 600;
+    const from =
+      direction === 1
+        ? offset.current >= setWidth * 2
+          ? offset.current - setWidth
+          : offset.current
+        : offset.current < viewWidth
+        ? offset.current + setWidth
+        : offset.current;
+    if (from !== offset.current) {
+      place(from);
+    }
+    const pageStep = Math.max(
+      TILE_STEP,
+      Math.floor(viewWidth / TILE_STEP) * TILE_STEP,
+    );
+    place(from + direction * pageStep, true);
+  };
+  return (
+    <Pressable
+      {...noFocusRing}
+      focusable={false}
+      onHoverIn={() => {
+        hovering.current = true;
+      }}
+      onHoverOut={() => {
+        hovering.current = false;
+      }}
+      style={styles.trainRow}
+    >
+      <ScrollView
+        ref={list}
+        horizontal
+        contentContainerStyle={styles.trainContent}
+        showsHorizontalScrollIndicator={false}
+        style={ui.grow}
+        onLayout={e => setViewWidth(e.nativeEvent.layout.width)}
+        onTouchStart={() => {
+          holdUntil.current = Date.now() + 6000;
+        }}
+        scrollEventThrottle={16}
+        onScroll={e => {
+          const x = e.nativeEvent.contentOffset.x;
+          if (Date.now() < glidingUntil.current) {
+            offset.current = x;
+            expected.current = x;
+            return;
+          }
+          if (Math.abs(x - expected.current) > 3) {
+            // The person scrolled it, so hand over control for a while.
+            holdUntil.current = Date.now() + 6000;
+            offset.current = x;
+            expected.current = x;
+            if (x >= setWidth * 2) {
+              place(x - setWidth);
+            } else if (x <= 0) {
+              place(x + setWidth);
+            }
+          }
+        }}
+      >
+        {Array.from({ length: copies }, (_, copy) => (
+          <View key={copy} style={styles.trainSet}>
+            {tiles(copy !== 0)}
+          </View>
+        ))}
+      </ScrollView>
+      <IconButton
+        icon="back"
+        label="Previous"
+        solid
+        style={styles.arrowLeft}
+        onPress={() => page(-1)}
+      />
+      <IconButton
+        icon="forward"
+        label="Next"
+        solid
+        style={styles.arrowRight}
+        onPress={() => page(1)}
+      />
+    </Pressable>
+  );
+}
+
+function Tile({
+  label,
+  title,
+  caption,
+  covers,
+  plus = false,
+  clone,
+  onPress,
+}: {
+  clone: boolean;
+  label: string;
+  title: string;
+  caption: string;
+  covers: string[];
+  plus?: boolean;
+  onPress: () => void;
+}): React.JSX.Element {
+  const [hover, setHover] = useState(false);
+  const [focus, setFocus] = useState(false);
+  const lit = hover || focus;
+  const open = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(open, {
+      toValue: lit ? 1 : 0,
+      duration: 180,
+      useNativeDriver: false,
+    }).start();
+  }, [lit, open]);
+  return (
+    <Pressable
+      {...noFocusRing}
+      accessibilityRole="button"
+      accessibilityLabel={clone ? undefined : label}
+      accessibilityElementsHidden={clone}
+      importantForAccessibility={clone ? 'no-hide-descendants' : 'auto'}
+      focusable={!clone}
+      onPress={onPress}
+      onHoverIn={() => setHover(true)}
+      onHoverOut={() => setHover(false)}
+      onFocus={() => setFocus(true)}
+      onBlur={() => setFocus(false)}
+      style={styles.tile}
+    >
+      <View style={styles.art}>
+        {covers.map((uri, index) => (
+          <Animated.Image
+            key={uri}
+            source={{ uri }}
+            style={[
+              styles.cover,
+              fan(index, covers.length, open),
+              lit && styles.coverLit,
+            ]}
+            resizeMode="cover"
+            accessibilityIgnoresInvertColors
+          />
+        ))}
+        {!plus && covers.length === 0 && (
+          <Text style={styles.letter}>{title.slice(0, 1)}</Text>
+        )}
+        {plus && (
+          <View style={[styles.plus, lit && styles.plusLit]}>
+            <Icon
+              name="plus"
+              size={26}
+              color={lit ? colors.background : colors.chrome}
+            />
+          </View>
+        )}
+      </View>
+      <View style={styles.copy}>
+        <Text style={[styles.title, lit && styles.titleLit]}>{title}</Text>
+        <Text style={ui.muted}>{caption}</Text>
+      </View>
+    </Pressable>
+  );
+}
+
 export function Hub({
   workspace: w,
   navigate,
@@ -14,6 +293,7 @@ export function Hub({
 }): React.JSX.Element {
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState('');
+  const { width } = useViewport();
   const create = () =>
     w.run(async () => {
       const title = name.trim();
@@ -44,60 +324,51 @@ export function Hub({
       setAdding(false);
     }, 'Section created');
   return (
-    <ScrollView contentContainerStyle={ui.page}>
-      <View style={ui.row}>
-        <View style={ui.grow}>
-          <Text accessibilityRole="header" style={ui.heading}>
-            Content Hub
-          </Text>
-          <Text style={ui.muted}>
-            A place for everything you watch and read.
-          </Text>
-        </View>
-        <Button label="Add section" primary onPress={() => setAdding(true)} />
-      </View>
-      <View style={styles.grid}>
-        {w.catalog?.sections.map(section => {
-          const entries = w.catalog!.entries.filter(
-            e => e.sectionId === section.id,
-          );
-          const covers = entries.filter(e => e.cover).slice(0, 3);
-          return (
-            <View key={section.id} style={styles.section}>
-              <View style={styles.collage}>
-                {covers.length ? (
-                  covers.map(entry => (
-                    <Image
-                      key={entry.id}
-                      source={{
-                        uri: normalizeImageUri(
-                          `file://${w.io?.privateRoot}/${entry.cover}`,
-                        ),
-                      }}
-                      style={styles.cover}
-                      accessibilityIgnoresInvertColors
-                    />
-                  ))
-                ) : (
-                  <Text style={styles.emptyArt}>
-                    {section.title.slice(0, 1)}
-                  </Text>
-                )}
-              </View>
-              <View style={styles.copy}>
-                <Text style={ui.subheading}>{section.title}</Text>
-                <Text style={ui.muted}>{entries.length} items</Text>
-                <Button
-                  label={`Browse ${section.title}`}
-                  onPress={() =>
-                    navigate({ name: 'library', sectionId: section.id })
-                  }
-                />
-              </View>
-            </View>
-          );
-        })}
-      </View>
+    <PanelPage center>
+      <Text
+        accessibilityRole="header"
+        style={[styles.hero, width < 700 && styles.heroPhone]}
+      >
+        Content Hub
+      </Text>
+      <Train
+        paused={adding}
+        tiles={clone => [
+          ...(w.catalog?.sections ?? []).map(section => {
+            const entries = w.catalog!.entries.filter(
+              e => e.sectionId === section.id,
+            );
+            const count = entries.length;
+            return (
+              <Tile
+                key={section.id}
+                clone={clone}
+                label={`Browse ${section.title}`}
+                title={section.title}
+                caption={`${count} ${count === 1 ? 'title' : 'titles'}`}
+                covers={entries
+                  .filter(e => e.cover)
+                  .slice(0, 3)
+                  .map(e => coverUri(e, w.io?.privateRoot))}
+                onPress={() =>
+                  navigate({ name: 'library', sectionId: section.id })
+                }
+              />
+            );
+          }),
+          <Tile
+            key="add-section"
+            clone={clone}
+            label="Add section"
+            title="Add section"
+            caption="Start a new library"
+            covers={[]}
+            plus
+            onPress={() => setAdding(true)}
+          />,
+        ]}
+      />
+
       <Sheet
         title="Add content section"
         visible={adding}
@@ -118,29 +389,63 @@ export function Hub({
           }}
         />
       </Sheet>
-    </ScrollView>
+    </PanelPage>
   );
 }
 const styles = StyleSheet.create({
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 20 },
-  section: {
-    minWidth: 240,
-    maxWidth: 420,
-    flexGrow: 1,
-    flexBasis: 280,
-    backgroundColor: colors.panel,
-    borderRadius: 10,
-    overflow: 'hidden',
+  hero: {
+    fontFamily: displayFamily,
+    fontSize: 52,
+    fontWeight: '700',
+    letterSpacing: -1,
+    color: colors.text,
+    textAlign: 'center',
+    marginBottom: 0,
   },
-  collage: {
-    height: 190,
-    flexDirection: 'row',
-    backgroundColor: colors.raised,
-    justifyContent: 'center',
+  heroPhone: { fontFamily, fontSize: 36, letterSpacing: -0.5 },
+  trainRow: { flexDirection: 'row', alignItems: 'center' },
+  // Room for covers to spread and lift on hover without being cut off.
+  trainContent: { paddingVertical: 28 },
+  arrowLeft: { position: 'absolute', left: 12, zIndex: 2 },
+  arrowRight: { position: 'absolute', right: 12, zIndex: 2 },
+  trainSet: { flexDirection: 'row' },
+  tile: { width: 200, marginRight: 24, alignItems: 'center' },
+  art: {
+    width: 200,
+    height: 176,
     alignItems: 'center',
-    overflow: 'hidden',
+    justifyContent: 'center',
   },
-  cover: { height: 210, flex: 1, resizeMode: 'cover' },
-  emptyArt: { fontSize: 76, color: colors.chrome, fontWeight: '300' },
-  copy: { padding: 20, gap: 10 },
+  cover: {
+    position: 'absolute',
+    width: 108,
+    height: 158,
+    borderRadius: 6,
+    opacity: 0.92,
+  },
+  coverLit: { opacity: 1 },
+  letter: {
+    fontFamily: displayFamily,
+    fontSize: 96,
+    fontWeight: '300',
+    color: colors.line,
+  },
+  plus: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.raised,
+  },
+  plusLit: { backgroundColor: colors.chrome },
+  copy: { marginTop: 10, gap: 2, alignItems: 'center' },
+  title: {
+    fontFamily: displayFamily,
+    fontSize: 22,
+    fontWeight: '600',
+    letterSpacing: -0.5,
+    color: colors.text,
+  },
+  titleLit: { fontFamily, color: colors.mist },
 });

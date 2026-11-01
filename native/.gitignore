@@ -27,3 +27,7 @@ __tests__/
 windows/**/Bundle/
 
 .cache/
+
+
+# Icon working files
+tools/icon-candidates/

@@ -83,7 +83,8 @@ class CatalogStorageModule(private val context: ReactApplicationContext) : React
     val result = JSONArray()
     val parent = if (DocumentsContract.isTreeUri(uri) && !uri.path.orEmpty().contains("/document/")) document(uri) else uri
     val children = DocumentsContract.buildChildDocumentsUriUsingTree(uri, DocumentsContract.getDocumentId(parent))
-    context.contentResolver.query(children, arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID, DocumentsContract.Document.COLUMN_DISPLAY_NAME, DocumentsContract.Document.COLUMN_MIME_TYPE, DocumentsContract.Document.COLUMN_SIZE), null, null, null)?.use { cursor ->
+    val query = context.contentResolver.query(children, arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID, DocumentsContract.Document.COLUMN_DISPLAY_NAME, DocumentsContract.Document.COLUMN_MIME_TYPE, DocumentsContract.Document.COLUMN_SIZE), null, null, null) ?: error("Provider could not list folder")
+    query.use { cursor ->
       while (cursor.moveToNext()) result.put(JSONObject().put("name", cursor.getString(1)).put("uri", DocumentsContract.buildDocumentUriUsingTree(uri, cursor.getString(0)).toString()).put("directory", cursor.getString(2) == DocumentsContract.Document.MIME_TYPE_DIR).put("size", cursor.getLong(3)))
     }
     return result
@@ -135,10 +136,36 @@ class CatalogStorageModule(private val context: ReactApplicationContext) : React
           "replace" -> { val source=owned(payload.getString("staged")); val target=owned(payload.getString("destination")); require(source.parentFile == target.parentFile) { "Atomic replacement requires same directory" }; java.nio.file.Files.move(source.toPath(),target.toPath(),java.nio.file.StandardCopyOption.REPLACE_EXISTING,java.nio.file.StandardCopyOption.ATOMIC_MOVE); null }
           "removeOwned" -> { val file=owned(payload.getString("uri")); if(file.exists()) require(file.deleteRecursively()) { "Could not remove app-owned file" }; null }
           "resolveChild" -> resolve(payload.getString("root"),payload.getString("relativePath"))
+          "createMediaFolder" -> {
+            val root = payload.getString("root")
+            require(preferences.getStringSet("roots", emptySet())!!.contains(root)) { "Select the local media root first" }
+            require(root.startsWith("content://") && DocumentsContract.isTreeUri(Uri.parse(root))) { "Folder creation requires a selected document tree" }
+            val segments = parts(payload.getString("relativePath"))
+            var current = document(Uri.parse(root))
+            for (segment in segments) {
+              val children = listing(current)
+              var next: Uri? = null
+              for (index in 0 until children.length()) {
+                val item = children.getJSONObject(index)
+                if (item.getString("name") == segment) {
+                  require(item.getBoolean("directory")) { "A file occupies the requested folder" }
+                  require(next == null) { "Provider returned duplicate folder names" }
+                  next = Uri.parse(item.getString("uri"))
+                }
+              }
+              current = next ?: (DocumentsContract.createDocument(context.contentResolver, current, DocumentsContract.Document.MIME_TYPE_DIR, segment) ?: error("Provider could not create folder"))
+            }
+            current.toString()
+          }
           "deleteMediaFolder" -> {
             val root=payload.getString("root"); require(preferences.getStringSet("roots",emptySet())!!.contains(root)) { "Select the local media root first" }
             val child=resolve(root,payload.getString("relativePath"))
-            if(child != null) { require(child != root); require(child.startsWith("content://")) { "Media deletion requires a selected document tree" }; require(DocumentsContract.deleteDocument(context.contentResolver,Uri.parse(child))) { "Provider could not delete media folder" } }; null
+            if(child != null) {
+              require(child != root); require(child.startsWith("content://")) { "Media deletion requires a selected document tree" }
+              val mime = context.contentResolver.query(Uri.parse(child), arrayOf(DocumentsContract.Document.COLUMN_MIME_TYPE), null, null, null)?.use { cursor -> if (cursor.moveToFirst()) cursor.getString(0) else null }
+              require(mime == DocumentsContract.Document.MIME_TYPE_DIR) { "Expected a media folder" }
+              require(DocumentsContract.deleteDocument(context.contentResolver,Uri.parse(child))) { "Provider could not delete media folder" }
+            }; null
           }
           "thumbnail" -> {
             val width=payload.getInt("width").coerceIn(64,1024)

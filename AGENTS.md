@@ -2,9 +2,9 @@
 
 Work only on `codex/react-native-rebuild` in this worktree. Original `mob_use` workspace is a read-only reference; preserve its uncommitted changes. See docs/rebuild/source-reference.json.
 
-Read docs/rebuild/PLAN.md, DESIGN.md and feature-map.md. User authorized execution on 2026-11-01. Phases 1–9 source implementation and phase 10 non-compiling checks are recorded in STATUS.md and VERIFICATION.md. Native builds remain prohibited.
+Read docs/rebuild/PLAN.md, DESIGN.md and feature-map.md. User authorized execution on 2026-11-01. Phases 1–9 source implementation and phase 10 non-compiling checks are recorded in STATUS.md and VERIFICATION.md. User authorized native Windows builds on 2026-11-02.
 
-After go-ahead implement phases in order. Perform and record static checks after each phase; full automated/runtime verification only after all feature phases. Do not compile native hosts, EXE or APK, invoke Gradle/MSBuild/package commands, or trigger external build CI. Clearly report native runtime/release verification as pending when unavailable under that constraint.
+After go-ahead implement phases in order. Perform and record static checks after each phase; full automated/runtime verification only after all feature phases. Windows development builds and launches are allowed for verification. Do not compile APKs or release packages, invoke Gradle, or trigger external build CI without separate authorization. Clearly report native runtime/release verification as pending when unavailable under that constraint.
 
 Use TypeScript + native React Native controls. No WebView frontend, Python runtime, Electron or required local server. Local JSON is authoritative. Data/artwork transfer excludes videos and device roots/permissions. Imported device paths never authorize deletion outside the locally selected and validated media scope.
 

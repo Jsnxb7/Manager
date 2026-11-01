@@ -7,10 +7,15 @@
 #include <vector>
 #include <stdexcept>
 #include <fstream>
+#include <iterator>
 #include <set>
 #include <sstream>
+#include <string>
+#include <shellapi.h>
 #include <shlobj.h>
 #include <shobjidl.h>
+#include <wincodec.h>
+#include "src/webp/encode.h"
 #include <winrt/Windows.Data.Json.h>
 #include <winrt/Windows.Security.Cryptography.h>
 #include <winrt/Windows.Storage.Streams.h>
@@ -45,6 +50,39 @@ struct CatalogStorage {
     stream.write(text.data(), static_cast<std::streamsize>(text.size())); stream.flush();
     if (!stream) throw std::runtime_error("Cannot save file; check free space and permissions");
   }
+  // Decodes through WIC, shrinks to maxWidth at most and saves as WebP. Throws
+  // on undecodable input so callers can keep the original bytes.
+  static void EncodeWebp(fs::path const &source, fs::path const &destination, UINT maxWidth) {
+    auto const com = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+    if (FAILED(com) && com != RPC_E_CHANGED_MODE) winrt::throw_hresult(com);
+    struct ComScope { bool owned; ~ComScope() { if (owned) CoUninitialize(); } } scope{SUCCEEDED(com)};
+    winrt::com_ptr<IWICImagingFactory> factory;
+    winrt::check_hresult(CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(factory.put())));
+    winrt::com_ptr<IWICBitmapDecoder> decoder;
+    winrt::check_hresult(factory->CreateDecoderFromFilename(source.c_str(), nullptr, GENERIC_READ, WICDecodeMetadataCacheOnDemand, decoder.put()));
+    winrt::com_ptr<IWICBitmapFrameDecode> frame;
+    winrt::check_hresult(decoder->GetFrame(0, frame.put()));
+    UINT width = 0, height = 0;
+    winrt::check_hresult(frame->GetSize(&width, &height));
+    if (!width || !height) throw std::runtime_error("Image has no pixels");
+    UINT const outWidth = maxWidth && width > maxWidth ? maxWidth : width;
+    UINT const outHeight = (std::max)(1u, static_cast<UINT>(static_cast<UINT64>(height) * outWidth / width));
+    winrt::com_ptr<IWICBitmapScaler> scaler;
+    winrt::check_hresult(factory->CreateBitmapScaler(scaler.put()));
+    winrt::check_hresult(scaler->Initialize(frame.get(), outWidth, outHeight, WICBitmapInterpolationModeHighQualityCubic));
+    winrt::com_ptr<IWICFormatConverter> converter;
+    winrt::check_hresult(factory->CreateFormatConverter(converter.put()));
+    winrt::check_hresult(converter->Initialize(scaler.get(), GUID_WICPixelFormat32bppBGRA, WICBitmapDitherTypeNone, nullptr, 0.0, WICBitmapPaletteTypeCustom));
+    UINT const stride = outWidth * 4;
+    std::vector<BYTE> pixels(static_cast<size_t>(stride) * outHeight);
+    winrt::check_hresult(converter->CopyPixels(nullptr, stride, static_cast<UINT>(pixels.size()), pixels.data()));
+    uint8_t *encoded = nullptr;
+    size_t const size = WebPEncodeBGRA(pixels.data(), static_cast<int>(outWidth), static_cast<int>(outHeight), static_cast<int>(stride), 82.0f, &encoded);
+    if (!size || !encoded) throw std::runtime_error("WebP encoding failed");
+    std::string const bytes(reinterpret_cast<char const *>(encoded), size);
+    WebPFree(encoded);
+    Write(destination, bytes);
+  }
   static fs::path Path(winrt::hstring const &value) {
     std::wstring text(value); if (text.rfind(L"file://", 0) == 0) text = text.substr(7);
     return fs::path(text);
@@ -65,13 +103,33 @@ struct CatalogStorage {
   static fs::path Child(fs::path const &parent, winrt::hstring const &relative) {
     std::wstring text(relative); std::replace(text.begin(), text.end(), L'\\', L'/');
     fs::path rel(text);
-    if (rel.empty() || rel.is_absolute() || rel.has_root_name()) throw std::runtime_error("Invalid relative media reference");
+    if (rel.empty() || rel.is_absolute() || rel.has_root_name() || rel.has_root_directory()) throw std::runtime_error("Invalid relative media reference");
     for (auto const &part : rel) if (part == L".." || part == L"." || part.wstring().find(L':') != std::wstring::npos) throw std::runtime_error("Invalid relative media reference");
     auto target = parent / rel;
     if (!Within(parent, target)) throw std::runtime_error("Media reference escapes selected root");
     return target;
   }
   static Json::IJsonValue String(std::wstring const &text) { return Json::JsonValue::CreateStringValue(text); }
+  fs::path MediaTarget(fs::path const &parent, winrt::hstring const &relative) {
+    if (!Roots().count(parent.wstring())) throw std::runtime_error("Select the local media root first");
+    auto target = Child(parent, relative);
+    // Inspect lexical ancestors, before canonicalisation can hide a junction.
+    auto walk = target.root_path();
+    for (auto const &part : target.relative_path()) {
+      auto name = part.wstring();
+      auto base = name.substr(0, name.find(L'.'));
+      std::transform(base.begin(), base.end(), base.begin(), ::towlower);
+      if (base == L"con" || base == L"prn" || base == L"aux" || base == L"nul" || (base.size() == 4 && (base.substr(0, 3) == L"com" || base.substr(0, 3) == L"lpt") && base[3] >= L'1' && base[3] <= L'9')) throw std::runtime_error("Reserved media folder name");
+      if (name.empty() || name.back() == L'.' || name.back() == L' ' || name.find_first_of(L"<>\"|?*") != std::wstring::npos || std::any_of(name.begin(), name.end(), [](wchar_t c) { return c < 32; })) throw std::runtime_error("Invalid media folder name");
+      walk /= part;
+      auto attributes = GetFileAttributesW(walk.c_str());
+      if (attributes == INVALID_FILE_ATTRIBUTES) {
+        auto error = GetLastError();
+        if (error != ERROR_FILE_NOT_FOUND && error != ERROR_PATH_NOT_FOUND) throw std::runtime_error("Cannot inspect media folder");
+      } else if ((attributes & FILE_ATTRIBUTE_REPARSE_POINT) || !(attributes & FILE_ATTRIBUTE_DIRECTORY)) throw std::runtime_error("Media path must contain only ordinary folders");
+    }
+    return target;
+  }
   static Json::IJsonValue Null() { return Json::JsonValue::CreateNullValue(); }
   std::set<std::wstring> Roots() {
     std::set<std::wstring> result;
@@ -150,10 +208,23 @@ struct CatalogStorage {
       } return result;
     }
     if (method == "resolveChild") { auto path = Child(Path(args.GetNamedString(L"root")), args.GetNamedString(L"relativePath")); return fs::exists(path) ? String(path.wstring()) : Null(); }
+    if (method == "createMediaFolder") {
+      auto parent = Path(args.GetNamedString(L"root"));
+      if (!fs::is_directory(parent)) throw std::runtime_error("Selected media root is unavailable");
+      auto target = MediaTarget(parent, args.GetNamedString(L"relativePath"));
+      auto walk = parent;
+      for (auto const &part : target.lexically_relative(parent)) {
+        walk /= part;
+        MediaTarget(parent, winrt::hstring(walk.lexically_relative(parent).wstring()));
+        fs::create_directory(walk);
+        MediaTarget(parent, winrt::hstring(walk.lexically_relative(parent).wstring()));
+      }
+      return String(target.wstring());
+    }
     if (method == "deleteMediaFolder") {
       auto parent = Path(args.GetNamedString(L"root"));
       if (!Roots().count(parent.wstring())) throw std::runtime_error("Select the local media root first");
-      auto target = Child(parent, args.GetNamedString(L"relativePath"));
+      auto target = MediaTarget(parent, args.GetNamedString(L"relativePath"));
       if (!fs::exists(target)) return Null();
       if (!fs::is_directory(target)) throw std::runtime_error("Expected a season folder");
       auto walk = parent;
@@ -162,16 +233,19 @@ struct CatalogStorage {
       fs::remove_all(target); return Null();
     }
     if (method == "reveal") { auto path = Path(args.GetNamedString(L"uri")); ShellExecuteW(nullptr, L"open", path.c_str(), nullptr, nullptr, SW_SHOWNORMAL); return Null(); }
-    if (method == "thumbnail") throw std::runtime_error("WebP encoder unavailable in this host; original cover format will be preserved");
+    if (method == "thumbnail") {
+      EncodeWebp(Path(args.GetNamedString(L"source")), Owned(args.GetNamedString(L"destination")), static_cast<UINT>(args.GetNamedNumber(L"width")));
+      return Null();
+    }
     throw std::runtime_error("Unknown storage operation");
   }
-  REACT_METHOD(execute)
+  REACT_METHOD(Execute, L"execute")
   void Execute(std::string method, std::string json, winrt::Microsoft::ReactNative::ReactPromise<std::string> promise) noexcept {
     if (method == "pickFolder" || method == "pickFiles" || method == "saveFile") {
       context.UIDispatcher().Post([this, method, json, promise]() noexcept {
         try { promise.Resolve(winrt::to_string(Pick(method, Json::JsonObject::Parse(winrt::to_hstring(json))).Stringify())); }
         catch (std::exception const &error) { promise.Reject(error.what()); }
-        catch (winrt::hresult_error const &error) { promise.Reject(winrt::to_string(error.message())); }
+        catch (winrt::hresult_error const &error) { promise.Reject(error.message().c_str()); }
       });
     } else { Dispatch(method, json, promise); }
   }
@@ -179,6 +253,6 @@ struct CatalogStorage {
     co_await winrt::resume_background();
     try { promise.Resolve(winrt::to_string(Operation(method, Json::JsonObject::Parse(winrt::to_hstring(json))).Stringify())); }
     catch (std::exception const &error) { promise.Reject(error.what()); }
-    catch (winrt::hresult_error const &error) { promise.Reject(winrt::to_string(error.message())); }
+    catch (winrt::hresult_error const &error) { promise.Reject(error.message().c_str()); }
   }
 };

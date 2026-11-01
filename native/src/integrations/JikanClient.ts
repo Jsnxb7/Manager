@@ -12,12 +12,120 @@ export type SearchResult = {
   themes?: { name: string }[];
   demographics?: { name: string }[];
 };
+class RateLimitError extends Error {}
+const decodeHtml = (value: string) =>
+  value.replace(
+    /&(#x[\da-f]+|#\d+|amp|quot|apos|lt|gt|nbsp);/gi,
+    (entity, code: string) => {
+      if (code[0] === '#') {
+        const point =
+          code.charAt(1).toLowerCase() === 'x'
+            ? parseInt(code.slice(2), 16)
+            : Number(code.slice(1));
+        return point > 0 && point <= 0x10ffff
+          ? String.fromCodePoint(point)
+          : entity;
+      }
+      return (
+        (
+          {
+            amp: '&',
+            quot: '"',
+            apos: "'",
+            lt: '<',
+            gt: '>',
+            nbsp: ' ',
+          } as Record<string, string>
+        )[code.toLowerCase()] ?? entity
+      );
+    },
+  );
+const plainText = (html: string) =>
+  decodeHtml(
+    html
+      .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, ' ')
+      .replace(/<[^>]+>/g, ' '),
+  )
+    .replace(/\s+/g, ' ')
+    .trim();
+function malDetail(
+  html: string,
+  kind: 'anime' | 'manga',
+  id: number,
+  suggestion?: SearchResult,
+): SearchResult {
+  const meta = (name: string) => {
+    for (const tag of html.match(/<meta\b[^>]*>/gi) ?? []) {
+      const attributes: Record<string, string> = {};
+      for (const match of tag.matchAll(/([\w:-]+)\s*=\s*(["'])([\s\S]*?)\2/g)) {
+        attributes[match[1]!.toLowerCase()] = decodeHtml(match[3] ?? '').trim();
+      }
+      if ((attributes.property ?? attributes.name) === name) {
+        return attributes.content ?? '';
+      }
+    }
+    return '';
+  };
+  const fragment = (label: string) =>
+    new RegExp(
+      `<span[^>]*class=["'][^"']*dark_text[^"']*["'][^>]*>\\s*${label}:\\s*</span>([\\s\\S]*?)(?=<br\\s*/?>|</div>)`,
+      'i',
+    ).exec(html)?.[1] ?? '';
+  const field = (label: string) => plainText(fragment(label));
+  const names = (plural: string, singular: string) => {
+    const part = fragment(plural) || fragment(singular);
+    const links = [...part.matchAll(/<a\b[^>]*>([\s\S]*?)<\/a>/gi)].map(m =>
+      plainText(m[1] ?? ''),
+    );
+    return [
+      ...new Set(
+        links.length
+          ? links
+          : plainText(part)
+              .split(',')
+              .map(v => v.trim()),
+      ),
+    ]
+      .filter(v => v && v.toLowerCase() !== 'none found')
+      .map(name => ({ name }));
+  };
+  return {
+    mal_id: id,
+    title: meta('og:title') || suggestion?.title || 'Untitled',
+    type: field('Type') || suggestion?.type || '',
+    status: field('Status') || suggestion?.status || '',
+    episodes:
+      kind === 'anime'
+        ? Number(/\d+/.exec(field('Episodes'))?.[0]) || null
+        : null,
+    images: {
+      jpg: {
+        image_url: meta('og:image') || suggestion?.images?.jpg?.image_url || '',
+      },
+    },
+    url:
+      meta('og:url') ||
+      suggestion?.url ||
+      `https://myanimelist.net/${kind}/${id}`,
+    genres: names('Genres', 'Genre'),
+    themes: names('Themes', 'Theme'),
+    demographics: names('Demographics', 'Demographic'),
+  };
+}
 export class JikanClient {
   private cache = new Map<string, { expires: number; value: unknown }>();
   private inFlight = new Map<string, Promise<unknown>>();
   private tail: Promise<void> = Promise.resolve();
   private lastRequest = 0;
-  private request<T>(path: string, signal: AbortSignal): Promise<T> {
+  private suggestions = new Map<string, SearchResult>();
+  private request<T>(
+    path: string,
+    signal: AbortSignal,
+    text = false,
+  ): Promise<T> {
+    if (signal.aborted) {
+      return Promise.reject(new Error('Search cancelled'));
+    }
     const cached = this.cache.get(path);
     if (cached && cached.expires > Date.now()) {
       return Promise.resolve(cached.value as T);
@@ -43,12 +151,22 @@ export class JikanClient {
       const timeout = setTimeout(() => controller.abort(), 8000);
       try {
         this.lastRequest = Date.now();
-        const response = await fetch(`https://api.jikan.moe/v4/${path}`, {
-          signal: controller.signal,
-          headers: { Accept: 'application/json' },
-        });
+        const response = await fetch(
+          path.startsWith('https://')
+            ? path
+            : `https://api.jikan.moe/v4/${path}`,
+          {
+            signal: controller.signal,
+            headers: {
+              Accept: text
+                ? 'text/html,application/xhtml+xml'
+                : 'application/json',
+            },
+          },
+        );
         if (!response.ok) {
-          throw new Error(
+          const ErrorType = response.status === 429 ? RateLimitError : Error;
+          throw new ErrorType(
             response.status === 429
               ? `Metadata search rate limit. Retry after ${
                   response.headers.get('Retry-After') ?? 'a few'
@@ -56,8 +174,16 @@ export class JikanClient {
               : 'Metadata search unavailable. You can enter the title manually.',
           );
         }
-        const value: unknown = await response.json();
-        this.cache.set(path, { value, expires: Date.now() + 600000 });
+        const value: unknown = text
+          ? await response.text()
+          : await response.json();
+        if (signal.aborted) {
+          throw new Error('Search cancelled');
+        }
+        this.cache.set(path, {
+          value,
+          expires: Date.now() + (text ? 3600000 : 600000),
+        });
         if (this.cache.size > 128) {
           this.cache.delete(this.cache.keys().next().value!);
         }
@@ -86,20 +212,116 @@ export class JikanClient {
     if (query.trim().length < 2) {
       return [];
     }
-    return (
-      await this.request<{ data: SearchResult[] }>(
-        `${kind}?q=${encodeURIComponent(query.trim())}&limit=8`,
+    try {
+      const result = await this.request<{ data?: SearchResult[] }>(
+        `${kind}?q=${encodeURIComponent(query.trim())}&limit=8&sfw=true`,
         signal,
+      );
+      if (Array.isArray(result?.data) && result.data.length) {
+        return result.data;
+      }
+    } catch (error) {
+      if (signal.aborted || error instanceof RateLimitError) {
+        throw error;
+      }
+    }
+    const payload = await this.request<{
+      categories?: {
+        type: string;
+        items?: {
+          id: number;
+          name?: string;
+          url?: string;
+          image_url?: string;
+          thumbnail_url?: string;
+          payload?: { media_type?: string; status?: string };
+        }[];
+      }[];
+    }>(
+      `https://myanimelist.net/search/prefix.json?type=${kind}&keyword=${encodeURIComponent(
+        query.trim(),
+      )}&v=1`,
+      signal,
+    );
+    if (!Array.isArray(payload?.categories)) {
+      throw new Error('Metadata search returned an invalid response.');
+    }
+    const results = payload.categories
+      .filter(c => c?.type === kind)
+      .flatMap(c => (Array.isArray(c.items) ? c.items : []))
+      .slice(0, 8)
+      .filter(
+        item =>
+          item && Number.isInteger(Number(item.id)) && Number(item.id) > 0,
       )
-    ).data;
+      .map(item => ({
+        mal_id: Number(item.id),
+        title: item.name || 'Untitled',
+        type: item.payload?.media_type || '',
+        status: item.payload?.status || '',
+        episodes: null,
+        images: {
+          jpg: { image_url: item.image_url || item.thumbnail_url || '' },
+        },
+        url: item.url || `https://myanimelist.net/${kind}/${item.id}`,
+      }));
+    for (const item of results) {
+      this.suggestions.set(`${kind}/${item.mal_id}`, item);
+      if (this.suggestions.size > 128) {
+        this.suggestions.delete(this.suggestions.keys().next().value!);
+      }
+    }
+    return results;
   }
   async detail(
     kind: 'anime' | 'manga',
     id: number,
     signal: AbortSignal,
   ): Promise<SearchResult> {
-    return (await this.request<{ data: SearchResult }>(`${kind}/${id}`, signal))
-      .data;
+    let failure: unknown = new Error('Jikan did not return this title.');
+    try {
+      const result = await this.request<{ data?: SearchResult }>(
+        `${kind}/${id}`,
+        signal,
+      );
+      if (
+        result?.data &&
+        !Array.isArray(result.data) &&
+        Number(result.data.mal_id) === id &&
+        typeof result.data.title === 'string' &&
+        result.data.title.trim()
+      ) {
+        return result.data;
+      }
+    } catch (error) {
+      if (signal.aborted || error instanceof RateLimitError) {
+        throw error;
+      }
+      failure = error;
+    }
+    const suggestion = this.suggestions.get(`${kind}/${id}`);
+    // Use the known MAL origin even if a suggestion contains an unexpected URL.
+    const url = suggestion?.url?.startsWith(
+      `https://myanimelist.net/${kind}/${id}/`,
+    )
+      ? suggestion.url
+      : `https://myanimelist.net/${kind}/${id}`;
+    try {
+      return malDetail(
+        await this.request<string>(url, signal, true),
+        kind,
+        id,
+        suggestion,
+      );
+    } catch (error) {
+      if (signal.aborted || error instanceof RateLimitError) {
+        throw error;
+      }
+      if (suggestion) {
+        return { ...suggestion, genres: [], themes: [], demographics: [] };
+      }
+      throw failure;
+    }
   }
 }
 export const jikan = new JikanClient();

@@ -48,6 +48,8 @@ export type PlaybackState = {
   ready: boolean;
   closed: boolean;
   error: string;
+  /** Set once when the native controls ask for another episode. */
+  request?: string;
   audio: { id: string; label: string }[];
   subtitles: { id: string; label: string }[];
 };

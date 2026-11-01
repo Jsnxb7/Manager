@@ -1,6 +1,9 @@
 #pragma once
 #include "pch.h"
 #include "NativeModules.h"
+#include <shellapi.h>
+#include <stdexcept>
+#include <string>
 inline HWND g_mainWindow = nullptr;
 inline winrt::Microsoft::ReactNative::ReactNativeHost g_reactHost{nullptr};
 REACT_MODULE(WindowControls)
@@ -9,7 +12,7 @@ struct WindowControls {
   bool full=false;LONG style=0;RECT normal{};
   REACT_INIT(Initialize)
   void Initialize(winrt::Microsoft::ReactNative::ReactContext const &value) noexcept {context=value;}
-  REACT_METHOD(execute)
+  REACT_METHOD(Execute, L"execute")
   void Execute(std::string action,winrt::Microsoft::ReactNative::ReactPromise<void> promise) noexcept {
     context.UIDispatcher().Post([this,action,promise]() noexcept {
       try {
@@ -19,7 +22,7 @@ struct WindowControls {
         else if(action=="reload"){g_reactHost.ReloadInstance();}
         else if(action=="restart"){WCHAR path[MAX_PATH];GetModuleFileNameW(nullptr,path,MAX_PATH);if(reinterpret_cast<INT_PTR>(ShellExecuteW(nullptr,L"open",path,nullptr,nullptr,SW_SHOWNORMAL))<=32)throw std::runtime_error("Could not restart app");PostMessageW(g_mainWindow,WM_CLOSE,0,0);}
         else throw std::runtime_error("Unknown window action");promise.Resolve();
-      }catch(std::exception const &error){promise.Reject(error.what());}catch(winrt::hresult_error const &error){promise.Reject(winrt::to_string(error.message()));}
+      }catch(std::exception const &error){promise.Reject(error.what());}catch(winrt::hresult_error const &error){promise.Reject(error.message().c_str());}
     });
   }
 };

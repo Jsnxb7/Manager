@@ -3,19 +3,32 @@ import { FileEntry, StorageAdapter } from '../platform/contracts';
 import { safeRelative } from '../repositories/legacyImport';
 export type Availability =
   | { state: 'available'; uri: string }
-  | { state: 'missing' | 'unlinked' | 'permission'; message: string };
+  | {
+      state: 'missing' | 'unlinked' | 'permission' | 'ambiguous';
+      message: string;
+    };
+const videoExtension = /\.(mp4|mkv|webm|avi|mov|m4v)$/i;
 export function episodeNumber(filename: string): number | null {
-  if (!/\.(mp4|mkv|avi|mov|webm|m4v|ogg)$/i.test(filename)) {
+  if (!videoExtension.test(filename)) {
     return null;
   }
-  const stem = filename.replace(/\.[^.]+$/, '');
+  const stem = filename
+    .replace(/\.[^.]+$/, '')
+    .replace(/\b(?:\d{3,4}p|[xh]\.?26[45]|\d{1,2}bit)\b/gi, ' ');
   if (/^\d+$/.test(stem)) {
     return Number(stem);
   }
+  // Explicit episode markers and release separators outrank title numbers.
   const match =
-    /(?:^|[\s._-])(?:s\d{1,2}e|episodes?|eps?|ep|e)?[\s._-]*(\d{1,4})(?:v\d+)?(?:[\s._-]*(?:end|final))?(?=[\s._-]|$)/i.exec(
+    /(?:^|[\s._[(-])(?:s\d{1,2}e|episodes?|eps?|ep|e)[\s._-]*(\d{1,4})(?:v\d+)?(?=[\s._\])[-]|$)/i.exec(
       stem,
-    );
+    ) ??
+    /(?:^|[\s_])-+[\s_]*(\d{1,4})(?:v\d+)?(?=[\s._\])[-]|$)/i.exec(stem) ??
+    [
+      ...stem.matchAll(
+        /(?:^|[\s._-])(\d{1,4})(?:v\d+)?(?:[\s._-]*(?:end|final))?(?=[\s._\])[-]|$)/gi,
+      ),
+    ].pop();
   return match?.[1] ? Number(match[1]) : null;
 }
 export class MediaResolver {
@@ -44,12 +57,40 @@ export class MediaResolver {
       }
       return results;
     }
-    let listing: FileEntry[] | null = null;
-    let scan: Promise<FileEntry[]> | null = null;
+    const scans = new Map<string, Promise<FileEntry[]>>();
+    const list = (uri: string) => {
+      let scan = scans.get(uri);
+      if (!scan) {
+        scan = this.io.list(uri);
+        scans.set(uri, scan);
+      }
+      return scan;
+    };
+    const isVideo = (file: FileEntry) =>
+      !file.directory && videoExtension.test(file.name);
+    const explicitVideo = async (uri: string) => {
+      // Provider URIs are opaque: validate against the selected folder listing,
+      // never manufacture a parent document URI from its encoded identifier.
+      if (uri.startsWith('content://')) {
+        return (
+          !!folder &&
+          (await list(folder)).some(f => f.uri === uri && isVideo(f))
+        );
+      }
+      const split = Math.max(uri.lastIndexOf('/'), uri.lastIndexOf('\\'));
+      return (
+        split >= 0 &&
+        (await list(uri.slice(0, split))).some(f => f.uri === uri && isVideo(f))
+      );
+    };
     const inspect = async (ep: Episode): Promise<void> => {
       try {
         const explicit = settings.episodeFiles[ep.id];
-        if (explicit && (await this.io.exists(explicit))) {
+        if (
+          explicit &&
+          (await this.io.exists(explicit)) &&
+          (await explicitVideo(explicit))
+        ) {
           results[ep.id] = { state: 'available', uri: explicit };
           return;
         }
@@ -60,31 +101,35 @@ export class MediaResolver {
           };
           return;
         }
-        const direct = await this.io.resolveChild(
-          folder,
-          safeRelative(ep.relativeFile),
-        );
-        if (direct) {
-          results[ep.id] = { state: 'available', uri: direct };
+        const videos = (await list(folder)).filter(isVideo);
+        const numbered = videos.filter(f => episodeNumber(f.name) !== null);
+        const exact = numbered.filter(f => episodeNumber(f.name) === ep.number);
+        if (exact.length > 1) {
+          results[ep.id] = {
+            state: 'ambiguous',
+            message: `Multiple video files claim episode ${ep.number}. Use Locate to select the intended file, or move duplicate releases out of this folder.`,
+          };
           return;
         }
-        scan ??= this.io.list(folder);
-        listing ??= await scan;
-        const numbered = listing
-          .filter(f => !f.directory && episodeNumber(f.name) !== null)
-          .sort(
-            (a, b) =>
-              (episodeNumber(a.name) ?? 0) - (episodeNumber(b.name) ?? 0) ||
-              a.name.localeCompare(b.name),
+        const relative = safeRelative(ep.relativeFile);
+        const split = relative.lastIndexOf('/');
+        const parent =
+          split < 0
+            ? folder
+            : await this.io.resolveChild(folder, relative.slice(0, split));
+        const direct =
+          parent &&
+          (await list(parent)).find(
+            f => f.name === relative.slice(split + 1) && isVideo(f),
           );
-        const exact = numbered.filter(f => episodeNumber(f.name) === ep.number);
-        const startsAtOne = numbered.some(f => episodeNumber(f.name) === 1);
         const match =
-          exact.length === 1
-            ? exact[0]
-            : !startsAtOne && numbered.length === entry.episodes.length
-            ? numbered[ep.number - 1]
-            : undefined;
+          direct ||
+          exact[0] ||
+          (numbered.length === 0 && videos.length === entry.episodes.length
+            ? [...videos].sort((a, b) => a.name.localeCompare(b.name))[
+                ep.number - 1
+              ]
+            : undefined);
         results[ep.id] = match
           ? { state: 'available', uri: match.uri }
           : {
