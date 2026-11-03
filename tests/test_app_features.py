@@ -150,6 +150,31 @@ class AppFeatureTests(unittest.TestCase):
         self.assertIn(b"relations-tab", response.data)
         self.assertIn(b"relations-panel", response.data)
 
+    def test_library_player_uses_local_assets_and_explicit_next_target(self):
+        response = self.client.get("/player/1/1")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"/static/vendor/videojs/video.min.js?v=8.24.1", response.data)
+        self.assertIn(b"/static/js/player.js", response.data)
+        self.assertIn(b'data-next-url="/player/1/2"', response.data)
+        self.assertIn(b'data-progress-url="/api/tracking/progress"', response.data)
+        self.assertNotIn(b"data-setup", response.data)
+        self.assertNotIn(b"vjs.zencdn.net", response.data)
+
+    def test_custom_player_uses_shared_player_and_playlist_next_target(self):
+        playlist = [
+            {"id": 1, "name": "First.mp4", "path": "/first.mp4"},
+            {"id": 2, "name": "Second.mp4", "path": "/second.mp4"},
+        ]
+        with patch("blueprints.custom_player_routes.load_playlist", return_value=playlist):
+            response = self.client.get("/custom_player/0")
+            last_response = self.client.get("/custom_player/1")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"/static/js/player.js", response.data)
+        self.assertIn(b'data-next-url="/custom_player/1"', response.data)
+        self.assertIn(b'data-progress-url="/api/custom_player/progress"', response.data)
+        self.assertNotIn(b"data-setup", response.data)
+        self.assertIn(b'data-next-url=""', last_response.data)
+
 
 if __name__ == "__main__":
     unittest.main()

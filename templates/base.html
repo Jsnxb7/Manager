@@ -6,6 +6,7 @@
     <title>Anime Manager</title>
     {% block vendor_head %}{% endblock %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css', v='20260905-static-background-stable-library') }}">
+    {% block page_styles %}{% endblock %}
     <style>
         #toast-container {
             position: fixed;

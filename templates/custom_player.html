@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% block body_class %}custom-player-page{% endblock %}
-{% block vendor_head %}<link href="https://vjs.zencdn.net/7.15.4/video-js.css" rel="stylesheet">{% endblock %}
+{% block vendor_head %}<link href="{{ url_for('static', filename='vendor/videojs/video-js.min.css', v='8.24.1') }}" rel="stylesheet">{% endblock %}
+{% block page_styles %}<link href="{{ url_for('static', filename='css/video-player.css', v='20261017') }}" rel="stylesheet">{% endblock %}
 {% block app_background_media %}{% endblock %}
-{% block vendor_scripts %}<script src="https://vjs.zencdn.net/7.15.4/video.min.js"></script>{% endblock %}
+{% block vendor_scripts %}
+<script src="{{ url_for('static', filename='vendor/videojs/video.min.js', v='8.24.1') }}"></script>
+<script src="{{ url_for('static', filename='js/player.js', v='20261017') }}"></script>
+{% endblock %}
 
 {% block content %}
 
@@ -49,7 +53,9 @@
                            controls autoplay preload="auto"
                            data-media-id="{{ current_item.id }}"
                            data-resume-time="{{ saved_progress.current_time | default(0) }}"
-                           data-setup='{}'>
+                           playsinline
+                           data-progress-url="{{ url_for('custom_player.custom_player_progress') }}"
+                           data-next-url="{{ url_for('custom_player.custom_player_play', index=current_index + 1) if current_index is not none and playlist and current_index + 1 < playlist|length else '' }}">
                         <source src="{{ current_item.path }}" type="{{ current_item.mime_type | default('video/mp4') }}">
                     </video>
                 {% else %}
@@ -373,129 +379,6 @@ async function clearPlaylist() {
     window.location.href = '/custom_player';
 }
 
-/* ── Video.js setup ──────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', () => {
-    const videoEl = document.getElementById('video-player');
-    if (!videoEl) return;
-
-    const player = videojs('video-player', {
-        controls: true,
-        autoplay: true,
-        preload: 'auto',
-        playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 2],
-        // Force video.js to read audio/text tracks straight from the browser's
-        // native <video> element rather than its own emulated track handling.
-        // This is what lets embedded MKV/MP4 audio & subtitle tracks show up.
-        html5: {
-            nativeAudioTracks: true,
-            nativeTextTracks: true,
-            nativeVideoTracks: true
-        },
-        controlBar: {
-            children: [
-                'playToggle','volumePanel','currentTimeDisplay','timeDivider',
-                'durationDisplay','progressControl','remainingTimeDisplay',
-                'subsCapsButton', 'audioTrackButton',
-                'playbackRateMenuButton','fullscreenToggle'
-            ]
-        }
-    });
-
-    // subsCapsButton / audioTrackButton auto-hide themselves when there's
-    // nothing to choose from (video.js handles that natively). We just log
-    // what got detected so track-support issues are easy to diagnose per browser.
-    player.ready(() => {
-        const audioTracks = player.audioTracks ? player.audioTracks() : null;
-        const textTracks = player.textTracks ? player.textTracks() : null;
-        console.log(`🎧 Audio tracks detected: ${audioTracks ? audioTracks.length : 0}`);
-        console.log(`💬 Text/subtitle tracks detected: ${textTracks ? textTracks.length : 0}`);
-        if (audioTracks) {
-            for (let i = 0; i < audioTracks.length; i++) {
-                const t = audioTracks[i];
-                console.log(`  audio[${i}]: label="${t.label}" language="${t.language}" enabled=${t.enabled}`);
-            }
-        }
-        if (textTracks) {
-            for (let i = 0; i < textTracks.length; i++) {
-                const t = textTracks[i];
-                console.log(`  text[${i}]: label="${t.label}" kind="${t.kind}" language="${t.language}"`);
-            }
-        }
-        if ((!audioTracks || audioTracks.length < 2) && (!textTracks || textTracks.length === 0)) {
-            console.warn('No selectable audio or subtitle tracks were exposed by the browser for this file. This is expected if the current browser/container combo doesn\'t support inband track parsing (e.g. ASS/SRT-in-MKV subtitles, or audio-track switching outside Chrome/Edge).');
-        }
-    });
-
-    const mediaId = parseInt(videoEl.dataset.mediaId || '0', 10);
-    let saveTimer = null, lastSavedAt = 0;
-
-    function buildPayload(completed = false) {
-        return {
-            media_id: mediaId,
-            current_time: Number(player.currentTime() || 0),
-            total_duration: Number(player.duration() || 0),
-            completed
-        };
-    }
-
-    async function saveProgress(completed = false, beacon = false) {
-        const p = buildPayload(completed);
-        if (!p.total_duration && !p.current_time && !completed) return;
-        const url = '/api/custom_player/progress';
-        if (beacon && navigator.sendBeacon) {
-            navigator.sendBeacon(url, new Blob([JSON.stringify(p)], { type: 'application/json' }));
-            return;
-        }
-        fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p), keepalive: true })
-            .catch(e => console.warn('progress save failed', e));
-    }
-
-    function scheduleSave() {
-        clearTimeout(saveTimer);
-        saveTimer = setTimeout(() => {
-            const now = Date.now();
-            if (now - lastSavedAt < 8000) return;
-            lastSavedAt = now;
-            saveProgress();
-        }, 600);
-    }
-
-    player.ready(() => {
-        const resumeTime = Number(videoEl.dataset.resumeTime || 0);
-        const shouldResume = new URLSearchParams(window.location.search).get('resume') === '1';
-        if (shouldResume && resumeTime > 1) player.currentTime(resumeTime);
-    });
-
-    player.on('timeupdate', scheduleSave);
-    player.on('pause', () => saveProgress());
-    window.addEventListener('beforeunload', () => saveProgress(false, true));
-    window.setupSubtitleImport?.(player, 'cp-subtitle-import-input');
-    window.setupPlayerTrackControls?.(player, {
-        audioSelectId: 'cp-audio-track-select',
-        textSelectId: 'cp-subtitle-track-select',
-        subtitleInputId: 'cp-subtitle-import-input'
-    });
-
-    player.on('ended', async () => {
-        await saveProgress(true);
-        const nextUrl = document.getElementById('player-nav-rails')?.dataset.nextUrl;
-        if (nextUrl) window.location.href = nextUrl;
-    });
-
-    /* Keyboard shortcuts */
-    document.addEventListener('keydown', e => {
-        if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
-        switch (e.key) {
-            case ' ': e.preventDefault(); player.paused() ? player.play() : player.pause(); break;
-            case 'ArrowLeft':  player.currentTime(player.currentTime() - 10); break;
-            case 'ArrowRight': player.currentTime(player.currentTime() + 10); break;
-            case 'ArrowUp':    player.volume(Math.min(player.volume() + 0.1, 1)); break;
-            case 'ArrowDown':  player.volume(Math.max(player.volume() - 0.1, 0)); break;
-            case 'f': player.isFullscreen() ? player.exitFullscreen() : player.requestFullscreen(); break;
-            case 'm': player.muted(!player.muted()); break;
-        }
-    });
-});
 </script>
 
 {% endblock %}

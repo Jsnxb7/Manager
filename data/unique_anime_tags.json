@@ -8,27 +8,27 @@
     "tags": [
         {
             "name": "Comedy",
-            "count": 250
+            "count": 255
         },
         {
             "name": "Romance",
-            "count": 207
+            "count": 206
         },
         {
             "name": "Fantasy",
-            "count": 191
+            "count": 197
         },
         {
             "name": "School",
-            "count": 181
+            "count": 180
         },
         {
             "name": "Action",
-            "count": 103
+            "count": 110
         },
         {
             "name": "Shounen",
-            "count": 103
+            "count": 104
         },
         {
             "name": "Drama",
@@ -36,15 +36,15 @@
         },
         {
             "name": "Slice of Life",
-            "count": 86
+            "count": 87
         },
         {
             "name": "Isekai",
-            "count": 82
+            "count": 84
         },
         {
             "name": "Adventure",
-            "count": 77
+            "count": 79
         },
         {
             "name": "CGDCT",
@@ -56,14 +56,14 @@
         },
         {
             "name": "Supernatural",
-            "count": 57
-        },
-        {
-            "name": "Adult Cast",
-            "count": 49
+            "count": 56
         },
         {
             "name": "Reincarnation",
+            "count": 50
+        },
+        {
+            "name": "Adult Cast",
             "count": 49
         },
         {
@@ -76,7 +76,7 @@
         },
         {
             "name": "Shoujo",
-            "count": 29
+            "count": 30
         },
         {
             "name": "Love Status Quo",
@@ -92,7 +92,7 @@
         },
         {
             "name": "Mystery",
-            "count": 22
+            "count": 23
         },
         {
             "name": "Harem",
@@ -100,7 +100,7 @@
         },
         {
             "name": "Historical",
-            "count": 20
+            "count": 21
         },
         {
             "name": "Gourmet",
@@ -159,23 +159,23 @@
             "count": 9
         },
         {
+            "name": "Josei",
+            "count": 9
+        },
+        {
+            "name": "Medical",
+            "count": 9
+        },
+        {
+            "name": "Survival",
+            "count": 9
+        },
+        {
             "name": "Visual Arts",
             "count": 9
         },
         {
             "name": "Gore",
-            "count": 8
-        },
-        {
-            "name": "Josei",
-            "count": 8
-        },
-        {
-            "name": "Medical",
-            "count": 8
-        },
-        {
-            "name": "Survival",
             "count": 8
         },
         {
@@ -199,15 +199,15 @@
             "count": 6
         },
         {
+            "name": "Villainess",
+            "count": 6
+        },
+        {
             "name": "Military",
             "count": 5
         },
         {
             "name": "Vampire",
-            "count": 5
-        },
-        {
-            "name": "Villainess",
             "count": 5
         },
         {
@@ -290,19 +290,19 @@
     "genres": [
         {
             "name": "Comedy",
-            "count": 247
+            "count": 250
         },
         {
             "name": "Romance",
-            "count": 207
+            "count": 206
         },
         {
             "name": "Fantasy",
-            "count": 191
+            "count": 200
         },
         {
             "name": "Action",
-            "count": 103
+            "count": 110
         },
         {
             "name": "Drama",
@@ -310,11 +310,11 @@
         },
         {
             "name": "Slice of Life",
-            "count": 85
+            "count": 86
         },
         {
             "name": "Adventure",
-            "count": 78
+            "count": 81
         },
         {
             "name": "Supernatural",
@@ -326,7 +326,7 @@
         },
         {
             "name": "Mystery",
-            "count": 22
+            "count": 23
         },
         {
             "name": "Sci-Fi",
@@ -338,7 +338,7 @@
         },
         {
             "name": "Ecchi",
-            "count": 16
+            "count": 17
         },
         {
             "name": "Sports",
@@ -372,11 +372,11 @@
     "themes": [
         {
             "name": "School",
-            "count": 184
+            "count": 187
         },
         {
             "name": "Isekai",
-            "count": 90
+            "count": 96
         },
         {
             "name": "CGDCT",
@@ -384,11 +384,11 @@
         },
         {
             "name": "Reincarnation",
-            "count": 54
+            "count": 56
         },
         {
             "name": "Adult Cast",
-            "count": 53
+            "count": 51
         },
         {
             "name": "Iyashikei",
@@ -407,11 +407,11 @@
             "count": 25
         },
         {
-            "name": "Harem",
-            "count": 21
+            "name": "Historical",
+            "count": 22
         },
         {
-            "name": "Historical",
+            "name": "Harem",
             "count": 21
         },
         {
@@ -444,11 +444,19 @@
         },
         {
             "name": "Anthropomorphic",
-            "count": 11
+            "count": 10
         },
         {
             "name": "Parody",
             "count": 10
+        },
+        {
+            "name": "Medical",
+            "count": 9
+        },
+        {
+            "name": "Survival",
+            "count": 9
         },
         {
             "name": "Visual Arts",
@@ -456,14 +464,6 @@
         },
         {
             "name": "Gore",
-            "count": 8
-        },
-        {
-            "name": "Medical",
-            "count": 8
-        },
-        {
-            "name": "Survival",
             "count": 8
         },
         {
@@ -483,11 +483,11 @@
             "count": 6
         },
         {
-            "name": "Vampire",
-            "count": 5
+            "name": "Villainess",
+            "count": 6
         },
         {
-            "name": "Villainess",
+            "name": "Vampire",
             "count": 5
         },
         {
@@ -558,19 +558,19 @@
     "demographics": [
         {
             "name": "Shounen",
-            "count": 113
+            "count": 123
         },
         {
             "name": "Seinen",
-            "count": 74
+            "count": 71
         },
         {
             "name": "Shoujo",
-            "count": 40
+            "count": 41
         },
         {
             "name": "Josei",
-            "count": 8
+            "count": 9
         },
         {
             "name": "Kids",

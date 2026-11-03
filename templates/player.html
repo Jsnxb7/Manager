@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% block body_class %}player-page{% endblock %}
-{% block vendor_head %}<link href="https://vjs.zencdn.net/7.15.4/video-js.css" rel="stylesheet">{% endblock %}
+{% block vendor_head %}<link href="{{ url_for('static', filename='vendor/videojs/video-js.min.css', v='8.24.1') }}" rel="stylesheet">{% endblock %}
+{% block page_styles %}<link href="{{ url_for('static', filename='css/video-player.css', v='20261017') }}" rel="stylesheet">{% endblock %}
 {% block app_background_media %}{% endblock %}
-{% block vendor_scripts %}<script src="https://vjs.zencdn.net/7.15.4/video.min.js"></script>{% endblock %}
+{% block vendor_scripts %}
+<script src="{{ url_for('static', filename='vendor/videojs/video.min.js', v='8.24.1') }}"></script>
+<script src="{{ url_for('static', filename='js/player.js', v='20261017') }}"></script>
+{% endblock %}
 
 {% block content %}
 
@@ -54,7 +58,9 @@
                            data-anime-id="{{ anime.id }}"
                            data-episode-number="{{ episode.number }}"
                            data-resume-time="{{ saved_progress.current_time|default(0) }}"
-                           data-setup='{}'>
+                           playsinline
+                           data-progress-url="{{ url_for('tracking.api_save_episode_progress') }}"
+                           data-next-url="{{ next_ep_url or '' }}">
                         <source src="{{ episode.video_url }}" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
@@ -181,150 +187,5 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
-    const player = videojs('video-player', {
-        controls: true,
-        autoplay: true,
-        preload: 'auto',
-        playbackRates: [0.5, 1, 1.5, 2],
-        // Force video.js to read audio/text tracks straight from the browser's
-        // native <video> element rather than its own emulated track handling.
-        // This is what lets embedded MKV/MP4 audio & subtitle tracks show up.
-        html5: {
-            nativeAudioTracks: true,
-            nativeTextTracks: true,
-            nativeVideoTracks: true
-        },
-        controlBar: {
-            children: [
-                'playToggle', 'volumePanel', 'currentTimeDisplay', 'timeDivider',
-                'durationDisplay', 'progressControl', 'remainingTimeDisplay',
-                'subsCapsButton', 'audioTrackButton',
-                'playbackRateMenuButton', 'fullscreenToggle'
-            ]
-        }
-    });
-
-    // subsCapsButton / audioTrackButton auto-hide themselves when there's
-    // nothing to choose from (video.js handles that natively). We just log
-    // what got detected so track-support issues are easy to diagnose per browser.
-    player.ready(() => {
-        const audioTracks = player.audioTracks ? player.audioTracks() : null;
-        const textTracks = player.textTracks ? player.textTracks() : null;
-        console.log(`🎧 Audio tracks detected: ${audioTracks ? audioTracks.length : 0}`);
-        console.log(`💬 Text/subtitle tracks detected: ${textTracks ? textTracks.length : 0}`);
-        if (audioTracks) {
-            for (let i = 0; i < audioTracks.length; i++) {
-                const t = audioTracks[i];
-                console.log(`  audio[${i}]: label="${t.label}" language="${t.language}" enabled=${t.enabled}`);
-            }
-        }
-        if (textTracks) {
-            for (let i = 0; i < textTracks.length; i++) {
-                const t = textTracks[i];
-                console.log(`  text[${i}]: label="${t.label}" kind="${t.kind}" language="${t.language}"`);
-            }
-        }
-        if ((!audioTracks || audioTracks.length < 2) && (!textTracks || textTracks.length === 0)) {
-            console.warn('No selectable audio or subtitle tracks were exposed by the browser for this file. This is expected if the current browser/container combo doesn\'t support inband track parsing (e.g. ASS/SRT-in-MKV subtitles, or audio-track switching outside Chrome/Edge).');
-        }
-    });
-
-    const trackingState = {
-        animeId: parseInt("{{ anime.id }}", 10),
-        episodeNumber: parseInt("{{ episode.number }}", 10),
-        saveTimer: null,
-        lastSavedAt: 0
-    };
-
-    function buildProgressPayload(completed = false) {
-        return {
-            anime_id: trackingState.animeId,
-            episode_number: trackingState.episodeNumber,
-            current_time: Number(player.currentTime() || 0),
-            total_duration: Number(player.duration() || 0),
-            completed
-        };
-    }
-
-    async function saveEpisodeProgress(completed = false, useBeacon = false) {
-        const payload = buildProgressPayload(completed);
-        if (!payload.total_duration && !payload.current_time && !completed) return;
-
-        if (useBeacon && navigator.sendBeacon) {
-            const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
-            navigator.sendBeacon("/api/tracking/progress", blob);
-            return;
-        }
-
-        await fetch("/api/tracking/progress", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-            keepalive: true
-        }).catch(error => console.warn("Could not save episode progress:", error));
-    }
-
-    function scheduleProgressSave() {
-        window.clearTimeout(trackingState.saveTimer);
-        trackingState.saveTimer = window.setTimeout(() => {
-            const now = Date.now();
-            if (now - trackingState.lastSavedAt < 8000) return;
-            trackingState.lastSavedAt = now;
-            saveEpisodeProgress(false);
-        }, 600);
-    }
-
-    player.ready(() => {
-        const shouldResume = new URLSearchParams(window.location.search).get("resume") === "1";
-        const resumeTime = Number(document.getElementById("video-player")?.dataset.resumeTime || 0);
-        if (shouldResume && resumeTime > 1) {
-            player.currentTime(resumeTime);
-        }
-    });
-
-    player.on("timeupdate", scheduleProgressSave);
-    player.on("pause", () => saveEpisodeProgress(false));
-    window.addEventListener("beforeunload", () => saveEpisodeProgress(false, true));
-    window.setupSubtitleImport?.(player, "subtitle-import-input");
-    window.setupPlayerTrackControls?.(player, {
-        audioSelectId: "player-audio-track-select",
-        textSelectId: "player-subtitle-track-select",
-        subtitleInputId: "subtitle-import-input"
-    });
-
-    const hideBigPlayButton = () => {
-        player.el().classList.add("player-hide-big-play");
-    };
-
-    player.ready(() => {
-        if (!player.paused()) hideBigPlayButton();
-    });
-    player.on("play", hideBigPlayButton);
-    player.on("playing", hideBigPlayButton);
-    player.on("pause", () => {
-        if (!player.ended()) hideBigPlayButton();
-    });
-
-player.on('ended', async function () {
-    await saveEpisodeProgress(true);
-    const nextUrl = {{ (next_target.url if next_target else '')|tojson }};
-    if (nextUrl) window.location.href = nextUrl;
-    else alert("🎉 Playback complete. No queued or related anime remains.");
-});
-
-
-    document.addEventListener('keydown', (event) => {
-        if (event.target.tagName.toLowerCase() === 'input') return;
-        const player = videojs('video-player');
-        switch (event.key) {
-            case ' ': event.preventDefault(); player.paused() ? player.play() : player.pause(); break;
-            case 'ArrowLeft': player.currentTime(player.currentTime() - 10); break;
-            case 'ArrowRight': player.currentTime(player.currentTime() + 10); break;
-            case 'ArrowUp': player.volume(Math.min(player.volume() + 0.1, 1)); break;
-            case 'ArrowDown': player.volume(Math.max(player.volume() - 0.1, 0)); break;
-            case 'f': player.isFullscreen() ? player.exitFullscreen() : player.requestFullscreen(); break;
-            case 'm': player.muted(!player.muted()); break;
-        }
-    });
 });
 </script>{% endblock %}
