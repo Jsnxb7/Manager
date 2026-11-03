@@ -9,7 +9,9 @@ import Video, {
 } from 'react-native-video';
 import { registerPlayerDriver } from './nativePlayer';
 import { PlaybackState } from '../services/progress';
+import { useViewport } from '../design/viewport';
 export default function VideoSurface(): React.JSX.Element {
+  const { height } = useViewport();
   const ref = useRef<VideoRef>(null);
   const state = useRef<PlaybackState>({
     position: 0,
@@ -129,13 +131,19 @@ export default function VideoSurface(): React.JSX.Element {
     state.current.paused = paused;
   }, [paused]);
   return (
-    <View style={styles.frame}>
+    // Short screens (landscape phones) keep the episode rail reachable below.
+    <View style={[styles.frame, { maxHeight: Math.max(200, height - 220) }]}>
       {uri !== '' && (
         <Video
           ref={ref}
           source={{ uri: uri.startsWith('/') ? `file://${uri}` : uri }}
           style={styles.video}
           controls
+          controlsStyles={controlsStyles}
+          resizeMode="contain"
+          fullscreenOrientation="landscape"
+          fullscreenAutorotate
+          subtitleStyle={subtitleStyle}
           paused={paused}
           rate={rate}
           volume={volume}
@@ -196,6 +204,17 @@ export default function VideoSurface(): React.JSX.Element {
     </View>
   );
 }
+// Media3's own controller: seek bar, +/-10 s, and a settings menu for speed, audio
+// and subtitle tracks. Previous and next live on the page.
+const controlsStyles = {
+  hideNext: true,
+  hidePrevious: true,
+  hideSettingButton: false,
+  seekIncrementMS: 10000,
+  hideNavigationBarOnFullScreenMode: true,
+  hideNotificationBarOnFullScreenMode: true,
+};
+const subtitleStyle = { fontSize: 18, paddingBottom: 12, opacity: 1 };
 const styles = StyleSheet.create({
   frame: {
     aspectRatio: 16 / 9,

@@ -3,6 +3,7 @@
 
 #include "pch.h"
 #include "AnimeManager.h"
+#include "resource.h"
 
 #include "AutolinkedNativeModules.g.h"
 
@@ -77,8 +78,25 @@ _Use_decl_annotations_ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE, PSTR 
   // Get the AppWindow so we can configure its initial title and size
   auto appWindow{reactNativeWin32App.AppWindow()};
   g_mainWindow = winrt::Microsoft::UI::GetWindowFromWindowId(appWindow.Id());
+  g_appWindow = appWindow;
   g_reactHost = reactNativeWin32App.ReactNativeHost();
   appWindow.Title(L"Anime Manager");
+  // Taskbar and title bar take the icon from the exe's own resource, not Windows'
+  // icon cache, which can keep showing an older icon after an update.
+  {
+    HINSTANCE const module = GetModuleHandleW(nullptr);
+    auto load = [&](int size) {
+      return static_cast<HICON>(LoadImageW(module, MAKEINTRESOURCEW(IDI_ICON1), IMAGE_ICON, size, size, 0));
+    };
+    UINT const dpi = GetDpiForWindow(g_mainWindow);
+    HICON const bigIcon = load(GetSystemMetricsForDpi(SM_CXICON, dpi));
+    HICON const smallIcon = load(GetSystemMetricsForDpi(SM_CXSMICON, dpi));
+    if (bigIcon) {
+      appWindow.SetIcon(winrt::Microsoft::UI::GetIconIdFromIcon(bigIcon));
+      SendMessageW(g_mainWindow, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(bigIcon));
+    }
+    if (smallIcon) SendMessageW(g_mainWindow, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(smallIcon));
+  }
   appWindow.Resize({1440, 900});
   // Pages draw up to the top of the window; only the caption buttons stay on top.
   {

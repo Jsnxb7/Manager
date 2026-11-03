@@ -1,4 +1,4 @@
-; Source-only installer recipe. It has NOT been compiled or verified on a device.
+; Installer recipe for the staged release folder. See packaging/README.md.
 #define AppVersion "1.0.0"
 #define ReleaseDir "..\..\release\windows"
 #if !FileExists(ReleaseDir + "\AnimeManager.exe")
@@ -23,11 +23,17 @@ ArchitecturesInstallIn64BitMode=x64compatible
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
+SetupIconFile=..\..\windows\AnimeManager\AnimeManager.ico
 UninstallDisplayIcon={app}\AnimeManager.exe
+; Tells Windows to refresh cached icons, so an updated app icon shows at once.
+ChangesAssociations=yes
 [Files]
 Source: "{#ReleaseDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "*.pdb,*.map,*.log,*.json.bak"
 [Icons]
 Name: "{group}\Anime Manager"; Filename: "{app}\AnimeManager.exe"
+Name: "{autodesktop}\Anime Manager"; Filename: "{app}\AnimeManager.exe"; Tasks: desktopicon
+[Tasks]
+Name: "desktopicon"; Description: "Create a desktop shortcut"; Flags: unchecked
 [Run]
 Filename: "{app}\redist\VC_redist.x64.exe"; Parameters: "/install /quiet /norestart"; Flags: waituntilterminated
 Filename: "{app}\AnimeManager.exe"; Description: "Open Anime Manager"; Flags: nowait postinstall skipifsilent

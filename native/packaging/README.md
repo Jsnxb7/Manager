@@ -25,3 +25,8 @@ No native build, APK assembly, EXE installer compilation, device launch or exter
 Only `native/src` and app-owned assets belong in the bundle. Legacy root catalogs, personal media/covers, exports, device paths, caches, logs, .venv and node_modules contents unrelated to runtime must not be manually copied into release assets. Native generated launcher icons retain required PNG/ICO formats; user covers use WebP on Android with codec-aware original-format fallback on Windows. No decorative video is bundled, so no WebM background decoder overhead is introduced.
 
 App open-with, native permissions, embedded/audio codecs, fullscreen, PiP, accessibility, resize/rotation, signed installation and performance are device verification gates. Static checks cannot validate those. The initial UI uses platform system typography to avoid an unlicensed/unregistered font bundle; revisit Source Sans 3 only with proper font registration and license assets.
+
+## Bundled third-party assets (2026-11-03)
+
+- UI icons: rendered from Phosphor Icons 2.1.1 (`@phosphor-icons/web`, MIT) by `tools/make-icons.py`.
+- Windows video: `libmpv-2.dll` from shinchiro/mpv-winbuild-cmake release 20261102 (mpv core GPLv2+, client API ISC). See `windows/third_party/mpv/README.md`. It is copied next to `AnimeManager.exe` by the build and must be staged into `release/windows/`.

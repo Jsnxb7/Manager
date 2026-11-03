@@ -1,6 +1,6 @@
 /* eslint-disable no-bitwise -- Base64 encoding uses byte-level masks and shifts. */
 import { NativeModules } from 'react-native';
-import { FileEntry, StorageAdapter } from './contracts';
+import { FileEntry, StorageAdapter, UnpackedPackage } from './contracts';
 
 type NativeStorage = {
   execute(method: string, payload: string): Promise<string>;
@@ -108,6 +108,24 @@ export async function createNativeStorage(): Promise<StorageAdapter> {
     },
     reveal: async uri => {
       await call('reveal', { uri });
+    },
+    pickSaveTarget: name => call<string | null>('pickSaveTarget', { name }),
+    writePackage: (target, catalog, header, artwork) =>
+      call<string>('writePackage', { target, catalog, header, artwork }),
+    unpackPackage: (uri, staging) =>
+      call<UnpackedPackage>('unpackPackage', { uri, staging }),
+    scanMediaFolders: (root, folders) =>
+      call<{ existing: string[]; missing: string[]; skipped: string[] }>(
+        'scanMediaFolders',
+        { root, folders },
+      ),
+    createMediaFolders: (root, folders) =>
+      call<{ created: number; failed: { folder: string; error: string }[] }>(
+        'createMediaFolders',
+        { root, folders },
+      ),
+    moveOwned: async (source, destination) => {
+      await call('moveOwned', { source, destination });
     },
   };
 }

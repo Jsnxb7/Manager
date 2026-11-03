@@ -35,7 +35,9 @@ class CatalogStorageModule(private val context: ReactApplicationContext) : React
         if (resultCode != Activity.RESULT_OK || data == null) { saveBytes = null; promise.resolve(if (mode == "pickFiles") "[]" else "null"); return }
         executor.execute {
           try {
-            if (mode == "saveFile") {
+            if (mode == "pickSaveTarget") {
+              promise.resolve(JSONObject.quote((data.data ?: error("No destination selected")).toString()))
+            } else if (mode == "saveFile") {
               val uri = data.data ?: error("No destination selected")
               context.contentResolver.openOutputStream(uri, "wt")!!.use { it.write(saveBytes ?: error("No export bytes")) }
               saveBytes = null
@@ -70,7 +72,7 @@ class CatalogStorageModule(private val context: ReactApplicationContext) : React
   private fun bytes(path: String): ByteArray = input(path).use { stream ->
     val output = java.io.ByteArrayOutputStream()
     val buffer = ByteArray(65536)
-    while (true) { val count = stream.read(buffer); if (count < 0) break; require(output.size() + count <= 128 * 1024 * 1024) { "File exceeds transfer limit" }; output.write(buffer, 0, count) }
+    while (true) { val count = stream.read(buffer); if (count < 0) break; require(output.size() + count <= 256 * 1024 * 1024) { "File exceeds transfer limit" }; output.write(buffer, 0, count) }
     output.toByteArray()
   }
   private fun parts(relative: String): List<String> {
@@ -106,12 +108,142 @@ class CatalogStorageModule(private val context: ReactApplicationContext) : React
     }
     return current
   }
+  private val artworkName = Regex("^artwork/[A-Za-z0-9_-]+\\.(webp|png|jpe?g|gif|avif)$", RegexOption.IGNORE_CASE)
+  private fun sha256(data: ByteArray): String = java.security.MessageDigest.getInstance("SHA-256").digest(data).joinToString("") { "%02x".format(it) }
+  /** Writes the catalog, its covers (stored as-is) and a checksummed manifest straight from disk. */
+  private fun writePackage(payload: JSONObject): String {
+    val target = payload.getString("target")
+    val manifest = JSONObject(payload.getJSONObject("header").toString())
+    val files = JSONObject()
+    val stream = if (target.startsWith("content://")) context.contentResolver.openOutputStream(Uri.parse(target), "wt")!! else File(target.removePrefix("file://")).outputStream()
+    java.util.zip.ZipOutputStream(java.io.BufferedOutputStream(stream, 1 shl 16)).use { zip ->
+      fun add(name: String, data: ByteArray, compress: Boolean) {
+        val entry = java.util.zip.ZipEntry(name)
+        if (!compress) {
+          val crc = java.util.zip.CRC32().apply { update(data) }
+          entry.method = java.util.zip.ZipEntry.STORED; entry.size = data.size.toLong(); entry.compressedSize = data.size.toLong(); entry.crc = crc.value
+        }
+        zip.putNextEntry(entry); zip.write(data); zip.closeEntry()
+        if (name != "manifest.json") files.put(name, JSONObject().put("bytes", data.size).put("sha256", sha256(data)))
+      }
+      add("data/catalog.json", payload.getString("catalog").toByteArray(Charsets.UTF_8), true)
+      val artwork = payload.getJSONArray("artwork")
+      for (index in 0 until artwork.length()) {
+        val item = artwork.getJSONObject(index)
+        val name = item.getString("name")
+        require(artworkName.matches(name)) { "Invalid artwork reference; videos cannot be exported." }
+        add(name, owned(item.getString("path")).readBytes(), false)
+      }
+      manifest.put("files", files)
+      add("manifest.json", manifest.toString().toByteArray(Charsets.UTF_8), true)
+    }
+    return target
+  }
+  /** Unpacks a catalog ZIP into app storage, checking names and sizes, and reports each file's checksum. */
+  private fun unpackPackage(payload: JSONObject): JSONObject {
+    val staging = owned(payload.getString("staging"))
+    if (staging.exists()) require(staging.deleteRecursively()) { "Could not clear the import folder" }
+    staging.mkdirs()
+    var manifest: String? = null; var catalog: String? = null
+    val files = JSONArray(); var count = 0; var total = 0L
+    java.util.zip.ZipInputStream(java.io.BufferedInputStream(input(payload.getString("uri")), 1 shl 16)).use { zip ->
+      val buffer = ByteArray(1 shl 16)
+      while (true) {
+        val entry = zip.nextEntry ?: break
+        if (entry.isDirectory) continue
+        val name = entry.name
+        require(++count <= 10000 && (name == "manifest.json" || name == "data/catalog.json" || artworkName.matches(name))) { "Package contains disallowed files or exceeds extraction limits." }
+        val digest = java.security.MessageDigest.getInstance("SHA-256")
+        val text = if (name.endsWith(".json")) java.io.ByteArrayOutputStream() else null
+        val file = if (text == null) File(staging, name).apply { parentFile!!.mkdirs() } else null
+        var size = 0L
+        (file?.outputStream() ?: text!!).use { out ->
+          while (true) {
+            val read = zip.read(buffer); if (read < 0) break
+            size += read; total += read
+            require(size <= 64L * 1024 * 1024 && total <= 2048L * 1024 * 1024) { "Package contains disallowed files or exceeds extraction limits." }
+            digest.update(buffer, 0, read); out.write(buffer, 0, read)
+          }
+        }
+        val hash = digest.digest().joinToString("") { "%02x".format(it) }
+        when (name) { "manifest.json" -> manifest = text!!.toString("UTF-8"); "data/catalog.json" -> catalog = text!!.toString("UTF-8") }
+        if (name != "manifest.json") files.put(JSONObject().put("name", name).put("bytes", size).put("sha256", hash))
+      }
+    }
+    return JSONObject().put("manifest", manifest ?: error("Missing package manifest or catalog")).put("catalog", catalog ?: error("Missing package manifest or catalog")).put("files", files)
+  }
+  /** Children of a document folder by name: listed once, then answered from memory. */
+  private class Folder(val uri: Uri, val children: MutableMap<String, Pair<Uri, Boolean>>)
+  private fun folder(uri: Uri): Folder {
+    val list = listing(uri); val children = HashMap<String, Pair<Uri, Boolean>>()
+    for (index in 0 until list.length()) { val item = list.getJSONObject(index); children[item.getString("name")] = Uri.parse(item.getString("uri")) to item.getBoolean("directory") }
+    return Folder(uri, children)
+  }
+  /** Checks every title folder with one listing per folder, not one per lookup. */
+  private fun scanMediaFolders(payload: JSONObject): JSONObject {
+    val root = payload.getString("root"); val folders = payload.getJSONArray("folders")
+    val existing = JSONArray(); val missing = JSONArray(); val skipped = JSONArray()
+    if (!root.startsWith("content://")) {
+      val parent = File(root.removePrefix("file://")).canonicalFile
+      for (index in 0 until folders.length()) {
+        val name = folders.getString(index)
+        try { val child = File(parent, parts(name).joinToString(File.separator)); if (child.isDirectory) existing.put(name) else if (!child.exists()) missing.put(name) else skipped.put(name) } catch (_: Exception) { skipped.put(name) }
+      }
+    } else {
+      val cache = HashMap<String, Folder>()
+      val top = folder(document(Uri.parse(root)))
+      for (index in 0 until folders.length()) {
+        val name = folders.getString(index)
+        try {
+          var current = top; var state = "existing"
+          val segments = parts(name)
+          for ((position, segment) in segments.withIndex()) {
+            val child = current.children[segment]
+            if (child == null) { state = "missing"; break }
+            if (!child.second) { state = "skipped"; break }
+            if (position < segments.size - 1) current = cache.getOrPut(child.first.toString()) { folder(child.first) }
+          }
+          when (state) { "existing" -> existing.put(name); "missing" -> missing.put(name); else -> skipped.put(name) }
+        } catch (_: Exception) { skipped.put(name) }
+      }
+    }
+    return JSONObject().put("existing", existing).put("missing", missing).put("skipped", skipped)
+  }
+  /** Creates every missing folder, reusing listings, and carries on past a single failure. */
+  private fun createMediaFolders(payload: JSONObject): JSONObject {
+    val root = payload.getString("root"); val folders = payload.getJSONArray("folders")
+    require(preferences.getStringSet("roots", emptySet())!!.contains(root)) { "Select the local media root first" }
+    require(root.startsWith("content://") && DocumentsContract.isTreeUri(Uri.parse(root))) { "Folder creation requires a selected document tree" }
+    val cache = HashMap<String, Folder>()
+    val top = folder(document(Uri.parse(root)))
+    var created = 0; val failed = JSONArray()
+    for (index in 0 until folders.length()) {
+      val name = folders.getString(index)
+      try {
+        var current = top
+        for (segment in parts(name)) {
+          val existing = current.children[segment]
+          val uri = if (existing != null) { require(existing.second) { "A file occupies the requested folder" }; existing.first } else {
+            val made = DocumentsContract.createDocument(context.contentResolver, current.uri, DocumentsContract.Document.MIME_TYPE_DIR, segment) ?: error("Storage provider could not create the folder")
+            current.children[segment] = made to true
+            cache[made.toString()] = Folder(made, HashMap())
+            made
+          }
+          current = cache.getOrPut(uri.toString()) { folder(uri) }
+        }
+        created++
+      } catch (error: Exception) {
+        failed.put(JSONObject().put("folder", name).put("error", error.message ?: error.javaClass.simpleName))
+      }
+    }
+    return JSONObject().put("created", created).put("failed", failed)
+  }
   private fun picker(method: String, payload: JSONObject, promise: Promise) {
     if (pending != null) { promise.reject("PICKER_BUSY", "Finish the open file picker first"); return }
     val activity = context.currentActivity ?: run { promise.reject("NO_ACTIVITY", "App window is not available"); return }
     val intent = when (method) {
       "pickFolder" -> Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or Intent.FLAG_GRANT_PREFIX_URI_PERMISSION)
-      "saveFile" -> Intent(Intent.ACTION_CREATE_DOCUMENT).setType(if (payload.getString("name").endsWith(".json")) "application/json" else "application/zip").addCategory(Intent.CATEGORY_OPENABLE).putExtra(Intent.EXTRA_TITLE, payload.getString("name"))
+      "saveFile", "pickSaveTarget" -> Intent(Intent.ACTION_CREATE_DOCUMENT).setType(if (payload.getString("name").endsWith(".json")) "application/json" else "application/zip").addCategory(Intent.CATEGORY_OPENABLE).putExtra(Intent.EXTRA_TITLE, payload.getString("name"))
       else -> Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType(when(payload.optString("kind")) { "video" -> "video/*"; "image" -> "image/*"; else -> "*/*" }).putExtra(Intent.EXTRA_ALLOW_MULTIPLE, payload.optString("kind") == "video").addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
     }
     if (method == "saveFile") saveBytes = Base64.decode(payload.getString("value"), Base64.DEFAULT)
@@ -121,7 +253,7 @@ class CatalogStorageModule(private val context: ReactApplicationContext) : React
   @ReactMethod
   fun execute(method: String, json: String, promise: Promise) {
     val payload = try { JSONObject(json) } catch (error: Exception) { promise.reject("JSON", error.message); return }
-    if (method in listOf("pickFolder", "pickFiles", "saveFile")) { UiThreadUtil.runOnUiThread { picker(method, payload, promise) }; return }
+    if (method in listOf("pickFolder", "pickFiles", "saveFile", "pickSaveTarget")) { UiThreadUtil.runOnUiThread { picker(method, payload, promise) }; return }
     executor.execute {
       try {
         val result: Any? = when (method) {
@@ -182,6 +314,11 @@ class CatalogStorageModule(private val context: ReactApplicationContext) : React
             destination.outputStream().use { require(resized.compress(if(Build.VERSION.SDK_INT>=30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP,82,it)) }
             if(resized !== image) resized.recycle();image.recycle();null
           }
+          "writePackage" -> writePackage(payload)
+          "scanMediaFolders" -> scanMediaFolders(payload)
+          "createMediaFolders" -> createMediaFolders(payload)
+          "unpackPackage" -> unpackPackage(payload)
+          "moveOwned" -> { val source=owned(payload.getString("source")); val target=owned(payload.getString("destination")); target.parentFile!!.mkdirs(); java.nio.file.Files.move(source.toPath(),target.toPath(),java.nio.file.StandardCopyOption.REPLACE_EXISTING); null }
           "reveal" -> throw UnsupportedOperationException("Use the Android file picker to locate media")
           else -> throw UnsupportedOperationException("Unknown storage operation: $method")
         }

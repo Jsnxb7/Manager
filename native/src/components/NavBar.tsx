@@ -1,9 +1,18 @@
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { Route } from '../app/routes';
 import { Section } from '../domain/catalog';
 import { colors, fontFamily, noFocusRing } from '../design/theme';
 import { Icon, IconButton, IconName } from './Icon';
+
+const appIcon = require('../assets/app-icon.webp');
 
 export type SearchBar = {
   value: string;
@@ -11,9 +20,15 @@ export type SearchBar = {
   placeholder: string;
 };
 
-function SearchField({ bar }: { bar: SearchBar }): React.JSX.Element {
+function SearchField({
+  bar,
+  phone = false,
+}: {
+  bar: SearchBar;
+  phone?: boolean;
+}): React.JSX.Element {
   return (
-    <View style={styles.searchField}>
+    <View style={[styles.searchField, phone && styles.searchFieldPhone]}>
       <Icon name="search" size={16} color={colors.muted} />
       <TextInput
         {...noFocusRing}
@@ -149,7 +164,7 @@ export function NavBar({
     const firstSection = sections[0];
     return (
       <View style={styles.bottomWrap}>
-        {searchOpen && searchBar && <SearchField bar={searchBar} />}
+        {searchOpen && searchBar && <SearchField bar={searchBar} phone />}
         <View accessibilityRole="toolbar" style={styles.bottom}>
           <BottomItem
             icon="home"
@@ -204,6 +219,11 @@ export function NavBar({
   }
   return (
     <View accessibilityRole="toolbar" style={styles.top}>
+      <Image
+        source={appIcon}
+        style={styles.appIcon}
+        accessibilityLabel="Anime Manager"
+      />
       <IconButton
         icon="back"
         label="Back"
@@ -268,7 +288,16 @@ export function NavBar({
 }
 
 const styles = StyleSheet.create({
+  appIcon: { width: 30, height: 30, marginRight: 8 },
   bottomWrap: { backgroundColor: colors.panel },
+  // Above the bottom bar the field is a full-width row of its own height.
+  searchFieldPhone: {
+    flex: 0,
+    maxWidth: undefined,
+    minHeight: 48,
+    marginHorizontal: 16,
+    marginTop: 8,
+  },
   searchField: {
     flex: 1,
     maxWidth: 420,

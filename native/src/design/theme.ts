@@ -8,7 +8,8 @@ export const colors = {
   chrome: '#C9CFD5',
   mist: '#F1F3F5',
   // Hovered controls, then selected ones: the blue of the distant ridges.
-  hover: '#25364A',
+  hover: '#2B4159',
+  rowHover: '#162637',
   accent: '#86B8DC',
   accentSoft: '#1E3A52',
   // Ash for main text, charcoal-grey for secondary text.
@@ -16,6 +17,8 @@ export const colors = {
   muted: '#8B9299',
   danger: '#E39E98',
   success: '#A3C4AF',
+  successSoft: '#1A3024',
+  successLine: '#3D6650',
 } as const;
 // Bahnschrift's engineered DIN shapes suit the steel-and-ash look and ship with Windows.
 export const fontFamily =

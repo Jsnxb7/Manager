@@ -6,7 +6,7 @@ import { Route } from '../app/routes';
 import { Button, HoverRow, Sheet, TextButton } from '../components/controls';
 import { PanelPage } from '../components/Fade';
 import { Icon } from '../components/Icon';
-import { colors, ui } from '../design/theme';
+import { colors, fontFamily, ui } from '../design/theme';
 import { useViewport } from '../design/viewport';
 import { windowAction } from '../platform/windowControls';
 import {
@@ -18,7 +18,7 @@ import {
   ImportPreview,
   exportCatalog,
   inspectLegacyFolder,
-  inspectPackage,
+  inspectPackageFile,
   inspectSavedSnapshot,
 } from '../services/transfer';
 export function Settings({
@@ -98,12 +98,7 @@ export function Settings({
                 action(async () => {
                   const file = (await w.io!.pickFiles('catalog'))[0];
                   if (file) {
-                    setPreview(
-                      await inspectPackage(
-                        await w.io!.readBytes(file),
-                        w.repo!,
-                      ),
-                    );
+                    setPreview(await inspectPackageFile(file, w.repo!, w.io!));
                   }
                 }, 'Import ready for review')
               }
@@ -506,42 +501,65 @@ function SettingRow({
   danger?: boolean;
 }): React.JSX.Element {
   const { width } = useViewport();
+  const verb = danger
+    ? 'Review'
+    : label.startsWith('Export')
+    ? 'Export'
+    : label.startsWith('Import')
+    ? 'Import'
+    : label === 'Fullscreen' || label === 'Always on top'
+    ? 'Toggle'
+    : label === 'Reload UI'
+    ? 'Reload'
+    : label === 'Restart app'
+    ? 'Restart'
+    : label === 'Choose / change media root'
+    ? 'Choose'
+    : 'Open';
   return (
     <HoverRow
       label={label}
       onPress={onPress}
       style={[styles.setting, width < 700 && styles.settingPhone]}
+      hoverStyle={danger ? styles.settingDangerHover : styles.settingHover}
     >
-      <View style={styles.description}>
-        <Text style={[ui.text, danger && ui.dangerText]}>{label}</Text>
-        <Text style={ui.muted}>
-          {explanations[label] ?? 'Switch to this saved local catalog.'}
-        </Text>
-      </View>
-      <View style={styles.control}>
-        <Text style={[ui.small, danger && ui.dangerText]}>
-          {danger
-            ? 'Review'
-            : label.startsWith('Export')
-            ? 'Export'
-            : label.startsWith('Import')
-            ? 'Import'
-            : label === 'Fullscreen' || label === 'Always on top'
-            ? 'Toggle'
-            : label === 'Reload UI'
-            ? 'Reload'
-            : label === 'Restart app'
-            ? 'Restart'
-            : label === 'Choose / change media root'
-            ? 'Choose'
-            : 'Open'}
-        </Text>
-        <Icon
-          name="forward"
-          size={18}
-          color={danger ? colors.danger : colors.chrome}
-        />
-      </View>
+      {hover => (
+        <>
+          <View style={styles.description}>
+            <Text
+              style={[
+                ui.text,
+                styles.label,
+                hover && styles.labelLit,
+                danger && ui.dangerText,
+              ]}
+            >
+              {label}
+            </Text>
+            <Text style={ui.muted}>
+              {explanations[label] ?? 'Switch to this saved local catalog.'}
+            </Text>
+          </View>
+          <View style={styles.control}>
+            <Text
+              style={[
+                styles.verb,
+                hover && styles.verbLit,
+                danger && ui.dangerText,
+              ]}
+            >
+              {verb}
+            </Text>
+            <Icon
+              name="forward"
+              size={16}
+              color={
+                danger ? colors.danger : hover ? colors.accent : colors.muted
+              }
+            />
+          </View>
+        </>
+      )}
     </HoverRow>
   );
 }
@@ -550,20 +568,34 @@ const styles = StyleSheet.create({
   columnPhone: { gap: 32 },
   group: { gap: 16 },
   actions: { gap: 4 },
+  // The highlight sits just outside the text column, so text stays aligned
+  // with the headings while the highlighted box keeps its own breathing room.
   setting: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 24,
-    paddingVertical: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    marginHorizontal: -16,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
+  settingHover: { backgroundColor: colors.rowHover, borderColor: colors.line },
+  settingDangerHover: { backgroundColor: '#2A1A1C', borderColor: '#5A3436' },
   settingPhone: { flexDirection: 'column', alignItems: 'stretch', gap: 8 },
   description: { flex: 1, gap: 4 },
+  label: { fontWeight: '600' },
+  labelLit: { color: colors.mist },
   control: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'flex-end',
+    gap: 6,
+    minWidth: 92,
     minHeight: 32,
-    alignSelf: 'flex-end',
   },
+  verb: { fontFamily, fontSize: 14, fontWeight: '600', color: colors.muted },
+  verbLit: { color: colors.accent },
   danger: { gap: 16, marginTop: 24 },
 });

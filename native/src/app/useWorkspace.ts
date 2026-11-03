@@ -5,6 +5,27 @@ import { createNativeStorage } from '../platform/nativeStorage';
 import { JsonRepository } from '../repositories/JsonRepository';
 import { CatalogRegistry } from '../repositories/CatalogRegistry';
 import { ImportPreview } from '../services/transfer';
+/** Native modules can reject with plain objects; show their message, not "[object Object]". */
+export function describeError(value: unknown): string {
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (value instanceof Error) {
+    return `Error: ${value.message}`;
+  }
+  if (value && typeof value === 'object') {
+    const record = value as { message?: unknown; code?: unknown };
+    if (typeof record.message === 'string' && record.message) {
+      return `Error: ${record.message}`;
+    }
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return 'Unknown error';
+    }
+  }
+  return String(value);
+}
 export function useWorkspace() {
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [settings, setSettings] = useState<DeviceSettings>(emptySettings);
@@ -14,7 +35,7 @@ export function useWorkspace() {
   const logTo = useRef<StorageAdapter | null>(null);
   // Errors also go to a small log file so problems can be traced afterwards.
   const setError = useCallback((value: unknown) => {
-    const message = value === '' ? '' : String(value);
+    const message = value === '' ? '' : describeError(value);
     setShownError(message);
     const storage = logTo.current;
     if (message && storage) {
@@ -65,7 +86,7 @@ export function useWorkspace() {
         setRepo(registry.current.recoveryRepo);
       }
       if (live.current) {
-        setError(String(e));
+        setError(e);
       }
     } finally {
       if (live.current) {
@@ -75,7 +96,7 @@ export function useWorkspace() {
   }, [setError]);
   useEffect(() => {
     live.current = true;
-    start().catch(e => setError(String(e)));
+    start().catch(setError);
     return () => {
       live.current = false;
     };

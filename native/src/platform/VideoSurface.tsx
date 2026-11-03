@@ -49,13 +49,15 @@ export default function VideoSurface({
         setAreaWidth(e.nativeEvent.layout.width);
         place();
       }}
-      // The whole video and its controls should fit below the heading.
+      // The video and the episode rail should both fit below the heading.
       style={[
         styles.stage,
         {
           height: Math.min(
             (areaWidth || width) * (9 / 16),
-            Math.max(220, height - (phone ? 200 : 300)),
+            // Full 16:9 height when the window allows, below the heading; the
+            // episode rail follows underneath and scrolls into view.
+            Math.max(220, height - (phone ? 150 : 190)),
           ),
         },
       ]}

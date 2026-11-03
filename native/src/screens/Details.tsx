@@ -14,6 +14,7 @@ import { Button, Choice, ProgressBar, Sheet } from '../components/controls';
 import { Cover, coverUri } from '../components/Cover';
 import { PanelPage } from '../components/Fade';
 import { IconButton } from '../components/Icon';
+import { ActionMenu } from '../components/ActionMenu';
 import { Relations } from '../components/Relations';
 import { DetailsEditor } from '../components/DetailsEditor';
 import { Episode, METADATA_GROUPS } from '../domain/catalog';
@@ -143,34 +144,69 @@ function EpisodeRow({
           </View>
         )}
       </Pressable>
-      <View
-        style={[
-          styles.episodeActions,
-          HOVER && !phone && !hover && styles.hidden,
-        ]}
-      >
-        {resume && (
+      {/* Narrow screens keep watched and play in reach; the rest sit behind ⋯. */}
+      {phone ? (
+        <ActionMenu label={`More for episode ${ep.number}`}>
+          {close => (
+            <>
+              {resume && (
+                <IconButton
+                  icon="reset"
+                  label="Start over"
+                  size={16}
+                  onPress={() => {
+                    close();
+                    onRestart();
+                  }}
+                />
+              )}
+              <IconButton
+                icon="search"
+                label="Locate file"
+                size={16}
+                onPress={() => {
+                  close();
+                  onLocate();
+                }}
+              />
+              <IconButton
+                icon="trash"
+                label="Delete episode"
+                size={16}
+                color={colors.danger}
+                onPress={() => {
+                  close();
+                  onDelete();
+                }}
+              />
+            </>
+          )}
+        </ActionMenu>
+      ) : (
+        <View style={[styles.episodeActions, HOVER && !hover && styles.hidden]}>
+          {resume && (
+            <IconButton
+              icon="reset"
+              label="Start over"
+              size={16}
+              onPress={onRestart}
+            />
+          )}
           <IconButton
-            icon="reset"
-            label="Start over"
+            icon="search"
+            label="Locate file"
             size={16}
-            onPress={onRestart}
+            onPress={onLocate}
           />
-        )}
-        <IconButton
-          icon="search"
-          label="Locate file"
-          size={16}
-          onPress={onLocate}
-        />
-        <IconButton
-          icon="trash"
-          label="Delete episode"
-          size={16}
-          color={colors.danger}
-          onPress={onDelete}
-        />
-      </View>
+          <IconButton
+            icon="trash"
+            label="Delete episode"
+            size={16}
+            color={colors.danger}
+            onPress={onDelete}
+          />
+        </View>
+      )}
       <IconButton
         icon="check"
         label={ep.watched ? 'Mark unwatched' : 'Mark watched'}
@@ -326,10 +362,9 @@ export function Details({
               </View>
               <View style={styles.actions}>
                 <Button
-                  label={
-                    entry.watched ? 'Mark as unwatched' : 'Mark as watched'
-                  }
+                  label={entry.watched ? 'Watched' : 'Mark as watched'}
                   primary
+                  success={entry.watched}
                   onPress={() =>
                     action(() =>
                       w.mutate(c => setWatched(c, entry.id, !entry.watched)),
@@ -473,7 +508,7 @@ export function Details({
           <View style={styles.episodesHead}>
             <Text
               accessibilityRole="header"
-              style={[styles.episodesTitle, ui.grow]}
+              style={[styles.episodesTitle, phone ? styles.fullRow : ui.grow]}
             >
               Episodes
             </Text>
@@ -484,7 +519,7 @@ export function Details({
               placeholderTextColor={colors.muted}
               value={title}
               onChangeText={setTitle}
-              style={[ui.input, styles.addInput]}
+              style={[ui.input, styles.addInput, phone && styles.addInputPhone]}
             />
             <IconButton
               icon="plus"
@@ -656,13 +691,17 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   addInput: { fontFamily, width: 280 },
+  // On phones the heading takes its own line and the field fills the next.
+  fullRow: { width: '100%' },
+  addInputPhone: { flex: 1, width: undefined },
   episodes: { borderTopWidth: 1, borderColor: colors.line },
-  episodeLit: { backgroundColor: '#14212E' },
+  episodeLit: { backgroundColor: colors.rowHover },
   episode: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
     paddingVertical: 8,
+    paddingHorizontal: 10,
     borderBottomWidth: 1,
     borderColor: colors.line,
   },

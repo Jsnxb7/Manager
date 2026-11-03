@@ -26,7 +26,31 @@ export interface StorageAdapter {
   deleteMediaFolder(root: string, relativePath: string): Promise<void>;
   thumbnail(source: string, destination: string, width: number): Promise<void>;
   reveal(uri: string): Promise<void>;
+  /** Native catalog transfer, when the host has it; covers never pass through JavaScript. */
+  pickSaveTarget?(name: string): Promise<string | null>;
+  writePackage?(
+    target: string,
+    catalog: string,
+    header: Record<string, unknown>,
+    artwork: { name: string; path: string }[],
+  ): Promise<string>;
+  unpackPackage?(uri: string, staging: string): Promise<UnpackedPackage>;
+  moveOwned?(source: string, destination: string): Promise<void>;
+  /** Batch folder checks and creation: one native call for a whole library. */
+  scanMediaFolders?(
+    root: string,
+    folders: string[],
+  ): Promise<{ existing: string[]; missing: string[]; skipped: string[] }>;
+  createMediaFolders?(
+    root: string,
+    folders: string[],
+  ): Promise<{ created: number; failed: { folder: string; error: string }[] }>;
 }
+export type UnpackedPackage = {
+  manifest: string;
+  catalog: string;
+  files: { name: string; bytes: number; sha256: string }[];
+};
 export type PlayerTracks = {
   audio: { id: string; label: string }[];
   subtitles: { id: string; label: string }[];

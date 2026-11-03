@@ -109,10 +109,18 @@
     <ClInclude Include="CatalogStorage.h" />
     <ClInclude Include="CatalogPlayer.h" />
     <ClInclude Include="WindowControls.h" />
+    <ClInclude Include="mpv\client.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="AutolinkedNativeModules.g.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- libmpv from the mpv project's Windows builds (see third_party/mpv/README.md); loaded at run time. -->
+    <CopyFileToFolders Include="..\third_party\mpv\libmpv-2.dll" Condition="Exists('..\third_party\mpv\libmpv-2.dll')">
+      <DestinationFolders>$(OutDir)</DestinationFolders>
+      <DeploymentContent>true</DeploymentContent>
+    </CopyFileToFolders>
   </ItemGroup>
   <ItemGroup>
     <!-- Vendored libwebp encoder, plain C outside the app's C++/WinRT settings. -->

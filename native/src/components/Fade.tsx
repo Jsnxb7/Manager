@@ -46,31 +46,20 @@ function Slice({
   );
 }
 
-/** Melts all four edges of artwork into the panel colour. Only the Player's side covers use it. */
-export function FadeEdges({
-  x,
-  y,
+/**
+ * Melts artwork into the panel on one side only: solid panel at that outer edge,
+ * untouched art at the opposite edge. The Player's side covers use it.
+ */
+export function OuterFade({
+  side,
 }: {
-  x: number;
-  y: number;
+  side: 'left' | 'right';
 }): React.JSX.Element {
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       <Slice
-        source={ramp.bottom}
-        style={{ top: 0, left: 0, right: 0, height: y }}
-      />
-      <Slice
-        source={ramp.top}
-        style={{ bottom: 0, left: 0, right: 0, height: y }}
-      />
-      <Slice
-        source={ramp.right}
-        style={{ top: 0, bottom: 0, left: 0, width: x }}
-      />
-      <Slice
-        source={ramp.left}
-        style={{ top: 0, bottom: 0, right: 0, width: x }}
+        source={side === 'left' ? ramp.right : ramp.left}
+        style={{ top: 0, bottom: 0, width: '80%', [side]: 0 }}
       />
     </View>
   );
@@ -216,6 +205,9 @@ export function PanelPage({
         onScrollY?.(e.nativeEvent.contentOffset.y);
       }}
     >
+      {/* Windows lets a scroll overshoot its end; the panel continues below the
+          page so the overshoot never reveals the background under it. */}
+      <View pointerEvents="none" style={styles.overpan} />
       {center ? (
         // The Hub's panel rests on the window bottom, with the mountains above it.
         <FadePanel
@@ -244,7 +236,7 @@ export function PanelPage({
           // The panel covers the sides. Its long top fade leaves the background
           // visible and starts above the heading, which sits inside the fade.
           x={0}
-          top={flush ? (phone ? 110 : 200) : phone ? 150 : 190}
+          top={flush ? (phone ? 90 : 110) : phone ? 150 : 190}
           bottom={0}
           pad={flush ? (phone ? 12 : 28) : phone ? 22 : 84}
           style={[
@@ -253,7 +245,9 @@ export function PanelPage({
               // Starts under the top bar so the bar's image lines up seamlessly.
               // Narrow Windows windows still have caption buttons at the top.
               marginTop: phone ? (Platform.OS === 'windows' ? 32 : 0) : 88,
-              paddingTop: flush ? (phone ? 60 : 120) : 76,
+              // The player keeps the title close to the bar so the video and
+              // episode rail fit in one screen.
+              paddingTop: flush ? (phone ? 40 : 36) : 76,
               paddingBottom: phone ? 72 : 112,
             },
           ]}
@@ -280,4 +274,12 @@ const styles = StyleSheet.create({
   bottomPanel: { width: '100%' },
   // Short pages still reach the window bottom.
   panel: { width: '100%', flexGrow: 1 },
+  overpan: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: -2000,
+    height: 2000,
+    backgroundColor: colors.panel,
+  },
 });

@@ -12,6 +12,7 @@ import {
 } from '../components/controls';
 import { PanelPage } from '../components/Fade';
 import { IconButton } from '../components/Icon';
+import { ActionMenu } from '../components/ActionMenu';
 import { DragList } from '../components/DragList';
 import { MediaResolver } from '../services/media';
 import { colors, fontFamily, ui, noFocusRing } from '../design/theme';
@@ -240,86 +241,168 @@ export function QueueContent({
                         label="Play"
                         onPress={() => play(id)}
                       />
-                      <View
-                        style={[
-                          styles.actions,
-                          Platform.OS === 'windows' &&
-                            !phone &&
-                            !hover &&
-                            focused !== id &&
-                            styles.hidden,
-                        ]}
-                      >
-                        <IconButton
-                          icon="top"
-                          label="Top"
-                          disabled={index === 0}
-                          onPress={() =>
-                            action(() =>
-                              w.mutate(c =>
-                                reorderQueue(c, [
-                                  id,
-                                  ...c.queue.filter(v => v !== id),
-                                ]),
-                              ),
-                            )
-                          }
-                        />
-                        <IconButton
-                          icon="up"
-                          label="Up"
-                          disabled={index === 0}
-                          onPress={() =>
-                            action(() =>
-                              w.mutate(c => {
-                                const order = [...c.queue];
-                                const at = order.indexOf(id);
-                                if (at <= 0) {
-                                  return;
-                                }
-                                [order[at - 1], order[at]] = [
-                                  order[at]!,
-                                  order[at - 1]!,
-                                ];
-                                reorderQueue(c, order);
-                              }),
-                            )
-                          }
-                        />
-                        <IconButton
-                          icon="down"
-                          label="Down"
-                          disabled={index === ids.length - 1}
-                          onPress={() =>
-                            action(() =>
-                              w.mutate(c => {
-                                const order = [...c.queue];
-                                const at = order.indexOf(id);
-                                if (at < 0 || at >= order.length - 1) {
-                                  return;
-                                }
-                                [order[at], order[at + 1]] = [
-                                  order[at + 1]!,
-                                  order[at]!,
-                                ];
-                                reorderQueue(c, order);
-                              }),
-                            )
-                          }
-                        />
-                        <IconButton
-                          icon="trash"
-                          color={colors.danger}
-                          label="Remove"
-                          onPress={() =>
-                            action(() =>
-                              w.mutate(c => {
-                                c.queue = c.queue.filter(v => v !== id);
-                              }),
-                            )
-                          }
-                        />
-                      </View>
+                      {phone ? (
+                        <ActionMenu label={`Arrange ${e.title}`}>
+                          {close => (
+                            <>
+                              <IconButton
+                                icon="top"
+                                label="Top"
+                                disabled={index === 0}
+                                onPress={() => {
+                                  close();
+                                  action(() =>
+                                    w.mutate(c =>
+                                      reorderQueue(c, [
+                                        id,
+                                        ...c.queue.filter(v => v !== id),
+                                      ]),
+                                    ),
+                                  );
+                                }}
+                              />
+                              <IconButton
+                                icon="up"
+                                label="Up"
+                                disabled={index === 0}
+                                onPress={() => {
+                                  close();
+                                  action(() =>
+                                    w.mutate(c => {
+                                      const order = [...c.queue];
+                                      const at = order.indexOf(id);
+                                      if (at <= 0) {
+                                        return;
+                                      }
+                                      [order[at - 1], order[at]] = [
+                                        order[at]!,
+                                        order[at - 1]!,
+                                      ];
+                                      reorderQueue(c, order);
+                                    }),
+                                  );
+                                }}
+                              />
+                              <IconButton
+                                icon="down"
+                                label="Down"
+                                disabled={index === ids.length - 1}
+                                onPress={() => {
+                                  close();
+                                  action(() =>
+                                    w.mutate(c => {
+                                      const order = [...c.queue];
+                                      const at = order.indexOf(id);
+                                      if (at < 0 || at >= order.length - 1) {
+                                        return;
+                                      }
+                                      [order[at], order[at + 1]] = [
+                                        order[at + 1]!,
+                                        order[at]!,
+                                      ];
+                                      reorderQueue(c, order);
+                                    }),
+                                  );
+                                }}
+                              />
+                              <IconButton
+                                icon="trash"
+                                color={colors.danger}
+                                label="Remove"
+                                onPress={() => {
+                                  close();
+                                  action(() =>
+                                    w.mutate(c => {
+                                      c.queue = c.queue.filter(v => v !== id);
+                                    }),
+                                  );
+                                }}
+                              />
+                            </>
+                          )}
+                        </ActionMenu>
+                      ) : (
+                        <View
+                          style={[
+                            styles.actions,
+                            Platform.OS === 'windows' &&
+                              !phone &&
+                              !hover &&
+                              focused !== id &&
+                              styles.hidden,
+                          ]}
+                        >
+                          <IconButton
+                            icon="top"
+                            label="Top"
+                            disabled={index === 0}
+                            onPress={() =>
+                              action(() =>
+                                w.mutate(c =>
+                                  reorderQueue(c, [
+                                    id,
+                                    ...c.queue.filter(v => v !== id),
+                                  ]),
+                                ),
+                              )
+                            }
+                          />
+                          <IconButton
+                            icon="up"
+                            label="Up"
+                            disabled={index === 0}
+                            onPress={() =>
+                              action(() =>
+                                w.mutate(c => {
+                                  const order = [...c.queue];
+                                  const at = order.indexOf(id);
+                                  if (at <= 0) {
+                                    return;
+                                  }
+                                  [order[at - 1], order[at]] = [
+                                    order[at]!,
+                                    order[at - 1]!,
+                                  ];
+                                  reorderQueue(c, order);
+                                }),
+                              )
+                            }
+                          />
+                          <IconButton
+                            icon="down"
+                            label="Down"
+                            disabled={index === ids.length - 1}
+                            onPress={() =>
+                              action(() =>
+                                w.mutate(c => {
+                                  const order = [...c.queue];
+                                  const at = order.indexOf(id);
+                                  if (at < 0 || at >= order.length - 1) {
+                                    return;
+                                  }
+                                  [order[at], order[at + 1]] = [
+                                    order[at + 1]!,
+                                    order[at]!,
+                                  ];
+                                  reorderQueue(c, order);
+                                }),
+                              )
+                            }
+                          />
+                          <IconButton
+                            icon="trash"
+                            color={colors.danger}
+                            label="Remove"
+                            onPress={() =>
+                              action(() =>
+                                w.mutate(c => {
+                                  c.queue = c.queue.filter(v => v !== id);
+                                }),
+                              )
+                            }
+                          />
+                        </View>
+                      )}
                     </View>
                   </Pressable>
                 )}
@@ -369,8 +452,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     paddingTop: 20,
+    paddingBottom: 12,
+    paddingHorizontal: 10,
   },
-  entryPhone: { flexDirection: 'column', alignItems: 'stretch' },
+  // Phones and the drawer keep one row: identity on the left, play and ⋯ on the right.
+  entryPhone: { gap: 8, paddingHorizontal: 4 },
   identity: {
     flex: 1,
     minWidth: 0,
@@ -378,7 +464,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
-  identityPhone: { flex: undefined },
+  identityPhone: { gap: 10 },
   hidden: { opacity: 0 },
   position: { fontFamily, width: 24, textAlign: 'right' },
   cover: { width: 56 },
@@ -392,5 +478,5 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     paddingVertical: 8,
   },
-  actionsPhone: { justifyContent: 'flex-start', paddingLeft: 36 },
+  actionsPhone: { flexDirection: 'column', gap: 4, paddingVertical: 0 },
 });

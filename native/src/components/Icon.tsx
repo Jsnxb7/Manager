@@ -9,42 +9,9 @@ import {
   ViewStyle,
 } from 'react-native';
 import { colors, fontFamily, noFocusRing } from '../design/theme';
+import { regular, small } from './iconAssets';
 
-const glyphs = {
-  back: require('../assets/icons/back.webp'),
-  forward: require('../assets/icons/forward.webp'),
-  up: require('../assets/icons/up.webp'),
-  edit: require('../assets/icons/edit.webp'),
-  top: require('../assets/icons/top.webp'),
-  alert: require('../assets/icons/alert.webp'),
-  down: require('../assets/icons/down.webp'),
-  pause: require('../assets/icons/pause.webp'),
-  fullscreen: require('../assets/icons/fullscreen.webp'),
-  volume: require('../assets/icons/volume.webp'),
-  mute: require('../assets/icons/mute.webp'),
-  captions: require('../assets/icons/captions.webp'),
-  home: require('../assets/icons/home.webp'),
-  play: require('../assets/icons/play.webp'),
-  queue: require('../assets/icons/queue.webp'),
-  search: require('../assets/icons/search.webp'),
-  filter: require('../assets/icons/filter.webp'),
-  settings: require('../assets/icons/settings.webp'),
-  plus: require('../assets/icons/plus.webp'),
-  check: require('../assets/icons/check.webp'),
-  close: require('../assets/icons/close.webp'),
-  bookmark: require('../assets/icons/bookmark.webp'),
-  bookmarkFilled: require('../assets/icons/bookmark-filled.webp'),
-  trash: require('../assets/icons/trash.webp'),
-  grid: require('../assets/icons/grid.webp'),
-  list: require('../assets/icons/list.webp'),
-  tag: require('../assets/icons/tag.webp'),
-  link: require('../assets/icons/link.webp'),
-  reset: require('../assets/icons/reset.webp'),
-  folder: require('../assets/icons/folder.webp'),
-  player: require('../assets/icons/player.webp'),
-  more: require('../assets/icons/more.webp'),
-} as const;
-export type IconName = keyof typeof glyphs;
+export type IconName = keyof typeof regular;
 
 export function Icon({
   name,
@@ -57,7 +24,8 @@ export function Icon({
 }): React.JSX.Element {
   return (
     <Image
-      source={glyphs[name]}
+      // Phosphor glyphs pre-rendered per display scale; small icons use the bold cut.
+      source={(size <= 16 ? small : regular)[name]}
       style={{ width: size, height: size, tintColor: color }}
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
@@ -93,6 +61,7 @@ export function IconButton({
   const [focus, setFocus] = useState(false);
   // Even the smallest icons stay comfortable to hit.
   const pad = Math.max(8, Math.round(size * 0.45));
+  const lit = hover && !disabled;
   return (
     <Pressable
       {...noFocusRing}
@@ -110,8 +79,7 @@ export function IconButton({
         styles.button,
         { padding: pad, borderRadius: size + pad },
         solid && styles.solid,
-        active && styles.active,
-        hover && !disabled && styles.hover,
+        lit && (color === colors.danger ? styles.hoverDanger : styles.hover),
         focus && styles.focus,
         disabled && styles.disabled,
         style,
@@ -120,8 +88,12 @@ export function IconButton({
       <Icon
         name={icon}
         size={size}
-        color={color ?? (active ? colors.accent : colors.text)}
+        color={
+          color ?? (active ? colors.accent : lit ? colors.mist : colors.text)
+        }
       />
+      {/* The current page is marked like the text tabs: a short blue underline. */}
+      {active && !lit && <View style={styles.activeLine} />}
       {badge !== undefined && badge > 0 && (
         <View style={styles.badge}>
           <Text style={styles.badgeText}>{badge > 99 ? '99+' : badge}</Text>
@@ -138,26 +110,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  solid: { backgroundColor: '#0A131DCC' },
-  active: { backgroundColor: colors.accentSoft },
-  hover: { backgroundColor: colors.hover },
+  solid: { backgroundColor: '#0A131DE0', borderColor: '#FFFFFF1F' },
+  activeLine: {
+    position: 'absolute',
+    bottom: 2,
+    alignSelf: 'center',
+    width: 14,
+    height: 2,
+    borderRadius: 1,
+    backgroundColor: colors.accent,
+  },
+  // Hover is a lit blue disc with an accent rim; the selected page keeps a softer
+  // blue disc, so the two never read the same.
+  hover: { backgroundColor: colors.hover, borderColor: colors.accent },
+  hoverDanger: { backgroundColor: '#3A2226', borderColor: colors.danger },
   focus: { borderColor: colors.line },
   disabled: { opacity: 0.4 },
   badge: {
     position: 'absolute',
     top: 0,
     right: 0,
-    minWidth: 16,
-    height: 16,
-    borderRadius: 8,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
     paddingHorizontal: 4,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.chrome,
+    // Blue count with a rim in the bar's colour, so it sits apart from the icon.
+    backgroundColor: colors.accent,
+    borderWidth: 2,
+    borderColor: colors.background,
   },
   badgeText: {
     fontFamily,
     fontSize: 10,
+    lineHeight: 12,
     fontWeight: '700',
     color: colors.background,
   },

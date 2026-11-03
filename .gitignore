@@ -151,3 +151,9 @@ folder_structure.txt
 map.py
 /static/custom_media/
 electron-dist/
+
+# libmpv binary, see native/windows/third_party/mpv/README.md
+/native/windows/third_party/mpv/*.dll
+
+# Android NDK/CMake build cache
+.cxx/

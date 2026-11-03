@@ -7,7 +7,7 @@ import {
   newId,
   validateCatalog,
 } from '../domain/catalog';
-import { StorageAdapter } from '../platform/contracts';
+import { StorageAdapter, UnpackedPackage } from '../platform/contracts';
 import { JsonRepository } from '../repositories/JsonRepository';
 import {
   LegacyFiles,
@@ -15,7 +15,7 @@ import {
   safeRelative,
 } from '../repositories/legacyImport';
 
-const MAX_PACKAGE = 128 * 1024 * 1024;
+const MAX_PACKAGE = 768 * 1024 * 1024;
 const MAX_FILE = 32 * 1024 * 1024;
 const hash = (bytes: Uint8Array): string => bytesToHex(sha256(bytes));
 const artworkName = (name: string): boolean =>
@@ -30,7 +30,8 @@ type Manifest = {
 };
 export type ImportPreview = {
   catalog: Catalog;
-  artwork: Record<string, Uint8Array>;
+  /** Cover bytes, or the path of a cover already unpacked into app storage. */
+  artwork: Record<string, Uint8Array | string>;
   warnings: string[];
   expectedRevision: string;
   divergent: boolean;
@@ -42,6 +43,31 @@ export async function exportCatalog(
   io: StorageAdapter,
 ): Promise<string | null> {
   const catalog = await repo.snapshot();
+  const fileName = `anime-catalog-${new Date().toISOString().slice(0, 10)}.zip`;
+  if (io.pickSaveTarget && io.writePackage) {
+    const covers = [
+      ...new Set(catalog.entries.flatMap(e => (e.cover ? [e.cover] : []))),
+    ];
+    if (!covers.every(artworkName)) {
+      throw new Error('Invalid artwork reference; videos cannot be exported.');
+    }
+    const target = await io.pickSaveTarget(fileName);
+    if (!target) {
+      return null;
+    }
+    return io.writePackage(
+      target,
+      JSON.stringify(catalog),
+      {
+        format: 'anime-manager-catalog',
+        schemaVersion: 2,
+        catalogId: catalog.id,
+        revision: catalog.revision,
+        exportedAt: new Date().toISOString(),
+      },
+      covers.map(name => ({ name, path: `${io.privateRoot}/${name}` })),
+    );
+  }
   const files: Record<string, Uint8Array> = {
     'data/catalog.json': strToU8(JSON.stringify(catalog)),
   };
@@ -78,9 +104,96 @@ export async function exportCatalog(
   }
   files['manifest.json'] = strToU8(JSON.stringify(manifest));
   return io.saveFile(
-    `anime-catalog-${new Date().toISOString().slice(0, 10)}.zip`,
-    zipSync(files, { level: 6 }),
+    fileName,
+    // Artwork is already compressed; storing it as-is skips the slowest step.
+    zipSync(
+      Object.fromEntries(
+        Object.entries(files).map(([name, bytes]) => [
+          name,
+          [bytes, { level: artworkName(name) ? 0 : 6 }],
+        ]),
+      ),
+    ),
   );
+}
+
+/** Opens a catalog ZIP, natively where the host can, so large packages stay off the JS heap. */
+export async function inspectPackageFile(
+  uri: string,
+  repo: JsonRepository,
+  io: StorageAdapter,
+): Promise<ImportPreview> {
+  if (!io.unpackPackage || !io.moveOwned) {
+    return inspectPackage(await io.readBytes(uri), repo);
+  }
+  const staging = `${io.privateRoot}/import-staging`;
+  let unpacked: UnpackedPackage;
+  try {
+    unpacked = await io.unpackPackage(uri, staging);
+  } catch (error) {
+    // Older exports compressed every file; those still open the original way.
+    if (String(error).includes('compressed package')) {
+      return inspectPackage(await io.readBytes(uri), repo);
+    }
+    throw error;
+  }
+  return previewUnpacked(unpacked, staging, repo);
+}
+
+async function previewUnpacked(
+  unpacked: UnpackedPackage,
+  staging: string,
+  repo: JsonRepository,
+): Promise<ImportPreview> {
+  const manifest = JSON.parse(unpacked.manifest) as Manifest;
+  if (
+    manifest.format !== 'anime-manager-catalog' ||
+    manifest.schemaVersion !== 2 ||
+    !manifest.files ||
+    typeof manifest.files !== 'object'
+  ) {
+    throw new Error('Unsupported catalog package');
+  }
+  const files = new Map(unpacked.files.map(file => [file.name, file]));
+  for (const [name, value] of Object.entries(manifest.files)) {
+    const file = files.get(name);
+    if (!file || file.bytes !== value.bytes || file.sha256 !== value.sha256) {
+      throw new Error(`Checksum mismatch: ${name}`);
+    }
+  }
+  for (const name of files.keys()) {
+    if (!manifest.files[name]) {
+      throw new Error('Unlisted package file');
+    }
+  }
+  const catalog = validateCatalog(JSON.parse(unpacked.catalog));
+  if (
+    catalog.id !== manifest.catalogId ||
+    catalog.revision !== manifest.revision
+  ) {
+    throw new Error('Manifest identity does not match catalog');
+  }
+  const artwork: Record<string, string> = {};
+  for (const entry of catalog.entries) {
+    if (entry.cover) {
+      if (!artworkName(entry.cover) || !files.has(entry.cover)) {
+        throw new Error(`Missing artwork for ${entry.title}`);
+      }
+      artwork[entry.cover] = `${staging}/${entry.cover}`;
+    }
+  }
+  const current = await repo.snapshot();
+  return {
+    catalog,
+    artwork,
+    warnings: [],
+    expectedRevision: current.revision,
+    differentCatalog: current.id !== catalog.id,
+    divergent:
+      current.id === catalog.id &&
+      current.revision !== catalog.revision &&
+      catalog.parentRevision !== current.revision,
+  };
 }
 
 export async function inspectPackage(
@@ -190,10 +303,17 @@ export async function applyImport(
   await io.mkdir(`${io.privateRoot}/artwork`);
   // New filenames avoid modifying covers used by the old snapshot or its backup.
   const mapping = new Map<string, string>();
-  for (const [old, bytes] of Object.entries(preview.artwork)) {
+  for (const [old, source] of Object.entries(preview.artwork)) {
     const extension = old.split('.').pop()!;
     const name = `artwork/${newId('import')}.${extension}`;
-    await io.writeBytes(`${io.privateRoot}/${name}`, bytes);
+    if (typeof source === 'string') {
+      if (!io.moveOwned) {
+        throw new Error('This device cannot move unpacked artwork');
+      }
+      await io.moveOwned(source, `${io.privateRoot}/${name}`);
+    } else {
+      await io.writeBytes(`${io.privateRoot}/${name}`, source);
+    }
     mapping.set(old, name);
   }
   for (const entry of next.entries) {

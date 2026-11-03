@@ -18,12 +18,15 @@ export function Button({
   onPress,
   primary = false,
   danger = false,
+  success = false,
   disabled = false,
 }: {
   label: string;
   onPress: () => void;
   primary?: boolean;
   danger?: boolean;
+  /** A completed state, shown in green. */
+  success?: boolean;
   disabled?: boolean;
 }): React.JSX.Element {
   const [focused, setFocused] = useState(false);
@@ -42,10 +45,15 @@ export function Button({
       onBlur={() => setFocused(false)}
       style={({ pressed }) => [
         ui.button,
-        primary && ui.primary,
+        primary && !success && ui.primary,
+        success && styles.success,
         hover &&
           !disabled &&
-          (primary ? styles.primaryHover : styles.buttonHover),
+          (success
+            ? styles.successHover
+            : primary
+            ? styles.primaryHover
+            : styles.buttonHover),
         disabled && ui.disabled,
         (pressed || focused) && ui.pressed,
       ]}
@@ -53,7 +61,8 @@ export function Button({
       <Text
         style={[
           ui.buttonText,
-          primary && ui.primaryText,
+          primary && !success && ui.primaryText,
+          success && styles.successText,
           danger && ui.dangerText,
         ]}
       >
@@ -114,11 +123,13 @@ export function HoverRow({
   onPress,
   label,
   style,
+  hoverStyle,
 }: {
   children: React.ReactNode | ((hover: boolean) => React.ReactNode);
   onPress?: () => void;
   label?: string;
   style?: StyleProp<ViewStyle>;
+  hoverStyle?: StyleProp<ViewStyle>;
 }): React.JSX.Element {
   const [hover, setHover] = useState(false);
   return (
@@ -130,7 +141,7 @@ export function HoverRow({
       onPress={onPress}
       onHoverIn={() => setHover(true)}
       onHoverOut={() => setHover(false)}
-      style={[style, hover && styles.rowHover]}
+      style={[style, hover && (hoverStyle ?? styles.rowHover)]}
     >
       {typeof children === 'function' ? children(hover) : children}
     </Pressable>
@@ -459,9 +470,15 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   surface: { backgroundColor: colors.panel, borderRadius: 12 },
-  buttonHover: { backgroundColor: colors.hover, borderColor: colors.hover },
+  buttonHover: { backgroundColor: colors.hover, borderColor: colors.accent },
+  success: {
+    backgroundColor: colors.successSoft,
+    borderColor: colors.successLine,
+  },
+  successHover: { backgroundColor: '#22402F', borderColor: colors.success },
+  successText: { color: colors.success },
   primaryHover: { backgroundColor: colors.accent, borderColor: colors.accent },
-  rowHover: { backgroundColor: '#14212E' },
+  rowHover: { backgroundColor: colors.rowHover },
   textButton: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
   textButtonActive: { backgroundColor: colors.accentSoft },
   textButtonText: { fontFamily, fontSize: 14, color: colors.muted },

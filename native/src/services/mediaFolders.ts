@@ -53,9 +53,17 @@ export async function previewMediaFolders(
       preview.skipped.push(entry.title);
     }
   }
-  for (const folder of [...folders.values()].sort((a, b) =>
+  const sorted = [...folders.values()].sort((a, b) =>
     a.toLowerCase().localeCompare(b.toLowerCase()),
-  )) {
+  );
+  if (io.scanMediaFolders) {
+    const scan = await io.scanMediaFolders(root, sorted);
+    preview.existing = scan.existing;
+    preview.missing = scan.missing;
+    preview.skipped.push(...scan.skipped);
+    return preview;
+  }
+  for (const folder of sorted) {
     const target = await io.resolveChild(root, folder);
     if (target) {
       // Listing also rejects a regular file occupying the expected folder.
@@ -72,6 +80,16 @@ export async function createMissingMediaFolders(
   preview: FolderPreview,
   io: StorageAdapter,
 ): Promise<number> {
+  if (io.createMediaFolders) {
+    const result = await io.createMediaFolders(preview.root, preview.missing);
+    if (result.failed.length) {
+      const first = result.failed[0]!;
+      throw new Error(
+        `${result.created} folders created; ${result.failed.length} could not be created (first: ${first.folder}, ${first.error}). Preview again to retry them.`,
+      );
+    }
+    return result.created;
+  }
   let created = 0;
   for (const folder of preview.missing) {
     try {

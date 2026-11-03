@@ -36,6 +36,7 @@ import {
 import { Cover, coverUri } from '../components/Cover';
 import { PanelPage } from '../components/Fade';
 import { Icon, IconButton } from '../components/Icon';
+import { ActionMenu } from '../components/ActionMenu';
 import {
   colors,
   displayFamily,
@@ -99,20 +100,21 @@ function WatchedButton({
       onHoverOut={() => setHover(false)}
       style={[
         styles.watched,
-        done && styles.watchedDone,
         hover && styles.watchedHover,
+        done && styles.watchedDone,
+        done && hover && styles.watchedDoneHover,
       ]}
     >
       <Icon
-        name="check"
+        name={done ? 'check' : 'plus'}
         size={14}
-        color={hover ? colors.background : done ? colors.success : colors.text}
+        color={done ? colors.success : hover ? colors.accent : colors.muted}
       />
       <Text
         style={[
           styles.watchedText,
-          done && styles.watchedDoneText,
           hover && styles.watchedHoverText,
+          done && styles.watchedDoneText,
         ]}
       >
         {label}
@@ -145,7 +147,16 @@ function Actions({
   onEdit,
   onDelete,
   solid,
-}: CardProps & { size: number; solid: boolean }): React.JSX.Element {
+  after = () => undefined,
+}: CardProps & {
+  size: number;
+  solid: boolean;
+  after?: () => void;
+}): React.JSX.Element {
+  const then = (run: () => void) => () => {
+    run();
+    after();
+  };
   return (
     <>
       <IconButton
@@ -153,7 +164,7 @@ function Actions({
         label={entry.bookmarked ? 'Bookmarked' : 'Bookmark'}
         size={size}
         solid={solid}
-        onPress={onBookmark}
+        onPress={then(onBookmark)}
       />
       {entry.kind === 'anime' ? (
         <IconButton
@@ -162,7 +173,7 @@ function Actions({
           size={size}
           solid={solid}
           disabled={queued}
-          onPress={onQueue}
+          onPress={then(onQueue)}
         />
       ) : (
         <IconButton
@@ -170,7 +181,7 @@ function Actions({
           label="Edit link"
           size={size}
           solid={solid}
-          onPress={onEdit}
+          onPress={then(onEdit)}
         />
       )}
       {entry.kind !== 'custom' && (
@@ -179,7 +190,7 @@ function Actions({
           label="Metadata"
           size={size}
           solid={solid}
-          onPress={onMetadata}
+          onPress={then(onMetadata)}
         />
       )}
       <IconButton
@@ -188,7 +199,7 @@ function Actions({
         size={size}
         solid={solid}
         color={colors.danger}
-        onPress={onDelete}
+        onPress={then(onDelete)}
       />
     </>
   );
@@ -203,6 +214,8 @@ function GridCard(props: CardProps & { width: number }): React.JSX.Element {
   const { entry, uri, width, onOpen, onToggleWatched } = props;
   const [hover, setHover] = useState(false);
   const percent = entry.kind === 'anime' ? watchedPercent(entry) : 0;
+  // Menu icons track the card width so they stay in proportion as the grid reflows.
+  const iconSize = Math.min(20, Math.max(13, Math.round(width / 11)));
   return (
     <Pressable
       {...noFocusRing}
@@ -225,7 +238,21 @@ function GridCard(props: CardProps & { width: number }): React.JSX.Element {
           )}
           {(hover || !HOVER) && (
             <View style={styles.overlay}>
-              <Actions {...props} size={14} solid />
+              <ActionMenu
+                size={iconSize}
+                solid
+                direction="down"
+                label={`Actions for ${entry.title}`}
+              >
+                {close => (
+                  <Actions
+                    {...props}
+                    size={iconSize}
+                    solid={false}
+                    after={close}
+                  />
+                )}
+              </ActionMenu>
             </View>
           )}
         </Cover>
@@ -249,7 +276,10 @@ function GridCard(props: CardProps & { width: number }): React.JSX.Element {
       {percent > 0 && percent < 100 && (
         <ProgressBar value={percent} label={`${entry.title} completion`} />
       )}
-      <WatchedButton entry={entry} onPress={onToggleWatched} />
+      {/* Cards in a row share its height, so the buttons line up across the row. */}
+      <View style={styles.cardFoot}>
+        <WatchedButton entry={entry} onPress={onToggleWatched} />
+      </View>
     </Pressable>
   );
 }
@@ -1000,6 +1030,7 @@ const styles = StyleSheet.create({
   continueActions: { flexDirection: 'row', gap: 2, marginLeft: -6 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 32 },
   card: { gap: 5 },
+  cardFoot: { flexGrow: 1, justifyContent: 'flex-end' },
   mark: { position: 'absolute', top: 8, right: 8 },
   overlay: {
     position: 'absolute',
@@ -1017,34 +1048,42 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   cardTitleHover: { fontFamily, color: colors.mist },
+  // Neutral until done, then green; hover outlines it in the state's colour.
   watched: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 7,
-    minHeight: 34,
+    gap: 8,
+    height: 34,
     marginTop: 6,
     borderRadius: 8,
     paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: colors.line,
     backgroundColor: colors.raised,
   },
-  watchedDone: { backgroundColor: 'transparent' },
-  watchedHover: { backgroundColor: colors.chrome },
+  watchedHover: { backgroundColor: colors.hover, borderColor: colors.accent },
+  watchedDone: {
+    backgroundColor: colors.successSoft,
+    borderColor: colors.successLine,
+  },
+  watchedDoneHover: { backgroundColor: '#22402F', borderColor: colors.success },
   watchedText: {
     fontFamily,
     fontSize: 13,
     fontWeight: '600',
     color: colors.text,
   },
+  watchedHoverText: { fontFamily, color: colors.mist },
   watchedDoneText: { fontFamily, color: colors.success },
-  watchedHoverText: { fontFamily, color: colors.background },
   list: { borderTopWidth: 1, borderColor: colors.line },
-  rowLit: { backgroundColor: '#14212E' },
+  rowLit: { backgroundColor: colors.rowHover },
   rowItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
     paddingVertical: 10,
+    paddingHorizontal: 10,
     borderBottomWidth: 1,
     borderColor: colors.line,
   },

@@ -213,9 +213,11 @@ function Tile({
   covers,
   plus = false,
   clone,
+  compact = false,
   onPress,
 }: {
   clone: boolean;
+  compact?: boolean;
   label: string;
   title: string;
   caption: string;
@@ -247,37 +249,49 @@ function Tile({
       onHoverOut={() => setHover(false)}
       onFocus={() => setFocus(true)}
       onBlur={() => setFocus(false)}
-      style={styles.tile}
+      style={compact ? styles.tileCompact : styles.tile}
     >
-      <View style={styles.art}>
-        {covers.map((uri, index) => (
-          <Animated.Image
-            key={uri}
-            source={{ uri }}
-            style={[
-              styles.cover,
-              fan(index, covers.length, open),
-              lit && styles.coverLit,
-            ]}
-            resizeMode="cover"
-            accessibilityIgnoresInvertColors
-          />
-        ))}
-        {!plus && covers.length === 0 && (
-          <Text style={styles.letter}>{title.slice(0, 1)}</Text>
-        )}
-        {plus && (
-          <View style={[styles.plus, lit && styles.plusLit]}>
-            <Icon
-              name="plus"
-              size={26}
-              color={lit ? colors.background : colors.chrome}
+      {/* Phones show the same art at three quarters, centred in a smaller box. */}
+      <View style={compact ? styles.artBox : undefined}>
+        <View style={[styles.art, compact && styles.artCompact]}>
+          {covers.map((uri, index) => (
+            <Animated.Image
+              key={uri}
+              source={{ uri }}
+              style={[
+                styles.cover,
+                fan(index, covers.length, open),
+                lit && styles.coverLit,
+              ]}
+              resizeMode="cover"
+              accessibilityIgnoresInvertColors
             />
-          </View>
-        )}
+          ))}
+          {!plus && covers.length === 0 && (
+            <Text style={styles.letter}>{title.slice(0, 1)}</Text>
+          )}
+          {plus && (
+            <View style={[styles.plus, lit && styles.plusLit]}>
+              <Icon
+                name="plus"
+                size={26}
+                color={lit ? colors.background : colors.chrome}
+              />
+            </View>
+          )}
+        </View>
       </View>
       <View style={styles.copy}>
-        <Text style={[styles.title, lit && styles.titleLit]}>{title}</Text>
+        <Text
+          numberOfLines={1}
+          style={[
+            styles.title,
+            compact && styles.titleCompact,
+            lit && styles.titleLit,
+          ]}
+        >
+          {title}
+        </Text>
         <Text style={ui.muted}>{caption}</Text>
       </View>
     </Pressable>
@@ -331,9 +345,8 @@ export function Hub({
       >
         Content Hub
       </Text>
-      <Train
-        paused={adding}
-        tiles={clone => [
+      {(() => {
+        const tiles = (clone: boolean, compact = false) => [
           ...(w.catalog?.sections ?? []).map(section => {
             const entries = w.catalog!.entries.filter(
               e => e.sectionId === section.id,
@@ -346,6 +359,7 @@ export function Hub({
                 label={`Browse ${section.title}`}
                 title={section.title}
                 caption={`${count} ${count === 1 ? 'title' : 'titles'}`}
+                compact={compact}
                 covers={entries
                   .filter(e => e.cover)
                   .slice(0, 3)
@@ -364,10 +378,17 @@ export function Hub({
             caption="Start a new library"
             covers={[]}
             plus
+            compact={compact}
             onPress={() => setAdding(true)}
           />,
-        ]}
-      />
+        ];
+        // A phone shows every section at once in a grid; wider windows keep the train.
+        return width < 700 ? (
+          <View style={styles.grid}>{tiles(false, true)}</View>
+        ) : (
+          <Train paused={adding} tiles={clone => tiles(clone)} />
+        );
+      })()}
 
       <Sheet
         title="Add content section"
@@ -410,6 +431,23 @@ const styles = StyleSheet.create({
   arrowRight: { position: 'absolute', right: 12, zIndex: 2 },
   trainSet: { flexDirection: 'row' },
   tile: { width: 200, marginRight: 24, alignItems: 'center' },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    rowGap: 28,
+    paddingTop: 28,
+    paddingHorizontal: 8,
+  },
+  tileCompact: { width: '50%', alignItems: 'center' },
+  artBox: {
+    width: 150,
+    height: 132,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  artCompact: { transform: [{ scale: 0.75 }] },
+  titleCompact: { fontSize: 19 },
   art: {
     width: 200,
     height: 176,

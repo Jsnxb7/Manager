@@ -45,6 +45,13 @@ export default function Root(): React.JSX.Element {
   const [filterCount, setFilterCount] = useState(0);
   const [searchBar, setSearchBar] = useState<SearchBar | null>(null);
   const closeFilters = useCallback(() => setFiltersOpen(false), []);
+  // Search and filters belong to the page they were opened on; leaving closes them,
+  // so a library never opens with the keyboard already up.
+  const routeKey = JSON.stringify(route);
+  useEffect(() => {
+    setSearchOpen(false);
+    setFiltersOpen(false);
+  }, [routeKey]);
   const navigate = (next: Route) =>
     setHistory(stack =>
       stack[stack.length - 1]?.name === 'player' && next.name === 'player'

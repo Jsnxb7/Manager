@@ -4,6 +4,7 @@ import {
   Image,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -11,10 +12,10 @@ import {
 } from 'react-native';
 import { Workspace } from '../app/useWorkspace';
 import { Route } from '../app/routes';
-import { Button, Choice, ProgressBar } from '../components/controls';
-import { coverUri } from '../components/Cover';
-import { FadeEdges, PanelPage } from '../components/Fade';
+import { Button } from '../components/controls';
 import { Icon, IconButton } from '../components/Icon';
+import { coverUri } from '../components/Cover';
+import { OuterFade, PanelPage } from '../components/Fade';
 import {
   colors,
   displayFamily,
@@ -29,6 +30,7 @@ import {
   PlaybackState,
   saveProgress,
 } from '../services/progress';
+import { Catalog, Episode } from '../domain/catalog';
 import { setWatched } from '../services/mutations';
 import { playerCommand } from '../platform/nativePlayer';
 import VideoSurface from '../platform/VideoSurface';
@@ -37,6 +39,26 @@ import {
   resolveTarget,
   targetRoute,
 } from '../services/playback';
+
+// Page keys mapped to mpv's key names; mpv's own bindings then apply.
+const PLAYER_KEYS: Record<string, string> = {
+  ' ': 'SPACE',
+  Space: 'SPACE',
+  ArrowLeft: 'LEFT',
+  ArrowRight: 'RIGHT',
+  ArrowUp: 'UP',
+  ArrowDown: 'DOWN',
+  f: 'f',
+  F: 'f',
+  m: 'm',
+  M: 'm',
+  n: 'n',
+  p: 'p',
+  Escape: 'ESC',
+  MediaPlayPause: 'PLAYPAUSE',
+  MediaTrackNext: 'NEXT',
+  MediaTrackPrevious: 'PREV',
+};
 
 export function Player({
   workspace: w,
@@ -56,11 +78,6 @@ export function Player({
   const entry = w.catalog!.entries.find(e => e.id === animeId);
   const ep = entry?.episodes.find(e => e.id === episodeId);
   const [state, setState] = useState<PlaybackState | null>(null);
-  const [seek, setSeek] = useState('');
-  const [speed, setSpeed] = useState('1');
-  const [audioLabel, setAudioLabel] = useState('Default');
-  const [subtitleLabel, setSubtitleLabel] = useState('Off');
-  const [volume, setVolume] = useState(1);
   const { width } = useViewport();
   const phone = width < 700;
   // Below this the side covers would squeeze the video, so they move under it.
@@ -186,7 +203,12 @@ export function Player({
     };
     start().catch(error => {
       if (live) {
-        setFailed(String(error).replace(/^Error: /, ''));
+        setFailed(
+          String((error as { message?: string })?.message ?? error).replace(
+            /^Error: /,
+            '',
+          ),
+        );
       }
     });
     const timer = setInterval(() => {
@@ -212,9 +234,6 @@ export function Player({
     // The session follows stable identity; live workspace state is read from latest.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animeId, episodeId, resume, queueAnchor]);
-  const action = (method: string, args: Record<string, unknown> = {}) => {
-    playerCommand(method, args).then(setState).catch(w.setError);
-  };
   const resolveTargetSafe = (direction: 1 | -1) =>
     resolveTarget(w.catalog!, animeId, episodeId, direction, queueAnchor);
   const previous = entry && ep ? resolveTargetSafe(-1) : null;
@@ -250,285 +269,113 @@ export function Player({
   };
   return (
     <PanelPage flush>
-      {/* Keyed by width: stale text measurements after a resize would clip these,
-          and the video itself must not remount. */}
-      <Text
-        key={`title-${width}`}
-        accessibilityRole="header"
-        numberOfLines={2}
-        style={[styles.title, phone && styles.titlePhone]}
-      >
-        {entry.title}
-      </Text>
-      <Text key={`episode-${width}`} style={[ui.muted, styles.episode]}>
-        {[
-          entry.season,
-          `Episode ${ep.number}`,
-          ep.title === `Episode ${ep.number}` ? '' : ep.title,
-        ]
-          .filter(Boolean)
-          .join(', ')}
-      </Text>
-      <View style={wide ? styles.stage : undefined}>
-        {wide && (
-          <SideEpisode
-            direction="Previous"
-            target={previous}
-            {...neighbour(previous)}
-            onPress={() => previous && navigate(targetRoute(previous))}
-          />
-        )}
-        <View style={wide ? ui.grow : undefined}>
-          <VideoSurface
-            title={
-              failed
-                ? 'Nothing is playing'
-                : state?.ready
-                ? ''
-                : 'Opening the video'
-            }
-            detail={
-              state?.ready && !failed && !state.closed
-                ? 'Use the controls below, or the keyboard in that window.'
-                : ''
-            }
-          />
-        </View>
-        {wide && (
-          <SideEpisode
-            direction="Next"
-            target={next}
-            {...neighbour(next)}
-            onPress={() => next && navigate(targetRoute(next))}
-          />
-        )}
-      </View>
-      {!wide && (previous || next) && (
-        <View
-          key={`strip-${width}`}
-          style={[styles.strip, phone && styles.stripPhone]}
-        >
-          <StripEpisode
-            direction="Previous"
-            target={previous}
-            {...neighbour(previous)}
-            onPress={() => previous && navigate(targetRoute(previous))}
-          />
-          <StripEpisode
-            direction="Next"
-            target={next}
-            {...neighbour(next)}
-            onPress={() => next && navigate(targetRoute(next))}
-          />
-        </View>
-      )}
-      {failed !== '' && (
-        <View style={styles.failed}>
-          <Text selectable style={[ui.error, ui.grow]}>
-            {failed}
-          </Text>
-          <Button
-            label="Anime details"
-            primary
-            onPress={() => navigate({ name: 'details', animeId })}
-          />
-        </View>
-      )}
       <View
-        style={[
-          styles.controls,
-          (failed !== '' || Platform.OS === 'windows') && styles.gone,
-        ]}
+        // Player keys keep working after a click on a page control moves focus off
+        // the video. Typing in a text field is left alone.
+        {...{
+          onKeyDown: (e: { nativeEvent: { key: string } }) => {
+            const key = PLAYER_KEYS[e.nativeEvent.key];
+            if (key && !TextInput.State.currentlyFocusedInput()) {
+              playerCommand('key', { key }).catch(() => undefined);
+            }
+          },
+        }}
       >
-        {state && (
-          <Scrubber
-            position={state.position}
-            duration={state.duration}
-            onSeek={position => action('seek', { position })}
-          />
-        )}
-        <View style={styles.transport}>
-          <IconButton
-            icon="back"
-            label="Previous"
-            disabled={!previous}
-            onPress={() => previous && navigate(targetRoute(previous))}
-          />
-          <Button
-            label="-10s"
-            onPress={() =>
-              action('seek', {
-                position: Math.max(0, (state?.position ?? 0) - 10),
-              })
-            }
-          />
-          <IconButton
-            icon={state?.paused ? 'play' : 'pause'}
-            label={state?.paused ? 'Play' : 'Pause'}
-            size={26}
-            solid
-            onPress={() => action(state?.paused ? 'play' : 'pause')}
-          />
-          <Button
-            label="+10s"
-            onPress={() =>
-              action('seek', {
-                position: Math.min(
-                  state?.duration ?? 0,
-                  (state?.position ?? 0) + 10,
-                ),
-              })
-            }
-          />
-          <IconButton
-            icon="forward"
-            label="Next"
-            disabled={!next}
-            onPress={() => next && navigate(targetRoute(next))}
-          />
-          <View style={ui.grow} />
-          <IconButton
-            icon={volume === 0 ? 'mute' : 'volume'}
-            label={volume === 0 ? 'Unmute' : 'Mute'}
-            onPress={() => {
-              setVolume(v => (v === 0 ? 1 : 0));
-              action('volume', { volume: volume === 0 ? 1 : 0 });
-            }}
-          />
-          <IconButton
-            icon="captions"
-            label="Import SRT / VTT"
-            onPress={() => {
-              w.run(async () => {
-                const uri = (await w.io!.pickFiles('subtitle'))[0];
-                if (uri) {
-                  const text = await w.io!.readText(uri);
-                  await playerCommand('importSubtitle', {
-                    uri,
-                    format: text.replace(/^﻿/, '').startsWith('WEBVTT')
-                      ? 'vtt'
-                      : 'srt',
-                  });
-                }
-              }, 'Subtitles loaded').catch(w.setError);
-            }}
-          />
-          {Platform.OS === 'android' && Number(Platform.Version) >= 26 && (
-            <IconButton
-              icon="player"
-              label="Picture in picture"
-              onPress={() => action('pip')}
+        {/* Keyed by width: stale text measurements after a resize would clip these,
+          and the video itself must not remount. */}
+        <Text
+          key={`title-${width}`}
+          accessibilityRole="header"
+          numberOfLines={2}
+          style={[styles.title, phone && styles.titlePhone]}
+        >
+          {entry.title}
+        </Text>
+        <Text key={`episode-${width}`} style={[ui.muted, styles.episode]}>
+          {[
+            entry.season,
+            `Episode ${ep.number}`,
+            ep.title === `Episode ${ep.number}` ? '' : ep.title,
+          ]
+            .filter(Boolean)
+            .join(', ')}
+        </Text>
+        <View style={wide ? styles.stage : undefined}>
+          {wide && (
+            <SideEpisode
+              direction="Previous"
+              target={previous}
+              {...neighbour(previous)}
+              onPress={() => previous && navigate(targetRoute(previous))}
             />
           )}
-          <IconButton
-            icon="fullscreen"
-            label="Fullscreen"
-            onPress={() => action('fullscreen')}
-          />
-        </View>
-      </View>
-      <View style={styles.options}>
-        <Choice
-          inline
-          label="Playback speed"
-          values={['0.5', '0.75', '1', '1.25', '1.5', '2']}
-          value={speed}
-          display={`${speed}x`}
-          onChange={v => {
-            setSpeed(v);
-            action('rate', { rate: Number(v) });
-          }}
-        />
-        <Choice
-          inline
-          label="Volume"
-          values={['0', '25', '50', '75', '100']}
-          value={String(Math.round(volume * 100))}
-          display={`${Math.round(volume * 100)}%`}
-          onChange={v => {
-            setVolume(Number(v) / 100);
-            action('volume', { volume: Number(v) / 100 });
-          }}
-        />
-        <Choice
-          inline
-          label="Audio"
-          values={state?.audio.map(t => t.label) ?? []}
-          value={audioLabel}
-          onChange={label => {
-            setAudioLabel(label);
-            action('audio', {
-              id: state?.audio.find(t => t.label === label)?.id ?? '',
-            });
-          }}
-        />
-        <Choice
-          inline
-          label="Subtitles"
-          values={['Off', ...(state?.subtitles.map(t => t.label) ?? [])]}
-          value={subtitleLabel}
-          onChange={label => {
-            setSubtitleLabel(label);
-            action('subtitle', {
-              id: state?.subtitles.find(t => t.label === label)?.id ?? 'off',
-            });
-          }}
-        />
-        <Choice
-          inline
-          label="Jump to episode"
-          values={entry.episodes.map(e => `${e.number}. ${e.title}`)}
-          value={`${ep.number}. ${ep.title}`}
-          display={`Episode ${ep.number}`}
-          onChange={label => {
-            const item = entry.episodes.find(
-              e => `${e.number}. ${e.title}` === label,
-            );
-            if (item) {
-              navigate({
-                name: 'player',
-                animeId,
-                episodeId: item.id,
-                resume: false,
-              });
-            }
-          }}
-        />
-        <View style={styles.seek}>
-          <Text style={ui.muted}>Seek to seconds</Text>
-          <View style={styles.seekRow}>
-            <TextInput
-              {...noFocusRing}
-              accessibilityLabel="Seek to seconds"
-              placeholder="120"
-              placeholderTextColor={colors.muted}
-              value={seek}
-              keyboardType="number-pad"
-              onChangeText={setSeek}
-              style={[ui.input, styles.seekInput]}
-            />
-            <IconButton
-              icon="check"
-              label="Seek"
-              size={12}
-              disabled={seek.trim() === ''}
-              onPress={() => action('seek', { position: Number(seek) })}
+          <View style={wide ? ui.grow : undefined}>
+            <VideoSurface
+              title={
+                failed
+                  ? 'Nothing is playing'
+                  : state?.ready
+                  ? ''
+                  : 'Opening the video'
+              }
+              detail=""
             />
           </View>
+          {wide && (
+            <SideEpisode
+              direction="Next"
+              target={next}
+              {...neighbour(next)}
+              onPress={() => next && navigate(targetRoute(next))}
+            />
+          )}
         </View>
-        {failed === '' && (
-          <View style={styles.seek}>
-            <Text style={ui.muted}>This anime</Text>
-            <Pressable
-              {...noFocusRing}
-              accessibilityRole="link"
-              accessibilityLabel="Anime details"
+        {!wide && (previous || next) && (
+          <View
+            key={`strip-${width}`}
+            style={[styles.strip, phone && styles.stripPhone]}
+          >
+            <StripEpisode
+              direction="Previous"
+              target={previous}
+              {...neighbour(previous)}
+              onPress={() => previous && navigate(targetRoute(previous))}
+            />
+            <StripEpisode
+              direction="Next"
+              target={next}
+              {...neighbour(next)}
+              onPress={() => next && navigate(targetRoute(next))}
+            />
+          </View>
+        )}
+        {failed !== '' && (
+          <View style={styles.failed}>
+            <Text selectable style={[ui.error, ui.grow]}>
+              {failed}
+            </Text>
+            <Button
+              label="Anime details"
+              primary
               onPress={() => navigate({ name: 'details', animeId })}
-              style={styles.detailsLink}
-            >
-              <Text style={ui.text}>Anime details</Text>
-              <Icon name="forward" size={12} color={colors.muted} />
-            </Pressable>
+            />
+          </View>
+        )}
+        {entry.episodes.length > 1 && (
+          <View style={[styles.episodes, wide && styles.episodesWide]}>
+            <EpisodeRail
+              episodes={entry.episodes}
+              currentId={episodeId}
+              progress={w.catalog!.progress}
+              onPick={id =>
+                navigate({
+                  name: 'player',
+                  animeId,
+                  episodeId: id,
+                  resume: true,
+                })
+              }
+            />
           </View>
         )}
       </View>
@@ -536,55 +383,192 @@ export function Player({
   );
 }
 
-function clock(seconds: number): string {
-  const total = Math.max(0, Math.floor(seconds));
-  const hours = Math.floor(total / 3600);
-  const minutes = Math.floor(total / 60) % 60;
-  const rest = String(total % 60).padStart(2, '0');
-  return hours
-    ? `${hours}:${String(minutes).padStart(2, '0')}:${rest}`
-    : `${minutes}:${rest}`;
+/**
+ * Every episode in a sideways-scrolling rail under the video. The playing one is
+ * blue and starts centred, watched ones are green, part-watched ones show progress.
+ */
+function EpisodeRail({
+  episodes,
+  currentId,
+  progress,
+  onPick,
+}: {
+  episodes: Episode[];
+  currentId: string;
+  progress: Catalog['progress'];
+  onPick: (id: string) => void;
+}): React.JSX.Element {
+  const rail = useRef<ScrollView>(null);
+  const [view, setView] = useState(0);
+  const offset = useRef(0);
+  const index = Math.max(
+    0,
+    episodes.findIndex(e => e.id === currentId),
+  );
+  const step = CARD + GAP;
+  const scrollBy = (pages: number) =>
+    rail.current?.scrollTo({
+      x: Math.max(0, offset.current + pages * Math.max(step, view - step)),
+      animated: true,
+    });
+  return (
+    <View style={styles.railBlock}>
+      <View style={styles.railHead}>
+        <Text style={styles.overline}>Episodes</Text>
+        <Text style={styles.railCount}>
+          {index + 1} of {episodes.length}
+        </Text>
+        <View style={ui.grow} />
+        <IconButton
+          icon="back"
+          label="Earlier episodes"
+          size={16}
+          onPress={() => scrollBy(-1)}
+        />
+        <IconButton
+          icon="forward"
+          label="Later episodes"
+          size={16}
+          onPress={() => scrollBy(1)}
+        />
+      </View>
+      {/* The scrollbar sits in a strip the wrapper clips off; arrows and the wheel scroll instead. */}
+      <View style={styles.railClip}>
+        <ScrollView
+          ref={rail}
+          horizontal
+          style={styles.railScroll}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.railRow}
+          scrollEventThrottle={32}
+          onScroll={e => {
+            offset.current = e.nativeEvent.contentOffset.x;
+          }}
+          onLayout={e => {
+            const width = e.nativeEvent.layout.width;
+            setView(width);
+            // Opens with the playing episode centred.
+            rail.current?.scrollTo({
+              x: Math.max(0, index * step - (width - CARD) / 2),
+              animated: false,
+            });
+          }}
+        >
+          {episodes.map(e => {
+            const saved = progress[e.id];
+            const percent =
+              saved && saved.duration
+                ? (saved.currentTime / saved.duration) * 100
+                : 0;
+            return (
+              <EpisodeCard
+                key={e.id}
+                number={e.number}
+                title={
+                  e.title !== '' && e.title !== `Episode ${e.number}`
+                    ? e.title
+                    : ''
+                }
+                current={e.id === currentId}
+                watched={e.watched}
+                percent={percent}
+                onPress={() => e.id !== currentId && onPick(e.id)}
+              />
+            );
+          })}
+        </ScrollView>
+      </View>
+    </View>
+  );
 }
 
-function Scrubber({
-  position,
-  duration,
-  onSeek,
+// Width of the previous/next covers beside the video.
+const SIDE = 150;
+const CARD = 148;
+const GAP = 10;
+
+function EpisodeCard({
+  number,
+  title,
+  current,
+  watched,
+  percent,
+  onPress,
 }: {
-  position: number;
-  duration: number;
-  onSeek: (position: number) => void;
+  number: number;
+  title: string;
+  current: boolean;
+  watched: boolean;
+  percent: number;
+  onPress: () => void;
 }): React.JSX.Element {
-  const [trackWidth, setTrackWidth] = useState(0);
-  const [dragging, setDragging] = useState<number | null>(null);
-  const at = (x: number) =>
-    trackWidth ? Math.min(1, Math.max(0, x / trackWidth)) * duration : 0;
-  const shown = dragging ?? position;
+  const [hover, setHover] = useState(false);
+  const started = !watched && percent > 1 && percent < 90;
+  const status = current
+    ? 'Playing'
+    : watched
+    ? 'Watched'
+    : started
+    ? `${Math.round(percent)}% watched`
+    : 'Not watched';
   return (
-    <View style={styles.timeline}>
-      <Text style={styles.time}>{clock(shown)}</Text>
-      <View
-        style={styles.track}
-        onLayout={e => setTrackWidth(e.nativeEvent.layout.width)}
-        onStartShouldSetResponder={() => duration > 0}
-        onMoveShouldSetResponder={() => duration > 0}
-        onResponderGrant={e => setDragging(at(e.nativeEvent.locationX))}
-        onResponderMove={e => setDragging(at(e.nativeEvent.locationX))}
-        onResponderRelease={e => {
-          setDragging(null);
-          onSeek(at(e.nativeEvent.locationX));
-        }}
-        onResponderTerminate={() => setDragging(null)}
-      >
-        <View pointerEvents="none">
-          <ProgressBar
-            value={duration ? (shown / duration) * 100 : 0}
-            label="Playback position"
-          />
-        </View>
+    <Pressable
+      {...noFocusRing}
+      accessibilityRole="button"
+      accessibilityLabel={`Episode ${number}${
+        title ? `: ${title}` : ''
+      }, ${status}`}
+      accessibilityState={{ selected: current }}
+      {...{ tooltip: title || `Episode ${number}` }}
+      onPress={onPress}
+      onHoverIn={() => setHover(true)}
+      onHoverOut={() => setHover(false)}
+      style={[
+        styles.card,
+        watched && styles.cardWatched,
+        // Hover keeps each card's colour: green stays green, blue for the rest.
+        hover &&
+          !current &&
+          (watched ? styles.cardWatchedHover : styles.cardHover),
+        current && styles.cardCurrent,
+      ]}
+    >
+      <View style={styles.cardTop}>
+        <Text
+          style={[
+            styles.cardNumber,
+            watched && styles.cardNumberWatched,
+            current && styles.cardNumberCurrent,
+          ]}
+        >
+          {number}
+        </Text>
+        {current ? (
+          <Icon name="play" size={14} color={colors.accent} />
+        ) : watched ? (
+          <Icon name="check" size={14} color={colors.success} />
+        ) : null}
       </View>
-      <Text style={styles.time}>{clock(duration)}</Text>
-    </View>
+      <Text
+        numberOfLines={1}
+        style={[styles.cardLabel, (hover || current) && styles.cardLabelLit]}
+      >
+        {title || status}
+      </Text>
+      <View style={styles.cardTrack}>
+        <View
+          style={[
+            styles.cardFill,
+            watched && styles.cardFillWatched,
+            {
+              width: `${
+                watched ? 100 : current || started ? Math.max(4, percent) : 0
+              }%`,
+            },
+          ]}
+        />
+      </View>
+    </Pressable>
   );
 }
 
@@ -601,6 +585,7 @@ function StripEpisode({
   label: string;
   onPress: () => void;
 }): React.JSX.Element {
+  const [hover, setHover] = useState(false);
   if (!target) {
     return <View style={ui.grow} />;
   }
@@ -610,13 +595,17 @@ function StripEpisode({
       accessibilityRole="button"
       accessibilityLabel={`${direction}: ${label}`}
       onPress={onPress}
-      style={styles.stripItem}
+      onHoverIn={() => setHover(true)}
+      onHoverOut={() => setHover(false)}
+      style={[styles.stripItem, hover && styles.stripHover]}
     >
       {uri && (
         <Image source={{ uri }} resizeMode="cover" style={styles.stripArt} />
       )}
       <View style={styles.stripCopy}>
-        <Text style={ui.small}>{direction}</Text>
+        <Text style={[styles.overline, hover && styles.overlineLit]}>
+          {direction}
+        </Text>
         <Text numberOfLines={2} style={styles.sideLabel}>
           {label}
         </Text>
@@ -625,6 +614,10 @@ function StripEpisode({
   );
 }
 
+/**
+ * The previous or next title beside the video. The art stays whole where it meets
+ * the video and melts into the panel on its outer side.
+ */
 function SideEpisode({
   direction,
   target,
@@ -632,7 +625,7 @@ function SideEpisode({
   label,
   onPress,
 }: {
-  direction: string;
+  direction: 'Previous' | 'Next';
   target: PlaybackTarget | null;
   uri: string | null;
   label: string;
@@ -642,6 +635,7 @@ function SideEpisode({
   if (!target) {
     return <View style={styles.side} />;
   }
+  const left = direction === 'Previous';
   return (
     <Pressable
       {...noFocusRing}
@@ -656,13 +650,33 @@ function SideEpisode({
         <Image
           source={{ uri }}
           resizeMode="cover"
-          style={[styles.sideArt, hover ? styles.sideLit : styles.sideDim]}
+          style={[styles.sideArt, !hover && styles.sideRest]}
         />
       )}
-      <FadeEdges x={36} y={70} />
-      <View style={styles.sideCopy}>
-        <Text style={ui.small}>{direction}</Text>
-        <Text numberOfLines={3} style={styles.sideLabel}>
+      <OuterFade side={left ? 'left' : 'right'} />
+      <View
+        style={[
+          styles.sideEdge,
+          left ? styles.edgeLeft : styles.edgeRight,
+          hover && styles.sideEdgeLit,
+        ]}
+      />
+      <View
+        style={[styles.sideCopy, left ? styles.copyLeft : styles.copyRight]}
+      >
+        <Text
+          style={[
+            styles.overline,
+            hover && styles.overlineLit,
+            !left && styles.alignRight,
+          ]}
+        >
+          {direction}
+        </Text>
+        <Text
+          numberOfLines={3}
+          style={[styles.sideLabel, !left && styles.alignRight]}
+        >
           {label}
         </Text>
       </View>
@@ -682,26 +696,48 @@ const styles = StyleSheet.create({
   },
   titlePhone: { fontFamily, fontSize: 26, lineHeight: 32, letterSpacing: -0.4 },
   episode: { fontFamily, textAlign: 'center', marginBottom: 12 },
-  stage: { flexDirection: 'row', alignItems: 'stretch', gap: 12 },
-  side: {
-    width: 112,
-    overflow: 'hidden',
-    justifyContent: 'center',
-  },
+  // The covers touch the video, so their inner edge reads as part of it.
+  stage: { flexDirection: 'row', alignItems: 'stretch' },
+  side: { width: SIDE, overflow: 'hidden', justifyContent: 'flex-end' },
   sideArt: { ...StyleSheet.absoluteFill, width: '100%', height: '100%' },
-  sideDim: { opacity: 0.32 },
-  sideLit: { opacity: 0.75 },
-  sideCopy: { paddingHorizontal: 10, gap: 3 },
-  stripCopy: { flexShrink: 1 },
+  sideRest: { opacity: 0.85 },
+  sideEdge: { position: 'absolute', top: 0, bottom: 0, width: 3 },
+  edgeLeft: { right: 0 },
+  edgeRight: { left: 0 },
+  sideEdgeLit: { backgroundColor: colors.accent },
+  sideCopy: { paddingVertical: 14, gap: 3 },
+  copyLeft: { paddingLeft: 4, paddingRight: 16 },
+  copyRight: { paddingRight: 4, paddingLeft: 16 },
+  alignRight: { textAlign: 'right' },
+  overline: {
+    fontFamily,
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+    color: colors.muted,
+  },
+  overlineLit: { color: colors.accent },
+  stripCopy: { flexShrink: 1, gap: 2 },
   sideLabel: {
     fontFamily,
     fontSize: 16,
     fontWeight: '600',
-    color: colors.text,
+    color: colors.mist,
   },
-  strip: { flexDirection: 'row', gap: 24, marginTop: 14 },
-  stripPhone: { flexDirection: 'column', gap: 10 },
-  stripItem: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  strip: { flexDirection: 'row', gap: 12, marginTop: 14 },
+  stripPhone: { flexDirection: 'column', gap: 8 },
+  stripItem: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.line,
+  },
+  stripHover: { backgroundColor: colors.hover, borderColor: colors.accent },
   stripArt: { width: 44, height: 62, borderRadius: 4 },
   failed: {
     flexDirection: 'row',
@@ -710,41 +746,62 @@ const styles = StyleSheet.create({
     gap: 12,
     marginTop: 16,
   },
-  gone: { display: 'none' },
-  track: { flex: 1, height: 24, justifyContent: 'center' },
-  controls: { gap: 10, marginTop: 14 },
-  timeline: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  time: {
-    fontFamily,
-    fontSize: 13,
-    color: colors.muted,
+  episodes: { marginTop: 18 },
+  // Lines up with the video's edges, between the side covers.
+  episodesWide: { marginHorizontal: SIDE },
+  railBlock: { gap: 10 },
+  railHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    minHeight: 36,
+  },
+  railCount: { fontFamily, fontSize: 13, color: colors.muted },
+  railRow: { gap: GAP, paddingTop: 2, paddingBottom: 18 },
+  railClip: { overflow: 'hidden' },
+  railScroll: { marginBottom: -16 },
+  card: {
+    width: CARD,
+    gap: 6,
+    paddingTop: 10,
+    paddingHorizontal: 12,
+    paddingBottom: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: colors.raised,
+  },
+  cardWatched: { borderColor: colors.successLine, backgroundColor: '#14261D' },
+  cardHover: { borderColor: colors.accent, backgroundColor: colors.hover },
+  cardWatchedHover: { borderColor: colors.success, backgroundColor: '#1D3A2A' },
+  cardCurrent: {
+    borderColor: colors.accent,
+    backgroundColor: colors.accentSoft,
+  },
+  cardTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  cardNumber: {
+    fontFamily: displayFamily,
+    fontSize: 22,
+    lineHeight: 26,
+    fontWeight: '700',
+    color: colors.text,
     fontVariant: ['tabular-nums'],
   },
-  transport: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    gap: 6,
+  cardNumberWatched: { color: colors.success },
+  cardNumberCurrent: { color: colors.accent },
+  cardLabel: { fontFamily, fontSize: 13, color: colors.muted },
+  cardLabelLit: { color: colors.mist },
+  cardTrack: {
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: colors.line,
+    overflow: 'hidden',
+    marginTop: 2,
   },
-  options: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    columnGap: 32,
-    rowGap: 18,
-    marginTop: 26,
-    paddingTop: 20,
-    borderTopWidth: 1,
-    borderColor: colors.line,
-  },
-  seek: { gap: 6 },
-  seekRow: { flexDirection: 'row', alignItems: 'center', gap: 2, height: 32 },
-  seekInput: { minHeight: 32, height: 32, width: 72, paddingVertical: 0 },
-  detailsLink: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    minHeight: 32,
-  },
+  cardFill: { height: 3, backgroundColor: colors.accent },
+  cardFillWatched: { backgroundColor: colors.success },
 });
