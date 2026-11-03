@@ -1,0 +1,92 @@
+/* Loaded after app.css: keep page-wide video/button rules out of Video.js. */
+body:is(.player-page, .custom-player-page) #video-player.video-js {
+    position: relative;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    aspect-ratio: 16 / 9 !important;
+    background: #000;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body:is(.player-page, .custom-player-page) #video-player .vjs-tech {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    aspect-ratio: auto !important;
+    border-radius: 0 !important;
+    object-fit: contain;
+    outline: none;
+}
+
+body:is(.player-page, .custom-player-page) #video-player button {
+    font-family: inherit;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    text-shadow: none;
+    transform: none;
+    backdrop-filter: none;
+}
+
+body:is(.player-page, .custom-player-page) #video-player .vjs-big-play-button {
+    width: 2em;
+    height: 2em;
+    line-height: 2em;
+    margin: -1em 0 0 -1em;
+    border: 1px solid rgba(255, 255, 255, .7);
+    border-radius: 50%;
+    background: rgba(0, 0, 0, .65);
+    color: #fff;
+}
+
+body:is(.player-page, .custom-player-page) #video-player .vjs-control-bar {
+    height: 3.5em;
+    background: rgba(10, 10, 12, .85);
+}
+
+body:is(.player-page, .custom-player-page) #video-player .vjs-current-time,
+body:is(.player-page, .custom-player-page) #video-player .vjs-duration,
+body:is(.player-page, .custom-player-page) #video-player .vjs-time-divider {
+    display: block;
+}
+
+/* The wrapper must not inherit the stage's embedded height/aspect constraints. */
+body:is(.player-page, .custom-player-page) #video-player:is(.vjs-fullscreen, :fullscreen) {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+    aspect-ratio: auto !important;
+    border-radius: 0 !important;
+}
+
+/* Mouse/seek focus should not draw a border around the video or pin controls.
+   Keep a clear focus indicator for actual keyboard navigation through controls. */
+body:is(.player-page, .custom-player-page) #video-player:focus {
+    outline: none;
+}
+
+body:is(.player-page, .custom-player-page) #video-player :focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
+}
+
+body:is(.player-page, .custom-player-page) #video-player :focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: -2px;
+}
+
+body:is(.player-page, .custom-player-page) #video-player.vjs-has-started.vjs-user-inactive.vjs-playing {
+    cursor: none;
+}

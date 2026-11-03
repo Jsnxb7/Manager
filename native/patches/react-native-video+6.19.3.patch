@@ -1,0 +1,85 @@
+diff --git a/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/ExoPlayerView.kt b/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/ExoPlayerView.kt
+index 75e2307..f0cb835 100644
+--- a/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/ExoPlayerView.kt
++++ b/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/ExoPlayerView.kt
+@@ -7,6 +7,7 @@ import android.util.AttributeSet
+ import android.view.View
+ import android.view.View.MeasureSpec
+ import android.widget.FrameLayout
++import android.widget.PopupWindow
+ import android.widget.TextView
+ import androidx.media3.common.Player
+ import androidx.media3.common.Timeline
+@@ -14,6 +15,7 @@ import androidx.media3.common.util.UnstableApi
+ import androidx.media3.exoplayer.ExoPlayer
+ import androidx.media3.ui.AspectRatioFrameLayout
+ import androidx.media3.ui.DefaultTimeBar
++import androidx.media3.ui.PlayerControlView
+ import androidx.media3.ui.PlayerView
+ import com.brentvatne.common.api.ResizeMode
+ import com.brentvatne.common.api.SubtitleStyle
+@@ -62,6 +64,43 @@ class ExoPlayerView @JvmOverloads constructor(context: Context, attrs: Attribute
+         val liveBadgeLayoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+         liveBadgeLayoutParams.setMargins(16, 16, 16, 16)
+         addView(liveBadge, liveBadgeLayoutParams)
++        keepSettingsInsideController()
++    }
++
++    fun setNavigationButtons(showPrevious: Boolean, showNext: Boolean) {
++        playerView.setShowPreviousButton(showPrevious)
++        playerView.setShowNextButton(showNext)
++    }
++
++    /**
++     * Media3 offsets the settings popup by the controller width but anchors it to the
++     * settings button, so it only lines up when the player spans the whole screen.
++     * Re-anchor it to the controller's bottom-right corner whenever it opens.
++     */
++    private fun keepSettingsInsideController() {
++        val controller = playerView.findViewById<PlayerControlView>(androidx.media3.ui.R.id.exo_controller) ?: return
++        val popup = PlayerControlView::class.java.declaredFields
++            .firstOrNull { it.type == PopupWindow::class.java }
++            ?.apply { isAccessible = true }
++            ?.get(controller) as? PopupWindow ?: return
++        val margin = resources.getDimensionPixelSize(androidx.media3.ui.R.dimen.exo_settings_offset)
++        popup.contentView?.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
++            override fun onViewAttachedToWindow(v: View) {
++                v.post {
++                    if (popup.isShowing) {
++                        popup.update(
++                            controller,
++                            controller.width - popup.width - margin,
++                            -popup.height - margin,
++                            popup.width,
++                            popup.height
++                        )
++                    }
++                }
++            }
++
++            override fun onViewDetachedFromWindow(v: View) = Unit
++        })
+     }
+ 
+     fun setPlayer(player: ExoPlayer?) {
+diff --git a/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/ReactExoplayerView.java b/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/ReactExoplayerView.java
+index 623d90c..bc2ca31 100644
+--- a/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/ReactExoplayerView.java
++++ b/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/ReactExoplayerView.java
+@@ -524,6 +524,7 @@ public class ReactExoplayerView extends FrameLayout implements
+ 
+     private void refreshControlsStyles() {
+         if (exoPlayerView == null || player == null) return;
++        exoPlayerView.setNavigationButtons(!controlsConfig.getHidePrevious(), !controlsConfig.getHideNext());
+         updateControllerVisibility();
+     }
+ 
+@@ -844,6 +845,8 @@ public class ReactExoplayerView extends FrameLayout implements
+                 .setBandwidthMeter(bandwidthMeter)
+                 .setLoadControl(loadControl)
+                 .setMediaSourceFactory(mediaSourceFactory)
++                .setSeekBackIncrementMs(controlsConfig.getSeekIncrementMS())
++                .setSeekForwardIncrementMs(controlsConfig.getSeekIncrementMS())
+                 .build();
+         ReactNativeVideoManager.Companion.getInstance().onInstanceCreated(instanceId, player);
+         refreshDebugState();

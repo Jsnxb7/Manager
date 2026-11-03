@@ -8,3 +8,6 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+
+# react-native-video patch: ExoPlayerView finds PlayerControlView's settings popup by field type.
+-keepclassmembers class androidx.media3.ui.PlayerControlView { android.widget.PopupWindow *; }
