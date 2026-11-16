@@ -1,6 +1,14 @@
 import { NativeModules } from 'react-native';
 export async function windowAction(
-  action: 'fullscreen' | 'alwaysOnTop' | 'reload' | 'restart',
+  action:
+    | 'fullscreen'
+    | 'alwaysOnTop'
+    | 'reload'
+    | 'restart'
+    | 'minimize'
+    | 'arrowsOn'
+    | 'arrowsOff'
+    | `runInstaller|${string}`,
 ): Promise<void> {
   const module = NativeModules.WindowControls as
     | { execute(action: string): Promise<void> }

@@ -155,6 +155,15 @@ export function scanRelations(c: Catalog, entryId?: string): void {
     }
   }
 }
+/** Scans every anime title; returns how many titles joined a relation group. */
+export function scanAllRelations(c: Catalog): number {
+  const linked = () =>
+    new Set(c.relations.flatMap(r => (r.entryIds.length > 1 ? r.entryIds : [])))
+      .size;
+  const before = linked();
+  scanRelations(c);
+  return linked() - before;
+}
 export function removeRelation(
   c: Catalog,
   anchor: string,

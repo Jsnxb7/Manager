@@ -8,7 +8,7 @@ Checked on 2026-11-02 against the old Flask/Electron app on `mob_use` (every rou
 | --- | --- | --- |
 | Build | Release EXE folder and installer built | Signed release APK built (arm64-v8a, x86_64) |
 | Runs | Release EXE opens with the full library | **Never installed or opened** |
-| Video playback | libmpv embedded in the page (2026-11-03), with mpv's on-screen controller; replaces the Media Foundation player. Built; not yet played on the user's library | Media3 through `react-native-video`, with Media3's full controller (settings for speed, audio, subtitles); never played |
+| Video playback | libmpv embedded in the page, with mpv's on-screen controller. Played on the real library 2026-11-05: subtitles, speed, fullscreen, picture-in-picture, resume, auto-next | Media3 through `react-native-video`, with Media3's full controller (settings for speed, audio, subtitles); never played |
 | Built-in subtitles | Built through libmpv/libass (styled ASS, embedded tracks, auto-loaded sidecar files) | Built (Media3 tracks); never tried |
 | Picking the video folder | Used | Built with the Android folder picker; never tried |
 | Creating title folders | Built; not used | Built; not used |
@@ -59,27 +59,30 @@ Before relying on Android: install the APK, import a catalog export, pick the vi
 | Jikan search with MAL fallback, rate limits | Built |
 | New metadata value confirmation | Built |
 | Import the old app's data and covers | Done once, used |
-| Export and import catalog | Built |
+| Export and import catalog | Built; plus PC ↔ phone sync over ngrok, and in-app updates via `npm run release` (2026-11-06, see NEXT-PHASES.md) |
 
 ### Quality-of-life details
 
 | Old behaviour | Status |
 | --- | --- |
 | Toast messages, including the cover-download warning | Built as toasts |
-| Loading skeleton cards while the list loads | **Missing**: a spinner shows instead |
-| Smooth scroll to the list top on page change | Partial: a top button exists; changing page does not scroll |
+| Loading skeleton cards while the list loads | Built 2026-11-16: a pulsing card grid while the library opens, and a pulsing placeholder in each cover until its image loads |
+| Smooth scroll to the list top on page change | Built (2026-11-06) |
 | Compact/comfort density remembered | Replaced by grid/list, remembered per section |
-| Esc closes dialogs | **Missing on PC**; Android back button works |
-| Enter adds a custom metadata value | **Missing**: needs the Add value button |
-| Arrow keys move through Jikan search results | **Missing** |
-| Cover preview before saving in the add form | Partial: shows after choosing, not as a live preview |
-| Video preview on hover: continue-watching cards, episode rows, previous/next in the player | **Missing** |
+| Esc closes dialogs | Built (2026-11-06); Android back button works |
+| Enter adds a custom metadata value | Built (2026-11-06) |
+| Arrow keys move through Jikan search results | Built (2026-11-06) |
+| Cover preview before saving in the add form | Built 2026-11-16: the MyAnimeList cover shows as soon as a search result is picked (downloaded on save), a chosen image replaces it, and either can be removed |
+| Video preview on hover: continue-watching cards, episode rows, previous/next in the player | Built on PC (2026-11-06): muted clip beside the item |
 | Details tab in the address (`#relations`) | Replaced by remembering the tab per title |
-| Player keys: Space, arrows, F, M, volume | Built on PC when the video has focus; not when page controls have focus |
-| Ctrl+R reload, F11 fullscreen, Ctrl+M minimise | **Missing as shortcuts**; window buttons and the player's fullscreen exist |
+| Player keys: Space, arrows, F, M, volume | Built on PC; page buttons hand focus back to the video |
+| Ctrl+R reload, F11 fullscreen, Ctrl+M minimise | Built (2026-11-06) |
 | Always on top | Built in Settings window tools |
-| Drag files into the custom player | **Missing**; use Choose videos |
+| Drag files into the custom player | Built on PC (2026-11-06); also a cover image onto the Add form |
 | Drag reorder in queue, relations, playlist | Built |
+| Double-tap left/right to skip 10 s (Android) | Built 2026-11-15 in the patched `ExoPlayerView` (inline and fullscreen; repeated taps add up, shown as a badge); compiles, not tried on a device |
+| Hold for 2× speed; swipe left half for brightness, right half for volume (Android) | Built 2026-11-16 in the same patched view; brightness applies only while the player is shown; compiles, not tried on a device |
+| Turning the phone sideways opens fullscreen, upright closes it (Android) | Built 2026-11-16 (phones only, after the video loads); not tried on a device |
 | Subtitle file loading | Built (SRT, VTT) |
 | Playback speed list | Built |
 | Picture-in-picture | Built on PC and Android; not used |
@@ -91,50 +94,76 @@ Before relying on Android: install the APK, import a catalog export, pick the vi
 | --- | --- |
 | Choose Flask EXE, Flask data folder, backend status, PID, idle shutdown | Not needed: no server |
 | Open config folder, open data folder | Built as Open app data (PC) |
-| Open logs | Partial: errors go to `app-log.txt` in the app data folder; no log viewer |
+| Open logs | Built: Settings → View error log |
 | DevTools | Not available in release builds |
-| Reset all paths | Partial: clear video folder and clear relinked files exist separately |
+| Reset all paths | Built: Settings → Reset all folder links |
 | Restart and reload app | Built in Settings window tools |
 
 ## Must do
 
 1. **Run Android on a real device** and fix what breaks. Nothing there has run.
 2. **Built-in subtitles and wider format support on PC**: done with libmpv (shinchiro build 20261102, GPLv2+). The licence matters if the app is ever shared publicly.
-3. **Use the untested PC features once each**: folder creation, delete on a throwaway title, title editing, drag, in-video controls, picture-in-picture, auto-next, resume.
+3. ~~Use the untested PC features once each~~: done 2026-11-05, except Settings' bulk folder creation and auto-next into a related season or the queue.
 
-## Should do
+## Should do / Nice to have
 
-4. Esc closes dialogs; Enter adds metadata values; arrow keys in search results.
-5. Player keys work whatever has focus on the Player page.
-6. Scroll to the list top when changing page.
-7. Make the final save on close reliable.
-8. Loading skeletons instead of a spinner.
-9. Settings should show catalog names, not internal IDs, and offer to remove the old empty catalog.
+Done on 2026-11-06 (see [NEXT-PHASES.md](NEXT-PHASES.md)):
+- Esc, Enter and arrow keys in forms and search.
+- Player keys whatever has focus.
+- Scroll to the list top on page change.
+- Hover previews, file drops, Custom Player positions.
+- Alternate titles and year in search results.
+- Whole-library relations check, log viewer, reset all folder links.
+- Ctrl+R, F11 and Ctrl+M.
 
-## Nice to have
+Done on 2026-11-15/16: loading skeletons; Android double-tap seek, hold for 2×, brightness/volume swipes, rotate to fullscreen.
 
-10. Hover video previews (continue watching, episodes, previous/next).
-11. Drag files into the custom player and the add form.
-12. App shortcuts: Ctrl+R, F11, Ctrl+M.
-13. Custom player remembering positions between sessions.
-14. Alternate titles and year in search results.
-15. A whole-library relations check.
-16. A separate tablet layout.
+Still open:
+- A separate tablet layout (skipped by choice).
+- See the QoL backlog below.
 
 ## Known bugs
 
-- Resizing the window resets the Hub, Details and Queue pages; Library returns to its scroll position.
-- The Player can open scrolled past its heading.
-- A thin line may show under the Continue watching cover in narrow windows.
-- Settings shows internal IDs for saved catalogs.
-- The Start menu "AnimeManager" entry is the old development package and crashes. Use the installer. Removing it with Windows deletes that package's copy of the library, which is now also at `%LOCALAPPDATA%\AnimeManager\catalogs`.
-- Toasts cannot draw over the video on PC.
+Fixed on 2026-11-05 (see [NEXT-PHASES.md](NEXT-PHASES.md)): resize losing page position, Player opening past its heading, the line under Continue watching covers, internal catalog IDs in Settings, toasts hidden by the video, drag reordering not moving items, episodes unmarked as watched when opened without resume.
+
+Space on a focused page button pressing it and also pausing the video: fixed 2026-11-06 (page buttons hand focus back to the video; see NEXT-PHASES.md Phase C). No open bugs are recorded.
+
+## QoL backlog
+
+Built on 2026-11-16 (typecheck, lint and tests pass; not yet used in the app):
+- Long-press (touch) or right-click (PC) on a library card, list row or episode row opens a menu of its actions. Phone list rows had no actions menu before.
+- Resizing the window no longer loses open edit/delete/metadata dialogs, typed text, expanded filter groups, the add-section dialog, or Details' file checks. The Details tab was already kept.
+- Live cover preview in the add form.
+
+Built on 2026-11-16 (second batch; typecheck, lint, format, 159 tests and the Windows Release build pass):
+- Library sort (title, recently watched, recently added, progress, your rating), next to the count. Checked in the app.
+- Multi-select: the select button or a card's menu, then a floating bar to mark watched/unwatched (read), queue, bookmark or delete the chosen titles. Esc leaves it. Checked in the app.
+- Search everything: the search button outside a library, or Ctrl+K anywhere on PC; Search on the phone's bottom bar. Checked in the app.
+- Personal rating (1-10 scale in Details, star badge on cards and search results, sort and "Your rating" filter) and notes (Details only, saved as you type). Rating checked in the app; notes typing not tried on the real library.
+- Episode matching: extras (NCOP/NCED/PV/preview/trailer/sample/recap) are left out; OVA/SP only count for OVA titles; duplicates are ranked by Locate link, then newer version, then the release group and resolution most of the folder uses, and a true tie names the files; later seasons numbered 13, 14... map to 1, 2...; years and CRC checksums are ignored. Details has "Review matches". Unit-tested; the sheet was opened in the app.
+- New episode files: every app open and the library refresh button scan the folders (cached in `catalogs/new-episodes.json`); cards show "+N new", the filters have "New episodes", and Details offers "Add them" / "Not now". The real library had no new files, so the banner and badge were not seen with real data.
+- Up next: when an episode ends, a 4-second countdown under the video (and in mpv's on-screen text on PC) with Play now and Cancel; seeking back cancels it. Not played through on the real library yet.
+- Audio and subtitle choice remembered per title (by language, else track number; subtitles off is kept). Not played yet.
+- Android: pull down on a library or Details to re-check episode files. Not run on a device.
+
+Mapped on 2026-11-16 from this file, NEXT-PHASES.md and AUDIT.md, each checked against the current code. AUDIT.md predates most fixes; its scroll memory, filter-save-on-leave, tooltips, action menus, cover replacement, cover clean-up on delete and queue file checks are all built now.
+
+| Item | Platform | Where it comes from |
+| --- | --- | --- |
+| Picture-in-picture automatically when leaving the app with the Home button during playback | Android | New; PiP exists only as a button. `react-native-video` has `enterPictureInPictureOnLeave` |
+| Fullscreen turns the phone to landscape even with auto-rotate off | Android | New; react-native-video ignores `fullscreenOrientation` on Android, so fullscreen with rotation locked stays portrait |
+| Skip-opening button (+85 s), shown in the first minutes of an episode | Both | New |
+| Same seek step on both: arrow keys skip 5 s on PC, Android skips 10 s | PC | New |
+| Final seconds of progress kept on a hard close or crash | Both | REMAINING "Progress saved when the page closes" (Partial); Android already saves when the app goes to the background |
+| Hardware keyboard shortcuts on Android (Space, arrows, Esc) for tablets with keyboards | Android | AUDIT §keyboard |
+| Separate tablet layout | Android | Skipped by choice 2026-11-06 |
+
+Not QoL but still open in NEXT-PHASES.md Phase F: back up the signing key, final re-import if the old app was used, retire the old app, update STATUS.md.
 
 ## Library data
 
 - Only 140 video files are on this PC; most episodes show as missing until their files are added or relinked.
-- 21 titles have no cover: they had no image in the old app either.
-- "Lucky☆Star" is garbled in the old data and needs its title corrected.
+- All titles have covers and the Lucky☆Star title is fixed (2026-11-05).
 
 ## Builds
 

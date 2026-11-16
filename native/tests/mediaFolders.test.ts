@@ -125,6 +125,26 @@ describe('recoverable deletion', () => {
     expect(s.removed).toEqual([]);
     expect(s.files.has('app/artwork/test.webp')).toBe(false);
   });
+  it('removes the title folder only when its last season goes', async () => {
+    const s = setup();
+    s.directories.add('media/Synthetic Show');
+    s.directories.add('media/Synthetic Show/S1');
+    s.directories.add('media/Synthetic Show/S2');
+    await deleteEntry(s.entry, s.settings, s.io, async change => {
+      change(s.catalog);
+    });
+    expect(s.removed).toEqual(['media/Synthetic Show/S1']);
+    const t = setup();
+    t.directories.add('media/Synthetic Show');
+    t.directories.add('media/Synthetic Show/S1');
+    await deleteEntry(t.entry, t.settings, t.io, async change => {
+      change(t.catalog);
+    });
+    expect(t.removed).toEqual([
+      'media/Synthetic Show/S1',
+      'media/Synthetic Show',
+    ]);
+  });
   it('does not touch videos when the pending catalog write fails', async () => {
     const s = setup();
     s.directories.add('media/Synthetic Show/S1');

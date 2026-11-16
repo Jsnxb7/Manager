@@ -14,9 +14,23 @@ import {
 } from 'react-native';
 import { Route } from './routes';
 import { useWorkspace } from './useWorkspace';
+import { pushKeyHandler, useEscape } from './keys';
+import { GlobalSearch } from '../components/GlobalSearch';
+import { validLink } from '../services/library';
+import { LibrarySkeleton } from '../components/Skeleton';
+import { loadNewEpisodes, refreshNewEpisodes } from '../services/newEpisodes';
+import { useSync } from './useSync';
+import { SyncApprovalSheet, SyncSheet } from '../components/SyncSheet';
 import { Button, Sheet, SheetHost, Toast } from '../components/controls';
-import { BarFade } from '../components/Fade';
+import {
+  BarFade,
+  PageMemoryContext,
+  clearPageState,
+  forgetPages,
+} from '../components/Fade';
 import { NavBar, SearchBar } from '../components/NavBar';
+import { PopoverHost } from '../components/Popover';
+import { Reveal } from '../components/Motion';
 import { colors, fontFamily, ui } from '../design/theme';
 import { ViewportContext, ViewportHeightContext } from '../design/viewport';
 import { Hub } from '../screens/Hub';
@@ -27,12 +41,27 @@ import { Player } from '../screens/Player';
 import { Queue, QueueContent } from '../screens/Queue';
 import { Settings } from '../screens/Settings';
 import { CustomPlayer } from '../screens/CustomPlayer';
+import { playerCommand } from '../platform/nativePlayer';
 
 const mountains = require('../assets/backgrounds/mountains.webp');
 const BAR_HEIGHT = Platform.OS === 'windows' ? 88 : 58;
 
 export default function Root(): React.JSX.Element {
   const w = useWorkspace();
+  const sync = useSync(w);
+  // An update toast shows once per build until dismissed; Settings keeps the button.
+  const [updateSeen, setUpdateSeen] = useState(0);
+  const updateBuild = sync.update?.build ?? 0;
+  const showUpdate = updateBuild > 0 && updateSeen !== updateBuild;
+  // The "set up sync first" toast steps aside after a while.
+  const { needsSetup, dismissSetup } = sync;
+  useEffect(() => {
+    if (!needsSetup) {
+      return;
+    }
+    const timer = setTimeout(dismissSetup, 8000);
+    return () => clearTimeout(timer);
+  }, [needsSetup, dismissSetup]);
   const initialOpened = useRef(false);
   const [history, setHistory] = useState<Route[]>([{ name: 'home' }]);
   const [drawer, setDrawer] = useState(false);
@@ -41,13 +70,50 @@ export default function Root(): React.JSX.Element {
   const phone = (windowSize.width || width) < 700;
   const route = history[history.length - 1]!;
   const [searchOpen, setSearchOpen] = useState(false);
+  // Search across every section: Ctrl+K, or the search button outside a library.
+  const [everything, setEverything] = useState(false);
+  useEffect(
+    () =>
+      pushKeyHandler(key => {
+        if (key !== 'Ctrl+K') {
+          return false;
+        }
+        setEverything(true);
+        return true;
+      }),
+    [],
+  );
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filterCount, setFilterCount] = useState(0);
   const [searchBar, setSearchBar] = useState<SearchBar | null>(null);
   const closeFilters = useCallback(() => setFiltersOpen(false), []);
   // Search and filters belong to the page they were opened on; leaving closes them,
   // so a library never opens with the keyboard already up.
+  // Esc closes the search bar; open dialogs above it close first.
+  useEscape(searchOpen, () => setSearchOpen(false));
   const routeKey = JSON.stringify(route);
+  const pageKey = `${history.length - 1}:${routeKey}`;
+  // Page state survives a resize remount, never a move to another history entry.
+  // Cleared during render, before the new page reads it.
+  const shownPage = useRef(pageKey);
+  // Pages glide in from the side the user is heading: deeper from the right,
+  // Back from the left, and sideways moves (the next episode) rise in place.
+  const shownDepth = useRef(history.length);
+  const pageDirection = useRef(0);
+  if (shownPage.current !== pageKey) {
+    shownPage.current = pageKey;
+    pageDirection.current = Math.sign(history.length - shownDepth.current);
+    shownDepth.current = history.length;
+    clearPageState();
+  }
+  // Positions are kept for pages still in the history, so Back returns to them.
+  useEffect(() => {
+    forgetPages(key => {
+      const split = key.indexOf(':');
+      const at = history[Number(key.slice(0, split))];
+      return !!at && JSON.stringify(at) === key.slice(split + 1);
+    });
+  }, [history]);
   useEffect(() => {
     setSearchOpen(false);
     setFiltersOpen(false);
@@ -92,7 +158,15 @@ export default function Root(): React.JSX.Element {
       navigate={navigate}
       onQueue={() => setDrawer(true)}
       onSearch={() => setSearchOpen(v => !v)}
+      onSearchEverything={() => setEverything(true)}
       onFilters={() => setFiltersOpen(v => !v)}
+      sync={{
+        active: sync.online,
+        busy: sync.busy,
+        onPress: () => {
+          sync.press().catch(w.setError);
+        },
+      }}
     />
   );
   useEffect(() => {
@@ -117,6 +191,13 @@ export default function Root(): React.JSX.Element {
       return;
     }
     initialOpened.current = true;
+    // Badges come from the last scan at once; a fresh scan runs on every start.
+    if (w.io) {
+      const io = w.io;
+      loadNewEpisodes(io)
+        .then(() => refreshNewEpisodes(io, w.catalog!, w.settings))
+        .catch(() => undefined);
+    }
     if (w.io?.initialMedia) {
       setHistory([
         { name: 'home' },
@@ -130,7 +211,15 @@ export default function Root(): React.JSX.Element {
         }
       })
       .catch(w.setError);
-  }, [w.catalog, w.io, w.setError]);
+  }, [w.catalog, w.io, w.setError, w.settings]);
+  // Toasts cannot draw over the Windows video window; mpv repeats them on the video.
+  const toastText = w.error || w.notice;
+  const onPlayer = route.name === 'player';
+  useEffect(() => {
+    if (Platform.OS === 'windows' && onPlayer && toastText) {
+      playerCommand('message', { text: toastText }).catch(() => undefined);
+    }
+  }, [onPlayer, toastText]);
   useEffect(() => {
     const sub = Linking.addEventListener('url', ({ url }) => {
       if (/^(content|file):/i.test(url)) {
@@ -168,89 +257,98 @@ export default function Root(): React.JSX.Element {
       )}
       <ViewportHeightContext.Provider value={windowSize.height}>
         <ViewportContext.Provider value={windowSize.width}>
-          <View
-            key={
-              ['home', 'library', 'details', 'queue'].includes(route.name)
-                ? layoutKey
-                : 'stable'
-            }
-            style={styles.workspace}
-          >
-            <View style={ui.grow}>
-              {!w.catalog ? (
-                <View style={ui.page}>
-                  <Text style={ui.heading}>Opening your local library</Text>
-                  <Text style={ui.muted}>No server or account required.</Text>
-                  {!w.busy && w.repo && (
-                    <Button
-                      label="Restore previous verified snapshot"
-                      danger
-                      onPress={() => {
-                        w.run(async () => {
-                          w.setCatalog(await w.repo!.restorePrevious());
-                        }, 'Previous snapshot restored').catch(w.setError);
-                      }}
-                    />
-                  )}
-                  {!w.busy && (
-                    <Button
-                      label="Retry opening library"
-                      onPress={() => {
-                        w.retry().catch(w.setError);
-                      }}
-                    />
-                  )}
-                </View>
-              ) : route.name === 'settings' ? (
-                <Settings workspace={w} navigate={navigate} />
-              ) : route.name === 'custom' ? (
-                <CustomPlayer
-                  key={route.initialUri ?? 'session'}
-                  workspace={w}
-                  initialUri={route.initialUri ?? ''}
-                />
-              ) : route.name === 'queue' ? (
-                <Queue workspace={w} navigate={navigate} />
-              ) : route.name === 'player' ? (
-                <Player
-                  key={route.animeId + route.episodeId}
-                  workspace={w}
-                  animeId={route.animeId}
-                  episodeId={route.episodeId}
-                  resume={route.resume}
-                  queueAnchor={route.queueAnchor ?? null}
-                  navigate={navigate}
-                />
-              ) : route.name === 'details' ? (
-                <Details
-                  key={route.animeId}
-                  workspace={w}
-                  animeId={route.animeId}
-                  navigate={navigate}
-                />
-              ) : route.name === 'library' ? (
-                <Library
-                  key={route.sectionId}
-                  workspace={w}
-                  sectionId={route.sectionId}
-                  navigate={navigate}
-                  filtersOpen={filtersOpen}
-                  onSearchBar={setSearchBar}
-                  onCloseFilters={closeFilters}
-                  onFilterCount={setFilterCount}
-                />
-              ) : route.name === 'add' ? (
-                <EntryForm
-                  key={route.sectionId}
-                  workspace={w}
-                  sectionId={route.sectionId}
-                  navigate={navigate}
-                />
-              ) : route.name === 'home' ? (
-                <Hub workspace={w} navigate={navigate} />
-              ) : null}
+          <PageMemoryContext.Provider value={pageKey}>
+            <View
+              key={
+                ['home', 'library', 'details', 'queue'].includes(route.name)
+                  ? layoutKey
+                  : 'stable'
+              }
+              style={styles.workspace}
+            >
+              <Reveal
+                id={pageKey}
+                direction={pageDirection.current}
+                still={route.name === 'player' || route.name === 'custom'}
+                style={ui.grow}
+              >
+                {!w.catalog && w.busy ? (
+                  <LibrarySkeleton />
+                ) : !w.catalog ? (
+                  <View style={ui.page}>
+                    <Text style={ui.heading}>Opening your local library</Text>
+                    <Text style={ui.muted}>No server or account required.</Text>
+                    {!w.busy && w.repo && (
+                      <Button
+                        label="Restore previous verified snapshot"
+                        danger
+                        onPress={() => {
+                          w.run(async () => {
+                            w.setCatalog(await w.repo!.restorePrevious());
+                          }, 'Previous snapshot restored').catch(w.setError);
+                        }}
+                      />
+                    )}
+                    {!w.busy && (
+                      <Button
+                        label="Retry opening library"
+                        onPress={() => {
+                          w.retry().catch(w.setError);
+                        }}
+                      />
+                    )}
+                  </View>
+                ) : route.name === 'settings' ? (
+                  <Settings workspace={w} navigate={navigate} sync={sync} />
+                ) : route.name === 'custom' ? (
+                  <CustomPlayer
+                    key={route.initialUri ?? 'session'}
+                    workspace={w}
+                    initialUri={route.initialUri ?? ''}
+                  />
+                ) : route.name === 'queue' ? (
+                  <Queue workspace={w} navigate={navigate} />
+                ) : route.name === 'player' ? (
+                  <Player
+                    key={route.animeId + route.episodeId}
+                    workspace={w}
+                    animeId={route.animeId}
+                    episodeId={route.episodeId}
+                    resume={route.resume}
+                    queueAnchor={route.queueAnchor ?? null}
+                    navigate={navigate}
+                  />
+                ) : route.name === 'details' ? (
+                  <Details
+                    key={route.animeId}
+                    workspace={w}
+                    animeId={route.animeId}
+                    navigate={navigate}
+                  />
+                ) : route.name === 'library' ? (
+                  <Library
+                    key={route.sectionId}
+                    workspace={w}
+                    sectionId={route.sectionId}
+                    navigate={navigate}
+                    filtersOpen={filtersOpen}
+                    onSearchBar={setSearchBar}
+                    onCloseFilters={closeFilters}
+                    onFilterCount={setFilterCount}
+                  />
+                ) : route.name === 'add' ? (
+                  <EntryForm
+                    key={route.sectionId}
+                    workspace={w}
+                    sectionId={route.sectionId}
+                    navigate={navigate}
+                  />
+                ) : route.name === 'home' ? (
+                  <Hub workspace={w} navigate={navigate} />
+                ) : null}
+              </Reveal>
             </View>
-          </View>
+          </PageMemoryContext.Provider>
         </ViewportContext.Provider>
       </ViewportHeightContext.Provider>
       {phone && nav}
@@ -262,6 +360,19 @@ export default function Root(): React.JSX.Element {
           />
         )}
       </View>
+      <GlobalSearch
+        visible={everything}
+        onClose={() => setEverything(false)}
+        catalog={w.catalog}
+        privateRoot={w.io?.privateRoot}
+        onOpen={entry => {
+          if (entry.kind === 'anime') {
+            navigate({ name: 'details', animeId: entry.id });
+          } else {
+            Linking.openURL(validLink(entry.link)).catch(w.setError);
+          }
+        }}
+      />
       <Sheet
         title="Queue"
         drawer
@@ -286,8 +397,41 @@ export default function Root(): React.JSX.Element {
           }}
         />
       </Sheet>
+      <SyncSheet sync={sync} onError={w.setError} />
+      <SyncApprovalSheet sync={sync} />
       <SheetHost />
-      {w.error !== '' ? (
+      <PopoverHost width={windowSize.width} height={windowSize.height} />
+      {w.error === '' && w.notice === '' && sync.needsSetup ? (
+        <Toast
+          kind="success"
+          icon="sync"
+          message="Set up sync first: add the domain and key in Settings"
+          bottom={phone ? 84 : 28}
+          action={{
+            label: 'Set up',
+            onPress: () => {
+              sync.dismissSetup();
+              navigate({ name: 'settings' });
+            },
+          }}
+          onDismiss={sync.dismissSetup}
+        />
+      ) : w.error === '' && w.notice === '' && showUpdate ? (
+        <Toast
+          kind="success"
+          icon="sync"
+          message={`Version ${sync.update!.version} is ready to install`}
+          bottom={phone ? 84 : 28}
+          action={{
+            label: 'Install',
+            onPress: () => {
+              setUpdateSeen(updateBuild);
+              sync.installUpdate().catch(w.setError);
+            },
+          }}
+          onDismiss={() => setUpdateSeen(updateBuild)}
+        />
+      ) : w.error !== '' ? (
         <Toast
           kind="error"
           message={w.error}

@@ -78,6 +78,7 @@ export async function createNativeStorage(): Promise<StorageAdapter> {
     },
     readBytes: async uri =>
       decodeBase64(await call<string>('readBytes', { uri })),
+    hashFiles: uris => call<Record<string, string>>('sha256Files', { uris }),
     writeBytes: async (uri, bytes) => {
       await call('writeBytes', { uri, value: encodeBase64(bytes) });
     },

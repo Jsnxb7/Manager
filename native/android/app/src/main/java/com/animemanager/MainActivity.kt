@@ -11,7 +11,10 @@ class MainActivity : ReactActivity() {
     val content = findViewById<android.view.View>(android.R.id.content)
     androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(content) { view, insets ->
       val bars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars() or androidx.core.view.WindowInsetsCompat.Type.displayCutout())
-      view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+      // Edge-to-edge windows no longer shrink for the keyboard (adjustResize is
+      // ignored), so lift the content above it here.
+      val ime = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.ime())
+      view.setPadding(bars.left, bars.top, bars.right, maxOf(bars.bottom, ime.bottom))
       insets
     }
     androidx.core.view.ViewCompat.requestApplyInsets(content)

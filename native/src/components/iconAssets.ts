@@ -32,6 +32,13 @@ export const regular = {
   folder: require('../assets/icons/folder.webp'),
   player: require('../assets/icons/player.webp'),
   more: require('../assets/icons/more.webp'),
+  pip: require('../assets/icons/pip.webp'),
+  sync: require('../assets/icons/sync.webp'),
+  star: require('../assets/icons/star.webp'),
+  starFilled: require('../assets/icons/starFilled.webp'),
+  sort: require('../assets/icons/sort.webp'),
+  refresh: require('../assets/icons/refresh.webp'),
+  select: require('../assets/icons/select.webp'),
 } as const;
 export const small = {
   back: require('../assets/icons/back-sm.webp'),
@@ -66,4 +73,11 @@ export const small = {
   folder: require('../assets/icons/folder-sm.webp'),
   player: require('../assets/icons/player-sm.webp'),
   more: require('../assets/icons/more-sm.webp'),
+  pip: require('../assets/icons/pip-sm.webp'),
+  sync: require('../assets/icons/sync-sm.webp'),
+  star: require('../assets/icons/star-sm.webp'),
+  starFilled: require('../assets/icons/starFilled-sm.webp'),
+  sort: require('../assets/icons/sort-sm.webp'),
+  refresh: require('../assets/icons/refresh-sm.webp'),
+  select: require('../assets/icons/select-sm.webp'),
 } as const;

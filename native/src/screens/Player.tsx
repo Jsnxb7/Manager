@@ -31,9 +31,10 @@ import {
   saveProgress,
 } from '../services/progress';
 import { Catalog, Episode } from '../domain/catalog';
-import { setWatched } from '../services/mutations';
+import { clearProgress } from '../services/mutations';
 import { playerCommand } from '../platform/nativePlayer';
 import VideoSurface from '../platform/VideoSurface';
+import { usePreview } from '../platform/usePreview';
 import {
   PlaybackTarget,
   resolveTarget,
@@ -41,9 +42,9 @@ import {
 } from '../services/playback';
 
 // Page keys mapped to mpv's key names; mpv's own bindings then apply.
+// Space is left out: on a focused page button it presses that button, and the
+// video takes focus back right after (refocusVideo), where Space pauses.
 const PLAYER_KEYS: Record<string, string> = {
-  ' ': 'SPACE',
-  Space: 'SPACE',
   ArrowLeft: 'LEFT',
   ArrowRight: 'RIGHT',
   ArrowUp: 'UP',
@@ -54,6 +55,13 @@ const PLAYER_KEYS: Record<string, string> = {
   M: 'm',
   n: 'n',
   p: 'p',
+  // Speed down/up/reset, then subtitle and audio track cycling.
+  '[': '[',
+  ']': ']',
+  Backspace: 'BS',
+  j: 'j',
+  J: 'J',
+  '#': '#',
   Escape: 'ESC',
   MediaPlayPause: 'PLAYPAUSE',
   MediaTrackNext: 'NEXT',
@@ -87,6 +95,35 @@ export function Player({
   latest.current = w;
   const lastState = useRef<PlaybackState | null>(null);
   const openUri = useRef('');
+  // After the last second, the next episode starts on its own unless cancelled.
+  const [upNext, setUpNext] = useState<{
+    target: PlaybackTarget;
+    left: number;
+  } | null>(null);
+  const upNextRef = useRef<{ target: PlaybackTarget; deadline: number } | null>(
+    null,
+  );
+  // The card over the video goes when the countdown ends, is cancelled, or the page closes.
+  const counting = upNext !== null;
+  useEffect(() => {
+    if (Platform.OS !== 'windows') {
+      return;
+    }
+    const clear = () => {
+      playerCommand('overlay', { ass: '' }).catch(() => undefined);
+    };
+    if (!counting) {
+      clear();
+    }
+    return counting ? clear : undefined;
+  }, [counting]);
+  const cancelUpNext = () => {
+    upNextRef.current = null;
+    setUpNext(null);
+    playerCommand('message', { text: 'Up next cancelled' }).catch(
+      () => undefined,
+    );
+  };
   useEffect(() => {
     if (!entry || !ep) {
       return;
@@ -94,7 +131,36 @@ export function Player({
     let live = true,
       polling = false,
       lastSaved = Date.now();
-    const completion = new CompletionGuard();
+    let completion = new CompletionGuard();
+    upNextRef.current = null;
+    setUpNext(null);
+    // The audio and subtitles playing when the video opened; a later change is
+    // the viewer's choice and is remembered for this title.
+    const tracksAtOpen: { audio?: string; subtitle?: string } = {};
+    const rememberTracks = (value: PlaybackState) => {
+      const changes: { audio?: string; subtitle?: string } = {};
+      for (const [kind, now] of [
+        ['audio', value.audioTrack],
+        ['subtitle', value.subtitleTrack],
+      ] as const) {
+        if (!now) {
+          continue;
+        }
+        if (tracksAtOpen[kind] === undefined) {
+          tracksAtOpen[kind] = now;
+        } else if (tracksAtOpen[kind] !== now) {
+          tracksAtOpen[kind] = now;
+          changes[kind] = now;
+        }
+      }
+      if (changes.audio || changes.subtitle) {
+        latest.current
+          .updateSettings(s => {
+            s.tracks[animeId] = { ...s.tracks[animeId], ...changes };
+          })
+          .catch(latest.current.setError);
+      }
+    };
     const save = async (value: PlaybackState) => {
       if (value.ready && latest.current.repo) {
         latest.current.setCatalog(
@@ -139,6 +205,36 @@ export function Player({
         if (value.error) {
           throw new Error(value.error);
         }
+        if (value.ready) {
+          rememberTracks(value);
+        }
+        if (!value.ended) {
+          // Seeking back or replaying cancels a countdown and re-arms the end.
+          completion = new CompletionGuard();
+          if (upNextRef.current) {
+            upNextRef.current = null;
+            setUpNext(null);
+          }
+        }
+        const pending = upNextRef.current;
+        if (pending && live) {
+          const left = Math.max(
+            0,
+            Math.ceil((pending.deadline - Date.now()) / 1000),
+          );
+          if (left <= 0) {
+            upNextRef.current = null;
+            navigate(targetRoute(pending.target));
+            return;
+          }
+          setUpNext({ target: pending.target, left });
+          playerCommand('overlay', {
+            ass: upNextCard(
+              upNextLabel(latest.current.catalog, pending.target, animeId),
+              left,
+            ),
+          }).catch(() => undefined);
+        }
         if (completion.shouldAdvance(value.ended)) {
           await save(value).catch(latest.current.setError);
           const catalog = latest.current.catalog;
@@ -146,7 +242,11 @@ export function Player({
             ? resolveTarget(catalog, animeId, episodeId, 1, queueAnchor)
             : null;
           if (live && next) {
-            navigate(targetRoute(next));
+            upNextRef.current = {
+              target: next,
+              deadline: Date.now() + UP_NEXT_SECONDS * 1000,
+            };
+            setUpNext({ target: next, left: UP_NEXT_SECONDS });
           }
         } else if (
           value.ready &&
@@ -187,17 +287,21 @@ export function Player({
         return;
       }
       openUri.current = file.uri;
-      if (!resume) {
-        await latest.current.mutate(c =>
-          setWatched(c, animeId, false, episodeId),
-        );
+      // Starting from the beginning only drops the saved position, as the old app
+      // did. Watched marks stay: Previous or auto-next onto a watched episode must
+      // not undo it.
+      if (!resume && latest.current.catalog?.progress[episodeId]) {
+        await latest.current.mutate(c => clearProgress(c, episodeId));
       }
       const position = resume
         ? latest.current.catalog?.progress[episodeId]?.currentTime ?? 0
         : 0;
+      const tracks = latest.current.settings.tracks[animeId];
       await playerCommand('open', {
         uri: file.uri,
         position,
+        audio: tracks?.audio ?? '',
+        subtitle: tracks?.subtitle ?? '',
         title: `${entry.title} · Episode ${ep.number}`,
       });
     };
@@ -268,7 +372,7 @@ export function Player({
     };
   };
   return (
-    <PanelPage flush>
+    <PanelPage flush pinTop>
       <View
         // Player keys keep working after a click on a page control moves focus off
         // the video. Typing in a text field is left alone.
@@ -283,26 +387,32 @@ export function Player({
       >
         {/* Keyed by width: stale text measurements after a resize would clip these,
           and the video itself must not remount. */}
-        <Text
-          key={`title-${width}`}
-          accessibilityRole="header"
-          numberOfLines={2}
-          style={[styles.title, phone && styles.titlePhone]}
-        >
-          {entry.title}
-        </Text>
-        <Text key={`episode-${width}`} style={[ui.muted, styles.episode]}>
-          {[
-            entry.season,
-            `Episode ${ep.number}`,
-            ep.title === `Episode ${ep.number}` ? '' : ep.title,
-          ]
-            .filter(Boolean)
-            .join(', ')}
-        </Text>
+        <View key={`head-${width}`} style={styles.head}>
+          <View style={styles.headMeta}>
+            <Text style={[styles.overline, styles.overlineLit]}>
+              {[
+                entry.season,
+                `Episode ${ep.number} of ${entry.episodes.length}`,
+              ]
+                .filter(Boolean)
+                .join('  ·  ')}
+            </Text>
+            {ep.title !== `Episode ${ep.number}` && ep.title ? (
+              <Text numberOfLines={1} style={styles.headEpisode}>
+                {ep.title}
+              </Text>
+            ) : null}
+          </View>
+          <TitleLink
+            title={entry.title}
+            phone={phone}
+            onPress={() => navigate({ name: 'details', animeId })}
+          />
+        </View>
         <View style={wide ? styles.stage : undefined}>
           {wide && (
             <SideEpisode
+              workspace={w}
               direction="Previous"
               target={previous}
               {...neighbour(previous)}
@@ -323,6 +433,7 @@ export function Player({
           </View>
           {wide && (
             <SideEpisode
+              workspace={w}
               direction="Next"
               target={next}
               {...neighbour(next)}
@@ -330,18 +441,57 @@ export function Player({
             />
           )}
         </View>
+        {state?.ready && (
+          <View style={[styles.tools, wide && styles.toolsWide]}>
+            {canPip && (
+              <IconButton
+                icon="pip"
+                label="Picture in picture"
+                size={18}
+                onPress={() => {
+                  playerCommand('pip').then(refocusVideo).catch(w.setError);
+                }}
+              />
+            )}
+            <IconButton
+              icon="fullscreen"
+              label="Fullscreen"
+              size={18}
+              onPress={() => {
+                playerCommand('fullscreen').catch(w.setError);
+              }}
+            />
+          </View>
+        )}
+        {upNext && (
+          <UpNext
+            key={`next-${width}`}
+            left={upNext.left}
+            label={upNextLabel(w.catalog, upNext.target, animeId)}
+            uri={neighbour(upNext.target).uri}
+            wide={wide}
+            phone={phone}
+            onPlay={() => {
+              upNextRef.current = null;
+              navigate(targetRoute(upNext.target));
+            }}
+            onCancel={cancelUpNext}
+          />
+        )}
         {!wide && (previous || next) && (
           <View
             key={`strip-${width}`}
             style={[styles.strip, phone && styles.stripPhone]}
           >
             <StripEpisode
+              workspace={w}
               direction="Previous"
               target={previous}
               {...neighbour(previous)}
               onPress={() => previous && navigate(targetRoute(previous))}
             />
             <StripEpisode
+              workspace={w}
               direction="Next"
               target={next}
               {...neighbour(next)}
@@ -387,6 +537,184 @@ export function Player({
  * Every episode in a sideways-scrolling rail under the video. The playing one is
  * blue and starts centred, watched ones are green, part-watched ones show progress.
  */
+const UP_NEXT_SECONDS = 4;
+
+/** ASS colour from #RRGGBB (ASS orders it blue, green, red). */
+function assColor(hex: string): string {
+  const h = hex.replace('#', '');
+  return `&H${h.slice(4, 6)}${h.slice(2, 4)}${h.slice(0, 2)}&`;
+}
+
+/** A rounded rectangle in ASS drawing commands. */
+function assBox(w: number, h: number, r: number): string {
+  return `m ${r} 0 l ${w - r} 0 b ${w} 0 ${w} 0 ${w} ${r} l ${w} ${
+    h - r
+  } b ${w} ${h} ${w} ${h} ${w - r} ${h} l ${r} ${h} b 0 ${h} 0 ${h} 0 ${
+    h - r
+  } l 0 ${r} b 0 0 0 0 ${r} 0`;
+}
+
+/**
+ * The up-next card mpv draws over the video on PC, matching the page's panel:
+ * night-blue box, blue overline, the next title, and a draining countdown bar.
+ */
+function upNextCard(label: string, left: number): string {
+  const x = 28;
+  const y = 28;
+  const w = 430;
+  const h = 104;
+  const pad = 22;
+  const track = w - pad * 2;
+  const fill = Math.max(4, Math.round((track * left) / UP_NEXT_SECONDS));
+  const safe = label.replace(/[{}\\]/g, '').slice(0, 46);
+  const base = '\\bord0\\shad0\\blur0';
+  return [
+    `{\\an7\\pos(${x},${y})${base}\\1c${assColor(
+      '#0A131D',
+    )}\\1a&H28&\\p1}${assBox(w, h, 14)}{\\p0}`,
+    `{\\an7\\pos(${x},${y})${base}\\1c${assColor(
+      '#2A3A4B',
+    )}\\1a&H00&\\3a&HFF&\\p1}${assBox(4, h, 2)}{\\p0}`,
+    `{\\an7\\pos(${x + pad},${
+      y + 16
+    })${base}\\fnBahnschrift\\fs15\\fsp1.5\\1c${assColor(
+      '#86B8DC',
+    )}}UP NEXT IN ${left} S`,
+    `{\\an7\\pos(${x + pad},${
+      y + 38
+    })${base}\\fnBahnschrift SemiBold\\fs24\\1c${assColor('#F1F3F5')}}${safe}`,
+    `{\\an7\\pos(${x + pad},${y + h - 22})${base}\\1c${assColor(
+      '#1D2B3A',
+    )}\\p1}${assBox(track, 4, 2)}{\\p0}`,
+    `{\\an7\\pos(${x + pad},${y + h - 22})${base}\\1c${assColor(
+      '#86B8DC',
+    )}\\p1}${assBox(fill, 4, 2)}{\\p0}`,
+  ].join('\n');
+}
+
+/** "Episode 5", or the title name when the queue moves to another title. */
+function upNextLabel(
+  catalog: Catalog | null,
+  target: PlaybackTarget,
+  animeId: string,
+): string {
+  const item = catalog?.entries.find(e => e.id === target.entryId);
+  const number = item?.episodes.find(e => e.id === target.episodeId)?.number;
+  if (!item) {
+    return 'Next episode';
+  }
+  return item.id === animeId
+    ? `Episode ${number ?? ''}`
+    : `${item.title}, episode ${number ?? ''}`;
+}
+
+/**
+ * The countdown under the video once an episode ends. The video is a native
+ * surface the page cannot draw over, so on PC mpv repeats the count on screen.
+ */
+function UpNext({
+  left,
+  label,
+  uri,
+  wide,
+  phone,
+  onPlay,
+  onCancel,
+}: {
+  left: number;
+  label: string;
+  uri: string | null;
+  wide: boolean;
+  phone: boolean;
+  onPlay: () => void;
+  onCancel: () => void;
+}): React.JSX.Element {
+  return (
+    <View
+      accessibilityRole="alert"
+      accessibilityLiveRegion="polite"
+      style={[
+        styles.upNext,
+        wide && styles.toolsWide,
+        phone && styles.upNextPhone,
+      ]}
+    >
+      {uri ? <Image source={{ uri }} style={styles.stripArt} /> : null}
+      <View style={styles.upNextCopy}>
+        <Text style={[styles.overline, styles.overlineLit]}>
+          Up next in {left} s
+        </Text>
+        <Text numberOfLines={1} style={[styles.sideLabel, styles.upNextLabel]}>
+          {label}
+        </Text>
+        <View style={styles.upNextTrack}>
+          <View
+            style={[
+              styles.upNextFill,
+              { width: `${(left / UP_NEXT_SECONDS) * 100}%` },
+            ]}
+          />
+        </View>
+      </View>
+      <View style={styles.upNextActions}>
+        <Button label="Play now" primary onPress={onPlay} />
+        <Button label="Cancel" onPress={onCancel} />
+      </View>
+    </View>
+  );
+}
+
+/**
+ * The anime title, which opens its details. The chevron marks it as a link at
+ * all times (phones have no hover); hovering tints both and nudges the chevron.
+ */
+function TitleLink({
+  title,
+  phone,
+  onPress,
+}: {
+  title: string;
+  phone: boolean;
+  onPress: () => void;
+}): React.JSX.Element {
+  const [hover, setHover] = useState(false);
+  return (
+    <Pressable
+      {...noFocusRing}
+      accessibilityRole="link"
+      accessibilityLabel={title}
+      accessibilityHint="Opens the anime details"
+      {...{ tooltip: 'Anime details' }}
+      onPress={onPress}
+      onHoverIn={() => setHover(true)}
+      onHoverOut={() => setHover(false)}
+      style={({ pressed }) => [
+        styles.titleLink,
+        pressed && styles.titlePressed,
+      ]}
+    >
+      <Text
+        numberOfLines={2}
+        style={[
+          styles.title,
+          phone && styles.titlePhone,
+          styles.titleText,
+          hover && styles.titleHover,
+        ]}
+      >
+        {title}
+      </Text>
+      <View style={[styles.titleChevron, hover && styles.titleChevronHover]}>
+        <Icon
+          name="forward"
+          size={phone ? 14 : 16}
+          color={hover ? colors.background : colors.chrome}
+        />
+      </View>
+    </Pressable>
+  );
+}
+
 function EpisodeRail({
   episodes,
   currentId,
@@ -406,11 +734,13 @@ function EpisodeRail({
     episodes.findIndex(e => e.id === currentId),
   );
   const step = CARD + GAP;
-  const scrollBy = (pages: number) =>
+  const scrollBy = (pages: number) => {
     rail.current?.scrollTo({
       x: Math.max(0, offset.current + pages * Math.max(step, view - step)),
       animated: true,
     });
+    refocusVideo();
+  };
   return (
     <View style={styles.railBlock}>
       <View style={styles.railHead}>
@@ -481,6 +811,19 @@ function EpisodeRail({
     </View>
   );
 }
+
+// Keyboard focus goes back to the video after a page button, so Space and the
+// arrows keep controlling playback instead of pressing that button again.
+const refocusVideo = (): void => {
+  if (Platform.OS === 'windows') {
+    playerCommand('show').catch(() => undefined);
+  }
+};
+
+// Windows floats the video in its own window; Android supports it from API 26.
+const canPip =
+  Platform.OS === 'windows' ||
+  (Platform.OS === 'android' && Number(Platform.Version) >= 26);
 
 // Width of the previous/next covers beside the video.
 const SIDE = 150;
@@ -578,7 +921,9 @@ function StripEpisode({
   uri,
   label,
   onPress,
+  workspace,
 }: {
+  workspace: Workspace;
   direction: string;
   target: PlaybackTarget | null;
   uri: string | null;
@@ -586,6 +931,18 @@ function StripEpisode({
   onPress: () => void;
 }): React.JSX.Element {
   const [hover, setHover] = useState(false);
+  const clip = usePreview(
+    workspace,
+    target
+      ? {
+          entryId: target.entryId,
+          episodeId: target.episodeId,
+          start: target.resume
+            ? workspace.catalog?.progress[target.episodeId]?.currentTime ?? 0
+            : 0,
+        }
+      : null,
+  );
   if (!target) {
     return <View style={ui.grow} />;
   }
@@ -595,8 +952,15 @@ function StripEpisode({
       accessibilityRole="button"
       accessibilityLabel={`${direction}: ${label}`}
       onPress={onPress}
-      onHoverIn={() => setHover(true)}
-      onHoverOut={() => setHover(false)}
+      ref={clip.ref}
+      onHoverIn={() => {
+        setHover(true);
+        clip.onHoverIn();
+      }}
+      onHoverOut={() => {
+        setHover(false);
+        clip.onHoverOut();
+      }}
       style={[styles.stripItem, hover && styles.stripHover]}
     >
       {uri && (
@@ -624,7 +988,9 @@ function SideEpisode({
   uri,
   label,
   onPress,
+  workspace,
 }: {
+  workspace: Workspace;
   direction: 'Previous' | 'Next';
   target: PlaybackTarget | null;
   uri: string | null;
@@ -632,6 +998,18 @@ function SideEpisode({
   onPress: () => void;
 }): React.JSX.Element {
   const [hover, setHover] = useState(false);
+  const clip = usePreview(
+    workspace,
+    target
+      ? {
+          entryId: target.entryId,
+          episodeId: target.episodeId,
+          start: target.resume
+            ? workspace.catalog?.progress[target.episodeId]?.currentTime ?? 0
+            : 0,
+        }
+      : null,
+  );
   if (!target) {
     return <View style={styles.side} />;
   }
@@ -642,8 +1020,15 @@ function SideEpisode({
       accessibilityRole="button"
       accessibilityLabel={`${direction}: ${label}`}
       onPress={onPress}
-      onHoverIn={() => setHover(true)}
-      onHoverOut={() => setHover(false)}
+      ref={clip.ref}
+      onHoverIn={() => {
+        setHover(true);
+        clip.onHoverIn();
+      }}
+      onHoverOut={() => {
+        setHover(false);
+        clip.onHoverOut();
+      }}
       style={styles.side}
     >
       {uri && (
@@ -687,15 +1072,42 @@ function SideEpisode({
 const styles = StyleSheet.create({
   title: {
     fontFamily: displayFamily,
-    fontSize: 42,
-    lineHeight: 48,
+    fontSize: 32,
+    lineHeight: 38,
     fontWeight: '700',
-    letterSpacing: -1,
-    color: colors.text,
+    letterSpacing: -0.6,
+    color: colors.mist,
     textAlign: 'center',
   },
-  titlePhone: { fontFamily, fontSize: 26, lineHeight: 32, letterSpacing: -0.4 },
-  episode: { fontFamily, textAlign: 'center', marginBottom: 12 },
+  titlePhone: { fontFamily, fontSize: 22, lineHeight: 28, letterSpacing: -0.3 },
+  head: { alignItems: 'center', gap: 8, marginTop: 8, marginBottom: 18 },
+  headMeta: { alignItems: 'center', gap: 2 },
+  headEpisode: { fontFamily, fontSize: 14, color: colors.muted },
+  titleLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'center',
+    maxWidth: '100%',
+    gap: 12,
+  },
+  titlePressed: { opacity: 0.7 },
+  titleText: { flexShrink: 1 },
+  titleHover: { color: colors.accent },
+  titleChevron: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: colors.raised,
+  },
+  titleChevronHover: {
+    backgroundColor: colors.accent,
+    borderColor: colors.accent,
+    transform: [{ translateX: 3 }],
+  },
   // The covers touch the video, so their inner edge reads as part of it.
   stage: { flexDirection: 'row', alignItems: 'stretch' },
   side: { width: SIDE, overflow: 'hidden', justifyContent: 'flex-end' },
@@ -726,6 +1138,31 @@ const styles = StyleSheet.create({
     color: colors.mist,
   },
   strip: { flexDirection: 'row', gap: 12, marginTop: 14 },
+  upNext: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: 16,
+    marginTop: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: '#0E1A26',
+  },
+  upNextPhone: { padding: 10, gap: 10 },
+  upNextCopy: { flexGrow: 1, flexBasis: 200, flexShrink: 1, gap: 4 },
+  upNextTrack: {
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: colors.raised,
+    overflow: 'hidden',
+    marginTop: 8,
+  },
+  upNextFill: { height: 4, borderRadius: 2, backgroundColor: colors.accent },
+  upNextActions: { flexDirection: 'row', gap: 8 },
+  upNextLabel: { fontSize: 18 },
   stripPhone: { flexDirection: 'column', gap: 8 },
   stripItem: {
     flex: 1,
@@ -746,6 +1183,14 @@ const styles = StyleSheet.create({
     gap: 12,
     marginTop: 16,
   },
+  tools: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 4,
+    marginTop: 6,
+  },
+  // Lines up with the video's right edge, inside the side covers.
+  toolsWide: { marginHorizontal: SIDE },
   episodes: { marginTop: 18 },
   // Lines up with the video's edges, between the side covers.
   episodesWide: { marginHorizontal: SIDE },

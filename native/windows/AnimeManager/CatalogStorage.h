@@ -9,6 +9,8 @@
 #include <fstream>
 #include <iterator>
 #include <set>
+#include <bcrypt.h>
+#pragma comment(lib, "bcrypt.lib")
 #include <sstream>
 #include <string>
 #include <shellapi.h>
@@ -99,7 +101,7 @@ struct CatalogStorage {
   }
   fs::path Owned(winrt::hstring const &value) {
     auto path = Path(value);
-    if (root.empty() || !Within(root, path)) throw std::runtime_error("Operation outside app private storage");
+    if (root.empty() || !Within(root, path)) throw std::runtime_error("Operation outside app private storage: " + winrt::to_string(path.wstring()));
     return path;
   }
   static fs::path Child(fs::path const &parent, winrt::hstring const &relative) {
@@ -326,6 +328,23 @@ struct CatalogStorage {
       if(argv&&count>1&&fs::is_regular_file(argv[1])){auto extension=fs::path(argv[1]).extension().wstring();std::transform(extension.begin(),extension.end(),extension.begin(),::towlower);if(extension==L".mp4"||extension==L".mkv"||extension==L".webm"||extension==L".avi"||extension==L".mov"||extension==L".m4v")info.SetNamedValue(L"initialMedia",String(argv[1]));}
       if(argv)LocalFree(argv);return info; }
     if (method == "readText") return String(winrt::to_hstring(Read(Path(args.GetNamedString(L"path")))) .c_str());
+    // Content hashes of several files at once (sync compares covers by content).
+    if (method == "sha256Files") {
+      Json::JsonObject result;
+      for (auto const &item : args.GetNamedArray(L"uris")) {
+        auto const uri = item.GetString();
+        std::error_code missing;
+        if (!fs::is_regular_file(Path(uri), missing)) continue;
+        auto const data = Read(Path(uri));
+        uint8_t digest[32];
+        if (BCryptHash(BCRYPT_SHA256_ALG_HANDLE, nullptr, 0, reinterpret_cast<PUCHAR>(const_cast<char *>(data.data())), static_cast<ULONG>(data.size()), digest, sizeof(digest)) != 0) continue;
+        static wchar_t const digits[] = L"0123456789abcdef";
+        std::wstring hex;
+        for (uint8_t b : digest) { hex += digits[b >> 4]; hex += digits[b & 15]; }
+        result.SetNamedValue(uri, Json::JsonValue::CreateStringValue(hex));
+      }
+      return result;
+    }
     if (method == "readBytes") {
       auto bytes = Read(Path(args.GetNamedString(L"uri")));
       auto buffer = Crypto::CryptographicBuffer::CreateFromByteArray(winrt::array_view<uint8_t const>(reinterpret_cast<uint8_t const *>(bytes.data()), reinterpret_cast<uint8_t const *>(bytes.data()) + bytes.size()));

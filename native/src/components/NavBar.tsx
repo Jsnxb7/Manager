@@ -66,7 +66,11 @@ export type NavProps = {
   navigate: (route: Route) => void;
   onQueue: () => void;
   onSearch: () => void;
+  /** Search every section (outside a library, and Ctrl+K). */
+  onSearchEverything: () => void;
   onFilters: () => void;
+  /** PC <-> phone sync. */
+  sync?: { active: boolean; busy: boolean; onPress: () => void } | undefined;
 };
 
 function SectionTab({
@@ -157,7 +161,9 @@ export function NavBar({
   navigate,
   onQueue,
   onSearch,
+  onSearchEverything,
   onFilters,
+  sync,
 }: NavProps): React.JSX.Element {
   const inLibrary = route.name === 'library';
   if (phone) {
@@ -189,16 +195,24 @@ export function NavBar({
               />
             </>
           ) : (
-            firstSection && (
+            <>
+              {firstSection && (
+                <BottomItem
+                  icon="grid"
+                  label="Library"
+                  active={false}
+                  onPress={() =>
+                    navigate({ name: 'library', sectionId: firstSection.id })
+                  }
+                />
+              )}
               <BottomItem
-                icon="grid"
-                label="Library"
+                icon="search"
+                label="Search"
                 active={false}
-                onPress={() =>
-                  navigate({ name: 'library', sectionId: firstSection.id })
-                }
+                onPress={onSearchEverything}
               />
-            )
+            </>
           )}
           <BottomItem
             icon="queue"
@@ -207,6 +221,14 @@ export function NavBar({
             badge={queueCount}
             onPress={onQueue}
           />
+          {sync && (
+            <BottomItem
+              icon="sync"
+              label={sync.busy ? 'Syncing' : 'Sync'}
+              active={sync.active || sync.busy}
+              onPress={sync.onPress}
+            />
+          )}
           <BottomItem
             icon="more"
             label="More"
@@ -247,11 +269,18 @@ export function NavBar({
         ))}
       </View>
       {searchOpen && searchBar && inLibrary && <SearchField bar={searchBar} />}
+      {!inLibrary && (
+        <IconButton
+          icon="search"
+          label="Search everything (Ctrl+K)"
+          onPress={onSearchEverything}
+        />
+      )}
       {inLibrary && (
         <>
           <IconButton
             icon="search"
-            label="Search"
+            label="Search this library (Ctrl+K searches everything)"
             active={searchOpen}
             onPress={onSearch}
           />
@@ -263,6 +292,20 @@ export function NavBar({
             onPress={onFilters}
           />
         </>
+      )}
+      {sync && (
+        <IconButton
+          icon="sync"
+          label={
+            sync.busy
+              ? 'Syncing'
+              : sync.active
+              ? 'Sync: sharing through ngrok'
+              : 'Sync'
+          }
+          active={sync.active || sync.busy}
+          onPress={sync.onPress}
+        />
       )}
       <IconButton
         icon="player"

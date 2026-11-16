@@ -11,6 +11,8 @@ export interface StorageAdapter {
   writeText(path: string, value: string): Promise<void>;
   readBytes(uri: string): Promise<Uint8Array>;
   writeBytes(uri: string, bytes: Uint8Array): Promise<void>;
+  /** SHA-256 of several files natively; missing files are left out. */
+  hashFiles?(uris: string[]): Promise<Record<string, string>>;
   exists(uri: string): Promise<boolean>;
   list(uri: string): Promise<FileEntry[]>;
   mkdir(uri: string): Promise<void>;

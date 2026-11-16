@@ -1,7 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { CatalogSummary } from '../repositories/CatalogRegistry';
+
+const shortDate = (iso: string): string => {
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime())
+    ? 'unknown'
+    : date.toLocaleDateString(undefined, {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      });
+};
 import { strToU8 } from 'fflate';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Workspace } from '../app/useWorkspace';
+import { SyncState } from '../app/useSync';
+import { SyncSettings } from '../components/SyncSettings';
 import { Route } from '../app/routes';
 import { Button, HoverRow, Sheet, TextButton } from '../components/controls';
 import { PanelPage } from '../components/Fade';
@@ -13,7 +27,9 @@ import {
   FolderPreview,
   createMissingMediaFolders,
   previewMediaFolders,
+  resetFolderLinks,
 } from '../services/mediaFolders';
+import { scanAllRelations } from '../services/relations';
 import {
   ImportPreview,
   exportCatalog,
@@ -24,9 +40,11 @@ import {
 export function Settings({
   workspace: w,
   navigate,
+  sync,
 }: {
   workspace: Workspace;
   navigate: (route: Route) => void;
+  sync: SyncState;
 }): React.JSX.Element {
   const { width } = useViewport();
   const [backups, setBackups] = useState<
@@ -49,32 +67,87 @@ export function Settings({
   const action = (job: () => Promise<void>, message?: string) => {
     w.run(job, message).catch(w.setError);
   };
+  const [catalogs, setCatalogs] = useState<CatalogSummary[]>([]);
+  const [log, setLog] = useState<string[] | null>(null);
+  const savedCount = w.savedCatalogs.length;
+  useEffect(() => {
+    let live = true;
+    w.describeCatalogs()
+      .then(list => live && setCatalogs(list))
+      .catch(w.setError);
+    return () => {
+      live = false;
+    };
+    // Re-read when catalogs are added, removed or switched.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [savedCount, w.catalog?.id]);
   return (
     <PanelPage width={1050}>
       <View style={[styles.column, width < 700 && styles.columnPhone]}>
         <Text accessibilityRole="header" style={ui.heading}>
           Storage and data
         </Text>
+        <SyncSettings workspace={w} sync={sync} />
         <View style={styles.group}>
           <Text accessibilityRole="header" style={ui.subheading}>
             Local catalog
           </Text>
           <View style={ui.rule} />
-          {w.savedCatalogs.length > 1 &&
-            w.savedCatalogs.map(saved => (
-              <SettingRow
-                key={saved.path}
-                label={`Open catalog ${saved.id}`}
-                onPress={() =>
-                  action(() => w.openSavedCatalog(saved.path), 'Catalog opened')
-                }
-              />
-            ))}
-          <Text selectable style={ui.muted}>
-            Catalog: {w.catalog!.id}
-          </Text>
-          <Text selectable style={ui.small}>
-            Revision: {w.catalog!.revision}
+          {catalogs.length > 1 &&
+            catalogs
+              .filter(saved => !saved.active)
+              .map(saved =>
+                saved.titles === 0 ? (
+                  <SettingRow
+                    key={saved.path}
+                    label={`Remove empty catalog${
+                      saved.updatedAt
+                        ? ` (last changed ${shortDate(saved.updatedAt)})`
+                        : ''
+                    }`}
+                    danger
+                    onPress={() =>
+                      confirm(
+                        'Remove empty catalog?',
+                        'It holds no titles. The open catalog is not affected.',
+                        [
+                          { text: 'Cancel', style: 'cancel' },
+                          {
+                            text: 'Remove',
+                            style: 'destructive',
+                            onPress: () =>
+                              action(async () => {
+                                await w.removeEmptyCatalog(saved.path);
+                                setCatalogs(await w.describeCatalogs());
+                              }, 'Empty catalog removed'),
+                          },
+                        ],
+                      )
+                    }
+                  />
+                ) : (
+                  <SettingRow
+                    key={saved.path}
+                    label={`Open other catalog: ${
+                      saved.titles === null
+                        ? 'unreadable'
+                        : `${saved.titles} titles`
+                    }${
+                      saved.updatedAt
+                        ? `, last changed ${shortDate(saved.updatedAt)}`
+                        : ''
+                    }`}
+                    onPress={() =>
+                      action(async () => {
+                        await w.openSavedCatalog(saved.path);
+                        setCatalogs(await w.describeCatalogs());
+                      }, 'Catalog opened')
+                    }
+                  />
+                ),
+              )}
+          <Text style={ui.muted}>
+            Open catalog last changed {shortDate(w.catalog!.updatedAt)}
           </Text>
           <Text style={ui.text}>
             {w.catalog!.entries.length} titles, {w.catalog!.sections.length}{' '}
@@ -261,6 +334,28 @@ export function Settings({
                 )
               }
             />
+            <SettingRow
+              danger
+              label="Reset all folder links"
+              onPress={() =>
+                confirm(
+                  'Reset all folder links?',
+                  'Clears every media folder choice and every relinked title folder and episode file on this device. Titles, progress and video files are not touched; choose the media folders again afterwards.',
+                  [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                      text: 'Reset links',
+                      style: 'destructive',
+                      onPress: () =>
+                        action(
+                          () => w.updateSettings(resetFolderLinks),
+                          'Folder links reset; files preserved',
+                        ),
+                    },
+                  ],
+                )
+              }
+            />
           </View>
         </View>
         <View style={styles.group}>
@@ -304,6 +399,48 @@ export function Settings({
             label="Custom Player"
             onPress={() => navigate({ name: 'custom' })}
           />
+          <SettingRow
+            label="Check relations for all anime"
+            onPress={() =>
+              confirm(
+                'Check relations for all anime?',
+                'Links seasons of the same series across the whole library, the way adding a title does. Pairs you removed before stay apart.',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  {
+                    text: 'Check',
+                    onPress: () =>
+                      w
+                        .run(async () => {
+                          let found = 0;
+                          await w.mutate(c => {
+                            found = scanAllRelations(c);
+                          });
+                          return found
+                            ? `${found} titles newly linked`
+                            : 'No new relations found';
+                        })
+                        .catch(w.setError),
+                  },
+                ],
+              )
+            }
+          />
+          <SettingRow
+            label="View error log"
+            onPress={() => {
+              // Just opens a view, so no "Saved" notice.
+              const path = `${w.io!.privateRoot}/app-log.txt`;
+              w.io!.exists(path)
+                .then(found => (found ? w.io!.readText(path) : ''))
+                .then(text =>
+                  setLog(
+                    text.split('\n').filter(Boolean).slice(-200).reverse(),
+                  ),
+                )
+                .catch(w.setError);
+            }}
+          />
           {Platform.OS === 'windows' && (
             <SettingRow
               label="Open app data folder"
@@ -330,6 +467,38 @@ export function Settings({
             }
           />
         </View>
+        <Sheet
+          title="Error log"
+          visible={log !== null}
+          onClose={() => setLog(null)}
+        >
+          {log && log.length === 0 && (
+            <Text style={ui.muted}>No errors have been logged.</Text>
+          )}
+          {log && log.length > 0 && (
+            <ScrollView style={styles.log}>
+              {log.map((line, index) => (
+                <Text key={index} selectable style={[ui.small, styles.logLine]}>
+                  {line}
+                </Text>
+              ))}
+            </ScrollView>
+          )}
+          <View style={styles.actions}>
+            <Button
+              label="Clear log"
+              danger
+              disabled={!log?.length}
+              onPress={() =>
+                action(async () => {
+                  await w.io!.writeText(`${w.io!.privateRoot}/app-log.txt`, '');
+                  setLog([]);
+                }, 'Log cleared')
+              }
+            />
+            <Button label="Close" onPress={() => setLog(null)} />
+          </View>
+        </Sheet>
         <Sheet
           title="Create missing folders"
           visible={folderPreview !== null}
@@ -477,6 +646,11 @@ const explanations: Record<string, string> = {
     'Replace the active catalog with the previous verified local backup.',
   'Choose / change media root':
     'Set the folder used to locate videos on this device.',
+  'Reset all folder links':
+    'Forget every media folder and relinked location on this device.',
+  'Check relations for all anime':
+    'Link seasons of the same series across the whole library.',
+  'View error log': 'Recent errors, newest first, for troubleshooting.',
   'Clear relinked files':
     'Return all title and episode locations to the selected library roots.',
   'Create missing folders':
@@ -515,6 +689,10 @@ function SettingRow({
     ? 'Restart'
     : label === 'Choose / change media root'
     ? 'Choose'
+    : label.startsWith('Check')
+    ? 'Check'
+    : label.startsWith('View')
+    ? 'View'
     : 'Open';
   return (
     <HoverRow
@@ -537,7 +715,10 @@ function SettingRow({
               {label}
             </Text>
             <Text style={ui.muted}>
-              {explanations[label] ?? 'Switch to this saved local catalog.'}
+              {explanations[label] ??
+                (label.startsWith('Remove empty catalog')
+                  ? 'It holds no titles; your open catalog stays as it is.'
+                  : 'Switch to this saved local catalog.')}
             </Text>
           </View>
           <View style={styles.control}>
@@ -564,6 +745,8 @@ function SettingRow({
   );
 }
 const styles = StyleSheet.create({
+  log: { maxHeight: 420 },
+  logLine: { paddingVertical: 3 },
   column: { maxWidth: 860, width: '100%', alignSelf: 'center', gap: 40 },
   columnPhone: { gap: 32 },
   group: { gap: 16 },

@@ -259,6 +259,46 @@ class CatalogStorageModule(private val context: ReactApplicationContext) : React
         val result: Any? = when (method) {
           "info" -> JSONObject().put("privateRoot", privateRoot.path)
           "readText" -> bytes(payload.getString("path")).toString(Charsets.UTF_8)
+          // App update from the PC: a signed GET saved to cache/updates.
+          "downloadFile" -> {
+            val name = payload.getString("name")
+            if (!Regex("^AnimeManager-[\\w.-]+\\.apk$").matches(name)) error("Unexpected update file name")
+            val folder = File(context.cacheDir, "updates").apply { mkdirs() }
+            folder.listFiles()?.forEach { it.delete() }
+            val target = File(folder, name)
+            val connection = java.net.URL(payload.getString("url")).openConnection() as java.net.HttpURLConnection
+            connection.connectTimeout = 20000; connection.readTimeout = 60000
+            val headers = payload.getJSONObject("headers")
+            for (key in headers.keys()) connection.setRequestProperty(key, headers.getString(key))
+            try {
+              if (connection.responseCode != 200) error("The PC answered ${connection.responseCode}")
+              connection.inputStream.use { input -> target.outputStream().use { input.copyTo(it, 256 * 1024) } }
+            } finally { connection.disconnect() }
+            target.absolutePath
+          }
+          "installApk" -> {
+            val file = File(payload.getString("path"))
+            if (file.parentFile?.canonicalFile != File(context.cacheDir, "updates").canonicalFile) error("Only downloaded updates can be installed")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !context.packageManager.canRequestPackageInstalls()) {
+              context.startActivity(Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:${context.packageName}")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+              error("Allow Anime Manager to install updates, then tap Install again")
+            }
+            val uri = androidx.core.content.FileProvider.getUriForFile(context, "${context.packageName}.updates", file)
+            context.startActivity(Intent(Intent.ACTION_VIEW).setDataAndType(uri, "application/vnd.android.package-archive")
+              .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK))
+            null
+          }
+          "sha256Files" -> {
+            val uris = payload.getJSONArray("uris"); val result = JSONObject()
+            for (i in 0 until uris.length()) {
+              val uri = uris.getString(i)
+              try {
+                val digest = java.security.MessageDigest.getInstance("SHA-256").digest(bytes(uri))
+                result.put(uri, digest.joinToString("") { "%02x".format(it) })
+              } catch (_: Exception) { /* Missing files are left out. */ }
+            }
+            result
+          }
           "readBytes" -> Base64.encodeToString(bytes(payload.getString("uri")), Base64.NO_WRAP)
           "writeText" -> { val file=owned(payload.getString("path")); file.parentFile!!.mkdirs(); file.writeText(payload.getString("value")); null }
           "writeBytes" -> { val file=owned(payload.getString("uri")); file.parentFile!!.mkdirs(); file.writeBytes(Base64.decode(payload.getString("value"), Base64.DEFAULT)); null }

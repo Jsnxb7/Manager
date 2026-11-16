@@ -1,5 +1,7 @@
 ; Installer recipe for the staged release folder. See packaging/README.md.
-#define AppVersion "1.0.0"
+#ifndef AppVersion
+  #define AppVersion "1.0.0"
+#endif
 #define ReleaseDir "..\..\release\windows"
 #if !FileExists(ReleaseDir + "\AnimeManager.exe")
   #error Stage the native release directory before packaging. No application binary is included in this repository.
@@ -25,6 +27,12 @@ SolidCompression=yes
 WizardStyle=modern
 SetupIconFile=..\..\windows\AnimeManager\AnimeManager.ico
 UninstallDisplayIcon={app}\AnimeManager.exe
+AppVerName=Anime Manager {#AppVersion}
+VersionInfoVersion={#AppVersion}
+; Updates install over the running app: it is closed first and reopened after a
+; silent (in-app) update. The library lives in app data and is not touched.
+CloseApplications=yes
+RestartApplications=no
 ; Tells Windows to refresh cached icons, so an updated app icon shows at once.
 ChangesAssociations=yes
 [Files]
@@ -37,3 +45,4 @@ Name: "desktopicon"; Description: "Create a desktop shortcut"; Flags: unchecked
 [Run]
 Filename: "{app}\redist\VC_redist.x64.exe"; Parameters: "/install /quiet /norestart"; Flags: waituntilterminated
 Filename: "{app}\AnimeManager.exe"; Description: "Open Anime Manager"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\AnimeManager.exe"; Flags: nowait runasoriginaluser; Check: WizardSilent

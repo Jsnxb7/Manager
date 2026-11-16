@@ -242,85 +242,76 @@ export function QueueContent({
                         onPress={() => play(id)}
                       />
                       {phone ? (
-                        <ActionMenu label={`Arrange ${e.title}`}>
-                          {close => (
-                            <>
-                              <IconButton
-                                icon="top"
-                                label="Top"
-                                disabled={index === 0}
-                                onPress={() => {
-                                  close();
-                                  action(() =>
-                                    w.mutate(c =>
-                                      reorderQueue(c, [
-                                        id,
-                                        ...c.queue.filter(v => v !== id),
-                                      ]),
-                                    ),
-                                  );
-                                }}
-                              />
-                              <IconButton
-                                icon="up"
-                                label="Up"
-                                disabled={index === 0}
-                                onPress={() => {
-                                  close();
-                                  action(() =>
-                                    w.mutate(c => {
-                                      const order = [...c.queue];
-                                      const at = order.indexOf(id);
-                                      if (at <= 0) {
-                                        return;
-                                      }
-                                      [order[at - 1], order[at]] = [
-                                        order[at]!,
-                                        order[at - 1]!,
-                                      ];
-                                      reorderQueue(c, order);
-                                    }),
-                                  );
-                                }}
-                              />
-                              <IconButton
-                                icon="down"
-                                label="Down"
-                                disabled={index === ids.length - 1}
-                                onPress={() => {
-                                  close();
-                                  action(() =>
-                                    w.mutate(c => {
-                                      const order = [...c.queue];
-                                      const at = order.indexOf(id);
-                                      if (at < 0 || at >= order.length - 1) {
-                                        return;
-                                      }
-                                      [order[at], order[at + 1]] = [
-                                        order[at + 1]!,
-                                        order[at]!,
-                                      ];
-                                      reorderQueue(c, order);
-                                    }),
-                                  );
-                                }}
-                              />
-                              <IconButton
-                                icon="trash"
-                                color={colors.danger}
-                                label="Remove"
-                                onPress={() => {
-                                  close();
-                                  action(() =>
-                                    w.mutate(c => {
-                                      c.queue = c.queue.filter(v => v !== id);
-                                    }),
-                                  );
-                                }}
-                              />
-                            </>
-                          )}
-                        </ActionMenu>
+                        <ActionMenu
+                          label={`Arrange ${e.title}`}
+                          items={[
+                            {
+                              label: 'Move to top',
+                              icon: 'top',
+                              disabled: index === 0,
+                              onPress: () =>
+                                action(() =>
+                                  w.mutate(c =>
+                                    reorderQueue(c, [
+                                      id,
+                                      ...c.queue.filter(v => v !== id),
+                                    ]),
+                                  ),
+                                ),
+                            },
+                            {
+                              label: 'Move up',
+                              icon: 'up',
+                              disabled: index === 0,
+                              onPress: () =>
+                                action(() =>
+                                  w.mutate(c => {
+                                    const order = [...c.queue];
+                                    const at = order.indexOf(id);
+                                    if (at <= 0) {
+                                      return;
+                                    }
+                                    [order[at - 1], order[at]] = [
+                                      order[at]!,
+                                      order[at - 1]!,
+                                    ];
+                                    reorderQueue(c, order);
+                                  }),
+                                ),
+                            },
+                            {
+                              label: 'Move down',
+                              icon: 'down',
+                              disabled: index === ids.length - 1,
+                              onPress: () =>
+                                action(() =>
+                                  w.mutate(c => {
+                                    const order = [...c.queue];
+                                    const at = order.indexOf(id);
+                                    if (at < 0 || at >= order.length - 1) {
+                                      return;
+                                    }
+                                    [order[at], order[at + 1]] = [
+                                      order[at + 1]!,
+                                      order[at]!,
+                                    ];
+                                    reorderQueue(c, order);
+                                  }),
+                                ),
+                            },
+                            {
+                              label: 'Remove from queue',
+                              icon: 'trash',
+                              danger: true,
+                              onPress: () =>
+                                action(() =>
+                                  w.mutate(c => {
+                                    c.queue = c.queue.filter(v => v !== id);
+                                  }),
+                                ),
+                            },
+                          ]}
+                        />
                       ) : (
                         <View
                           style={[
