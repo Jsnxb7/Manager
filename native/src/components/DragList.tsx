@@ -23,6 +23,7 @@ export function DragList({
     ids: string[];
     centers: number[];
     center: number;
+    startY: number;
     next: string[];
   } | null>(null);
   const latest = useRef({ ids, onReorder });
@@ -49,7 +50,10 @@ export function DragList({
           onStartShouldSetPanResponderCapture: () =>
             !disabled && ids.length > 1,
           onMoveShouldSetPanResponderCapture: () => !disabled && ids.length > 1,
-          onPanResponderGrant: () => {
+          // Handlers are rebuilt on every render, including mid-drag, and a rebuilt
+          // responder's gesture state starts from zero. The distance is measured
+          // from the pointer's own start instead.
+          onPanResponderGrant: event => {
             const original = [...ids];
             const centers = original.map(key => {
               const layout = layouts.current.get(key);
@@ -60,16 +64,18 @@ export function DragList({
               ids: original,
               centers,
               center: centers[index] ?? 0,
+              startY: event.nativeEvent.pageY,
               next: original,
             };
             setActive(id);
           },
-          onPanResponderMove: (_, gesture) => {
+          onPanResponderMove: event => {
             const value = drag.current;
             if (!value) {
               return;
             }
-            const center = value.center + gesture.dy;
+            const center =
+              value.center + (event.nativeEvent.pageY - value.startY);
             const others = value.ids.filter(key => key !== value.id);
             const at = others.filter(
               key => center > value.centers[value.ids.indexOf(key)]!,

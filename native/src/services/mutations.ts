@@ -28,6 +28,10 @@ export function setWatched(
     entry.watched = entry.episodes.every(ep => ep.watched);
   }
 }
+/** Forgets one episode's saved position without touching its watched mark. */
+export function clearProgress(catalog: Catalog, episodeId: string): void {
+  delete catalog.progress[episodeId];
+}
 export function addEpisode(
   catalog: Catalog,
   entryId: string,
@@ -218,6 +222,7 @@ export async function deleteEntry(
   // Failure retains the record with its pending marker, so deletion is retryable.
   if (target) {
     await io.deleteMediaFolder(target.root, target.relativePath);
+    await removeEmptyParent(target, io);
   }
   let coverIsShared = false;
   await mutate(c => {
@@ -229,6 +234,28 @@ export async function deleteEntry(
   }
 }
 
+/**
+ * After a season folder goes, its title folder goes too if nothing else is left
+ * in it, as the old app did. Anything still inside keeps it. Never the root itself.
+ */
+async function removeEmptyParent(
+  target: DeleteTarget,
+  io: StorageAdapter,
+): Promise<void> {
+  const parts = target.relativePath.split('/');
+  if (parts.length < 2) {
+    return;
+  }
+  const parent = parts.slice(0, -1).join('/');
+  try {
+    const uri = await io.resolveChild(target.root, parent);
+    if (uri && (await io.list(uri)).length === 0) {
+      await io.deleteMediaFolder(target.root, parent);
+    }
+  } catch {
+    /* The season is gone either way; an untidy empty folder is harmless. */
+  }
+}
 export async function removeOwnedCover(
   entry: Entry,
   io: StorageAdapter,

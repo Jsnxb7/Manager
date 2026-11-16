@@ -15,6 +15,13 @@ export function securePathPart(value: string): string {
     : cleaned;
 }
 
+/** Forgets every folder this device knows: media roots and relinked titles and files. */
+export function resetFolderLinks(settings: DeviceSettings): void {
+  settings.roots = {};
+  settings.titleFolders = {};
+  settings.episodeFiles = {};
+}
+
 export function animeFolder(entry: Entry): string {
   const title = securePathPart(entry.title);
   const season = securePathPart(entry.season);

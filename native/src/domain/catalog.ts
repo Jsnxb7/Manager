@@ -47,6 +47,12 @@ export const entrySchema = z.object({
       fetchedAt: z.string(),
     })
     .nullable(),
+  /** Personal score, 1 to 10; null when unrated. */
+  rating: z.number().int().min(1).max(10).nullable().default(null),
+  /** Personal notes, shown on Details. */
+  notes: z.string().max(20000).default(''),
+  /** When an episode last played; newest wins in sync. */
+  lastWatchedAt: z.string().max(40).nullable().default(null),
   legacy: z.record(z.string(), z.unknown()).default({}),
 });
 export const progressSchema = z.object({
@@ -88,8 +94,21 @@ export type Metadata = z.infer<typeof metadataSchema>;
 export type Section = Catalog['sections'][number];
 export type Relation = Catalog['relations'][number];
 
+export const SORT_ORDERS = [
+  'title',
+  'recentlyWatched',
+  'recentlyAdded',
+  'progress',
+  'rating',
+] as const;
+export type SortOrder = (typeof SORT_ORDERS)[number];
 export const filterSchema = z.object({
   search: z.string(),
+  sort: z.enum(SORT_ORDERS).default('title'),
+  /** Only titles rated at least this (0 = no rating filter). */
+  minRating: z.number().int().min(0).max(10).default(0),
+  /** Only titles whose folders hold new episode files. */
+  fresh: z.boolean().default(false),
   unread: z.boolean(),
   ongoing: z.boolean(),
   bookmarked: z.boolean(),
@@ -111,6 +130,40 @@ export const settingsSchema = z.object({
   episodeFiles: z.record(z.string(), z.string()),
   filters: z.record(z.string(), filterSchema),
   compact: z.record(z.string(), z.boolean()),
+  /**
+   * Audio and subtitle choice per title, reused for its next episodes:
+   * `lang:<code>`, `id:<track>` or (subtitles) `off`. Device-only.
+   */
+  tracks: z
+    .record(
+      z.string(),
+      z.object({
+        audio: z.string().max(100).optional(),
+        subtitle: z.string().max(100).optional(),
+      }),
+    )
+    .default({}),
+  /** PC <-> phone sync over ngrok; device-only, never synced itself. */
+  sync: z
+    .object({
+      /** The PC's ngrok domain, e.g. name.ngrok-free.dev. */
+      domain: z.string().max(300),
+      /** Shared key, 32 hex digits. */
+      key: z.string().max(100),
+      /** PC only: local port ngrok forwards to. */
+      port: z.number().int().min(1024).max(65535),
+      /** PC only: share whenever the app is open. */
+      share: z.boolean(),
+      lastSyncedAt: z.string().nullable(),
+    })
+    .optional(),
+});
+export const emptySync = (): NonNullable<DeviceSettings['sync']> => ({
+  domain: '',
+  key: '',
+  port: 47820,
+  share: false,
+  lastSyncedAt: null,
 });
 export type DeviceSettings = z.infer<typeof settingsSchema>;
 export const emptyMetadata = (): Metadata => ({
@@ -121,6 +174,9 @@ export const emptyMetadata = (): Metadata => ({
 });
 export const emptyFilter = (): LibraryFilter => ({
   search: '',
+  sort: 'title',
+  minRating: 0,
+  fresh: false,
   unread: false,
   ongoing: false,
   bookmarked: false,
@@ -135,6 +191,7 @@ export const emptySettings = (): DeviceSettings => ({
   episodeFiles: {},
   filters: {},
   compact: {},
+  tracks: {},
 });
 let sequence = 0;
 // Identity only, not a security token. Repository uniqueness validation is mandatory.

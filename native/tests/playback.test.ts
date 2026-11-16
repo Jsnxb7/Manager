@@ -15,7 +15,7 @@ import {
   queueTarget,
   resolveTarget,
 } from '../src/services/playback';
-import { setWatched } from '../src/services/mutations';
+import { clearProgress, setWatched } from '../src/services/mutations';
 function setup() {
   const c = emptyCatalog();
   const add = (title: string, season: string) =>
@@ -36,6 +36,38 @@ function setup() {
     q: add('Other Title', 'S1'),
   };
 }
+describe('next and previous episodes', () => {
+  it('resumes a part-watched neighbour and starts others from the beginning', () => {
+    const { c, a } = setup();
+    const [first, second] = a.episodes;
+    expect(resolveTarget(c, a.id, first!.id, 1)?.resume).toBe(false);
+    c.progress[second!.id] = {
+      entryId: a.id,
+      episodeId: second!.id,
+      currentTime: 300,
+      duration: 1400,
+      updatedAt: new Date().toISOString(),
+    };
+    expect(resolveTarget(c, a.id, first!.id, 1)?.resume).toBe(true);
+    second!.watched = true;
+    expect(resolveTarget(c, a.id, first!.id, 1)?.resume).toBe(false);
+  });
+  it('starting over drops the position but keeps the watched mark', () => {
+    const { c, a } = setup();
+    const ep = a.episodes[0]!;
+    ep.watched = true;
+    c.progress[ep.id] = {
+      entryId: a.id,
+      episodeId: ep.id,
+      currentTime: 50,
+      duration: 1400,
+      updatedAt: new Date().toISOString(),
+    };
+    clearProgress(c, ep.id);
+    expect(ep.watched).toBe(true);
+    expect(c.progress[ep.id]).toBeUndefined();
+  });
+});
 describe('relations and title queue', () => {
   it('uses episode then relation then queue priority and preserves the anchor', () => {
     const { c, a, b, q } = setup();

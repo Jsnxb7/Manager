@@ -1,9 +1,16 @@
 /* eslint-disable react-native/no-inline-styles -- fade geometry is computed from props */
-import React, { useEffect, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   Image,
   ImageSourcePropType,
   Platform,
+  RefreshControl,
   ScrollView,
   StyleProp,
   StyleSheet,
@@ -63,6 +70,47 @@ export function OuterFade({
       />
     </View>
   );
+}
+
+/** Names the page in the navigation history, so its scroll position can be kept. */
+export const PageMemoryContext = createContext('');
+const pageScroll = new Map<string, number>();
+/** Drops remembered positions for history entries that no longer exist. */
+export function forgetPages(keep: (key: string) => boolean): void {
+  for (const key of [...pageScroll.keys()]) {
+    if (!keep(key)) {
+      pageScroll.delete(key);
+    }
+  }
+}
+
+// Page state that outlives a remount of the same page (a window resize re-renders
+// some pages from scratch on Windows) but not a visit: Root clears it whenever the
+// current history entry changes, so coming Back opens the page fresh.
+const pageState = new Map<string, unknown>();
+export function clearPageState(): void {
+  pageState.clear();
+}
+/** useState that survives a remount of the current page. */
+export function usePageState<T>(
+  name: string,
+  initial: T | (() => T),
+): [T, React.Dispatch<React.SetStateAction<T>>] {
+  const memoryKey = useContext(PageMemoryContext);
+  const key = `${memoryKey}|${name}`;
+  const [value, setValue] = useState<T>(() =>
+    memoryKey && pageState.has(key)
+      ? (pageState.get(key) as T)
+      : typeof initial === 'function'
+      ? (initial as () => T)()
+      : initial,
+  );
+  useEffect(() => {
+    if (memoryKey) {
+      pageState.set(key, value);
+    }
+  }, [key, memoryKey, value]);
+  return [value, setValue];
 }
 
 const scrollListeners = new Set<(y: number) => void>();
@@ -175,9 +223,15 @@ export function PanelPage({
   center = false,
   width: maxWidth,
   flush = false,
+  pinTop = false,
   onScrollY,
+  onRefresh,
 }: {
   onScrollY?: (y: number) => void;
+  /** Pull down at the top to run this (Android only; PC has a refresh button). */
+  onRefresh?: (() => Promise<unknown>) | undefined;
+  /** Holds the page at its top while it opens (the Player). */
+  pinTop?: boolean;
   children: React.ReactNode;
   scrollRef?: React.Ref<ScrollView>;
   center?: boolean;
@@ -186,14 +240,52 @@ export function PanelPage({
 }): React.JSX.Element {
   const { width } = useViewport();
   const phone = width < 700;
-  // Each page starts at the top, so the bar returns to plain background.
-  useEffect(() => reportScroll(0), []);
+  const memoryKey = useContext(PageMemoryContext);
+  const own = useRef<ScrollView | null>(null);
+  const setRef = (node: ScrollView | null) => {
+    own.current = node;
+    if (typeof scrollRef === 'function') {
+      scrollRef(node);
+    } else if (scrollRef) {
+      (scrollRef as React.MutableRefObject<ScrollView | null>).current = node;
+    }
+  };
+  const opened = useRef(Date.now());
+  // A page comes back where it was left: after Back, and after a window resize,
+  // which re-renders some pages from scratch. Otherwise it starts at the top.
+  useEffect(() => {
+    const saved = memoryKey ? pageScroll.get(memoryKey) ?? 0 : 0;
+    reportScroll(saved);
+    if (!saved) {
+      return;
+    }
+    const timer = setTimeout(
+      () => own.current?.scrollTo({ y: saved, animated: false }),
+      60,
+    );
+    return () => clearTimeout(timer);
+  }, [memoryKey]);
   // The Hub rests on the window bottom and only scrolls if it cannot fit.
   const [viewHeight, setViewHeight] = useState(0);
   const [panelHeight, setPanelHeight] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const pull =
+    onRefresh && Platform.OS === 'android' ? (
+      <RefreshControl
+        refreshing={refreshing}
+        onRefresh={() => {
+          setRefreshing(true);
+          onRefresh().finally(() => setRefreshing(false));
+        }}
+        colors={[colors.accent]}
+        tintColor={colors.accent}
+        progressBackgroundColor={colors.raised}
+      />
+    ) : undefined;
   return (
     <ScrollView
-      ref={scrollRef}
+      ref={setRef}
+      refreshControl={pull}
       contentContainerStyle={
         center ? [styles.hubPage, { minHeight: viewHeight }] : styles.page
       }
@@ -201,8 +293,18 @@ export function PanelPage({
       onLayout={e => setViewHeight(e.nativeEvent.layout.height)}
       scrollEventThrottle={16}
       onScroll={e => {
-        reportScroll(e.nativeEvent.contentOffset.y);
-        onScrollY?.(e.nativeEvent.contentOffset.y);
+        const y = e.nativeEvent.contentOffset.y;
+        // While a pinned page opens, focus moving onto a control lower down must
+        // not carry the page past its heading.
+        if (pinTop && y > 0 && Date.now() - opened.current < 900) {
+          own.current?.scrollTo({ y: 0, animated: false });
+          return;
+        }
+        if (memoryKey) {
+          pageScroll.set(memoryKey, y);
+        }
+        reportScroll(y);
+        onScrollY?.(y);
       }}
     >
       {/* Windows lets a scroll overshoot its end; the panel continues below the

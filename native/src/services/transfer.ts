@@ -282,6 +282,21 @@ export async function inspectPackage(
   };
 }
 
+/** Keeps a verified copy of a catalog in snapshots/ before it is replaced. */
+export async function archiveCatalog(
+  io: StorageAdapter,
+  before: Catalog,
+): Promise<void> {
+  await io.mkdir(`${io.privateRoot}/snapshots`);
+  const archive = `${io.privateRoot}/snapshots/snapshot-${hash(
+    strToU8(`${before.id}:${before.revision}`),
+  ).slice(0, 32)}.json`;
+  if (!(await io.exists(archive))) {
+    await io.writeText(archive, JSON.stringify(before));
+    validateCatalog(JSON.parse(await io.readText(archive)));
+  }
+}
+
 export async function applyImport(
   preview: ImportPreview,
   repo: JsonRepository,
@@ -291,14 +306,7 @@ export async function applyImport(
   if (before.revision !== preview.expectedRevision) {
     throw new Error('Catalog changed; review the import again.');
   }
-  await io.mkdir(`${io.privateRoot}/snapshots`);
-  const archive = `${io.privateRoot}/snapshots/snapshot-${hash(
-    strToU8(`${before.id}:${before.revision}`),
-  ).slice(0, 32)}.json`;
-  if (!(await io.exists(archive))) {
-    await io.writeText(archive, JSON.stringify(before));
-    validateCatalog(JSON.parse(await io.readText(archive)));
-  }
+  await archiveCatalog(io, before);
   const next = cloneCatalog(preview.catalog);
   await io.mkdir(`${io.privateRoot}/artwork`);
   // New filenames avoid modifying covers used by the old snapshot or its backup.

@@ -1,16 +1,35 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Workspace } from '../app/useWorkspace';
 import { Button, Choice } from '../components/controls';
 import { PanelPage } from '../components/Fade';
 import { Icon, IconButton } from '../components/Icon';
 import { DragList } from '../components/DragList';
-import { colors, fontFamily, ui } from '../design/theme';
+import {
+  colors,
+  displayFamily,
+  fontFamily,
+  noFocusRing,
+  ui,
+} from '../design/theme';
 import { useViewport } from '../design/viewport';
 import { newId } from '../domain/catalog';
 import VideoSurface from '../platform/VideoSurface';
+import {
+  VIDEO_EXTENSIONS,
+  canDropFiles,
+  hasExtension,
+  useFileDrops,
+} from '../platform/drops';
 import { playerCommand } from '../platform/nativePlayer';
 import { CompletionGuard, PlaybackState } from '../services/progress';
+import {
+  SavedPositions,
+  clock,
+  loadPositions,
+  recordPosition,
+  savePositions,
+} from '../services/customPositions';
 type Item = { id: string; uri: string; name: string };
 export function CustomPlayer({
   workspace: w,
@@ -27,7 +46,7 @@ export function CustomPlayer({
           {
             id: newId('session'),
             uri: initialUri,
-            name: decodeURIComponent(initialUri.split('/').pop() ?? 'Video'),
+            name: fileLabel(initialUri).title,
           },
         ]
       : [],
@@ -38,20 +57,56 @@ export function CustomPlayer({
   const [audio, setAudio] = useState('');
   const [subtitle, setSubtitle] = useState('Off');
   const progress = useRef(new Map<string, number>());
+  // Positions from earlier sessions, by file; loaded before the first video opens.
+  const saved = useRef<SavedPositions>({});
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    let live = true;
+    (w.io ? loadPositions(w.io) : Promise.resolve({}))
+      .then(value => {
+        saved.current = value;
+      })
+      .finally(() => live && setLoaded(true));
+    return () => {
+      live = false;
+    };
+    // Loaded once per visit; later saves keep the ref current.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const persist = () => {
+    const io = latest.current.w.io;
+    if (io) {
+      savePositions(io, saved.current).catch(() => undefined);
+    }
+  };
   const latest = useRef({ w, items });
   latest.current = { w, items };
   const item = items.find(v => v.id === activeId);
   useEffect(() => {
-    if (!item) {
+    if (!item || !loaded) {
       return;
     }
     let live = true,
-      polling = false;
+      polling = false,
+      lastSaved = Date.now(),
+      last: PlaybackState | null = null;
     const guard = new CompletionGuard();
+    const remember = (value: PlaybackState) => {
+      if (value.ready) {
+        recordPosition(
+          saved.current,
+          item.uri,
+          value.position,
+          value.duration,
+          value.ended,
+        );
+      }
+    };
     playerCommand('open', {
       uri: item.uri,
       title: item.name,
-      position: progress.current.get(item.id) ?? 0,
+      position:
+        progress.current.get(item.id) ?? saved.current[item.uri]?.position ?? 0,
     }).catch(w.setError);
     const timer = setInterval(() => {
       if (polling) {
@@ -64,7 +119,13 @@ export function CustomPlayer({
             return;
           }
           setState(value);
+          last = value;
           progress.current.set(item.id, value.position);
+          if (value.ended || Date.now() - lastSaved >= 5000) {
+            lastSaved = Date.now();
+            remember(value);
+            persist();
+          }
           if (value.request) {
             const all = latest.current.items;
             const at = all.findIndex(v => v.id === item.id);
@@ -93,11 +154,15 @@ export function CustomPlayer({
     return () => {
       live = false;
       clearInterval(timer);
+      if (last) {
+        remember(last);
+        persist();
+      }
       playerCommand('close').catch(() => undefined);
     };
     // Stable session identity controls media lifetime; other state is read from refs.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [item?.id]);
+  }, [item?.id, loaded]);
   const action = (method: string, args: Record<string, unknown> = {}) => {
     playerCommand(method, args).then(setState).catch(w.setError);
   };
@@ -108,19 +173,29 @@ export function CustomPlayer({
       next: index >= 0 && index < items.length - 1,
     }).catch(() => undefined);
   }, [index, items.length]);
+  const add = (uris: string[]) => {
+    const additions = uris.map(uri => ({
+      id: newId('session'),
+      uri,
+      name: fileLabel(uri).title,
+    }));
+    setItems(list => [...list, ...additions]);
+    if (!activeId && additions[0]) {
+      setActiveId(additions[0].id);
+    }
+  };
   const pick = () =>
-    w.run(async () => {
-      const uris = await w.io!.pickFiles('video');
-      const additions = uris.map(uri => ({
-        id: newId('session'),
-        uri,
-        name: decodeURIComponent(uri.split('/').pop() ?? 'Video'),
-      }));
-      setItems(list => [...list, ...additions]);
-      if (!activeId && additions[0]) {
-        setActiveId(additions[0].id);
-      }
-    }, 'Files added');
+    w.run(async () => add(await w.io!.pickFiles('video')), 'Files added');
+  // Videos dragged onto the window join the playlist; anything else is ignored.
+  useFileDrops(paths => {
+    const videos = paths.filter(path => hasExtension(path, VIDEO_EXTENSIONS));
+    if (videos.length) {
+      add(videos);
+      w.setError('');
+    } else {
+      w.setError('Only video files can be added to the playlist.');
+    }
+  });
   return (
     <PanelPage>
       <View style={styles.page}>
@@ -128,8 +203,9 @@ export function CustomPlayer({
           Custom player
         </Text>
         <Text style={ui.muted}>
-          A temporary playlist. Original files stay in place; this session is
-          excluded from catalog transfers.
+          A temporary playlist. Original files stay in place and each one
+          resumes where you left it; none of this is part of catalog transfers.
+          {canDropFiles ? ' You can also drop videos onto this window.' : ''}
         </Text>
         <View style={ui.row}>
           <Button
@@ -165,9 +241,8 @@ export function CustomPlayer({
             {item ? (
               <>
                 <Text style={ui.subheading}>{item.name}</Text>
-                <Text style={ui.muted}>
-                  {Math.floor(state?.position ?? 0)} /{' '}
-                  {Math.floor(state?.duration ?? 0)} seconds
+                <Text style={[ui.muted, styles.time]}>
+                  {clock(state?.position ?? 0)} / {clock(state?.duration ?? 0)}
                 </Text>
                 {Platform.OS !== 'windows' && (
                   <View style={ui.row}>
@@ -268,7 +343,12 @@ export function CustomPlayer({
             ) : null}
           </View>
           <View style={[styles.playlist, phone && styles.playlistPhone]}>
-            <Text style={ui.subheading}>Playlist, {items.length} files</Text>
+            <View style={styles.playlistHead}>
+              <Text style={ui.subheading}>Playlist</Text>
+              <Text style={ui.muted}>
+                {items.length === 1 ? '1 file' : `${items.length} files`}
+              </Text>
+            </View>
             <DragList
               ids={items.map(media => media.id)}
               onReorder={order =>
@@ -278,58 +358,24 @@ export function CustomPlayer({
               }
               renderItem={(id, at) => {
                 const media = items.find(value => value.id === id)!;
+                const move = (by: 1 | -1) =>
+                  setItems(list => {
+                    const next = [...list];
+                    [next[at], next[at + by]] = [next[at + by]!, next[at]!];
+                    return next;
+                  });
                 return (
-                  <View key={media.id}>
-                    <View style={ui.rule} />
-                    <View style={styles.file}>
-                      <Text
-                        style={[
-                          ui.text,
-                          media.id === activeId && styles.current,
-                        ]}
-                      >
-                        {at + 1}. {media.name}
-                        {media.id === activeId ? ', Now playing' : ''}
-                      </Text>
-                      <View style={ui.row}>
-                        <IconButton
-                          icon="play"
-                          label="Play"
-                          onPress={() => setActiveId(media.id)}
-                        />
-                        <IconButton
-                          icon="up"
-                          label="Move up"
-                          disabled={at === 0}
-                          onPress={() =>
-                            setItems(list => {
-                              const next = [...list];
-                              [next[at - 1], next[at]] = [
-                                next[at]!,
-                                next[at - 1]!,
-                              ];
-                              return next;
-                            })
-                          }
-                        />
-                        <IconButton
-                          icon="down"
-                          label="Move down"
-                          disabled={at === items.length - 1}
-                          onPress={() =>
-                            setItems(list => {
-                              const next = [...list];
-                              [next[at], next[at + 1]] = [
-                                next[at + 1]!,
-                                next[at]!,
-                              ];
-                              return next;
-                            })
-                          }
-                        />
-                      </View>
-                    </View>
-                  </View>
+                  <PlaylistRow
+                    key={media.id}
+                    number={at + 1}
+                    uri={media.uri}
+                    playing={media.id === activeId}
+                    resumeAt={saved.current[media.uri]?.position ?? null}
+                    first={at === 0}
+                    last={at === items.length - 1}
+                    onPlay={() => setActiveId(media.id)}
+                    onMove={move}
+                  />
                 );
               }}
             />
@@ -340,7 +386,156 @@ export function CustomPlayer({
   );
 }
 
+/** A file's own name for display: no folders, no extension, underscores as spaces. */
+export function fileLabel(uri: string): { title: string; kind: string } {
+  let name = uri.split(/[\\/]/).pop() ?? '';
+  try {
+    name = decodeURIComponent(name);
+  } catch {
+    // A literal % in a Windows file name is fine as it is.
+  }
+  const dot = name.lastIndexOf('.');
+  const kind = dot > 0 ? name.slice(dot + 1).toUpperCase() : '';
+  const title = (dot > 0 ? name.slice(0, dot) : name)
+    .replace(/_/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return { title: title || 'Video', kind };
+}
+
+function PlaylistRow({
+  number,
+  uri,
+  playing,
+  resumeAt,
+  first,
+  last,
+  onPlay,
+  onMove,
+}: {
+  number: number;
+  uri: string;
+  playing: boolean;
+  resumeAt: number | null;
+  first: boolean;
+  last: boolean;
+  onPlay: () => void;
+  onMove: (by: 1 | -1) => void;
+}): React.JSX.Element {
+  const [hover, setHover] = useState(false);
+  const { title, kind } = fileLabel(uri);
+  const status = playing
+    ? 'Now playing'
+    : resumeAt !== null
+    ? `Resumes at ${clock(resumeAt)}`
+    : kind;
+  return (
+    <Pressable
+      {...noFocusRing}
+      accessibilityRole="button"
+      accessibilityLabel={`${number}. ${title}, ${status || 'Not started'}`}
+      accessibilityState={{ selected: playing }}
+      {...{ tooltip: title }}
+      onPress={onPlay}
+      onHoverIn={() => setHover(true)}
+      onHoverOut={() => setHover(false)}
+      style={[
+        styles.row,
+        hover && !playing && styles.rowHover,
+        playing && styles.rowPlaying,
+      ]}
+    >
+      <Text style={[styles.rowNumber, playing && styles.rowNumberPlaying]}>
+        {number}
+      </Text>
+      <View style={styles.rowCopy}>
+        <Text
+          numberOfLines={3}
+          style={[styles.rowTitle, (hover || playing) && styles.rowTitleLit]}
+        >
+          {title}
+        </Text>
+        {status !== '' && (
+          <Text
+            numberOfLines={1}
+            style={[styles.rowStatus, playing && styles.rowStatusPlaying]}
+          >
+            {status}
+          </Text>
+        )}
+      </View>
+      {!playing && (
+        <IconButton icon="play" label="Play" size={16} onPress={onPlay} />
+      )}
+      <View style={styles.rowMove}>
+        <IconButton
+          icon="up"
+          label="Move up"
+          size={12}
+          disabled={first}
+          onPress={() => onMove(-1)}
+        />
+        <IconButton
+          icon="down"
+          label="Move down"
+          size={12}
+          disabled={last}
+          onPress={() => onMove(1)}
+        />
+      </View>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
+  time: { fontVariant: ['tabular-nums'] },
+  playlistHead: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 8,
+    paddingVertical: 10,
+    paddingLeft: 12,
+    paddingRight: 6,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: colors.raised,
+  },
+  rowHover: { borderColor: colors.accent, backgroundColor: colors.hover },
+  rowPlaying: {
+    borderColor: colors.accent,
+    backgroundColor: colors.accentSoft,
+  },
+  rowNumber: {
+    fontFamily: displayFamily,
+    fontSize: 20,
+    fontWeight: '700',
+    minWidth: 22,
+    textAlign: 'center',
+    color: colors.muted,
+    fontVariant: ['tabular-nums'],
+  },
+  rowNumberPlaying: { color: colors.accent },
+  rowCopy: { flex: 1, minWidth: 0, gap: 3 },
+  rowTitle: {
+    fontFamily,
+    fontSize: 15,
+    lineHeight: 20,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  rowTitleLit: { color: colors.mist },
+  rowStatus: { fontFamily, fontSize: 12, color: colors.muted },
+  rowStatusPlaying: { color: colors.accent },
+  // Stacked, so the name keeps most of the row.
+  rowMove: { alignItems: 'center', marginVertical: -6 },
   page: { gap: 20 },
   layout: { flexDirection: 'row', alignItems: 'flex-start', gap: 32 },
   stacked: { flexDirection: 'column', gap: 32 },
@@ -365,8 +560,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: colors.line,
   },
-  playlist: { width: '30%', gap: 16 },
+  playlist: { width: '34%', minWidth: 300, gap: 16 },
   playlistPhone: { width: '100%' },
-  file: { paddingVertical: 16, gap: 12 },
-  current: { fontFamily, color: colors.mist },
 });

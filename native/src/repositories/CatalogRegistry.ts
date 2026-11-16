@@ -5,6 +5,13 @@ import { StorageAdapter } from '../platform/contracts';
 import { JsonRepository } from './JsonRepository';
 import { ImportPreview, applyImport } from '../services/transfer';
 type Registry = { active: string; catalogs: { id: string; path: string }[] };
+export type CatalogSummary = {
+  id: string;
+  path: string;
+  active: boolean;
+  titles: number | null;
+  updatedAt: string;
+};
 export type OpenWorkspace = {
   repo: JsonRepository;
   catalog: Catalog;
@@ -63,6 +70,41 @@ export class CatalogRegistry {
     this.value.active = path;
     await this.persist();
     return { repo, catalog, settings };
+  }
+  /** Title count and last change for each saved catalog, for people to tell them apart. */
+  async describe(): Promise<CatalogSummary[]> {
+    const result: CatalogSummary[] = [];
+    for (const saved of this.value.catalogs) {
+      const summary: CatalogSummary = {
+        ...saved,
+        active: saved.path === this.value.active,
+        titles: null,
+        updatedAt: '',
+      };
+      try {
+        const raw = JSON.parse(
+          await this.io.readText(
+            `${this.io.privateRoot}/${saved.path}/catalog.json`,
+          ),
+        ) as { entries?: unknown[]; updatedAt?: string };
+        summary.titles = Array.isArray(raw.entries) ? raw.entries.length : 0;
+        summary.updatedAt = raw.updatedAt ?? '';
+      } catch {
+        /* Shown as unreadable; never removable from here. */
+      }
+      result.push(summary);
+    }
+    return result;
+  }
+  /** Removes a saved catalog that holds no titles. The open one always stays. */
+  async removeEmpty(path: string): Promise<void> {
+    const [summary] = (await this.describe()).filter(c => c.path === path);
+    if (!summary || summary.active || summary.titles !== 0) {
+      throw new Error('Only an empty catalog that is not open can be removed.');
+    }
+    this.value.catalogs = this.value.catalogs.filter(c => c.path !== path);
+    await this.persist();
+    await this.io.removeOwned(`${this.io.privateRoot}/${path}`);
   }
   async accept(
     preview: ImportPreview,

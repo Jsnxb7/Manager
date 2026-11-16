@@ -10,11 +10,31 @@ import {
 } from 'react-native';
 import { Workspace } from '../app/useWorkspace';
 import { Route } from '../app/routes';
-import { Button, Choice, ProgressBar, Sheet } from '../components/controls';
+import {
+  Button,
+  Choice,
+  ProgressBar,
+  Sheet,
+  TextButton,
+  ChipButton,
+} from '../components/controls';
+import { RatingScale } from '../components/Badges';
+import { ReviewMatches } from '../components/ReviewMatches';
+import { FolderMatch } from '../services/episodeMatch';
+import {
+  addFoundEpisodes,
+  dismissNewEpisodes,
+  forgetFound,
+  newFor,
+  recordTitle,
+  useNewEpisodes,
+} from '../services/newEpisodes';
 import { Cover, coverUri } from '../components/Cover';
-import { PanelPage } from '../components/Fade';
+import { PanelPage, usePageState } from '../components/Fade';
+import { PreviewSource, usePreview } from '../platform/usePreview';
 import { IconButton } from '../components/Icon';
 import { ActionMenu } from '../components/ActionMenu';
+import { ContextMenu, useContextMenu } from '../components/ContextMenu';
 import { Relations } from '../components/Relations';
 import { DetailsEditor } from '../components/DetailsEditor';
 import { Episode, METADATA_GROUPS } from '../domain/catalog';
@@ -80,7 +100,12 @@ function EpisodeRow({
   onToggle,
   onLocate,
   onDelete,
+  workspace,
+  preview,
 }: {
+  workspace: Workspace;
+  /** Hover clip on Windows; null when the file is not available. */
+  preview: PreviewSource | null;
   episode: Episode;
   availability: Availability | undefined;
   percent: number;
@@ -94,6 +119,8 @@ function EpisodeRow({
   onDelete: () => void;
 }): React.JSX.Element {
   const [hover, setHover] = useState(false);
+  const clip = usePreview(workspace, preview);
+  const menu = useContextMenu();
   const missing = availability && availability.state !== 'available';
   const status = ep.watched
     ? 'Completed'
@@ -103,8 +130,15 @@ function EpisodeRow({
   return (
     <Pressable
       {...noFocusRing}
-      onHoverIn={() => setHover(true)}
-      onHoverOut={() => setHover(false)}
+      ref={clip.ref}
+      onHoverIn={() => {
+        setHover(true);
+        clip.onHoverIn();
+      }}
+      onHoverOut={() => {
+        setHover(false);
+        clip.onHoverOut();
+      }}
       focusable={false}
       style={[styles.episode, hover && styles.episodeLit]}
     >
@@ -119,6 +153,7 @@ function EpisodeRow({
         } episode ${ep.number}`}
         onPress={onPlay}
         style={styles.episodeCopy}
+        {...menu.pressProps}
       >
         <Text
           numberOfLines={1}
@@ -144,82 +179,105 @@ function EpisodeRow({
           </View>
         )}
       </Pressable>
-      {/* Narrow screens keep watched and play in reach; the rest sit behind ⋯. */}
-      {phone ? (
-        <ActionMenu label={`More for episode ${ep.number}`}>
-          {close => (
-            <>
-              {resume && (
-                <IconButton
-                  icon="reset"
-                  label="Start over"
-                  size={16}
-                  onPress={() => {
-                    close();
-                    onRestart();
-                  }}
-                />
-              )}
+      {/* Controls centre on the title and status lines, not the progress bar. */}
+      <View style={styles.rail}>
+        {/* Narrow screens keep watched and play in reach; the rest sit behind ⋯. */}
+        {phone ? (
+          <ActionMenu
+            label={`More for episode ${ep.number}`}
+            items={[
+              ...(resume
+                ? [
+                    {
+                      label: 'Start over',
+                      icon: 'reset' as const,
+                      onPress: onRestart,
+                    },
+                  ]
+                : []),
+              { label: 'Locate file', icon: 'search', onPress: onLocate },
+              {
+                label: 'Delete episode',
+                icon: 'trash',
+                onPress: onDelete,
+                danger: true,
+              },
+            ]}
+          />
+        ) : (
+          <View
+            style={[styles.episodeActions, HOVER && !hover && styles.hidden]}
+          >
+            {resume && (
               <IconButton
-                icon="search"
-                label="Locate file"
+                icon="reset"
+                label="Start over"
                 size={16}
-                onPress={() => {
-                  close();
-                  onLocate();
-                }}
+                onPress={onRestart}
               />
-              <IconButton
-                icon="trash"
-                label="Delete episode"
-                size={16}
-                color={colors.danger}
-                onPress={() => {
-                  close();
-                  onDelete();
-                }}
-              />
-            </>
-          )}
-        </ActionMenu>
-      ) : (
-        <View style={[styles.episodeActions, HOVER && !hover && styles.hidden]}>
-          {resume && (
+            )}
             <IconButton
-              icon="reset"
-              label="Start over"
+              icon="search"
+              label="Locate file"
               size={16}
-              onPress={onRestart}
+              onPress={onLocate}
             />
-          )}
-          <IconButton
-            icon="search"
-            label="Locate file"
-            size={16}
-            onPress={onLocate}
-          />
-          <IconButton
-            icon="trash"
-            label="Delete episode"
-            size={16}
-            color={colors.danger}
-            onPress={onDelete}
-          />
-        </View>
-      )}
-      <IconButton
-        icon="check"
-        label={ep.watched ? 'Mark unwatched' : 'Mark watched'}
-        size={16}
-        color={ep.watched ? colors.success : colors.muted}
-        onPress={onToggle}
-      />
-      <IconButton
-        icon="play"
-        label={resume ? 'Continue' : ep.watched ? 'Rewatch' : 'Play'}
-        size={16}
-        color={missing ? colors.muted : colors.chrome}
-        onPress={onPlay}
+            <IconButton
+              icon="trash"
+              label="Delete episode"
+              size={16}
+              color={colors.danger}
+              onPress={onDelete}
+            />
+          </View>
+        )}
+        <IconButton
+          icon="check"
+          label={ep.watched ? 'Mark unwatched' : 'Mark watched'}
+          size={16}
+          color={ep.watched ? colors.success : colors.muted}
+          onPress={onToggle}
+        />
+        <IconButton
+          icon="play"
+          label={resume ? 'Continue' : ep.watched ? 'Rewatch' : 'Play'}
+          size={16}
+          color={missing ? colors.muted : colors.chrome}
+          onPress={onPlay}
+        />
+      </View>
+      <ContextMenu
+        title={`Episode ${ep.number}`}
+        visible={menu.visible}
+        onClose={menu.close}
+        items={[
+          {
+            label: resume ? 'Continue' : ep.watched ? 'Rewatch' : 'Play',
+            icon: 'play',
+            onPress: onPlay,
+          },
+          ...(resume
+            ? [
+                {
+                  label: 'Start over',
+                  icon: 'reset' as const,
+                  onPress: onRestart,
+                },
+              ]
+            : []),
+          {
+            label: ep.watched ? 'Mark as unwatched' : 'Mark as watched',
+            icon: 'check',
+            onPress: onToggle,
+          },
+          { label: 'Locate file', icon: 'search', onPress: onLocate },
+          {
+            label: 'Delete episode',
+            icon: 'trash',
+            onPress: onDelete,
+            danger: true,
+          },
+        ]}
       />
     </Pressable>
   );
@@ -247,16 +305,30 @@ export function Details({
     detailTabs.set(animeId, value);
     setSelection({ id: animeId, tab: value });
   };
-  const [editing, setEditing] = useState(false);
-  const [title, setTitle] = useState('');
-  const [link, setLink] = useState(entry?.link ?? '');
-  const [removing, setRemoving] = useState<Episode | null>(null);
-  const [availability, setAvailability] = useState<
+  // Kept through a window resize, which re-renders this page from scratch.
+  const [editing, setEditing] = usePageState('editing', false);
+  const [title, setTitle] = usePageState('title', '');
+  const [composerFocus, setComposerFocus] = useState(false);
+  const [link, setLink] = usePageState('link', entry?.link ?? '');
+  const [removing, setRemoving] = usePageState<Episode | null>(
+    'removing',
+    null,
+  );
+  const [availability, setAvailability] = usePageState<
     Record<string, Availability>
-  >({});
+  >('availability', {});
+  const [folderMatch, setFolder] = usePageState<FolderMatch | null>(
+    'folder',
+    null,
+  );
+  const [reviewing, setReviewing] = usePageState('reviewing', false);
+  const [notes, setNotes] = usePageState('notes', entry?.notes ?? '');
   const [scan, setScan] = useState(0);
+  const found = useNewEpisodes();
   const { width } = useViewport();
   const phone = width < 700;
+  // Tablets and narrow windows keep the poster smaller so the summary has room.
+  const tablet = !phone && width < 1000;
   const resolver = useMemo(
     () => (w.io ? new MediaResolver(w.io) : null),
     [w.io],
@@ -266,10 +338,18 @@ export function Details({
   useEffect(() => {
     let live = true;
     if (entry && resolver) {
-      resolver.check(entry, current.current.settings).then(
+      resolver.scan(entry, current.current.settings).then(
         value => {
           if (live) {
-            setAvailability(value);
+            setAvailability(value.availability);
+            setFolder(value.folder);
+            if (value.folder && current.current.io) {
+              recordTitle(
+                current.current.io,
+                entry.id,
+                value.folder.newEpisodes,
+              );
+            }
           }
         },
         error => {
@@ -282,7 +362,34 @@ export function Details({
     return () => {
       live = false;
     };
-  }, [entry, resolver, w.settings, scan]);
+  }, [entry, resolver, w.settings, scan, setAvailability, setFolder]);
+  // Notes save shortly after typing stops, and when the field loses focus.
+  const savedNotes = entry?.notes ?? '';
+  const notesRef = useRef({ notes, savedNotes });
+  notesRef.current = { notes, savedNotes };
+  const saveNotes = () => {
+    const value = notesRef.current;
+    if (!entry || value.notes === value.savedNotes) {
+      return;
+    }
+    current.current
+      .mutate(c => {
+        entryById(c, entry.id).notes = value.notes.slice(0, 20000);
+      })
+      .catch(current.current.setError);
+  };
+  useEffect(() => {
+    const timer = setTimeout(saveNotes, 900);
+    return () => clearTimeout(timer);
+    // saveNotes reads the latest values through notesRef.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [notes]);
+  useEffect(
+    () => () => saveNotes(),
+    // Leaving the page saves what is still waiting.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
   if (!entry) {
     return (
       <PanelPage>
@@ -299,18 +406,45 @@ export function Details({
   const action = (task: () => Promise<void>, message?: string) => {
     w.run(task, message).catch(w.setError);
   };
+  const addNewEpisode = () =>
+    action(async () => {
+      await w.mutate(c => addEpisode(c, entry.id, title));
+      setTitle('');
+    }, 'Episode added');
   const completed = entry.episodes.filter(ep => ep.watched).length;
   const percent = watchedPercent(entry);
   const available = Object.values(availability).filter(
     value => value.state === 'available',
   ).length;
+  const newEpisodes = newFor(found.scan, entry.id);
+  const locate = (ep: Episode) =>
+    action(async () => {
+      const file = (await w.io!.pickFiles('video'))[0];
+      if (file) {
+        await w.updateSettings(s => {
+          s.episodeFiles[ep.id] = file;
+        });
+        setScan(v => v + 1);
+      }
+    }, 'File linked');
   const latest = Object.values(w.catalog!.progress)
     .filter(p => p.entryId === entry.id)
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0];
   return (
-    <PanelPage>
+    <PanelPage
+      onRefresh={async () => {
+        setAvailability({});
+        setScan(v => v + 1);
+      }}
+    >
       <View style={[styles.hero, phone && styles.heroPhone]}>
-        <View style={[styles.poster, phone && styles.posterPhone]}>
+        <View
+          style={[
+            styles.poster,
+            tablet && styles.posterTablet,
+            phone && styles.posterPhone,
+          ]}
+        >
           <Cover
             title={entry.title}
             uri={entry.cover ? coverUri(entry, w.io?.privateRoot) : null}
@@ -417,12 +551,25 @@ export function Details({
                   />
                 )}
                 <IconButton
-                  icon="reset"
-                  label="Check local files"
+                  icon="refresh"
+                  label="Check local files and new episodes"
                   onPress={() => {
                     setAvailability({});
                     setScan(v => v + 1);
                   }}
+                />
+              </View>
+              <View style={styles.rating}>
+                <Text style={ui.muted}>Your rating</Text>
+                <RatingScale
+                  value={entry.rating}
+                  onChange={value =>
+                    action(() =>
+                      w.mutate(c => {
+                        entryById(c, entry.id).rating = value;
+                      }),
+                    )
+                  }
                 />
               </View>
               <View style={styles.facts}>
@@ -462,6 +609,27 @@ export function Details({
         )
       ) : (
         <>
+          <View style={styles.notes}>
+            <Text accessibilityRole="header" style={styles.notesTitle}>
+              Notes
+            </Text>
+            <TextInput
+              {...noFocusRing}
+              multiline
+              accessibilityLabel="Notes"
+              placeholder="Anything to remember about this title: where you stopped, who recommended it, what you thought."
+              placeholderTextColor={colors.muted}
+              value={notes}
+              onChangeText={setNotes}
+              onBlur={saveNotes}
+              maxLength={20000}
+              textAlignVertical="top"
+              style={[ui.input, styles.notesInput]}
+            />
+            <Text style={ui.small}>
+              {notes === savedNotes ? 'Saved with the title' : 'Saving…'}
+            </Text>
+          </View>
           <View style={styles.source}>
             <TextInput
               {...noFocusRing}
@@ -505,34 +673,88 @@ export function Details({
             Folder locations stay on this device and are left out of catalog
             exports.
           </Text>
+          {newEpisodes.length > 0 && (
+            <View accessibilityRole="alert" style={styles.fresh}>
+              <View style={styles.freshCopy}>
+                <Text style={styles.freshTitle}>
+                  {newEpisodes.length} new episode
+                  {newEpisodes.length === 1 ? '' : 's'} in the folder
+                </Text>
+                <Text style={ui.small}>
+                  {newEpisodes.length === 1 ? 'Episode ' : 'Episodes '}
+                  {newEpisodes.map(n => n.number).join(', ')}, found in the
+                  title folder but not listed yet.
+                </Text>
+              </View>
+              <Button
+                label={`Add ${newEpisodes.length === 1 ? 'it' : 'them'}`}
+                primary
+                onPress={() =>
+                  action(async () => {
+                    await w.mutate(c => {
+                      addFoundEpisodes(c, entry.id, newEpisodes);
+                    });
+                    await forgetFound(w.io!, entry.id);
+                    setScan(v => v + 1);
+                  }, `Added ${newEpisodes.length} episode${newEpisodes.length === 1 ? '' : 's'}`)
+                }
+              />
+              <TextButton
+                label="Not now"
+                onPress={() =>
+                  action(() => dismissNewEpisodes(w.io!, entry.id))
+                }
+              />
+            </View>
+          )}
           <View style={styles.episodesHead}>
-            <Text
-              accessibilityRole="header"
-              style={[styles.episodesTitle, phone ? styles.fullRow : ui.grow]}
+            <View
+              style={[
+                styles.episodesTitleRow,
+                phone ? styles.fullRow : ui.grow,
+              ]}
             >
-              Episodes
-            </Text>
-            <TextInput
-              {...noFocusRing}
-              accessibilityLabel="New episode title (optional)"
-              placeholder="New episode title (optional)"
-              placeholderTextColor={colors.muted}
-              value={title}
-              onChangeText={setTitle}
-              style={[ui.input, styles.addInput, phone && styles.addInputPhone]}
+              <Text accessibilityRole="header" style={styles.episodesTitle}>
+                Episodes
+              </Text>
+              <Text style={styles.episodesCount}>
+                {entry.episodes.filter(ep => ep.watched).length} of{' '}
+                {entry.episodes.length} watched
+              </Text>
+            </View>
+            <ChipButton
+              icon="search"
+              label="Review matches"
+              onPress={() => setReviewing(true)}
             />
-            <IconButton
-              icon="plus"
-              label="Add episode"
-              solid
-              size={16}
-              onPress={() =>
-                action(async () => {
-                  await w.mutate(c => addEpisode(c, entry.id, title));
-                  setTitle('');
-                }, 'Episode added')
-              }
-            />
+            <View
+              style={[
+                styles.composer,
+                composerFocus && styles.composerFocus,
+                phone && styles.addInputPhone,
+              ]}
+            >
+              <TextInput
+                {...noFocusRing}
+                accessibilityLabel="New episode title (optional)"
+                placeholder={`Episode ${
+                  entry.episodes.length + 1
+                } title (optional)`}
+                placeholderTextColor={colors.muted}
+                value={title}
+                onChangeText={setTitle}
+                onFocus={() => setComposerFocus(true)}
+                onBlur={() => setComposerFocus(false)}
+                onSubmitEditing={addNewEpisode}
+                style={styles.composerInput}
+              />
+              <ChipButton
+                icon="plus"
+                label="Add episode"
+                primary
+                onPress={addNewEpisode}
+              />
+            </View>
           </View>
           <View style={styles.episodes}>
             {entry.episodes.map(ep => {
@@ -542,6 +764,16 @@ export function Details({
               return (
                 <EpisodeRow
                   key={ep.id}
+                  workspace={w}
+                  preview={
+                    availability[ep.id]?.state === 'available'
+                      ? {
+                          entryId: entry.id,
+                          episodeId: ep.id,
+                          start: progress?.currentTime ?? 0,
+                        }
+                      : null
+                  }
                   episode={ep}
                   availability={availability[ep.id]}
                   resume={resume}
@@ -583,17 +815,7 @@ export function Details({
                       ),
                     )
                   }
-                  onLocate={() =>
-                    action(async () => {
-                      const file = (await w.io!.pickFiles('video'))[0];
-                      if (file) {
-                        await w.updateSettings(s => {
-                          s.episodeFiles[ep.id] = file;
-                        });
-                        setScan(v => v + 1);
-                      }
-                    }, 'File linked')
-                  }
+                  onLocate={() => locate(ep)}
                   onDelete={() => setRemoving(ep)}
                 />
               );
@@ -601,6 +823,14 @@ export function Details({
           </View>
         </>
       )}
+      <ReviewMatches
+        visible={reviewing}
+        onClose={() => setReviewing(false)}
+        episodes={entry.episodes}
+        availability={availability}
+        folder={folderMatch}
+        onLocate={locate}
+      />
       {editing && (
         <DetailsEditor
           key={entry.id}
@@ -634,11 +864,15 @@ export function Details({
     </PanelPage>
   );
 }
+// Height of an episode's title and status lines, which the row's controls centre on.
+const EPISODE_LINES = 40;
+
 const styles = StyleSheet.create({
   missing: { marginTop: 16, alignItems: 'flex-start' },
   hero: { flexDirection: 'row', gap: 36, marginBottom: 28 },
   heroPhone: { flexDirection: 'column', gap: 16 },
   poster: { width: 300 },
+  posterTablet: { width: 220 },
   posterPhone: { width: 200, alignSelf: 'center' },
   summary: { flex: 1, gap: 6, flexBasis: 'auto' },
   title: {
@@ -675,6 +909,34 @@ const styles = StyleSheet.create({
   fact: { gap: 6 },
   factValue: { fontFamily, fontSize: 15, lineHeight: 22, color: colors.text },
   source: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  rating: { gap: 6, marginTop: 18 },
+  notes: { gap: 8, marginTop: 36, marginBottom: 24, maxWidth: 760 },
+  notesTitle: {
+    fontFamily,
+    fontSize: 22,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  notesInput: { minHeight: 96, paddingTop: 10, lineHeight: 20 },
+  fresh: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: 12,
+    marginTop: 32,
+    padding: 16,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.accent,
+    backgroundColor: colors.accentSoft,
+  },
+  freshCopy: { flexGrow: 1, flexBasis: 240, gap: 3 },
+  freshTitle: {
+    fontFamily,
+    fontSize: 17,
+    fontWeight: '600',
+    color: colors.mist,
+  },
   episodesHead: {
     flexDirection: 'row',
     alignItems: 'flex-end',
@@ -686,27 +948,61 @@ const styles = StyleSheet.create({
   episodesTitle: {
     fontFamily: displayFamily,
     fontSize: 36,
+    lineHeight: 42,
     fontWeight: '700',
     letterSpacing: -0.8,
     color: colors.text,
   },
-  addInput: { fontFamily, width: 280 },
+  // Windows does not honour baseline alignment, so the count sits on the title's
+  // baseline by padding instead.
+  episodesTitleRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 14 },
+  episodesCount: {
+    fontFamily,
+    fontSize: 14,
+    lineHeight: 18,
+    paddingBottom: 5,
+    color: colors.muted,
+  },
+  composer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: 340,
+    maxWidth: '100%',
+    minHeight: 42,
+    paddingLeft: 14,
+    paddingRight: 4,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: '#0E1A26',
+  },
+  composerFocus: { borderColor: colors.accent },
+  composerInput: {
+    flex: 1,
+    fontFamily,
+    fontSize: 14,
+    color: colors.text,
+    paddingVertical: 8,
+  },
   // On phones the heading takes its own line and the field fills the next.
   fullRow: { width: '100%' },
-  addInputPhone: { flex: 1, width: undefined },
+  addInputPhone: { flex: 1, width: undefined, minWidth: 220 },
   episodes: { borderTopWidth: 1, borderColor: colors.line },
   episodeLit: { backgroundColor: colors.rowHover },
   episode: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: 14,
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingHorizontal: 10,
     borderBottomWidth: 1,
     borderColor: colors.line,
   },
   number: {
     width: 38,
+    height: EPISODE_LINES,
+    lineHeight: EPISODE_LINES,
+    textAlignVertical: 'center',
     fontFamily: displayFamily,
     fontSize: 24,
     fontWeight: '300',
@@ -714,15 +1010,29 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   numberDone: { fontFamily, color: colors.success },
-  episodeCopy: { flex: 1, gap: 2, paddingLeft: 6 },
+  episodeCopy: {
+    flex: 1,
+    minWidth: 0,
+    minHeight: EPISODE_LINES,
+    justifyContent: 'center',
+    gap: 2,
+    paddingLeft: 6,
+  },
+  rail: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: EPISODE_LINES,
+    gap: 2,
+  },
   episodeTitle: {
     fontFamily,
     fontSize: 15,
+    lineHeight: 20,
     fontWeight: '600',
     color: colors.text,
   },
   titleHover: { fontFamily, color: colors.mist },
-  episodeProgress: { maxWidth: 320, marginTop: 4 },
+  episodeProgress: { maxWidth: 320, marginTop: 6 },
   episodeActions: { flexDirection: 'row', gap: 2 },
   hidden: { opacity: 0 },
 });

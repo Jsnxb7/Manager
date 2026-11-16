@@ -18,6 +18,9 @@ export function saveProgress(
     ? Math.min(Math.max(0, time), total || Number.MAX_SAFE_INTEGER)
     : 0;
   const updatedAt = new Date().toISOString();
+  if (ended || current > 1) {
+    entry.lastWatchedAt = updatedAt;
+  }
   if (ended || (total > 0 && current / total >= 0.9)) {
     ep.watched = true;
     delete catalog.progress[episodeId];
@@ -52,6 +55,9 @@ export type PlaybackState = {
   request?: string;
   audio: { id: string; label: string }[];
   subtitles: { id: string; label: string }[];
+  /** The playing tracks as lang:<code>, id:<n> or off; empty until known. */
+  audioTrack?: string;
+  subtitleTrack?: string;
 };
 export class CompletionGuard {
   private finished = false;

@@ -12,7 +12,7 @@ import { Workspace } from '../app/useWorkspace';
 import { Route } from '../app/routes';
 import { coverUri } from '../components/Cover';
 import { Button, Field, Sheet } from '../components/controls';
-import { PanelPage } from '../components/Fade';
+import { PanelPage, usePageState } from '../components/Fade';
 import { Icon, IconButton } from '../components/Icon';
 import {
   colors,
@@ -61,6 +61,8 @@ function fan(index: number, total: number, open: Animated.Value) {
 }
 
 const TILE_STEP = 224;
+// Where the train was, so a window resize (which redraws the Hub) carries on from there.
+let trainOffset = 0;
 
 /**
  * Tiles travel slowly in an endless loop like train carriages. Hovering pauses
@@ -87,12 +89,17 @@ function Train({
   const copies = viewWidth ? Math.ceil(viewWidth / setWidth) + 3 : 1;
   const place = (value: number, animated = false) => {
     offset.current = value;
+    trainOffset = value;
     expected.current = value;
     list.current?.scrollTo({ x: value, animated });
   };
   useEffect(() => {
     if (viewWidth) {
-      place(setWidth);
+      place(
+        trainOffset >= setWidth && trainOffset < setWidth * 2
+          ? trainOffset
+          : setWidth,
+      );
     }
   }, [viewWidth, setWidth]);
   useEffect(() => {
@@ -305,8 +312,9 @@ export function Hub({
   workspace: Workspace;
   navigate: (route: Route) => void;
 }): React.JSX.Element {
-  const [adding, setAdding] = useState(false);
-  const [name, setName] = useState('');
+  // Kept through a window resize, which re-renders this page from scratch.
+  const [adding, setAdding] = usePageState('adding', false);
+  const [name, setName] = usePageState('name', '');
   const { width } = useViewport();
   const create = () =>
     w.run(async () => {

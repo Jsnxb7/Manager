@@ -105,6 +105,9 @@ export function createEntry(
     watched: false,
     read: false,
     bookmarked: false,
+    rating: null,
+    notes: '',
+    lastWatchedAt: null,
     metadata: draft.metadata,
     cover: draft.cover,
     external: draft.external,
@@ -128,13 +131,55 @@ export function createEntry(
   catalog.entries.push(entry);
   return entry;
 }
+/** Extra facts some filters and sort orders need. */
+export type FilterContext = {
+  progress?: Catalog['progress'];
+  /** Titles whose folders hold new episode files. */
+  fresh?: Set<string>;
+};
+
+/** Last time a title played: its own record or an episode still in progress. */
+export function lastWatched(
+  entry: Entry,
+  progress: Catalog['progress'] = {},
+): string {
+  let last = entry.lastWatchedAt ?? '';
+  for (const ep of entry.episodes) {
+    const at = progress[ep.id]?.updatedAt ?? '';
+    if (at > last) {
+      last = at;
+    }
+  }
+  return last;
+}
+
 export function filterEntries(
   entries: Entry[],
   filter: LibraryFilter,
+  context: FilterContext = {},
 ): Entry[] {
   const query = filter.search.trim().toLowerCase();
+  // Entries arrive in catalog order, which is the order they were added.
+  const added = new Map(entries.map((e, i) => [e.id, i]));
+  const byTitle = (a: Entry, b: Entry) => a.title.localeCompare(b.title);
+  const order: Record<LibraryFilter['sort'], (a: Entry, b: Entry) => number> = {
+    title: byTitle,
+    recentlyAdded: (a, b) => added.get(b.id)! - added.get(a.id)!,
+    recentlyWatched: (a, b) =>
+      lastWatched(b, context.progress).localeCompare(
+        lastWatched(a, context.progress),
+      ) || byTitle(a, b),
+    progress: (a, b) => watchedPercent(b) - watchedPercent(a) || byTitle(a, b),
+    rating: (a, b) => (b.rating ?? 0) - (a.rating ?? 0) || byTitle(a, b),
+  };
   return entries
     .filter(e => {
+      if (filter.minRating && (e.rating ?? 0) < filter.minRating) {
+        return false;
+      }
+      if (filter.fresh && !context.fresh?.has(e.id)) {
+        return false;
+      }
       if (filter.unread && (e.kind === 'anime' ? e.watched : e.read)) {
         return false;
       }
@@ -151,6 +196,7 @@ export function filterEntries(
           e.season,
           e.status,
           e.link,
+          e.notes,
           ...Object.values(e.metadata).flat(),
         ].some(v => v.toLowerCase().includes(query))
       ) {
@@ -166,7 +212,7 @@ export function filterEntries(
           ),
       );
     })
-    .sort((a, b) => a.title.localeCompare(b.title));
+    .sort(order[filter.sort] ?? byTitle);
 }
 export function metadataCatalog(
   entries: Entry[],

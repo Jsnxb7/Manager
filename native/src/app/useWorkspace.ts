@@ -101,15 +101,16 @@ export function useWorkspace() {
       live.current = false;
     };
   }, [start, setError]);
+  /** Runs a task with the busy indicator; a task can return its own notice. */
   const run = async (
-    task: () => Promise<void>,
+    task: () => Promise<void | string>,
     message = 'Saved',
   ): Promise<void> => {
     setError('');
     setBusy(true);
     try {
-      await task();
-      setNotice(message);
+      const result = await task();
+      setNotice(typeof result === 'string' && result ? result : message);
     } catch (e) {
       setError(String(e));
     } finally {
@@ -162,8 +163,22 @@ export function useWorkspace() {
     setRepo(opened.repo);
     setCatalog(opened.catalog);
     setSettings(opened.settings);
+    setSavedCatalogs(registry.current.catalogs);
+  };
+  const describeCatalogs = () =>
+    registry.current ? registry.current.describe() : Promise.resolve([]);
+  const removeEmptyCatalog = async (path: string): Promise<void> => {
+    if (!registry.current) {
+      throw new Error('Catalog is not ready');
+    }
+    await registry.current.removeEmpty(path);
+    setSavedCatalogs(registry.current.catalogs);
   };
   return {
+    /** A short success message in the toast. */
+    notify: setNotice,
+    describeCatalogs,
+    removeEmptyCatalog,
     catalog,
     acceptImport,
     savedCatalogs,

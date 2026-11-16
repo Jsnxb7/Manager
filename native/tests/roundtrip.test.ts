@@ -130,7 +130,7 @@ describe('cross-device catalog transfer', () => {
       'Checksum mismatch',
     );
   });
-  it('does not assign absolute-numbered files by ordinal and shares the directory scan', async () => {
+  it('matches a later season numbered on from the first and shares the directory scan', async () => {
     const memory = memoryStorage();
     const opened = await new CatalogRegistry(memory.io).start();
     const c = await opened.repo.mutate(d => {
@@ -157,7 +157,10 @@ describe('cross-device catalog transfer', () => {
       return listing(p);
     };
     const found = await new MediaResolver(memory.io).check(e, opened.settings);
-    expect(Object.values(found).every(v => v.state === 'missing')).toBe(true);
+    expect(e.episodes.map(ep => found[ep.id])).toEqual([
+      expect.objectContaining({ state: 'available', name: 'EP.14.mkv' }),
+      expect.objectContaining({ state: 'available', name: 'EP.15.mkv' }),
+    ]);
     expect(scans).toBe(1);
   });
   it('touches no media without a local root', async () => {

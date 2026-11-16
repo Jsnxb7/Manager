@@ -70,7 +70,9 @@ export function resolveTarget(
     return {
       entryId,
       episodeId: adjacent.id,
-      resume: false,
+      // A part-watched neighbour carries on from where it was left, as before.
+      resume:
+        !adjacent.watched && (c.progress[adjacent.id]?.currentTime ?? 0) > 1,
       type: 'episode',
       queueAnchor,
     };

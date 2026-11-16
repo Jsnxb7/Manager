@@ -50,6 +50,13 @@ ICONS = {
     "folder": "folder",
     "player": "monitor-play",
     "more": "dots-three",
+    "pip": "picture-in-picture",
+    "sync": "arrows-clockwise",
+    "star": "star",
+    "starFilled": ("star", "fill"),
+    "sort": "sort-ascending",
+    "refresh": "arrow-clockwise",
+    "select": "checks",
 }
 
 

@@ -10,6 +10,7 @@
     "static": "npm run typecheck && npm run lint && npm run format:check && node tools/check-source.cjs",
     "test": "jest --runInBand",
     "cli": "node tools/cli.cjs",
+    "release": "node tools/release.cjs",
     "postinstall": "patch-package"
   },
   "dependencies": {

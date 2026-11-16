@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import Video, {
   SelectedTrack,
   SelectedTrackType,
@@ -10,6 +10,29 @@ import Video, {
 import { registerPlayerDriver } from './nativePlayer';
 import { PlaybackState } from '../services/progress';
 import { useViewport } from '../design/viewport';
+type Track = { index: number; language?: string; selected?: boolean };
+/** The title's remembered track (lang:<code>, id:<n> or off) as a selection. */
+function remembered(value: unknown): SelectedTrack {
+  const text = typeof value === 'string' ? value : '';
+  if (text === 'off') {
+    return { type: SelectedTrackType.DISABLED };
+  }
+  if (text.startsWith('lang:') && text.length > 5) {
+    return { type: SelectedTrackType.LANGUAGE, value: text.slice(5) };
+  }
+  if (text.startsWith('id:') && text.length > 3) {
+    return { type: SelectedTrackType.INDEX, value: Number(text.slice(3)) };
+  }
+  return { type: SelectedTrackType.SYSTEM };
+}
+/** The playing track in the form the app remembers per title. */
+function playing(tracks: Track[], subtitles: boolean): string {
+  const track = tracks.find(t => t.selected);
+  if (!track) {
+    return subtitles && tracks.length ? 'off' : '';
+  }
+  return track.language ? `lang:${track.language}` : `id:${track.index}`;
+}
 export default function VideoSurface(): React.JSX.Element {
   const { height } = useViewport();
   const ref = useRef<VideoRef>(null);
@@ -36,6 +59,24 @@ export default function VideoSurface(): React.JSX.Element {
     type: SelectedTrackType.SYSTEM,
   });
   const [external, setExternal] = useState<TextTracks>([]);
+  // Turning a phone sideways opens fullscreen; turning it back upright closes it.
+  const screen = useWindowDimensions();
+  const landscape = screen.width > screen.height;
+  const phoneSized = Math.min(screen.width, screen.height) < 600;
+  const fullscreen = useRef(false);
+  const wasLandscape = useRef(landscape);
+  useEffect(() => {
+    const turned = landscape !== wasLandscape.current;
+    wasLandscape.current = landscape;
+    if (!turned || !phoneSized || !ref.current) {
+      return;
+    }
+    if (landscape && !fullscreen.current && state.current.ready) {
+      ref.current.presentFullscreenPlayer();
+    } else if (!landscape && fullscreen.current) {
+      ref.current.dismissFullscreenPlayer();
+    }
+  }, [landscape, phoneSized]);
   useEffect(
     () =>
       registerPlayerDriver(async (method, args) => {
@@ -55,6 +96,8 @@ export default function VideoSurface(): React.JSX.Element {
             start.current = Number(args.position) || 0;
             setUri(String(args.uri));
             setExternal([]);
+            setAudio(remembered(args.audio));
+            setSubtitle(remembered(args.subtitle));
             setPaused(false);
             break;
           case 'state':
@@ -152,6 +195,12 @@ export default function VideoSurface(): React.JSX.Element {
           textTracks={external}
           progressUpdateInterval={1000}
           playInBackground={false}
+          onFullscreenPlayerDidPresent={() => {
+            fullscreen.current = true;
+          }}
+          onFullscreenPlayerDidDismiss={() => {
+            fullscreen.current = false;
+          }}
           onLoad={event => {
             state.current.duration = event.duration;
             state.current.ready = true;
@@ -172,16 +221,31 @@ export default function VideoSurface(): React.JSX.Element {
           }}
           onProgress={event => {
             state.current.position = event.currentTime;
+            // Seeking back from the end cancels the up-next countdown.
+            if (
+              state.current.ended &&
+              event.currentTime < state.current.duration - 2
+            ) {
+              state.current.ended = false;
+            }
           }}
           onEnd={() => {
             state.current.ended = true;
             state.current.paused = true;
             setPaused(true);
+            // The up-next countdown shows on the page, below fullscreen.
+            if (fullscreen.current) {
+              ref.current?.dismissFullscreenPlayer();
+            }
           }}
           onPlaybackStateChanged={event => {
             state.current.paused = !event.isPlaying;
+            if (event.isPlaying) {
+              state.current.ended = false;
+            }
           }}
           onAudioTracks={event => {
+            state.current.audioTrack = playing(event.audioTracks, false);
             state.current.audio = event.audioTracks.map(track => ({
               id: String(track.index),
               label:
@@ -189,6 +253,7 @@ export default function VideoSurface(): React.JSX.Element {
             }));
           }}
           onTextTracks={event => {
+            state.current.subtitleTrack = playing(event.textTracks, true);
             state.current.subtitles = event.textTracks.map(track => ({
               id: String(track.index),
               label:

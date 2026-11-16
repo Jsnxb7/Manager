@@ -66,7 +66,13 @@ export function memoryStorage(privateRoot = 'app') {
       return files.has(value) || directories.has(value) ? value : null;
     },
     deleteMediaFolder: async (root, path) => {
-      removed.push(root + '/' + path);
+      const target = root + '/' + path;
+      removed.push(target);
+      for (const name of [...directories]) {
+        if (name === target || name.startsWith(target + '/')) {
+          directories.delete(name);
+        }
+      }
     },
     createMediaFolder: async (root, path) => {
       const parts = path.replace(/\\/g, '/').split('/');

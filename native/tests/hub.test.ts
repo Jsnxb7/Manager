@@ -5,6 +5,12 @@ import { Hub } from '../src/screens/Hub';
 import { Button, Field } from '../src/components/controls';
 import { emptyCatalog, emptySettings, Catalog } from '../src/domain/catalog';
 describe('Hub interactions in a mocked React Native host', () => {
+  // The Hub animates; real timers would fire after the test ends and crash Jest.
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
   it('opens the selected library and creates a section through its dialog', async () => {
     const catalog = emptyCatalog();
     const navigate = jest.fn();

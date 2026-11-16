@@ -88,7 +88,8 @@ describe('MAL metadata fallback', () => {
       expect(
         await finish(client.search('anime', 'Synthetic & Title', signal)),
       ).toEqual(first);
-      expect(fetcher).toHaveBeenCalledTimes(reason === 'failed' ? 3 : 2);
+      // A failed Jikan is skipped for a while, so the repeat search does not retry it.
+      expect(fetcher).toHaveBeenCalledTimes(2);
     },
   );
   it('falls back after a network error and limits suggestions to the requested kind and eight items', async () => {

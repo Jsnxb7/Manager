@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Modal,
   Platform,
@@ -11,7 +11,15 @@ import {
   ViewStyle,
   StyleSheet,
 } from 'react-native';
-import { Icon, IconButton } from './Icon';
+import { Icon, IconButton, IconName } from './Icon';
+import { useEscape } from '../app/keys';
+import { Reveal } from './Motion';
+import {
+  Popover,
+  PopoverItem,
+  popoverCount,
+  subscribePopovers,
+} from './Popover';
 import { colors, fontFamily, ui, noFocusRing } from '../design/theme';
 export function Button({
   label,
@@ -117,6 +125,47 @@ export function TextButton({
   );
 }
 
+/** A rounded icon-and-label control for secondary actions beside headings. */
+export function ChipButton({
+  icon,
+  label,
+  onPress,
+  primary = false,
+  disabled = false,
+}: {
+  icon: IconName;
+  label: string;
+  onPress: () => void;
+  primary?: boolean;
+  disabled?: boolean;
+}): React.JSX.Element {
+  const [hover, setHover] = useState(false);
+  const lit = hover && !disabled;
+  const tint = primary ? colors.background : lit ? colors.mist : colors.chrome;
+  return (
+    <Pressable
+      {...noFocusRing}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled }}
+      disabled={disabled}
+      onPress={onPress}
+      onHoverIn={() => setHover(true)}
+      onHoverOut={() => setHover(false)}
+      style={({ pressed }) => [
+        styles.chip,
+        primary && styles.chipPrimary,
+        lit && (primary ? styles.chipPrimaryHover : styles.buttonHover),
+        pressed && ui.pressed,
+        disabled && ui.disabled,
+      ]}
+    >
+      <Icon name={icon} size={14} color={tint} />
+      <Text style={[styles.chipText, { color: tint }]}>{label}</Text>
+    </Pressable>
+  );
+}
+
 /** A row that highlights under the pointer. Press is optional for rows of inner controls. */
 export function HoverRow({
   children,
@@ -154,6 +203,9 @@ export function Field({
   placeholder = '',
   numeric = false,
   multiline = false,
+  onSubmit,
+  onKey,
+  onFocusChange,
 }: {
   label: string;
   value: string;
@@ -161,6 +213,11 @@ export function Field({
   placeholder?: string;
   numeric?: boolean;
   multiline?: boolean;
+  /** Enter in a one-line field; the field keeps focus for the next entry. */
+  onSubmit?: () => void;
+  /** Keys pressed in the field, such as arrows to move through suggestions. */
+  onKey?: (key: string) => void;
+  onFocusChange?: (focused: boolean) => void;
 }): React.JSX.Element {
   return (
     <View style={styles.field}>
@@ -175,6 +232,11 @@ export function Field({
         onChangeText={onChange}
         keyboardType={numeric ? 'number-pad' : 'default'}
         multiline={multiline}
+        onSubmitEditing={onSubmit}
+        blurOnSubmit={onSubmit ? false : undefined}
+        onKeyPress={onKey ? e => onKey(e.nativeEvent.key) : undefined}
+        onFocus={onFocusChange ? () => onFocusChange(true) : undefined}
+        onBlur={onFocusChange ? () => onFocusChange(false) : undefined}
       />
     </View>
   );
@@ -196,12 +258,15 @@ function writeSheets(next: OpenSheet[]): void {
 
 /** True while any sheet is open; native views must hide or they cover it. */
 export function useSheetOpen(): boolean {
-  const [open, setOpen] = useState(openSheets.length > 0);
+  const covered = () => openSheets.length > 0 || popoverCount() > 0;
+  const [open, setOpen] = useState(covered);
   useEffect(() => {
-    const listener = () => setOpen(openSheets.length > 0);
+    const listener = () => setOpen(covered());
     hostListeners.add(listener);
+    const unsubscribe = subscribePopovers(listener);
     return () => {
       hostListeners.delete(listener);
+      unsubscribe();
     };
   }, []);
   return open;
@@ -233,11 +298,16 @@ export function Toast({
   kind,
   bottom,
   onDismiss,
+  action,
+  icon,
 }: {
   message: string;
   kind: 'error' | 'success';
   bottom: number;
   onDismiss?: () => void;
+  /** A button inside the toast, such as "Sync now". */
+  action?: { label: string; onPress: () => void };
+  icon?: IconName;
 }): React.JSX.Element {
   const error = kind === 'error';
   return (
@@ -248,13 +318,14 @@ export function Toast({
         style={styles.toast}
       >
         <Icon
-          name={error ? 'alert' : 'check'}
+          name={icon ?? (error ? 'alert' : 'check')}
           size={18}
           color={error ? colors.danger : colors.success}
         />
         <Text selectable={error} style={[ui.text, styles.toastText]}>
           {message.replace(/^Error: /, '')}
         </Text>
+        {action && <TextButton label={action.label} onPress={action.onPress} />}
         {onDismiss && (
           <IconButton
             icon="close"
@@ -299,14 +370,19 @@ export function SheetHost(): React.JSX.Element | null {
             onPress={sheet.onClose}
             style={StyleSheet.absoluteFill}
           />
-          <View
-            accessibilityViewIsModal
+          <Reveal
+            id="sheet"
+            direction={sheet.drawer ? 1 : 0}
+            distance={sheet.drawer ? 64 : 28}
+            duration={280}
             style={
               sheet.drawer ? styles.drawer : [styles.sheet, styles.surface]
             }
           >
-            <SheetBody sheet={sheet} />
-          </View>
+            <View accessibilityViewIsModal style={styles.sheetInner}>
+              <SheetBody sheet={sheet} />
+            </View>
+          </Reveal>
         </View>
       ))}
     </>
@@ -327,6 +403,7 @@ export function Sheet({
   drawer?: boolean;
 }): React.JSX.Element | null {
   const id = useRef({}).current;
+  useEscape(visible, onClose);
   useEffect(() => {
     if (!hostMounted) {
       return;
@@ -398,6 +475,7 @@ export function ProgressBar({
     </View>
   );
 }
+/** A dropdown: the current value, and its options in a menu right beneath it. */
 export function Choice({
   label,
   values,
@@ -417,38 +495,50 @@ export function Choice({
 }): React.JSX.Element {
   const [open, setOpen] = useState(false);
   const [hover, setHover] = useState(false);
+  const anchor = useRef<View | null>(null);
+  const shown = display ?? value.replace('_', ' ');
+  const close = useCallback(() => setOpen(false), []);
   return (
     <View style={[styles.field, row && styles.inlineRow]}>
       <Text style={ui.muted}>{label}</Text>
-      {inline ? (
-        <Pressable
-          {...noFocusRing}
-          accessibilityRole="button"
-          accessibilityLabel={`${label}: ${display ?? value}`}
-          onPress={() => setOpen(true)}
-          onHoverIn={() => setHover(true)}
-          onHoverOut={() => setHover(false)}
-          style={[styles.inlineValue, hover && styles.inlineHover]}
-        >
-          <Text style={ui.text}>{display ?? value.replace('_', ' ')}</Text>
-          <Icon name="down" size={12} color={colors.muted} />
-        </Pressable>
-      ) : (
-        <Button label={value.replace('_', ' ')} onPress={() => setOpen(true)} />
-      )}
-      <Sheet title={label} visible={open} onClose={() => setOpen(false)}>
+      <Pressable
+        {...noFocusRing}
+        ref={anchor}
+        accessibilityRole="combobox"
+        accessibilityLabel={`${label}: ${shown}`}
+        accessibilityState={{ expanded: open }}
+        onPress={() => setOpen(isOpen => !isOpen)}
+        onHoverIn={() => setHover(true)}
+        onHoverOut={() => setHover(false)}
+        style={[
+          inline ? styles.inlineValue : styles.select,
+          (hover || open) && (inline ? styles.inlineHover : styles.selectLit),
+        ]}
+      >
+        <Text style={[ui.text, !inline && styles.selectText]} numberOfLines={1}>
+          {shown}
+        </Text>
+        <Icon
+          name={open ? 'up' : 'down'}
+          size={12}
+          color={open ? colors.accent : colors.muted}
+        />
+      </Pressable>
+      <Popover anchorRef={anchor} visible={open} onClose={close}>
         {values.map(item => (
-          <Button
+          <PopoverItem
             key={item}
             label={item.replace('_', ' ')}
-            primary={item === value}
+            selected={item === value}
             onPress={() => {
-              onChange(item);
               setOpen(false);
+              if (item !== value) {
+                onChange(item);
+              }
             }}
           />
         ))}
-      </Sheet>
+      </Popover>
     </View>
   );
 }
@@ -479,12 +569,41 @@ const styles = StyleSheet.create({
   successText: { color: colors.success },
   primaryHover: { backgroundColor: colors.accent, borderColor: colors.accent },
   rowHover: { backgroundColor: colors.rowHover },
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    minHeight: 34,
+    paddingHorizontal: 14,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: colors.raised,
+  },
+  chipPrimary: { backgroundColor: colors.chrome, borderColor: colors.chrome },
+  chipPrimaryHover: { backgroundColor: colors.mist, borderColor: colors.mist },
+  chipText: { fontFamily, fontSize: 13, fontWeight: '600' },
   textButton: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
   textButtonActive: { backgroundColor: colors.accentSoft },
   textButtonText: { fontFamily, fontSize: 14, color: colors.muted },
   textButtonLit: { color: colors.text },
   textButtonActiveText: { color: colors.accent, fontWeight: '600' },
   inlineHover: { backgroundColor: colors.hover },
+  select: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    minHeight: 40,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: colors.raised,
+    alignSelf: 'flex-start',
+    minWidth: 180,
+  },
+  selectLit: { borderColor: colors.accent, backgroundColor: colors.hover },
+  selectText: { flex: 1, fontSize: 15 },
   inlineRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   inlineValue: {
     flexDirection: 'row',
@@ -539,6 +658,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   body: { gap: 14, paddingBottom: 16 },
+  sheetInner: { flexShrink: 1, gap: 20 },
   track: {
     height: 3,
     borderRadius: 2,

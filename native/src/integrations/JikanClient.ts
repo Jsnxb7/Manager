@@ -11,7 +11,36 @@ export type SearchResult = {
   genres?: { name: string }[];
   themes?: { name: string }[];
   demographics?: { name: string }[];
+  title_english?: string | null;
+  title_japanese?: string | null;
+  year?: number | null;
+  aired?: { prop?: { from?: { year?: number | null } } };
+  published?: { prop?: { from?: { year?: number | null } } };
 };
+
+/** The year a title started, from whichever field the source filled in. */
+export function startYear(item: SearchResult): number | null {
+  const value =
+    item.year ??
+    item.aired?.prop?.from?.year ??
+    item.published?.prop?.from?.year ??
+    null;
+  return typeof value === 'number' && value > 0 ? value : null;
+}
+
+/** English and Japanese titles that differ from the main one, for search results. */
+export function otherTitles(item: SearchResult): string[] {
+  const seen = new Set([item.title.trim().toLowerCase()]);
+  const result: string[] = [];
+  for (const value of [item.title_english, item.title_japanese]) {
+    const clean = (value ?? '').trim();
+    if (clean && !seen.has(clean.toLowerCase())) {
+      seen.add(clean.toLowerCase());
+      result.push(clean);
+    }
+  }
+  return result;
+}
 class RateLimitError extends Error {}
 const decodeHtml = (value: string) =>
   value.replace(
@@ -92,6 +121,10 @@ function malDetail(
   return {
     mal_id: id,
     title: meta('og:title') || suggestion?.title || 'Untitled',
+    // MyAnimeList's alternative titles, as Jikan would give them.
+    ...(field('English') ? { title_english: field('English') } : {}),
+    ...(field('Japanese') ? { title_japanese: field('Japanese') } : {}),
+    ...(suggestion?.year ? { year: suggestion.year } : {}),
     type: field('Type') || suggestion?.type || '',
     status: field('Status') || suggestion?.status || '',
     episodes:
@@ -117,6 +150,16 @@ export class JikanClient {
   private inFlight = new Map<string, Promise<unknown>>();
   private tail: Promise<void> = Promise.resolve();
   private lastRequest = 0;
+  /** While Jikan is unreachable, go straight to MyAnimeList instead of waiting out a timeout each time. */
+  private jikanDownUntil = 0;
+  /** Where the last search came from, so the form can say so. */
+  lastSource: 'jikan' | 'myanimelist' = 'jikan';
+  private jikanUp(): boolean {
+    return Date.now() >= this.jikanDownUntil;
+  }
+  private jikanFailed(): void {
+    this.jikanDownUntil = Date.now() + 5 * 60 * 1000;
+  }
   private suggestions = new Map<string, SearchResult>();
   private request<T>(
     path: string,
@@ -212,19 +255,24 @@ export class JikanClient {
     if (query.trim().length < 2) {
       return [];
     }
-    try {
-      const result = await this.request<{ data?: SearchResult[] }>(
-        `${kind}?q=${encodeURIComponent(query.trim())}&limit=8&sfw=true`,
-        signal,
-      );
-      if (Array.isArray(result?.data) && result.data.length) {
-        return result.data;
-      }
-    } catch (error) {
-      if (signal.aborted || error instanceof RateLimitError) {
-        throw error;
+    if (this.jikanUp()) {
+      try {
+        const result = await this.request<{ data?: SearchResult[] }>(
+          `${kind}?q=${encodeURIComponent(query.trim())}&limit=8&sfw=true`,
+          signal,
+        );
+        if (Array.isArray(result?.data) && result.data.length) {
+          this.lastSource = 'jikan';
+          return result.data;
+        }
+      } catch (error) {
+        if (signal.aborted || error instanceof RateLimitError) {
+          throw error;
+        }
+        this.jikanFailed();
       }
     }
+    this.lastSource = 'myanimelist';
     const payload = await this.request<{
       categories?: {
         type: string;
@@ -234,7 +282,11 @@ export class JikanClient {
           url?: string;
           image_url?: string;
           thumbnail_url?: string;
-          payload?: { media_type?: string; status?: string };
+          payload?: {
+            media_type?: string;
+            status?: string;
+            start_year?: number;
+          };
         }[];
       }[];
     }>(
@@ -260,6 +312,9 @@ export class JikanClient {
         type: item.payload?.media_type || '',
         status: item.payload?.status || '',
         episodes: null,
+        ...(Number(item.payload?.start_year) > 0
+          ? { year: Number(item.payload?.start_year) }
+          : {}),
         images: {
           jpg: { image_url: item.image_url || item.thumbnail_url || '' },
         },
@@ -279,25 +334,28 @@ export class JikanClient {
     signal: AbortSignal,
   ): Promise<SearchResult> {
     let failure: unknown = new Error('Jikan did not return this title.');
-    try {
-      const result = await this.request<{ data?: SearchResult }>(
-        `${kind}/${id}`,
-        signal,
-      );
-      if (
-        result?.data &&
-        !Array.isArray(result.data) &&
-        Number(result.data.mal_id) === id &&
-        typeof result.data.title === 'string' &&
-        result.data.title.trim()
-      ) {
-        return result.data;
+    if (this.jikanUp()) {
+      try {
+        const result = await this.request<{ data?: SearchResult }>(
+          `${kind}/${id}`,
+          signal,
+        );
+        if (
+          result?.data &&
+          !Array.isArray(result.data) &&
+          Number(result.data.mal_id) === id &&
+          typeof result.data.title === 'string' &&
+          result.data.title.trim()
+        ) {
+          return result.data;
+        }
+      } catch (error) {
+        if (signal.aborted || error instanceof RateLimitError) {
+          throw error;
+        }
+        failure = error;
+        this.jikanFailed();
       }
-    } catch (error) {
-      if (signal.aborted || error instanceof RateLimitError) {
-        throw error;
-      }
-      failure = error;
     }
     const suggestion = this.suggestions.get(`${kind}/${id}`);
     // Use the known MAL origin even if a suggestion contains an unexpected URL.

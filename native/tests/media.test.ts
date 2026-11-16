@@ -57,41 +57,47 @@ describe('media availability', () => {
     s.add('Mob Psycho 100 - 02.mkv');
     const list = jest.spyOn(s.io, 'list');
     const result = await s.check();
-    expect(result[s.entry.episodes[0].id]).toEqual({
+    expect(result[s.entry.episodes[0].id]).toMatchObject({
       state: 'available',
       uri: 'media/season/AnimePahe_86_-_01v2_1080p_SubsPlease.mp4',
     });
-    expect(result[s.entry.episodes[1].id]).toEqual({
+    expect(result[s.entry.episodes[1].id]).toMatchObject({
       state: 'available',
       uri: 'media/season/Mob Psycho 100 - 02.mkv',
     });
     expect(list).toHaveBeenCalledTimes(1);
   });
-  it('reports duplicate claims even when the expected direct file exists', async () => {
+  it('keeps the saved file name over other claims', async () => {
     const s = setup();
     s.add('1.mp4');
     s.add('Synthetic - 01v2.mkv');
-    const value = (await s.check())[s.entry.episodes[0].id];
-    expect(value?.state).toBe('ambiguous');
-    expect(value).toMatchObject({
-      message: expect.stringMatching(/Locate.*move duplicate/),
+    expect((await s.check())[s.entry.episodes[0].id]).toMatchObject({
+      state: 'available',
+      uri: 'media/season/1.mp4',
+      reason: 'Saved file name',
     });
   });
-  it('never assigns duplicate or absolute numbered files by ordinal', async () => {
-    const s = setup();
-    s.add('Synthetic - 03.mkv');
-    s.add('Synthetic - 03v2.mp4');
-    expect(
-      Object.values(await s.check()).every(v => v.state === 'missing'),
-    ).toBe(true);
-    s.entry.episodes[0].number = 3;
-    expect((await s.check())[s.entry.episodes[0].id]?.state).toBe('ambiguous');
-    s.files.delete('media/season/Synthetic - 03v2.mp4');
-    s.add('Synthetic - 04.mp4');
-    s.entry.episodes[0].number = 1;
-    expect(
-      Object.values(await s.check()).every(v => v.state === 'missing'),
-    ).toBe(true);
+  it('picks the newer version of a duplicate release', async () => {
+    const s = setup(1);
+    s.entry.episodes[0].relativeFile = 'gone.mkv';
+    s.add('Synthetic - 01.mkv');
+    s.add('Synthetic - 01v2.mkv');
+    expect((await s.check())[s.entry.episodes[0].id]).toMatchObject({
+      state: 'available',
+      name: 'Synthetic - 01v2.mkv',
+      reason: expect.stringMatching(/Newer version \(v2\)/),
+    });
+  });
+  it('names the files when duplicates truly tie', async () => {
+    const s = setup(1);
+    s.entry.episodes[0].relativeFile = 'gone.mkv';
+    s.add('Synthetic - 01.mkv');
+    s.add('Synthetic - 01.mp4');
+    expect((await s.check())[s.entry.episodes[0].id]).toMatchObject({
+      state: 'ambiguous',
+      files: ['Synthetic - 01.mkv', 'Synthetic - 01.mp4'],
+      message: expect.stringMatching(/2 files claim episode 1.*Locate/),
+    });
   });
   it('retains sorted ordinal fallback only for unnumbered videos with matching counts', async () => {
     const s = setup();
@@ -101,11 +107,11 @@ describe('media availability', () => {
     s.add('Audio.ogg');
     s.directories.add('media/season/Bonus.mkv');
     const result = await s.check();
-    expect(result[s.entry.episodes[0].id]).toEqual({
+    expect(result[s.entry.episodes[0].id]).toMatchObject({
       state: 'available',
       uri: 'media/season/Alpha.mp4',
     });
-    expect(result[s.entry.episodes[1].id]).toEqual({
+    expect(result[s.entry.episodes[1].id]).toMatchObject({
       state: 'available',
       uri: 'media/season/Beta.mkv',
     });
@@ -130,7 +136,7 @@ describe('media availability', () => {
     s.add('Synthetic - 01.mkv');
     s.settings.episodeFiles[s.entry.episodes[0].id] = 'media/season/1.mp4';
     s.settings.titleFolders = {};
-    expect((await s.check())[s.entry.episodes[0].id]).toEqual({
+    expect((await s.check())[s.entry.episodes[0].id]).toMatchObject({
       state: 'available',
       uri: 'media/season/1.mp4',
     });
@@ -140,7 +146,7 @@ describe('media availability', () => {
     s.directories.add('media/season/extras');
     s.add('extras/feature.mkv');
     s.entry.episodes[0].relativeFile = 'extras/feature.mkv';
-    expect((await s.check())[s.entry.episodes[0].id]).toEqual({
+    expect((await s.check())[s.entry.episodes[0].id]).toMatchObject({
       state: 'available',
       uri: 'media/season/extras/feature.mkv',
     });
@@ -153,7 +159,7 @@ describe('media availability', () => {
     s.io.list = async () => [{ name: '1.mp4', uri, directory: true, size: 0 }];
     expect((await s.check())[s.entry.episodes[0].id]?.state).toBe('missing');
     s.io.list = async () => [{ name: '1.mp4', uri, directory: false, size: 1 }];
-    expect((await s.check())[s.entry.episodes[0].id]).toEqual({
+    expect((await s.check())[s.entry.episodes[0].id]).toMatchObject({
       state: 'available',
       uri,
     });

@@ -1,16 +1,29 @@
 diff --git a/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/ExoPlayerView.kt b/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/ExoPlayerView.kt
-index 75e2307..f0cb835 100644
+index 75e2307..e603bc4 100644
 --- a/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/ExoPlayerView.kt
 +++ b/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/ExoPlayerView.kt
-@@ -7,6 +7,7 @@ import android.util.AttributeSet
+@@ -2,11 +2,20 @@ package com.brentvatne.exoplayer
+ 
+ import android.content.Context
+ import android.graphics.Color
++import android.graphics.Typeface
+ import android.graphics.drawable.GradientDrawable
++import android.media.AudioManager
++import android.os.SystemClock
++import android.provider.Settings
+ import android.util.AttributeSet
++import android.view.Gravity
++import android.view.MotionEvent
  import android.view.View
++import android.view.ViewConfiguration
++import android.view.Window
  import android.view.View.MeasureSpec
  import android.widget.FrameLayout
 +import android.widget.PopupWindow
  import android.widget.TextView
  import androidx.media3.common.Player
  import androidx.media3.common.Timeline
-@@ -14,6 +15,7 @@ import androidx.media3.common.util.UnstableApi
+@@ -14,9 +23,13 @@ import androidx.media3.common.util.UnstableApi
  import androidx.media3.exoplayer.ExoPlayer
  import androidx.media3.ui.AspectRatioFrameLayout
  import androidx.media3.ui.DefaultTimeBar
@@ -18,11 +31,284 @@ index 75e2307..f0cb835 100644
  import androidx.media3.ui.PlayerView
  import com.brentvatne.common.api.ResizeMode
  import com.brentvatne.common.api.SubtitleStyle
-@@ -62,6 +64,43 @@ class ExoPlayerView @JvmOverloads constructor(context: Context, attrs: Attribute
++import com.facebook.react.bridge.ReactContext
++import kotlin.math.abs
++import kotlin.math.roundToInt
+ 
+ @UnstableApi
+ class ExoPlayerView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
+@@ -62,6 +75,310 @@ class ExoPlayerView @JvmOverloads constructor(context: Context, attrs: Attribute
          val liveBadgeLayoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
          liveBadgeLayoutParams.setMargins(16, 16, 16, 16)
          addView(liveBadge, liveBadgeLayoutParams)
 +        keepSettingsInsideController()
++    }
++
++    // Touch gestures over the video:
++    //  - double-tap the left or right side to skip by the seek increment; further taps
++    //    on the same side within the streak window keep skipping;
++    //  - press and hold to play at 2x while held;
++    //  - swipe up or down on the left half for brightness, on the right half for volume.
++    private val badge: TextView = TextView(context).apply {
++        setTextColor(Color.WHITE)
++        textSize = 15f
++        typeface = Typeface.DEFAULT_BOLD
++        background = GradientDrawable().apply {
++            setColor(0x99202226.toInt())
++            cornerRadius = 999f
++        }
++        setPadding(36, 18, 36, 18)
++        alpha = 0f
++        isClickable = false
++        isFocusable = false
++    }
++    private val hideBadge = Runnable { badge.animate().alpha(0f).setDuration(220).start() }
++    private val doubleTapTimeout = ViewConfiguration.getDoubleTapTimeout().toLong()
++    private val doubleTapSlop = ViewConfiguration.get(context).scaledDoubleTapSlop
++    private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
++    private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
++    private var lastTapUp = 0L
++    private var lastTapX = 0f
++    private var lastTapSide = 0
++    private var controllerBeforeTaps = false
++    private var streakUntil = 0L
++    private var streakSide = 0
++    private var streakMs = 0L
++    private var mode = GESTURE_NONE
++    private var gestureZone = false
++    private var downX = 0f
++    private var downY = 0f
++    private var lastY = 0f
++    private var level = 0f
++    private var heldSpeed = 1f
++
++    // Brightness belongs to whichever window shows the video: the activity, or the
++    // fullscreen dialog while it is open (FullScreenPlayerView sets hostWindow).
++    var hostWindow: Window? = null
++    private var brightness = -1f
++    private var brightnessWindow: Window? = null
++
++    init {
++        addView(badge, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER))
++    }
++
++    private val startHold = Runnable {
++        val player = playerView.player
++        if (mode != GESTURE_PASS || player == null || !player.isPlaying) return@Runnable
++        mode = GESTURE_HOLD
++        lastTapUp = 0
++        heldSpeed = player.playbackParameters.speed
++        player.setPlaybackSpeed(2f)
++        cancelChildren()
++        showBadge("2×  ▸▸", Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0)
++    }
++
++    private fun endHold() {
++        playerView.player?.setPlaybackSpeed(heldSpeed)
++        removeCallbacks(hideBadge)
++        post(hideBadge)
++    }
++
++    // Leave the bottom bar (time bar, settings, fullscreen) to the controller.
++    private fun inGestureZone(y: Float) = !(playerView.isControllerFullyVisible && y > height * 0.72f)
++
++    private fun seekSide(x: Float, y: Float): Int {
++        if (!inGestureZone(y)) return 0
++        return when {
++            x < width * 0.4f -> -1
++            x > width * 0.6f -> 1
++            else -> 0
++        }
++    }
++
++    private fun showBadge(text: String, gravity: Int, hideAfterMs: Long) {
++        badge.text = text
++        val params = badge.layoutParams as LayoutParams
++        params.gravity = gravity
++        val centered = gravity and Gravity.HORIZONTAL_GRAVITY_MASK == Gravity.CENTER_HORIZONTAL
++        params.marginStart = if (centered) 0 else (width * 0.1f).toInt()
++        params.marginEnd = params.marginStart
++        params.topMargin = if (gravity and Gravity.VERTICAL_GRAVITY_MASK == Gravity.TOP) (height * 0.1f).toInt() else 0
++        badge.layoutParams = params
++        badge.animate().cancel()
++        badge.alpha = 1f
++        badge.bringToFront()
++        removeCallbacks(hideBadge)
++        if (hideAfterMs > 0) postDelayed(hideBadge, hideAfterMs)
++    }
++
++    private fun skip(side: Int, now: Long) {
++        val player = playerView.player ?: return
++        if (side != streakSide || now > streakUntil) streakMs = 0
++        if (side < 0) {
++            player.seekBack()
++            streakMs += player.seekBackIncrement
++        } else {
++            player.seekForward()
++            streakMs += player.seekForwardIncrement
++        }
++        streakSide = side
++        streakUntil = now + doubleTapTimeout + 400
++        val seconds = streakMs / 1000
++        showBadge(
++            if (side < 0) "«  ${seconds}s" else "${seconds}s  »",
++            Gravity.CENTER_VERTICAL or (if (side < 0) Gravity.START else Gravity.END),
++            650
++        )
++    }
++
++    private fun targetWindow(): Window? =
++        hostWindow ?: (context as? ReactContext)?.currentActivity?.window
++
++    private fun setWindowBrightness(window: Window, value: Float) {
++        val attrs = window.attributes
++        attrs.screenBrightness = value
++        window.attributes = attrs
++    }
++
++    private fun applyBrightness() {
++        val target = if (isAttachedToWindow) targetWindow() else null
++        brightnessWindow?.takeIf { it !== target }?.let { setWindowBrightness(it, -1f) }
++        brightnessWindow = target
++        if (brightness >= 0f) target?.let { setWindowBrightness(it, brightness) }
++    }
++
++    private fun beginLevel() {
++        level = if (mode == GESTURE_BRIGHTNESS) {
++            if (brightness >= 0f) {
++                brightness
++            } else {
++                targetWindow()?.attributes?.screenBrightness?.takeIf { it >= 0f }
++                    ?: (Settings.System.getInt(context.contentResolver, Settings.System.SCREEN_BRIGHTNESS, 128) / 255f)
++            }
++        } else {
++            audioManager.getStreamVolume(AudioManager.STREAM_MUSIC).toFloat() /
++                audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC).coerceAtLeast(1)
++        }
++    }
++
++    private fun adjustLevel(y: Float) {
++        level = (level + (lastY - y) / (height * 0.85f).coerceAtLeast(1f)).coerceIn(0f, 1f)
++        lastY = y
++        val percent = (level * 100).roundToInt()
++        if (mode == GESTURE_BRIGHTNESS) {
++            brightness = level.coerceAtLeast(0.01f)
++            applyBrightness()
++            showBadge("Brightness  $percent%", Gravity.TOP or Gravity.CENTER_HORIZONTAL, 700)
++        } else {
++            val max = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
++            val index = (level * max).roundToInt()
++            if (index != audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)) {
++                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, index, 0)
++            }
++            showBadge("Volume  $percent%", Gravity.TOP or Gravity.CENTER_HORIZONTAL, 700)
++        }
++    }
++
++    // Tell the controller the touch is over, so it does not toggle or click on release.
++    private fun cancelChildren() {
++        val now = SystemClock.uptimeMillis()
++        val cancel = MotionEvent.obtain(now, now, MotionEvent.ACTION_CANCEL, downX, downY, 0)
++        super.dispatchTouchEvent(cancel)
++        cancel.recycle()
++    }
++
++    override fun onAttachedToWindow() {
++        super.onAttachedToWindow()
++        applyBrightness()
++    }
++
++    override fun onDetachedFromWindow() {
++        removeCallbacks(startHold)
++        if (mode == GESTURE_HOLD) {
++            endHold()
++            mode = GESTURE_NONE
++        }
++        brightnessWindow?.let { setWindowBrightness(it, -1f) }
++        brightnessWindow = null
++        super.onDetachedFromWindow()
++    }
++
++    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
++        val now = ev.eventTime
++        val action = ev.actionMasked
++        when (action) {
++            MotionEvent.ACTION_DOWN -> {
++                removeCallbacks(startHold)
++                val side = seekSide(ev.x, ev.y)
++                val continuing = side != 0 && side == streakSide && now <= streakUntil
++                val second = side != 0 && side == lastTapSide &&
++                    now - lastTapUp <= doubleTapTimeout && abs(ev.x - lastTapX) <= doubleTapSlop * 2
++                if (continuing || second) {
++                    mode = GESTURE_SWALLOW
++                    lastTapUp = 0
++                    skip(side, now)
++                    if (second && !continuing) {
++                        // The first tap toggled the controller; put it back as it was.
++                        val restoreVisible = controllerBeforeTaps
++                        post { if (restoreVisible) playerView.showController() else playerView.hideController() }
++                    }
++                    return true
++                }
++                mode = GESTURE_PASS
++                downX = ev.x
++                downY = ev.y
++                gestureZone = inGestureZone(ev.y)
++                controllerBeforeTaps = playerView.isControllerFullyVisible
++                if (gestureZone) postDelayed(startHold, ViewConfiguration.getLongPressTimeout().toLong())
++            }
++            MotionEvent.ACTION_MOVE -> if (mode == GESTURE_PASS && gestureZone) {
++                val dx = ev.x - downX
++                val dy = ev.y - downY
++                if (abs(dy) > touchSlop && abs(dy) > abs(dx) * 1.5f) {
++                    removeCallbacks(startHold)
++                    mode = if (downX < width / 2f) GESTURE_BRIGHTNESS else GESTURE_VOLUME
++                    lastTapUp = 0
++                    lastY = ev.y
++                    beginLevel()
++                    cancelChildren()
++                    return true
++                }
++                if (abs(dx) > touchSlop || abs(dy) > touchSlop) removeCallbacks(startHold)
++            }
++            MotionEvent.ACTION_POINTER_DOWN -> {
++                lastTapUp = 0
++                removeCallbacks(startHold)
++            }
++            MotionEvent.ACTION_UP -> {
++                removeCallbacks(startHold)
++                if (mode == GESTURE_PASS) {
++                    if (now - ev.downTime <= ViewConfiguration.getTapTimeout() * 2L) {
++                        lastTapUp = now
++                        lastTapX = ev.x
++                        lastTapSide = seekSide(ev.x, ev.y)
++                    } else {
++                        lastTapUp = 0
++                    }
++                }
++            }
++            MotionEvent.ACTION_CANCEL -> removeCallbacks(startHold)
++        }
++        val ending = action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL
++        when (mode) {
++            GESTURE_SWALLOW -> {
++                if (ending) mode = GESTURE_NONE
++                return true
++            }
++            GESTURE_HOLD -> {
++                if (ending) {
++                    endHold()
++                    mode = GESTURE_NONE
++                }
++                return true
++            }
++            GESTURE_BRIGHTNESS, GESTURE_VOLUME -> {
++                if (action == MotionEvent.ACTION_MOVE) adjustLevel(ev.y)
++                if (ending) mode = GESTURE_NONE
++                return true
++            }
++        }
++        return super.dispatchTouchEvent(ev)
 +    }
 +
 +    fun setNavigationButtons(showPrevious: Boolean, showNext: Boolean) {
@@ -62,6 +348,39 @@ index 75e2307..f0cb835 100644
      }
  
      fun setPlayer(player: ExoPlayer?) {
+@@ -261,6 +578,12 @@ class ExoPlayerView @JvmOverloads constructor(context: Context, attrs: Attribute
+ 
+     companion object {
+         private const val TAG = "ExoPlayerView"
++        private const val GESTURE_NONE = 0
++        private const val GESTURE_PASS = 1
++        private const val GESTURE_SWALLOW = 2
++        private const val GESTURE_HOLD = 3
++        private const val GESTURE_BRIGHTNESS = 4
++        private const val GESTURE_VOLUME = 5
+     }
+ 
+     /**
+diff --git a/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/FullScreenPlayerView.kt b/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/FullScreenPlayerView.kt
+index b5d786b..4f05c86 100644
+--- a/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/FullScreenPlayerView.kt
++++ b/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/FullScreenPlayerView.kt
+@@ -86,6 +86,7 @@ class FullScreenPlayerView(
+     override fun onStart() {
+         super.onStart()
+         parent = exoPlayerView.parent as ViewGroup?
++        exoPlayerView.hostWindow = window
+         parent?.removeView(exoPlayerView)
+         containerView.addView(exoPlayerView, generateDefaultLayoutParams())
+         playerControlView?.let {
+@@ -98,6 +99,7 @@ class FullScreenPlayerView(
+     override fun onStop() {
+         super.onStop()
+         mKeepScreenOnHandler.removeCallbacks(mKeepScreenOnUpdater)
++        exoPlayerView.hostWindow = null
+         containerView.removeView(exoPlayerView)
+         parent?.addView(exoPlayerView, generateDefaultLayoutParams())
+         playerControlView?.let {
 diff --git a/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/ReactExoplayerView.java b/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/ReactExoplayerView.java
 index 623d90c..bc2ca31 100644
 --- a/node_modules/react-native-video/android/src/main/java/com/brentvatne/exoplayer/ReactExoplayerView.java
